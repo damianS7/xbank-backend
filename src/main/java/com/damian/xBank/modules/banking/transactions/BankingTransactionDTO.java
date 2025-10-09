@@ -1,0 +1,18 @@
+package com.damian.xBank.modules.banking.transactions;
+
+import java.math.BigDecimal;
+import java.time.Instant;
+
+public record BankingTransactionDTO(
+        Long id,
+        Long bankingAccountId,
+        Long bankingCardId,
+        BigDecimal amount,
+        BigDecimal accountBalance,
+        BankingTransactionType transactionType,
+        BankingTransactionStatus transactionStatus,
+        String description,
+        Instant createdAt,
+        Instant updatedAt
+) {
+}
