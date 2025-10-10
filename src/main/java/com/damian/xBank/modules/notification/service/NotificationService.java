@@ -1,0 +1,138 @@
+package com.damian.whatsapp.modules.notification.service;
+
+import com.damian.whatsapp.modules.notification.NotificationRepository;
+import com.damian.whatsapp.modules.notification.dto.NotificationEvent;
+import com.damian.whatsapp.modules.user.user.exception.UserNotFoundException;
+import com.damian.whatsapp.modules.user.user.repository.UserRepository;
+import com.damian.whatsapp.shared.domain.Notification;
+import com.damian.whatsapp.shared.domain.User;
+import com.damian.whatsapp.shared.exception.Exceptions;
+import com.damian.whatsapp.shared.util.AuthHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Sinks;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+@Service
+public class NotificationService {
+    private static final Logger log = LoggerFactory.getLogger(NotificationService.class);
+    private final NotificationRepository notificationRepository;
+    private final UserRepository userRepository;
+    private final Map<Long, Sinks.Many<NotificationEvent>> userSinks = new ConcurrentHashMap<>();
+
+    public NotificationService(
+            NotificationRepository notificationRepository,
+            UserRepository userRepository
+    ) {
+        this.notificationRepository = notificationRepository;
+        this.userRepository = userRepository;
+    }
+
+    /**
+     * Get notifications for the current user.
+     *
+     * @param pageable pagination params
+     * @return Page<Notification> a page of notifications
+     */
+    public Page<Notification> getNotifications(Pageable pageable) {
+        User currentUser = AuthHelper.getLoggedUser();
+        log.debug("Fetching notifications for user: {}", currentUser.getId());
+        return notificationRepository.findAllByUserId(currentUser.getId(), pageable);
+    }
+
+    /**
+     * Delete all notifications for the current user.
+     */
+    @Transactional
+    public void deleteNotifications() {
+        User currentUser = AuthHelper.getLoggedUser();
+        // delete all notifications
+        notificationRepository.deleteAllByUser_Id(currentUser.getId());
+        log.debug("Deleted all notifications from user: {}", currentUser.getId());
+    }
+
+    /**
+     * Get notifications for the current user as a Flux stream.
+     * The stream will be closed when the client disconnects.
+     *
+     * @return Flux<NotificationEvent> a stream of notifications
+     */
+    public Flux<NotificationEvent> getNotificationsForUser() {
+        User currentUser = AuthHelper.getLoggedUser();
+
+        // create a sink for the user if not exists
+        Sinks.Many<NotificationEvent> sink = userSinks.computeIfAbsent(
+                currentUser.getId(),
+                k -> Sinks.many().multicast().onBackpressureBuffer()
+        );
+
+        // remove when disconnect
+        return sink.asFlux().doOnCancel(() -> {
+            userSinks.remove(currentUser.getId());
+        });
+    }
+
+    /**
+     * Publish a notification event to the recipient.
+     *
+     * @param notificationEvent the notification event
+     */
+    public void publishNotification(NotificationEvent notificationEvent) {
+        User currentUser = AuthHelper.getLoggedUser();
+        log.debug(
+                "Publishing Notification ({}) to user: {}",
+                notificationEvent.type(),
+                notificationEvent.recipientId()
+        );
+
+        // if the receiverId is the same as senderId then do nothing
+        // this is to prevent sending notifications to oneself
+        // for example when a user likes or comment their own post
+        if (currentUser.getId().equals(notificationEvent.recipientId())) {
+            log.debug("Recipient is the same user. No need to notify.");
+            return;
+        }
+
+        // find recipient user who will receive the notification
+        User recipient = userRepository
+                .findById(notificationEvent.recipientId())
+                .orElseThrow(() -> {
+                    log.warn(
+                            "Notification failed: recipient: {} not found.",
+                            notificationEvent.recipientId()
+                    );
+                    return new UserNotFoundException(
+                            Exceptions.USER.NOT_FOUND,
+                            notificationEvent.recipientId()
+                    );
+                });
+
+        // create and save notification to the database
+        Notification notification = Notification
+                .create(recipient)
+                .setMessage(notificationEvent.message())
+                .setMetadata(notificationEvent.metadata())
+                .setType(notificationEvent.type());
+        notificationRepository.save(notification);
+
+        log.debug(
+                "Notification ({}) to user: {} stored on db.",
+                notificationEvent.type(),
+                notificationEvent.recipientId()
+        );
+
+        // emit event to the recipient if connected
+        var sink = userSinks.get(notificationEvent.recipientId());
+        if (sink != null) {
+            sink.tryEmitNext(notificationEvent);
+            log.debug("Notification sent on real time to: {}", notificationEvent.recipientId());
+        }
+    }
+}
