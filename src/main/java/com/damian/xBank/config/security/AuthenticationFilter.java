@@ -1,6 +1,5 @@
 package com.damian.xBank.config.security;
 
-
 import com.damian.xBank.modules.auth.exception.EmailNotFoundException;
 import com.damian.xBank.modules.auth.service.CustomUserDetailsService;
 import com.damian.xBank.shared.exception.Exceptions;
