@@ -1,6 +1,23 @@
+app:
+  frontend:
+    host: "whatsapp.local"
+    port: 8081
 spring:
+  rabbitmq:
+    host: ${RABBIT_HOST:rabbitmq}
+    port: ${RABBIT_PORT:5672}
+    username: ${RABBIT_USER}
+    password: ${RABBIT_PASS}
+  mail:
+    host: ${MAIL_HOST:mailpit}
+    port: ${MAIL_PORT:1025}
+    username:
+    password:
+    properties:
+      mail.smtp.auth: false
+      mail.smtp.starttls.enable: false
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:5440/postgres
     username: ${DB_USER}
     password: ${DB_PASS}
     driver-class-name: org.postgresql.Driver
@@ -9,3 +26,7 @@ spring:
   output:
     ansi:
       enabled: ALWAYS
+logging:
+  level:
+    root: INFO
+    org.hibernate.SQL: DEBUG

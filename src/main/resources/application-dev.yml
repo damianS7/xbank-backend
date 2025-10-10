@@ -1,12 +1,21 @@
+app:
+  frontend:
+    host: "localhost"
+    port: 8080
 spring:
+  rabbitmq:
+    host: ${RABBIT_HOST:localhost}
+    port: ${RABBIT_PORT:5672}
+    username: ${RABBIT_USER}
+    password: ${RABBIT_PASS}
   datasource:
-    url: jdbc:postgresql://localhost:5430/postgres
+    url: jdbc:postgresql://localhost:5432/postgres
     username: ${DB_USER}
     password: ${DB_PASS}
     driver-class-name: org.postgresql.Driver
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
-    show-sql: true
+    show-sql: false
     hibernate:
       ddl-auto: none
     properties:
@@ -24,8 +33,18 @@ spring:
       enabled: true
     livereload:
       enabled: true
+  mail:
+    host: localhost
+    port: 1025
+    username:
+    password:
+    properties:
+      mail.smtp.auth: false
+      mail.smtp.starttls.enable: false
 logging:
   level:
-    org.hibernate.orm.jdbc.bind: TRACE
-    org.hibernate.SQL: DEBUG
+    root: INFO
+    com.damian.xBank: DEBUG
+    org.hibernate.orm.jdbc.bind: INFO
+    org.hibernate.SQL: INFO
     org.hibernate.type.descriptor.sql: TRACE
