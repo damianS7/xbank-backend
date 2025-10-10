@@ -4,97 +4,120 @@ CREATE SCHEMA public AUTHORIZATION pg_database_owner;
 
 COMMENT ON SCHEMA public IS 'standard public schema';
 
+-- User tables
 
-CREATE TYPE public."customer_role_type" AS ENUM (
-	'CUSTOMER',
+CREATE TYPE public."user_account_status_type" AS ENUM (
+	'DISABLED',
+	'ENABLED',
+	'PENDING_VERIFICATION'
+);
+CREATE CAST (varchar as user_account_status_type) WITH INOUT AS IMPLICIT;
+
+CREATE TYPE public."user_role_type" AS ENUM (
+	'USER',
 	'ADMIN'
 );
+CREATE CAST (varchar as user_role_type) WITH INOUT AS IMPLICIT;
 
-CREATE CAST (varchar as customer_role_type) WITH INOUT AS IMPLICIT;
-
-CREATE TABLE public.customers (
-	id int4 GENERATED ALWAYS AS IDENTITY NOT NULL,
-	email varchar(80) NOT NULL,
-	"role" public."customer_role_type" DEFAULT 'CUSTOMER'::customer_role_type NOT NULL,
-	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-	updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-	CONSTRAINT customers_email_key UNIQUE (email),
-	CONSTRAINT customers_pkey PRIMARY KEY (id)
+CREATE TABLE public.users (
+  id int4 GENERATED ALWAYS AS IDENTITY NOT NULL,
+  email VARCHAR(80) UNIQUE NOT NULL,
+  password_hash VARCHAR(60) NOT NULL,
+  role public.user_role_type DEFAULT 'USER'::user_role_type NOT NULL,
+  account_status public.user_account_status_type DEFAULT 'ENABLED'::user_account_status_type NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT users_pkey PRIMARY KEY (id)
 );
+
+CREATE TYPE public."user_token_type" AS ENUM (
+	'ACCOUNT_VERIFICATION',
+	'RESET_PASSWORD'
+);
+CREATE CAST (varchar as user_token_type) WITH INOUT AS IMPLICIT;
+
+CREATE TABLE public.user_tokens (
+	id int4 GENERATED ALWAYS AS IDENTITY NOT NULL,
+	user_id int4 NOT NULL,
+	token varchar(100) NOT NULL,
+	used BOOLEAN DEFAULT FALSE,
+	type public."user_token_type" NOT NULL,
+	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+	expires_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+	CONSTRAINT user_token_pkey PRIMARY KEY (id),
+	CONSTRAINT user_token_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE
+);
+
+-- Customer
 
 CREATE TYPE public."customer_gender_type" AS ENUM (
 	'MALE',
 	'FEMALE'
 );
-
 CREATE CAST (varchar as customer_gender_type) WITH INOUT AS IMPLICIT;
 
-CREATE TABLE public.customer_profiles (
+CREATE TABLE public.customers (
 	id int4 GENERATED ALWAYS AS IDENTITY NOT NULL,
-	customer_id int4 NOT NULL,
+	user_id int4 NOT NULL,
 	first_name varchar(20) NOT NULL,
 	last_name varchar(40) NOT NULL,
 	phone varchar(14) NOT NULL,
 	birthdate date NOT NULL,
 	gender public."customer_gender_type" NOT NULL,
-	photo_path varchar(100) NULL, -- path to image
+	photo varchar(100) NULL, -- path to image
 	address varchar(50) NOT NULL,
 	postal_code varchar(8) NOT NULL,
 	country varchar(12) NOT NULL,
 	national_id varchar(12) NOT NULL,
 	updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-	CONSTRAINT profiles_customer_id_key UNIQUE (customer_id),
-	CONSTRAINT profiles_national_id_key UNIQUE (national_id),
-	CONSTRAINT profiles_pkey PRIMARY KEY (id),
-	CONSTRAINT profiles_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES public.customers(id) ON DELETE CASCADE
+	CONSTRAINT customers_pkey PRIMARY KEY (id),
+	CONSTRAINT customers_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE
 );
 
-CREATE TYPE public."auth_status_type" AS ENUM (
-	'DISABLED',
-	'ENABLED'
+CREATE TYPE public."notification_type" AS ENUM (
+	'MESSAGE'
 );
+CREATE CAST (varchar as notification_type) WITH INOUT AS IMPLICIT;
 
-CREATE CAST (varchar as auth_status_type) WITH INOUT AS IMPLICIT;
-
-CREATE TYPE public."email_verification_status_type" AS ENUM (
-	'NOT_VERIFIED',
-	'VERIFIED'
-);
-
-CREATE CAST (varchar as email_verification_status_type) WITH INOUT AS IMPLICIT;
-
-CREATE TABLE public.customer_auth (
+CREATE TABLE public.customer_notifications (
 	id int4 GENERATED ALWAYS AS IDENTITY NOT NULL,
 	customer_id int4 NOT NULL,
-	password_hash varchar(60) NOT NULL,
-	auth_account_status public."auth_status_type" DEFAULT 'ENABLED'::auth_status_type NOT NULL,
-	"email_verification_status" public."email_verification_status_type" DEFAULT 'NOT_VERIFIED'::email_verification_status_type NOT NULL,
-	updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-	CONSTRAINT auth_customer_id_key UNIQUE (customer_id),
-	CONSTRAINT auth_pkey PRIMARY KEY (id),
-	CONSTRAINT auth_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES public.customers(id) ON DELETE CASCADE
+	type public."notification_type" NOT NULL,
+	message varchar(255) NOT NULL,
+	metadata jsonb NOT NULL,
+    created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+	CONSTRAINT customer_notifications_pkey PRIMARY KEY (id),
+    CONSTRAINT customer_notifications_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES public.customers(id) ON DELETE CASCADE
 );
+
+CREATE TABLE public.customer_settings (
+	id int4 GENERATED ALWAYS AS IDENTITY NOT NULL,
+	customer_id int4 NOT NULL,
+	settings jsonb NOT NULL,
+	CONSTRAINT settings_pkey PRIMARY KEY (id),
+    CONSTRAINT settings_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES public.customers(id) ON DELETE CASCADE
+);
+
+-- Banking Account
 
 CREATE TYPE public."banking_account_currency_type" AS ENUM (
 	'EUR',
 	'USD'
 );
-
 CREATE CAST (varchar as banking_account_currency_type) WITH INOUT AS IMPLICIT;
 
 CREATE TYPE public."banking_account_status_type" AS ENUM (
-	'OPEN',
-	'CLOSED',
-	'SUSPENDED'
+  'PENDING_ACTIVATION',
+  'ACTIVE',
+  'SUSPENDED',
+  'CLOSED'
 );
-
 CREATE CAST (varchar as banking_account_status_type) WITH INOUT AS IMPLICIT;
 
 CREATE TYPE public."banking_account_type" AS ENUM (
 	'SAVINGS',
 	'CHECKING'
 );
-
 CREATE CAST (varchar as banking_account_type) WITH INOUT AS IMPLICIT;
 
 CREATE TABLE public.banking_accounts (
@@ -105,7 +128,7 @@ CREATE TABLE public.banking_accounts (
 	balance numeric(15, 2) DEFAULT 0.00 NOT NULL,
 	account_type public."banking_account_type" DEFAULT 'SAVINGS'::banking_account_type NOT NULL,
 	account_currency public."banking_account_currency_type" DEFAULT 'EUR'::banking_account_currency_type NOT NULL,
-	account_status public."banking_account_status_type" DEFAULT 'CLOSED'::banking_account_status_type NOT NULL,
+	account_status public."banking_account_status_type" DEFAULT 'PENDING_ACTIVATION'::banking_account_status_type NOT NULL,
 	notes text NULL,
 	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
 	updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
@@ -114,32 +137,34 @@ CREATE TABLE public.banking_accounts (
 	CONSTRAINT banking_accounts_customers_fk FOREIGN KEY (customer_id) REFERENCES public.customers(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TYPE public."banking_card_status_type" AS ENUM (
-	'ENABLED',
-	'DISABLED'
-);
+-- Banking Card
 
+CREATE TYPE public."banking_card_status_type" AS ENUM (
+  'ACTIVE',      -- Actiaved and working
+  'INACTIVE',    -- Deactivated by user or bank (can be activated again)
+  'CANCELLED',   -- Cancelled (lost, account closed, robbed)
+  'EXPIRED',     -- Card expired.
+  'PENDING_ACTIVATION' -- Emitted but not activated by user
+);
 CREATE CAST (varchar as banking_card_status_type) WITH INOUT AS IMPLICIT;
 
 CREATE TYPE public."banking_card_lock_status_type" AS ENUM (
 	'LOCKED',
 	'UNLOCKED'
 );
-
 CREATE CAST (varchar as banking_card_lock_status_type) WITH INOUT AS IMPLICIT;
 
 CREATE TYPE public."banking_card_type" AS ENUM (
 	'CREDIT',
 	'DEBIT'
 );
-
 CREATE CAST (varchar as banking_card_type) WITH INOUT AS IMPLICIT;
 
 CREATE TABLE public.banking_cards (
-	id int4 GENERATED ALWAYS AS IDENTITY NOT NULL,
-	banking_account_id int4 NOT NULL,
+	id int4 GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	account_id int4 NOT NULL,
 	card_type public."banking_card_type" NOT NULL,
-	card_status public."banking_card_status_type" DEFAULT 'DISABLED'::banking_card_status_type NOT NULL,
+	card_status public."banking_card_status_type" DEFAULT 'PENDING_ACTIVATION'::banking_card_status_type NOT NULL,
 	lock_status public."banking_card_lock_status_type" DEFAULT 'UNLOCKED'::banking_card_lock_status_type NOT NULL,
 	card_number varchar(32) NOT NULL,
 	card_pin varchar(4) NOT NULL,
@@ -149,9 +174,12 @@ CREATE TABLE public.banking_cards (
 	notes text NULL,
 	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
 	updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-	CONSTRAINT banking_card_pkey PRIMARY KEY (id),
-	CONSTRAINT banking_card_banking_account_id_fkey FOREIGN KEY (banking_account_id) REFERENCES public.banking_accounts(id) ON DELETE CASCADE
+	CONSTRAINT fk_account_id_fkey FOREIGN KEY (account_id)
+	    REFERENCES public.banking_accounts(id)
+	    ON DELETE CASCADE
 );
+
+-- Banking transactions
 
 CREATE TYPE public."banking_transaction_status_type" AS ENUM (
 	'PENDING',
@@ -159,7 +187,6 @@ CREATE TYPE public."banking_transaction_status_type" AS ENUM (
 	'COMPLETED',
 	'REJECTED'
 );
-
 CREATE CAST (varchar as banking_transaction_status_type) WITH INOUT AS IMPLICIT;
 
 CREATE TYPE public."banking_transaction_type" AS ENUM (
@@ -169,21 +196,23 @@ CREATE TYPE public."banking_transaction_type" AS ENUM (
 	'TRANSFER_TO',
 	'TRANSFER_FROM'
 );
-
 CREATE CAST (varchar as banking_transaction_type) WITH INOUT AS IMPLICIT;
 
 CREATE TABLE public.banking_transactions (
-	id int4 GENERATED ALWAYS AS IDENTITY NOT NULL,
-	banking_account_id int4 NOT NULL,
-	banking_card_id int4 NULL,
+	id int4 GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	account_id int4 NOT NULL,
+	card_id int4 NULL,
 	account_balance numeric(15, 2) NOT NULL,
 	transaction_type public."banking_transaction_type" NOT NULL,
 	amount numeric(15, 2) NOT NULL,
 	description text NULL,
-	transaction_status public."banking_transaction_status_type" DEFAULT 'PENDING'::banking_transaction_status_type NOT NULL,
+	status public."banking_transaction_status_type" DEFAULT 'PENDING'::banking_transaction_status_type NOT NULL,
 	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
 	updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-	CONSTRAINT banking_transactions_pkey PRIMARY KEY (id),
-	CONSTRAINT banking_transactions_banking_card_id_fkey FOREIGN KEY (banking_card_id) REFERENCES public.banking_cards(id) ON DELETE SET NULL,
-	CONSTRAINT banking_transactions_banking_account_id_fkey FOREIGN KEY (banking_account_id) REFERENCES public.banking_accounts(id) ON DELETE CASCADE
+	CONSTRAINT fk_transactions_account FOREIGN KEY (account_id)
+            REFERENCES public.banking_accounts(id)
+            ON DELETE CASCADE,
+        CONSTRAINT fk_transactions_card FOREIGN KEY (card_id)
+            REFERENCES public.banking_cards(id)
+            ON DELETE SET NULL
 );

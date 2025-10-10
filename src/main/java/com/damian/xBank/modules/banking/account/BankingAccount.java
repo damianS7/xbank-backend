@@ -2,7 +2,7 @@ package com.damian.xBank.modules.banking.account;
 
 import com.damian.xBank.modules.banking.card.BankingCard;
 import com.damian.xBank.modules.banking.transactions.BankingTransaction;
-import com.damian.xBank.modules.customer.Customer;
+import com.damian.xBank.shared.domain.Customer;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -59,7 +59,7 @@ public class BankingAccount {
         this.balance = BigDecimal.valueOf(0);
         this.accountCurrency = BankingAccountCurrency.EUR;
         this.accountType = BankingAccountType.SAVINGS;
-        this.accountStatus = BankingAccountStatus.OPEN;
+        this.accountStatus = BankingAccountStatus.ACTIVE;
         this.createdAt = Instant.now();
     }
 

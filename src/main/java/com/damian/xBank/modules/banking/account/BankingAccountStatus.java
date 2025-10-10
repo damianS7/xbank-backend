@@ -1,7 +1,8 @@
 package com.damian.xBank.modules.banking.account;
 
 public enum BankingAccountStatus {
-    OPEN,
+    PENDING_ACTIVATION,
+    ACTIVE,
     CLOSED,
     SUSPENDED
 }
