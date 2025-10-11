@@ -2,8 +2,8 @@ package com.damian.xBank.modules.notification.service;
 
 import com.damian.xBank.modules.notification.dto.NotificationEvent;
 import com.damian.xBank.modules.notification.repository.NotificationRepository;
-import com.damian.xBank.modules.user.user.exception.UserNotFoundException;
-import com.damian.xBank.modules.user.user.repository.UserRepository;
+import com.damian.xBank.modules.user.account.account.exception.UserAccountException;
+import com.damian.xBank.modules.user.account.account.repository.UserAccountRepository;
 import com.damian.xBank.shared.domain.Notification;
 import com.damian.xBank.shared.domain.UserAccount;
 import com.damian.xBank.shared.exception.Exceptions;
@@ -24,15 +24,15 @@ import java.util.concurrent.ConcurrentHashMap;
 public class NotificationService {
     private static final Logger log = LoggerFactory.getLogger(NotificationService.class);
     private final NotificationRepository notificationRepository;
-    private final UserRepository userRepository;
+    private final UserAccountRepository userAccountRepository;
     private final Map<Long, Sinks.Many<NotificationEvent>> userSinks = new ConcurrentHashMap<>();
 
     public NotificationService(
             NotificationRepository notificationRepository,
-            UserRepository userRepository
+            UserAccountRepository userAccountRepository
     ) {
         this.notificationRepository = notificationRepository;
-        this.userRepository = userRepository;
+        this.userAccountRepository = userAccountRepository;
     }
 
     /**
@@ -101,15 +101,15 @@ public class NotificationService {
         }
 
         // find recipient user who will receive the notification
-        UserAccount recipient = userRepository
+        UserAccount recipient = userAccountRepository
                 .findById(notificationEvent.recipientId())
                 .orElseThrow(() -> {
                     log.warn(
                             "Notification failed: recipient: {} not found.",
                             notificationEvent.recipientId()
                     );
-                    return new UserNotFoundException(
-                            Exceptions.USER.NOT_FOUND,
+                    return new UserAccountException(
+                            Exceptions.USER_ACCOUNT.NOT_FOUND,
                             notificationEvent.recipientId()
                     );
                 });
