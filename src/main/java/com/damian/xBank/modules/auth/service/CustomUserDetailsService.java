@@ -2,8 +2,9 @@ package com.damian.xBank.modules.auth.service;
 
 import com.damian.xBank.modules.auth.exception.EmailNotFoundException;
 import com.damian.xBank.modules.user.user.repository.UserRepository;
-import com.damian.xBank.shared.domain.User;
+import com.damian.xBank.shared.domain.UserAccount;
 import com.damian.xBank.shared.domain.UserPrincipal;
+import com.damian.xBank.shared.exception.Exceptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,7 +27,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     public UserDetails loadUserByEmail(String email) throws EmailNotFoundException {
-        User user = userRepository
+        UserAccount user = userRepository
                 .findByUserAccount_Email(email)
                 .orElseThrow(
                         () -> {

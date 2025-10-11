@@ -1,8 +1,8 @@
 package com.damian.xBank.modules.auth.controller;
 
-import com.damian.whatsapp.modules.auth.dto.AuthenticationRequest;
-import com.damian.whatsapp.modules.auth.dto.AuthenticationResponse;
-import com.damian.whatsapp.modules.auth.service.AuthenticationService;
+import com.damian.xBank.modules.auth.dto.AuthenticationResponse;
+import com.damian.xBank.modules.auth.service.AuthenticationService;
+import com.damian.xBank.modules.auth.dto.AuthenticationRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

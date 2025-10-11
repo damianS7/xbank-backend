@@ -1,7 +1,7 @@
-package com.damian.whatsapp.modules.auth.exception;
+package com.damian.xBank.modules.auth.exception;
 
-import com.damian.whatsapp.shared.exception.Exceptions;
-import com.damian.whatsapp.shared.util.ApiResponse;
+import com.damian.xBank.shared.exception.Exceptions;
+import com.damian.xBank.shared.utils.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;

@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.auth.http;
+package com.damian.xBank.modules.auth.dto;
 
 import jakarta.validation.constraints.NotNull;
 

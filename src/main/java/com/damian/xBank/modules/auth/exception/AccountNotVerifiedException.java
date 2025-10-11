@@ -1,6 +1,6 @@
-package com.damian.whatsapp.modules.auth.exception;
+package com.damian.xBank.modules.auth.exception;
 
-import com.damian.whatsapp.shared.exception.ApplicationException;
+import com.damian.xBank.shared.exception.ApplicationException;
 
 public class AccountNotVerifiedException extends ApplicationException {
     public AccountNotVerifiedException(String message) {

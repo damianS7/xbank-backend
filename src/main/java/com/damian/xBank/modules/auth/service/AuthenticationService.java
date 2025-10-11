@@ -7,7 +7,7 @@ import com.damian.xBank.modules.auth.exception.AccountSuspendedException;
 import com.damian.xBank.modules.user.account.account.UserAccountStatus;
 import com.damian.xBank.shared.domain.UserPrincipal;
 import com.damian.xBank.shared.exception.Exceptions;
-import com.damian.xBank.shared.util.JwtUtil;
+import com.damian.xBank.shared.utils.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -68,14 +68,14 @@ public class AuthenticationService {
         );
 
         // check if the account is disabled
-        if (currentUser.getUser().getAccountStatus().equals(UserAccountStatus.SUSPENDED)) {
+        if (currentUser.getAccount().getAccountStatus().equals(UserAccountStatus.SUSPENDED)) {
             throw new AccountSuspendedException(
                     Exceptions.ACCOUNT.SUSPENDED
             );
         }
 
         // check if the account is verified
-        if (currentUser.getUser().getAccountStatus().equals(UserAccountStatus.PENDING_VERIFICATION)) {
+        if (currentUser.getAccount().getAccountStatus().equals(UserAccountStatus.PENDING_VERIFICATION)) {
             throw new AccountNotVerifiedException(
                     Exceptions.ACCOUNT.NOT_VERIFIED
             );

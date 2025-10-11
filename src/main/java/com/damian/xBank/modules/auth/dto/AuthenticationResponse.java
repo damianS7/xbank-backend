@@ -1,4 +1,4 @@
-package com.damian.whatsapp.modules.auth.dto;
+package com.damian.xBank.modules.auth.dto;
 
 /**
  * Used for returning the token after successful authentication.
