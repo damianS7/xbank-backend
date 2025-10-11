@@ -1,6 +1,7 @@
 package com.damian.xBank.config;
 
 import com.damian.xBank.modules.auth.service.CustomUserDetailsService;
+import net.datafaker.Faker;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,6 +35,11 @@ public class SecurityConfig {
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder);
         daoAuthenticationProvider.setUserDetailsService(customUserDetailsService);
         return daoAuthenticationProvider;
+    }
+
+    @Bean
+    public Faker getFaker() {
+        return new Faker();
     }
 }
 
