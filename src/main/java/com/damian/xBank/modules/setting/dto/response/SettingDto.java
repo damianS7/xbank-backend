@@ -1,4 +1,4 @@
-package com.damian.whatsapp.modules.setting.dto.response;
+package com.damian.xBank.modules.setting.dto.response;
 
 public record SettingDto(
         Long id,

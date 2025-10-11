@@ -1,4 +1,4 @@
-package com.damian.whatsapp.modules.setting.dto.request;
+package com.damian.xBank.modules.setting.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;

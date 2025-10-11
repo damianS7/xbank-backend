@@ -1,14 +1,14 @@
-package com.damian.whatsapp.modules.setting.service;
+package com.damian.xBank.modules.setting.service;
 
-import com.damian.whatsapp.modules.setting.SettingRepository;
-import com.damian.whatsapp.modules.setting.dto.request.SettingUpdateRequest;
-import com.damian.whatsapp.modules.setting.dto.request.SettingsPatchRequest;
-import com.damian.whatsapp.modules.setting.exception.SettingNotFoundException;
-import com.damian.whatsapp.modules.setting.exception.SettingNotOwnerException;
-import com.damian.whatsapp.shared.domain.Setting;
-import com.damian.whatsapp.shared.domain.User;
-import com.damian.whatsapp.shared.exception.Exceptions;
-import com.damian.whatsapp.shared.util.AuthHelper;
+import com.damian.xBank.modules.setting.dto.request.SettingUpdateRequest;
+import com.damian.xBank.modules.setting.dto.request.SettingsPatchRequest;
+import com.damian.xBank.modules.setting.exception.SettingNotFoundException;
+import com.damian.xBank.modules.setting.exception.SettingNotOwnerException;
+import com.damian.xBank.modules.setting.repository.SettingRepository;
+import com.damian.xBank.shared.domain.Setting;
+import com.damian.xBank.shared.domain.UserAccount;
+import com.damian.xBank.shared.exception.Exceptions;
+import com.damian.xBank.shared.utils.AuthHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -28,13 +28,14 @@ public class SettingService {
 
     // get all the settings for the current user
     public Set<Setting> getSettings() {
-        User currentUser = AuthHelper.getLoggedUser();
+        UserAccount currentUser = AuthHelper.getLoggedUser();
         return settingRepository.findByUser_Id(currentUser.getId());
     }
 
+    // TODO
     // update only one setting
     public Setting updateSetting(Long settingId, SettingUpdateRequest request) {
-        User currentUser = AuthHelper.getLoggedUser();
+        UserAccount currentUser = AuthHelper.getLoggedUser();
 
         // find the setting by settingId
         Setting setting = settingRepository.findById(settingId).orElseThrow(
@@ -42,16 +43,15 @@ public class SettingService {
         );
 
         // check if the logged user is the owner of the setting.
-        if (!setting.isOwner(currentUser)) {
+        if (!setting.isOwner(currentUser.getCustomer())) {
             throw new SettingNotOwnerException(Exceptions.SETTINGS.NOT_OWNER, currentUser.getId());
         }
 
-        setting.setSettingValue(request.value());
+        //        setting.setSettings(request.value());
 
         log.debug(
                 "Updated setting: {} with value: {} by user: {}",
-                setting.getSettingKey(),
-                setting.getSettingValue(),
+                setting.getSettings(),
                 currentUser.getId()
         );
 

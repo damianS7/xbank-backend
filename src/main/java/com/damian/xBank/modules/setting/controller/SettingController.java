@@ -1,11 +1,11 @@
-package com.damian.whatsapp.modules.setting.controller;
+package com.damian.xBank.modules.setting.controller;
 
-import com.damian.whatsapp.modules.setting.dto.mapper.SettingDtoMapper;
-import com.damian.whatsapp.modules.setting.dto.request.SettingUpdateRequest;
-import com.damian.whatsapp.modules.setting.dto.request.SettingsPatchRequest;
-import com.damian.whatsapp.modules.setting.dto.response.SettingDto;
-import com.damian.whatsapp.modules.setting.service.SettingService;
-import com.damian.whatsapp.shared.domain.Setting;
+import com.damian.xBank.modules.setting.dto.mapper.SettingDtoMapper;
+import com.damian.xBank.modules.setting.dto.request.SettingUpdateRequest;
+import com.damian.xBank.modules.setting.dto.request.SettingsPatchRequest;
+import com.damian.xBank.modules.setting.dto.response.SettingDto;
+import com.damian.xBank.modules.setting.service.SettingService;
+import com.damian.xBank.shared.domain.Setting;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import org.springframework.beans.factory.annotation.Autowired;

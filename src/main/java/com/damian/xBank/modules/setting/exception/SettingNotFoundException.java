@@ -1,6 +1,6 @@
-package com.damian.whatsapp.modules.setting.exception;
+package com.damian.xBank.modules.setting.exception;
 
-import com.damian.whatsapp.shared.exception.ApplicationException;
+import com.damian.xBank.shared.exception.ApplicationException;
 
 public class SettingNotFoundException extends ApplicationException {
     private final Long settingId;

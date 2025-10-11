@@ -1,7 +1,7 @@
-package com.damian.whatsapp.modules.setting.dto.mapper;
+package com.damian.xBank.modules.setting.dto.mapper;
 
-import com.damian.whatsapp.modules.setting.dto.response.SettingDto;
-import com.damian.whatsapp.shared.domain.Setting;
+import com.damian.xBank.modules.setting.dto.response.SettingDto;
+import com.damian.xBank.shared.domain.Setting;
 
 import java.util.Set;
 import java.util.stream.Collectors;

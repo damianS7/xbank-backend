@@ -1,6 +1,6 @@
-package com.damian.whatsapp.modules.setting;
+package com.damian.xBank.modules.setting.repository;
 
-import com.damian.whatsapp.shared.domain.Setting;
+import com.damian.xBank.shared.domain.Setting;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
