@@ -1,14 +1,14 @@
 name: 'xbank'
 services:
   mailpit:
-    container_name: photogram-mailpit
+    container_name: xbank-mailpit
     image: axllent/mailpit:latest
     ports:
       - "1025:1025" # SMTP
       - "8025:8025" # Web UI
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: photogram-rabbitmq
+    container_name: xbank-rabbitmq
     ports:
       - "5672:5672"   # app port (AMQP)
       - "15672:15672" # UI web
@@ -19,7 +19,7 @@ services:
       - rabbitmq_data:/var/lib/rabbitmq
 
   database:
-    container_name: photogram-database
+    container_name: xbank-database
     build:
       context: .
       dockerfile: Dockerfile.db
