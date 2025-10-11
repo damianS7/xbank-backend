@@ -1,8 +1,8 @@
-package com.damian.whatsapp.shared.infrastructure.messaging;
+package com.damian.xBank.shared.infrastructure.messaging;
 
-import com.damian.whatsapp.config.RabbitConfig;
-import com.damian.whatsapp.modules.notification.dto.NotificationEvent;
-import com.damian.whatsapp.modules.notification.service.NotificationService;
+import com.damian.xBank.config.RabbitConfig;
+import com.damian.xBank.modules.notification.dto.NotificationEvent;
+import com.damian.xBank.modules.notification.service.NotificationService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 

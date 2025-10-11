@@ -1,7 +1,7 @@
-package com.damian.whatsapp.shared.infrastructure.storage;
+package com.damian.xBank.shared.infrastructure.storage;
 
-import com.damian.whatsapp.shared.domain.User;
-import com.damian.whatsapp.shared.util.AuthHelper;
+import com.damian.xBank.shared.domain.UserAccount;
+import com.damian.xBank.shared.utils.AuthHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -36,7 +36,7 @@ public class ImageUploaderService {
      * Uploads an image to the server
      */
     public File uploadImage(MultipartFile file, String folder, String filename) {
-        final User currentUser = AuthHelper.getLoggedUser();
+        final UserAccount currentUser = AuthHelper.getLoggedUser();
         Path path = Paths.get(
                 getUserUploadFolder(currentUser.getId()),
                 folder

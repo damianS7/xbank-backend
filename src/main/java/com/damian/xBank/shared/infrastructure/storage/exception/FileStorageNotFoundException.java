@@ -1,4 +1,4 @@
-package com.damian.whatsapp.shared.infrastructure.storage.exception;
+package com.damian.xBank.shared.infrastructure.storage.exception;
 
 public class FileStorageNotFoundException extends FileStorageException {
 

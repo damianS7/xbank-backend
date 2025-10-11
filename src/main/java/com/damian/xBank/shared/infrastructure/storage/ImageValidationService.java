@@ -1,9 +1,9 @@
-package com.damian.whatsapp.shared.infrastructure.storage;
+package com.damian.xBank.shared.infrastructure.storage;
 
-import com.damian.whatsapp.shared.exception.Exceptions;
-import com.damian.whatsapp.shared.infrastructure.storage.exception.ImageEmptyFileException;
-import com.damian.whatsapp.shared.infrastructure.storage.exception.ImageTooLargeException;
-import com.damian.whatsapp.shared.infrastructure.storage.exception.ImageTypeNotSupportedException;
+import com.damian.xBank.shared.exception.Exceptions;
+import com.damian.xBank.shared.infrastructure.storage.exception.ImageEmptyFileException;
+import com.damian.xBank.shared.infrastructure.storage.exception.ImageTooLargeException;
+import com.damian.xBank.shared.infrastructure.storage.exception.ImageTypeNotSupportedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

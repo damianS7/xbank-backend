@@ -1,6 +1,6 @@
-package com.damian.whatsapp.shared.util;
+package com.damian.xBank.shared.utils;
 
-import com.damian.whatsapp.shared.exception.Exceptions;
+import com.damian.xBank.shared.exception.Exceptions;
 import org.springframework.core.io.Resource;
 
 import java.io.File;

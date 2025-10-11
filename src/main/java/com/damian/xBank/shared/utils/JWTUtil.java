@@ -1,4 +1,4 @@
-package com.damian.whatsapp.shared.util;
+package com.damian.xBank.shared.utils;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;

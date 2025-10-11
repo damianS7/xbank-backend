@@ -1,4 +1,4 @@
-package com.damian.whatsapp.shared.util;
+package com.damian.xBank.shared.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;

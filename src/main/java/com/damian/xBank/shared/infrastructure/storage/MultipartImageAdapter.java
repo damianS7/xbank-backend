@@ -1,6 +1,6 @@
-package com.damian.whatsapp.shared.infrastructure.storage;
+package com.damian.xBank.shared.infrastructure.storage;
 
-import com.damian.whatsapp.shared.util.ImageHelper;
+import com.damian.xBank.shared.utils.ImageHelper;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;

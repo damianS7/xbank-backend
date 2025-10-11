@@ -1,6 +1,6 @@
-package com.damian.whatsapp.shared.infrastructure.storage;
+package com.damian.xBank.shared.infrastructure.storage;
 
-import com.damian.whatsapp.shared.infrastructure.storage.exception.ImageCompressionFailedException;
+import com.damian.xBank.shared.infrastructure.storage.exception.ImageCompressionFailedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

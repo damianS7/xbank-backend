@@ -1,4 +1,4 @@
-package com.damian.whatsapp.shared.util;
+package com.damian.xBank.shared.utils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.http.HttpStatus;
