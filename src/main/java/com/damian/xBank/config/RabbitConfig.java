@@ -1,4 +1,4 @@
-package com.damian.whatsapp.config;
+package com.damian.xBank.config;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
