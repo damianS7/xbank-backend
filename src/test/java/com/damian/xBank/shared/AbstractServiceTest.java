@@ -1,5 +1,6 @@
 package com.damian.xBank.shared;
 
+import com.damian.xBank.shared.domain.Customer;
 import com.damian.xBank.shared.domain.User;
 import com.damian.xBank.shared.domain.UserAccount;
 import org.junit.jupiter.api.AfterEach;
@@ -40,6 +41,10 @@ public abstract class AbstractServiceTest {
         SecurityContextHolder.setContext(securityContext);
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(SecurityContextHolder.getContext().getAuthentication().getPrincipal()).thenReturn(user);
+    }
+
+    protected void setUpContext(Customer customer) {
+        setUpContext(customer.getAccount());
     }
 
 }
