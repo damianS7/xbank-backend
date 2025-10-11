@@ -1,316 +1,172 @@
 package com.damian.xBank.modules.auth;
 
-import com.damian.xBank.modules.auth.exception.AccountDisabledException;
-import com.damian.xBank.modules.auth.exception.AuthenticationBadCredentialsException;
-import com.damian.xBank.modules.auth.http.AuthenticationRequest;
-import com.damian.xBank.modules.auth.http.AuthenticationResponse;
-import com.damian.xBank.modules.customer.Customer;
-import com.damian.xBank.modules.customer.CustomerGender;
-import com.damian.xBank.modules.customer.CustomerRepository;
-import com.damian.xBank.modules.customer.CustomerService;
-import com.damian.xBank.modules.customer.exception.CustomerNotFoundException;
-import com.damian.xBank.modules.customer.http.request.CustomerPasswordUpdateRequest;
-import com.damian.xBank.modules.customer.http.request.CustomerRegistrationRequest;
+import com.damian.xBank.modules.auth.dto.AuthenticationRequest;
+import com.damian.xBank.modules.auth.dto.AuthenticationResponse;
+import com.damian.xBank.modules.auth.exception.AccountNotVerifiedException;
+import com.damian.xBank.modules.auth.exception.AccountSuspendedException;
+import com.damian.xBank.modules.auth.service.AuthenticationService;
+import com.damian.xBank.modules.user.account.account.enums.UserAccountStatus;
+import com.damian.xBank.shared.AbstractServiceTest;
+import com.damian.xBank.shared.domain.User;
+import com.damian.xBank.shared.domain.UserAccount;
 import com.damian.xBank.shared.exception.Exceptions;
-import com.damian.xBank.shared.exception.PasswordMismatchException;
-import com.damian.xBank.shared.utils.JWTUtil;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import com.damian.xBank.shared.utils.JwtUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import java.time.LocalDate;
-import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class) // Habilita Mockito en JUnit 5
-public class AuthenticationServiceTest {
-
-    @Mock
-    private CustomerRepository customerRepository;
-
-    @Mock
-    private AuthenticationRepository authenticationRepository;
+public class AuthenticationServiceTest extends AbstractServiceTest {
 
     @InjectMocks
     private AuthenticationService authenticationService;
 
     @Mock
-    private CustomerService customerService;
-
-    @Mock
     private AuthenticationManager authenticationManager;
 
     @Mock
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
-    private BCryptPasswordEncoder passwordEncoder;
-
-    @Mock
-    private JWTUtil jwtUtil;
-
-    private final String RAW_PASSWORD = "123456";
-
-    @BeforeEach
-    void setUp() {
-        passwordEncoder = new BCryptPasswordEncoder();
-        customerRepository.deleteAll();
-    }
-
-    @AfterEach
-    public void tearDown() {
-        SecurityContextHolder.clearContext();
-    }
-
-    void setUpContext(Customer customer) {
-        Authentication authentication = Mockito.mock(Authentication.class);
-        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
-        SecurityContextHolder.setContext(securityContext);
-        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
-        Mockito.when(SecurityContextHolder.getContext().getAuthentication().getPrincipal()).thenReturn(customer);
-    }
-
-    @Test
-    @DisplayName("should register a new customer")
-    void shouldRegisterCustomer() {
-        // given
-        Customer givenCustomer = new Customer();
-        givenCustomer.setEmail("customer@test.com");
-        givenCustomer.setPassword("123456");
-        givenCustomer.getProfile().setNationalId("123456789Z");
-        givenCustomer.getProfile().setFirstName("John");
-        givenCustomer.getProfile().setLastName("Wick");
-        givenCustomer.getProfile().setPhone("123 123 123");
-        givenCustomer.getProfile().setGender(CustomerGender.MALE);
-        givenCustomer.getProfile().setBirthdate(LocalDate.of(1989, 1, 1));
-        givenCustomer.getProfile().setCountry("USA");
-        givenCustomer.getProfile().setAddress("fake ave");
-        givenCustomer.getProfile().setPostalCode("050012");
-        givenCustomer.getProfile().setPhotoPath("no photoPath");
-
-        CustomerRegistrationRequest registrationRequest = new CustomerRegistrationRequest(
-                givenCustomer.getEmail(),
-                givenCustomer.getPassword(),
-                givenCustomer.getProfile().getFirstName(),
-                givenCustomer.getProfile().getLastName(),
-                givenCustomer.getProfile().getPhone(),
-                givenCustomer.getProfile().getBirthdate(),
-                givenCustomer.getProfile().getGender(),
-                givenCustomer.getProfile().getPhotoPath(),
-                givenCustomer.getProfile().getAddress(),
-                givenCustomer.getProfile().getPostalCode(),
-                givenCustomer.getProfile().getCountry(),
-                givenCustomer.getProfile().getNationalId()
-        );
-
-        // when
-        when(customerService.createCustomer(any(CustomerRegistrationRequest.class))).thenReturn(givenCustomer);
-        Customer registeredCustomer = authenticationService.register(registrationRequest);
-
-        // then
-        verify(customerService, times(1)).createCustomer(registrationRequest);
-        assertThat(registeredCustomer).isNotNull();
-        assertThat(registeredCustomer.getEmail()).isEqualTo(givenCustomer.getEmail());
-        assertThat(registeredCustomer.getProfile().getFirstName()).isEqualTo(givenCustomer.getProfile().getFirstName());
-        assertThat(registeredCustomer.getProfile().getLastName()).isEqualTo(givenCustomer.getProfile().getLastName());
-        assertThat(registeredCustomer.getProfile().getPhone()).isEqualTo(givenCustomer.getProfile().getPhone());
-        assertThat(registeredCustomer.getProfile().getGender()).isEqualTo(givenCustomer.getProfile().getGender());
-        assertThat(registeredCustomer.getProfile().getBirthdate()).isEqualTo(givenCustomer.getProfile().getBirthdate());
-        assertThat(registeredCustomer.getProfile().getCountry()).isEqualTo(givenCustomer.getProfile().getCountry());
-        assertThat(registeredCustomer.getProfile().getAddress()).isEqualTo(givenCustomer.getProfile().getAddress());
-        assertThat(registeredCustomer.getProfile().getPostalCode()).isEqualTo(givenCustomer
-                .getProfile()
-                .getPostalCode());
-        assertThat(registeredCustomer.getProfile().getNationalId()).isEqualTo(givenCustomer
-                .getProfile()
-                .getNationalId());
-    }
+    private JwtUtil jwtUtil;
 
     @Test
     @DisplayName("should login when valid credentials")
     void shouldLoginWhenValidCredentials() {
         // given
         Authentication authentication = mock(Authentication.class);
-        String token = "jwt-token";
+        String givenToken = "jwt-token";
 
-        Customer customer = new Customer(
-                1L,
-                "alice@gmail.com",
-                "123456"
+        UserAccount userAccount = UserAccount.create()
+                                             .setId(1L)
+                                             .setEmail("user@demo.com")
+                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                                             .setAccountStatus(UserAccountStatus.VERIFIED);
+
+        User user = new User(userAccount);
+
+        AuthenticationRequest request = new AuthenticationRequest(
+                userAccount.getEmail(),
+                userAccount.getPassword()
         );
-
-        AuthenticationRequest request = new AuthenticationRequest(customer.getEmail(), customer.getPassword());
 
         // when
         when(authenticationManager.authenticate(any())).thenReturn(authentication);
-        when(jwtUtil.generateToken(request.email())).thenReturn(token);
-        when(authentication.getPrincipal()).thenReturn(customer);
+        when(jwtUtil.generateToken(anyMap(), anyString())).thenReturn(givenToken);
+        when(authentication.getPrincipal()).thenReturn(user);
 
         AuthenticationResponse response = authenticationService.login(request);
 
         // then
-        assertThat(response.token()).isEqualTo(token);
+        assertThat(response)
+                .isNotNull()
+                .extracting(
+                        AuthenticationResponse::token
+                ).isEqualTo(givenToken);
     }
 
     @Test
     @DisplayName("should not login when invalid credentials")
     void shouldNotLoginWhenInvalidCredentials() {
         // given
-        Customer customer = new Customer(
-                1L,
-                "alice@gmail.com",
-                "123456"
+        UserAccount userAccount = UserAccount.create()
+                                             .setId(1L)
+                                             .setEmail("user@demo.com")
+                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                                             .setAccountStatus(UserAccountStatus.VERIFIED);
+
+        AuthenticationRequest request = new AuthenticationRequest(
+                userAccount.getEmail(),
+                userAccount.getPassword()
         );
 
-        AuthenticationRequest request = new AuthenticationRequest(customer.getEmail(), customer.getPassword());
-
         // when
-        when(authenticationManager.authenticate(any())).thenThrow(AuthenticationBadCredentialsException.class);
+        when(authenticationManager.authenticate(any()))
+                .thenThrow(new BadCredentialsException(
+                        Exceptions.USER.ACCOUNT.BAD_CREDENTIALS
+                ));
 
-        AuthenticationBadCredentialsException exception = assertThrows(
-                AuthenticationBadCredentialsException.class,
+        BadCredentialsException exception = assertThrows(
+                BadCredentialsException.class,
                 () -> authenticationService.login(request)
         );
 
         // Then
-        assertEquals(Exceptions.AUTH.BAD_CREDENTIALS, exception.getMessage());
+        assertEquals(Exceptions.USER.ACCOUNT.BAD_CREDENTIALS, exception.getMessage());
     }
 
     @Test
-    @DisplayName("should not login when account is disabled")
-    void shouldNotLoginWhenAccountIsDisabled() {
+    @DisplayName("should not login when account is suspended")
+    void shouldNotLoginWhenAccountIsSuspended() {
         // given
         Authentication authentication = mock(Authentication.class);
         String token = "jwt-token";
 
-        Customer customer = new Customer(
-                1L,
-                "alice@gmail.com",
-                "123456"
-        );
-        customer.getAuth().setAuthAccountStatus(AuthAccountStatus.DISABLED);
+        UserAccount userAccount = UserAccount.create()
+                                             .setId(1L)
+                                             .setEmail("user@demo.com")
+                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                                             .setAccountStatus(UserAccountStatus.SUSPENDED);
 
-        AuthenticationRequest request = new AuthenticationRequest(customer.getEmail(), customer.getPassword());
+        AuthenticationRequest request = new AuthenticationRequest(
+                userAccount.getEmail(),
+                userAccount.getPassword()
+        );
+
+        User user = new User(userAccount);
 
         // when
         when(authenticationManager.authenticate(any())).thenReturn(authentication);
-        when(jwtUtil.generateToken(request.email())).thenReturn(token);
-        when(authentication.getPrincipal()).thenReturn(customer);
+        when(jwtUtil.generateToken(anyMap(), anyString())).thenReturn(token);
+        when(authentication.getPrincipal()).thenReturn(user);
 
-        AccountDisabledException exception = assertThrows(
-                AccountDisabledException.class,
+        AccountSuspendedException exception = assertThrows(
+                AccountSuspendedException.class,
                 () -> authenticationService.login(request)
         );
 
         // Then
-        assertEquals(Exceptions.CUSTOMER.DISABLED, exception.getMessage());
+        assertEquals(Exceptions.USER.ACCOUNT.SUSPENDED, exception.getMessage());
     }
 
     @Test
-    @DisplayName("Should update customer password")
-    void shouldUpdateCustomerPassword() {
+    @DisplayName("should not login when account is not verified")
+    void shouldNotLoginWhenAccountIsNotVerified() {
         // given
-        final String currentRawPassword = "123456";
-        final String currentEncodedPassword = passwordEncoder.encode(currentRawPassword);
-        final String rawNewPassword = "1234";
-        final String encodedNewPassword = passwordEncoder.encode(rawNewPassword);
+        Authentication authentication = mock(Authentication.class);
+        String token = "jwt-token";
 
-        Customer customer = new Customer(
-                10L,
-                "customer@test.com",
-                currentEncodedPassword
+        UserAccount userAccount = UserAccount.create()
+                                             .setId(1L)
+                                             .setEmail("user@demo.com")
+                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                                             .setAccountStatus(UserAccountStatus.PENDING_VERIFICATION);
+
+        AuthenticationRequest request = new AuthenticationRequest(
+                userAccount.getEmail(),
+                userAccount.getPassword()
         );
 
-        CustomerPasswordUpdateRequest updateRequest = new CustomerPasswordUpdateRequest(
-                currentRawPassword,
-                rawNewPassword
-        );
-
-        // set the customer on the context
-        setUpContext(customer);
+        User user = new User(userAccount);
 
         // when
-        when(bCryptPasswordEncoder.encode(rawNewPassword)).thenReturn(encodedNewPassword);
-        when(authenticationRepository.findByCustomer_Id(customer.getId())).thenReturn(Optional.of(customer.getAuth()));
-        authenticationService.updatePassword(updateRequest);
+        when(authenticationManager.authenticate(any())).thenReturn(authentication);
+        when(jwtUtil.generateToken(anyMap(), anyString())).thenReturn(token);
+        when(authentication.getPrincipal()).thenReturn(user);
 
-        // then
-        verify(authenticationRepository, times(1)).save(customer.getAuth());
-        assertThat(customer.getPassword()).isEqualTo(encodedNewPassword);
-    }
-
-    @Test
-    @DisplayName("Should not update password when current password does not match")
-    void shouldNotUpdatePasswordWhenCurrentPasswordDoesNotMatch() {
-        // given
-        Customer customer = new Customer(
-                10L,
-                "customer@test.com",
-                bCryptPasswordEncoder.encode("1234")
+        AccountNotVerifiedException exception = assertThrows(
+                AccountNotVerifiedException.class,
+                () -> authenticationService.login(request)
         );
 
-        // set the customer on the context
-        setUpContext(customer);
-
-        CustomerPasswordUpdateRequest updateRequest = new CustomerPasswordUpdateRequest(
-                "wrongPassword",
-                "1234"
-        );
-
-        // when
-        PasswordMismatchException exception = assertThrows(
-                PasswordMismatchException.class,
-                () -> authenticationService.updatePassword(
-                        updateRequest
-                )
-        );
-        // then
-        assertEquals(PasswordMismatchException.PASSWORD_MISMATCH, exception.getMessage());
-    }
-
-    @Test
-    @DisplayName("Should not update password when auth entity not found")
-    void shouldNotUpdatePasswordWhenAuthNotFound() {
-        // given
-        Customer customer = new Customer(
-                10L,
-                "customer@test.com",
-                passwordEncoder.encode("1234")
-        );
-
-        // set the customer on the context
-        setUpContext(customer);
-
-        CustomerPasswordUpdateRequest updateRequest = new CustomerPasswordUpdateRequest(
-                "1234",
-                "1234678Ax$"
-        );
-
-        when(authenticationRepository.findByCustomer_Id(customer.getId()))
-                .thenReturn(Optional.empty());
-
-        CustomerNotFoundException exception = assertThrows(
-                CustomerNotFoundException.class,
-                () -> authenticationService.updatePassword(
-                        updateRequest
-                )
-        );
-
-        // then
-        assertEquals(Exceptions.CUSTOMER.NOT_FOUND, exception.getMessage());
+        // Then
+        assertEquals(Exceptions.USER.ACCOUNT.NOT_VERIFIED, exception.getMessage());
     }
 }

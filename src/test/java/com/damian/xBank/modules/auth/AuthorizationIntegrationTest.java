@@ -1,137 +1,83 @@
 package com.damian.xBank.modules.auth;
 
-import com.damian.xBank.modules.auth.http.AuthenticationRequest;
-import com.damian.xBank.modules.auth.http.AuthenticationResponse;
-import com.damian.xBank.modules.customer.Customer;
-import com.damian.xBank.modules.customer.CustomerGender;
-import com.damian.xBank.modules.customer.CustomerRepository;
-import com.damian.xBank.modules.customer.CustomerRole;
-import com.damian.xBank.modules.customer.profile.http.request.ProfileUpdateRequest;
-import com.damian.xBank.shared.utils.JWTUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
+import com.damian.xBank.modules.user.account.account.dto.request.UserAccountUpdateRequest;
+import com.damian.xBank.modules.user.account.account.enums.UserAccountRole;
+import com.damian.xBank.modules.user.account.account.enums.UserAccountStatus;
+import com.damian.xBank.shared.AbstractIntegrationTest;
+import com.damian.xBank.shared.domain.UserAccount;
+import com.damian.xBank.shared.exception.Exceptions;
+import com.damian.xBank.shared.utils.JwtUtil;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-@ActiveProfiles("test")
-@SpringBootTest
-@AutoConfigureMockMvc
-public class AuthorizationIntegrationTest {
-    @Autowired
-    private MockMvc mockMvc;
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+public class AuthorizationIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private JwtUtil jwtUtil;
 
-    @Autowired
-    private CustomerRepository customerRepository;
+    private UserAccount user;
+    private UserAccount admin;
 
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
-
-    @Autowired
-    private JWTUtil jwtUtil;
-
-    private String rawPassword = "123456";
-    private Customer customer;
-    private Customer admin;
-
-    @BeforeEach
+    @BeforeAll
     void setUp() {
-        customerRepository.deleteAll();
-        customer = new Customer();
-        customer.setEmail("customer@test.com");
-        customer.setPassword(bCryptPasswordEncoder.encode(rawPassword));
-        customer.getProfile().setNationalId("123456789Z");
-        customer.getProfile().setFirstName("John");
-        customer.getProfile().setLastName("Wick");
-        customer.getProfile().setPhone("123 123 123");
-        customer.getProfile().setGender(CustomerGender.MALE);
-        customer.getProfile().setBirthdate(LocalDate.of(1989, 1, 1));
-        customer.getProfile().setCountry("USA");
-        customer.getProfile().setAddress("fake ave");
-        customer.getProfile().setPostalCode("050012");
-        customer.getProfile().setPhotoPath("no photoPath");
+        user = UserAccount.create()
+                          .setEmail("customer@demo.com")
+                          .setPassword(passwordEncoder.encode(this.RAW_PASSWORD))
+                          .setRole(UserAccountRole.USER);
+        user.setAccountStatus(UserAccountStatus.VERIFIED);
+        userAccountRepository.save(user);
 
-        customerRepository.save(customer);
-
-        admin = new Customer();
-        admin.setEmail("admin@test.com");
-        admin.setPassword(bCryptPasswordEncoder.encode(rawPassword));
-        admin.setRole(CustomerRole.ADMIN);
-
-        customerRepository.save(admin);
-    }
-
-    String loginWithCustomer(Customer customer) throws Exception {
-        // given
-        AuthenticationRequest authenticationRequest = new AuthenticationRequest(
-                customer.getEmail(), this.rawPassword
-        );
-
-        String jsonRequest = objectMapper.writeValueAsString(authenticationRequest);
-
-        // when
-        MvcResult result = mockMvc.perform(post("/api/v1/auth/login")
-                                          .contentType(MediaType.APPLICATION_JSON)
-                                          .content(jsonRequest))
-                                  .andReturn();
-
-        AuthenticationResponse response = objectMapper.readValue(
-                result.getResponse().getContentAsString(),
-                AuthenticationResponse.class
-        );
-
-        return response.token();
+        admin = UserAccount.create()
+                           .setEmail("admin@test.com")
+                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setRole(UserAccountRole.ADMIN);
+        admin.setAccountStatus(UserAccountStatus.VERIFIED);
+        userAccountRepository.save(admin);
     }
 
     @Test
-    @DisplayName("Should have access when admin")
-    void shouldHaveAccessWhenAdmin() throws Exception {
+    @DisplayName("Should have access when token is valid")
+    void shouldHaveAccessWhenTokenIsValid() throws Exception {
         // given
-        final String token = loginWithCustomer(admin);
+        final String givenToken = jwtUtil.generateToken(
+                user.getEmail(),
+                new Date(System.currentTimeMillis() + 1000 * 60 * 60)
+        );
 
         // when
         mockMvc.perform(MockMvcRequestBuilders
-                       .get("/api/v1/admin/customers/" + customer.getId())
-                       .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+                       .get("/api/v1/customers")
+                       .header(HttpHeaders.AUTHORIZATION, "Bearer " + givenToken))
                .andDo(print())
-               .andExpect(MockMvcResultMatchers.status().is(200))
+               .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
-    @DisplayName("Should not have access when not admin")
-    void shouldNotHaveAccessWhenNotAdmin() throws Exception {
-        // given
-        final String token = loginWithCustomer(customer);
-
+    @DisplayName("Should not have access when not authenticated")
+    void shouldNotHaveAccessWhenNotAuthenticated() throws Exception {
         // when
         mockMvc.perform(MockMvcRequestBuilders
-                       .get("/api/v1/admin/customers/" + customer.getId())
-                       .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+                       .get("/api/v1/customers"))
                .andDo(print())
-               .andExpect(MockMvcResultMatchers.status().is(403));
+               .andExpect(MockMvcResultMatchers.status().is(HttpStatus.UNAUTHORIZED.value()))
+               .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -139,20 +85,16 @@ public class AuthorizationIntegrationTest {
     void shouldNotHaveAccessWhenTokenHasExpired() throws Exception {
         // given
         final String expiredToken = jwtUtil.generateToken(
-                customer.getEmail(),
+                user.getEmail(),
                 new Date(System.currentTimeMillis() - 1000 * 60 * 60)
         );
 
         // given
         Map<String, Object> fields = new HashMap<>();
         fields.put("firstName", "alice");
-        fields.put("lastName", "white");
-        fields.put("phone", "999 999 999");
-        fields.put("birthdate", LocalDate.of(1989, 1, 1));
-        fields.put("gender", CustomerGender.FEMALE);
 
-        ProfileUpdateRequest request = new ProfileUpdateRequest(
-                this.rawPassword,
+        UserAccountUpdateRequest request = new UserAccountUpdateRequest(
+                this.RAW_PASSWORD,
                 fields
         );
 
@@ -160,13 +102,60 @@ public class AuthorizationIntegrationTest {
 
         // when
         mockMvc.perform(MockMvcRequestBuilders
-                       .put("/api/v1/profiles/" + customer.getProfile().getId())
+                       .get("/api/v1/customers")
                        .contentType(MediaType.APPLICATION_JSON)
                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + expiredToken)
                        .content(jsonRequest))
                .andDo(print())
-               .andExpect(MockMvcResultMatchers.status().is(401))
-               .andExpect(jsonPath("$.message").value("Token expired"))
+               .andExpect(MockMvcResultMatchers.status().is(HttpStatus.UNAUTHORIZED.value()))
+               .andExpect(jsonPath("$.message").value(Exceptions.JWT.TOKEN.EXPIRED))
+               .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    @DisplayName("Should not have access when token is invalid")
+    void shouldNotHaveAccessWhenTokenIsInvalid() throws Exception {
+        // given
+        final String invalidToken = "bad-token";
+
+        // given
+        Map<String, Object> fields = new HashMap<>();
+        fields.put("firstName", "alice");
+
+        UserAccountUpdateRequest request = new UserAccountUpdateRequest(
+                this.RAW_PASSWORD,
+                fields
+        );
+
+        String jsonRequest = objectMapper.writeValueAsString(request);
+
+        // when
+        mockMvc.perform(MockMvcRequestBuilders
+                       .get("/api/v1/customers")
+                       .contentType(MediaType.APPLICATION_JSON)
+                       .header(HttpHeaders.AUTHORIZATION, "Bearer " + invalidToken)
+                       .content(jsonRequest))
+               .andDo(print())
+               .andExpect(MockMvcResultMatchers.status().is(HttpStatus.UNAUTHORIZED.value()))
+               .andExpect(jsonPath("$.message").value(Exceptions.JWT.TOKEN.INVALID))
+               .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    @DisplayName("Should not have access when token email not exists")
+    void shouldNotHaveAccessWhenTokenEmailNotExists() throws Exception {
+        // given
+        final String token = jwtUtil.generateToken(
+                "fake-email@demo.com",
+                new Date(System.currentTimeMillis() + 1000 * 60 * 60)
+        );
+
+        // when
+        mockMvc.perform(MockMvcRequestBuilders
+                       .get("/api/v1/customers")
+                       .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+               .andDo(print())
+               .andExpect(MockMvcResultMatchers.status().is(HttpStatus.UNAUTHORIZED.value()))
                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
     }
 }
