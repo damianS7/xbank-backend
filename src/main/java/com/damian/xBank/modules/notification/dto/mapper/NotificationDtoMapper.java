@@ -1,7 +1,7 @@
-package com.damian.whatsapp.modules.notification.dto.mapper;
+package com.damian.xBank.modules.notification.dto.mapper;
 
-import com.damian.whatsapp.modules.notification.dto.response.NotificationDto;
-import com.damian.whatsapp.shared.domain.Notification;
+import com.damian.xBank.modules.notification.dto.response.NotificationDto;
+import com.damian.xBank.shared.domain.Notification;
 import org.springframework.data.domain.Page;
 
 public class NotificationDtoMapper {

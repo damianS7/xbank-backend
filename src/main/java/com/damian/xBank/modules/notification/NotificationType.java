@@ -1,4 +1,4 @@
-package com.damian.whatsapp.modules.notification;
+package com.damian.xBank.modules.notification;
 
 public enum NotificationType {
     LIKE,

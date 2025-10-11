@@ -1,13 +1,13 @@
-package com.damian.whatsapp.modules.notification.service;
+package com.damian.xBank.modules.notification.service;
 
-import com.damian.whatsapp.modules.notification.NotificationRepository;
-import com.damian.whatsapp.modules.notification.dto.NotificationEvent;
-import com.damian.whatsapp.modules.user.user.exception.UserNotFoundException;
-import com.damian.whatsapp.modules.user.user.repository.UserRepository;
-import com.damian.whatsapp.shared.domain.Notification;
-import com.damian.whatsapp.shared.domain.User;
-import com.damian.whatsapp.shared.exception.Exceptions;
-import com.damian.whatsapp.shared.util.AuthHelper;
+import com.damian.xBank.modules.notification.dto.NotificationEvent;
+import com.damian.xBank.modules.notification.repository.NotificationRepository;
+import com.damian.xBank.modules.user.user.exception.UserNotFoundException;
+import com.damian.xBank.modules.user.user.repository.UserRepository;
+import com.damian.xBank.shared.domain.Notification;
+import com.damian.xBank.shared.domain.UserAccount;
+import com.damian.xBank.shared.exception.Exceptions;
+import com.damian.xBank.shared.utils.AuthHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -42,7 +42,7 @@ public class NotificationService {
      * @return Page<Notification> a page of notifications
      */
     public Page<Notification> getNotifications(Pageable pageable) {
-        User currentUser = AuthHelper.getLoggedUser();
+        UserAccount currentUser = AuthHelper.getLoggedUser();
         log.debug("Fetching notifications for user: {}", currentUser.getId());
         return notificationRepository.findAllByUserId(currentUser.getId(), pageable);
     }
@@ -52,7 +52,7 @@ public class NotificationService {
      */
     @Transactional
     public void deleteNotifications() {
-        User currentUser = AuthHelper.getLoggedUser();
+        UserAccount currentUser = AuthHelper.getLoggedUser();
         // delete all notifications
         notificationRepository.deleteAllByUser_Id(currentUser.getId());
         log.debug("Deleted all notifications from user: {}", currentUser.getId());
@@ -65,7 +65,7 @@ public class NotificationService {
      * @return Flux<NotificationEvent> a stream of notifications
      */
     public Flux<NotificationEvent> getNotificationsForUser() {
-        User currentUser = AuthHelper.getLoggedUser();
+        UserAccount currentUser = AuthHelper.getLoggedUser();
 
         // create a sink for the user if not exists
         Sinks.Many<NotificationEvent> sink = userSinks.computeIfAbsent(
@@ -85,7 +85,7 @@ public class NotificationService {
      * @param notificationEvent the notification event
      */
     public void publishNotification(NotificationEvent notificationEvent) {
-        User currentUser = AuthHelper.getLoggedUser();
+        UserAccount currentUser = AuthHelper.getLoggedUser();
         log.debug(
                 "Publishing Notification ({}) to user: {}",
                 notificationEvent.type(),
@@ -101,7 +101,7 @@ public class NotificationService {
         }
 
         // find recipient user who will receive the notification
-        User recipient = userRepository
+        UserAccount recipient = userRepository
                 .findById(notificationEvent.recipientId())
                 .orElseThrow(() -> {
                     log.warn(

@@ -1,6 +1,6 @@
-package com.damian.whatsapp.modules.notification.exception;
+package com.damian.xBank.modules.notification.exception;
 
-import com.damian.whatsapp.shared.exception.ApplicationException;
+import com.damian.xBank.shared.exception.ApplicationException;
 
 public class NotificationException extends ApplicationException {
     private final Long notificationId;

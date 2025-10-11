@@ -1,10 +1,10 @@
-package com.damian.whatsapp.modules.notification.controller;
+package com.damian.xBank.modules.notification.controller;
 
-import com.damian.whatsapp.modules.notification.dto.NotificationEvent;
-import com.damian.whatsapp.modules.notification.dto.mapper.NotificationDtoMapper;
-import com.damian.whatsapp.modules.notification.dto.response.NotificationDto;
-import com.damian.whatsapp.modules.notification.service.NotificationService;
-import com.damian.whatsapp.shared.domain.Notification;
+import com.damian.xBank.modules.notification.dto.NotificationEvent;
+import com.damian.xBank.modules.notification.dto.mapper.NotificationDtoMapper;
+import com.damian.xBank.modules.notification.dto.response.NotificationDto;
+import com.damian.xBank.modules.notification.service.NotificationService;
+import com.damian.xBank.shared.domain.Notification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;

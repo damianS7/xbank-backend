@@ -1,6 +1,6 @@
-package com.damian.whatsapp.modules.notification.dto.response;
+package com.damian.xBank.modules.notification.dto.response;
 
-import com.damian.whatsapp.modules.notification.NotificationType;
+import com.damian.xBank.modules.notification.NotificationType;
 
 import java.util.Map;
 
