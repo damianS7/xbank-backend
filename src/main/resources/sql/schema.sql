@@ -14,7 +14,7 @@ CREATE TYPE public."user_account_status_type" AS ENUM (
 CREATE CAST (varchar as user_account_status_type) WITH INOUT AS IMPLICIT;
 
 CREATE TYPE public."user_role_type" AS ENUM (
-	'USER',
+	'CUSTOMER',
 	'ADMIN'
 );
 CREATE CAST (varchar as user_role_type) WITH INOUT AS IMPLICIT;
@@ -23,20 +23,20 @@ CREATE TABLE public.users (
   id int4 GENERATED ALWAYS AS IDENTITY NOT NULL,
   email VARCHAR(80) UNIQUE NOT NULL,
   password_hash VARCHAR(60) NOT NULL,
-  role public.user_role_type DEFAULT 'USER'::user_role_type NOT NULL,
+  role public.user_role_type DEFAULT 'CUSTOMER'::user_role_type NOT NULL,
   account_status public.user_account_status_type DEFAULT 'ENABLED'::user_account_status_type NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT users_pkey PRIMARY KEY (id)
 );
 
-CREATE TYPE public."user_token_type" AS ENUM (
+CREATE TYPE public."user_account_token_type" AS ENUM (
 	'ACCOUNT_VERIFICATION',
 	'RESET_PASSWORD'
 );
-CREATE CAST (varchar as user_token_type) WITH INOUT AS IMPLICIT;
+CREATE CAST (varchar as user_account_token_type) WITH INOUT AS IMPLICIT;
 
-CREATE TABLE public.user_tokens (
+CREATE TABLE public.user_account_tokens (
 	id int4 GENERATED ALWAYS AS IDENTITY NOT NULL,
 	user_id int4 NOT NULL,
 	token varchar(100) NOT NULL,
@@ -44,10 +44,9 @@ CREATE TABLE public.user_tokens (
 	type public."user_token_type" NOT NULL,
 	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
 	expires_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-	CONSTRAINT user_token_pkey PRIMARY KEY (id),
-	CONSTRAINT user_token_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE
+	CONSTRAINT user_account_token_pkey PRIMARY KEY (id),
+	CONSTRAINT user_account_token_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE
 );
-
 -- Customer
 
 CREATE TYPE public."customer_gender_type" AS ENUM (
@@ -202,7 +201,7 @@ CREATE TABLE public.banking_transactions (
 	id int4 GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	account_id int4 NOT NULL,
 	card_id int4 NULL,
-	account_balance numeric(15, 2) NOT NULL,
+	last_balance numeric(15, 2) NOT NULL,
 	transaction_type public."banking_transaction_type" NOT NULL,
 	amount numeric(15, 2) NOT NULL,
 	description text NULL,
