@@ -1,20 +1,15 @@
 package com.damian.xBank.modules.setting.controller;
 
 import com.damian.xBank.modules.setting.dto.mapper.SettingDtoMapper;
-import com.damian.xBank.modules.setting.dto.request.SettingUpdateRequest;
 import com.damian.xBank.modules.setting.dto.request.SettingsPatchRequest;
 import com.damian.xBank.modules.setting.dto.response.SettingDto;
 import com.damian.xBank.modules.setting.service.SettingService;
 import com.damian.xBank.shared.domain.Setting;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Set;
 
 @RequestMapping("/api/v1")
 @RestController
@@ -29,28 +24,12 @@ public class SettingController {
     // endpoint to fetch all setting from logged user
     @GetMapping("/settings")
     public ResponseEntity<?> getSettings() {
-        Set<Setting> settings = settingService.getSettings();
-        Set<SettingDto> settingsDTO = SettingDtoMapper.toSettingDTOList(settings);
+        Setting settings = settingService.getSettings();
+        SettingDto settingsDto = SettingDtoMapper.toSettingDto(settings);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(settingsDTO);
-    }
-
-    // endpoint to update a setting
-    @PutMapping("/settings/{id}")
-    public ResponseEntity<?> updateSetting(
-            @PathVariable @NotNull @Positive
-            Long id,
-            @Validated @RequestBody
-            SettingUpdateRequest request
-    ) {
-        Setting setting = settingService.updateSetting(id, request);
-        SettingDto settingDTO = SettingDtoMapper.toSettingDTO(setting);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(settingDTO);
+                .body(settingsDto);
     }
 
     // endpoint to update a setting
@@ -59,12 +38,12 @@ public class SettingController {
             @Validated @RequestBody
             SettingsPatchRequest request
     ) {
-        Set<Setting> setting = settingService.updateSettings(request);
-        Set<SettingDto> settingDTO = SettingDtoMapper.toSettingDTOList(setting);
+        Setting setting = settingService.updateSettings(request);
+        SettingDto settingDto = SettingDtoMapper.toSettingDto(setting);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(settingDTO);
+                .body(settingDto);
     }
 }
 

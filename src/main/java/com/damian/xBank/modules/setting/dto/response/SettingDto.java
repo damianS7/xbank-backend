@@ -1,8 +1,9 @@
 package com.damian.xBank.modules.setting.dto.response;
 
+import java.util.Map;
+
 public record SettingDto(
         Long id,
-        String key,
-        String value
+        Map<String, Object> settings
 ) {
 }

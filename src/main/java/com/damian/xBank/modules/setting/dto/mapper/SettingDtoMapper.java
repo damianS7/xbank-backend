@@ -7,19 +7,18 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class SettingDtoMapper {
-    public static SettingDto toSettingDTO(Setting setting) {
+    public static SettingDto toSettingDto(Setting setting) {
         return new SettingDto(
                 setting.getId(),
-                setting.getSettingKey(),
-                setting.getSettingValue()
+                setting.getSettings()
         );
     }
 
-    public static Set<SettingDto> toSettingDTOList(Set<Setting> settings) {
+    public static Set<SettingDto> toSettingDtoList(Set<Setting> settings) {
         return settings
                 .stream()
                 .map(
-                        SettingDtoMapper::toSettingDTO
+                        SettingDtoMapper::toSettingDto
                 ).collect(Collectors.toSet());
     }
 }

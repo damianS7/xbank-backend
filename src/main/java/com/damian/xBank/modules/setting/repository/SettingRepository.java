@@ -4,10 +4,10 @@ import com.damian.xBank.shared.domain.Setting;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Set;
+import java.util.Optional;
 
 @Repository
 public interface SettingRepository extends JpaRepository<Setting, Long> {
-    Set<Setting> findByUser_Id(Long userId);
+    Optional<Setting> findByCustomer_Id(Long customerId);
 }
 

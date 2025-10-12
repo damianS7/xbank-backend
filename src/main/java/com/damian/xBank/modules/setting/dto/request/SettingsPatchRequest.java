@@ -14,7 +14,7 @@ import java.util.Map;
 public record SettingsPatchRequest(
         @NotNull(message = "Settings map cannot be null")
         @NotEmpty(message = "Settings map must have at least one entry")
-        Map<@NotNull(message = "Setting id cannot be null") Long,
+        Map<@NotNull(message = "Setting id cannot be null") String,
                 @NotBlank(message = "Setting value cannot be blank") String> settings
 ) {
 }
