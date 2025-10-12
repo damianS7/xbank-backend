@@ -1,10 +1,10 @@
 package com.damian.xBank.shared.utils;
 
+import com.damian.xBank.modules.user.account.account.enums.UserAccountRole;
 import com.damian.xBank.modules.user.account.account.exception.UserAccountInvalidPasswordConfirmationException;
-import com.damian.xBank.modules.user.user.enums.UserRole;
 import com.damian.xBank.shared.domain.Customer;
+import com.damian.xBank.shared.domain.User;
 import com.damian.xBank.shared.domain.UserAccount;
-import com.damian.xBank.shared.domain.UserPrincipal;
 import com.damian.xBank.shared.exception.Exceptions;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,10 +15,14 @@ public class AuthHelper {
     public static void validatePassword(UserAccount user, String rawPassword) {
         if (!bCryptPasswordEncoder.matches(rawPassword, user.getPassword())) {
             throw new UserAccountInvalidPasswordConfirmationException(
-                    Exceptions.ACCOUNT.INVALID_PASSWORD,
+                    Exceptions.USER.ACCOUNT.INVALID_PASSWORD,
                     user.getId()
             );
         }
+    }
+
+    public static void validatePassword(Customer customer, String rawPassword) {
+        AuthHelper.validatePassword(customer.getAccount(), rawPassword);
     }
 
     public static Customer getLoggedCustomer() {
@@ -29,15 +33,15 @@ public class AuthHelper {
         return AuthHelper.getUserPrincipal().getAccount();
     }
 
-    public static UserPrincipal getUserPrincipal() {
-        return (UserPrincipal) SecurityContextHolder
+    public static User getUserPrincipal() {
+        return (User) SecurityContextHolder
                 .getContext()
                 .getAuthentication()
                 .getPrincipal();
     }
 
     public static boolean isAdmin(UserAccount user) {
-        return user.getRole().equals(UserRole.ADMIN);
+        return user.getRole().equals(UserAccountRole.ADMIN);
     }
 
 }
