@@ -8,6 +8,7 @@ import com.damian.xBank.modules.setting.repository.SettingRepository;
 import com.damian.xBank.modules.user.account.account.repository.UserAccountRepository;
 import com.damian.xBank.modules.user.account.token.UserAccountTokenRepository;
 import com.damian.xBank.modules.user.customer.repository.CustomerRepository;
+import com.damian.xBank.shared.domain.Customer;
 import com.damian.xBank.shared.domain.UserAccount;
 import com.damian.xBank.shared.utils.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -76,13 +77,17 @@ public abstract class AbstractIntegrationTest {
         userAccountRepository.deleteAll();
     }
 
-    protected void loginWithUser(UserAccount user) throws Exception {
+    protected void login(UserAccount user) throws Exception {
         // given
         final HashMap<String, Object> claims = new HashMap<>();
         claims.put("email", user.getEmail());
         claims.put("role", user.getRole());
 
         token = jwtUtil.generateToken(claims, user.getEmail());
+    }
+
+    protected void login(Customer customer) throws Exception {
+        login(customer.getAccount());
     }
 
     protected void loginWithPost(UserAccount user) throws Exception {

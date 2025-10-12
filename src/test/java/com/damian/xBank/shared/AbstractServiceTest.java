@@ -47,4 +47,8 @@ public abstract class AbstractServiceTest {
         setUpContext(customer.getAccount());
     }
 
+    protected void setUpContext(User user) {
+        setUpContext(user.getAccount());
+    }
+
 }
