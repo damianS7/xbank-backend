@@ -19,7 +19,8 @@ public class Customer {
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<BankingAccount> bankingAccounts;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private UserAccount account;
 
     @Column
@@ -57,7 +58,12 @@ public class Customer {
     private Instant updatedAt;
 
     public Customer() {
+        this.account = new UserAccount(this);
         this.bankingAccounts = new HashSet<>();
+    }
+
+    public static Customer create() {
+        return new Customer();
     }
 
     public Customer(UserAccount account) {
@@ -65,12 +71,34 @@ public class Customer {
         this.account = account;
     }
 
+    public static Customer create(UserAccount account) {
+        return new Customer(account);
+    }
+
+    public Customer(String email, String password) {
+        this();
+        this.account = new UserAccount();
+        this.account.setEmail(email);
+        this.account.setPassword(password);
+    }
+
+    public Customer setEmail(String email) {
+        this.account.setEmail(email);
+        return this;
+    }
+
+    public Customer setPassword(String password) {
+        this.account.setPassword(password);
+        return this;
+    }
+
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public Customer setId(Long id) {
         this.id = id;
+        return this;
     }
 
     public String getFullName() {
@@ -81,96 +109,108 @@ public class Customer {
         return bankingAccounts;
     }
 
-    public void addBankingAccount(BankingAccount bankingAccount) {
+    public Customer addBankingAccount(BankingAccount bankingAccount) {
         if (bankingAccount.getOwner() != this) {
             bankingAccount.setOwner(this);
         }
 
         this.bankingAccounts.add(bankingAccount);
+        return this;
     }
 
-    public void setBankingAccounts(Set<BankingAccount> bankingAccounts) {
+    public Customer setBankingAccounts(Set<BankingAccount> bankingAccounts) {
         this.bankingAccounts = bankingAccounts;
+        return this;
     }
 
     public Instant getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Instant updatedAt) {
+    public Customer setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
+        return this;
     }
 
     public String getFirstName() {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
+    public Customer setFirstName(String firstName) {
         this.firstName = firstName;
+        return this;
     }
 
     public String getLastName() {
         return lastName;
     }
 
-    public void setLastName(String lastName) {
+    public Customer setLastName(String lastName) {
         this.lastName = lastName;
+        return this;
     }
 
     public String getPhone() {
         return phone;
     }
 
-    public void setPhone(String phone) {
+    public Customer setPhone(String phone) {
         this.phone = phone;
+        return this;
     }
 
     public LocalDate getBirthdate() {
         return birthdate;
     }
 
-    public void setBirthdate(LocalDate birthdate) {
+    public Customer setBirthdate(LocalDate birthdate) {
         this.birthdate = birthdate;
+        return this;
     }
 
     public String getPhotoPath() {
         return photo;
     }
 
-    public void setPhotoPath(String photo) {
+    public Customer setPhotoPath(String photo) {
         this.photo = photo;
+        return this;
     }
 
     public String getAddress() {
         return address;
     }
 
-    public void setAddress(String address) {
+    public Customer setAddress(String address) {
         this.address = address;
+        return this;
     }
 
     public String getPostalCode() {
         return postalCode;
     }
 
-    public void setPostalCode(String postalCode) {
+    public Customer setPostalCode(String postalCode) {
         this.postalCode = postalCode;
+        return this;
     }
 
     public String getCountry() {
         return country;
     }
 
-    public void setCountry(String country) {
+    public Customer setCountry(String country) {
         this.country = country;
+        return this;
     }
 
     public String getNationalId() {
         return nationalId;
     }
 
-    public void setNationalId(String nationalId) {
+    public Customer setNationalId(String nationalId) {
         this.nationalId = nationalId;
+        return this;
     }
 
 
@@ -187,15 +227,21 @@ public class Customer {
         return gender;
     }
 
-    public void setGender(CustomerGender gender) {
+    public Customer setGender(CustomerGender gender) {
         this.gender = gender;
+        return this;
     }
 
     public UserAccount getAccount() {
         return account;
     }
 
-    public void setAccount(UserAccount account) {
+    public Customer setAccount(UserAccount account) {
         this.account = account;
+        return this;
+    }
+
+    public String getEmail() {
+        return account.getEmail();
     }
 }

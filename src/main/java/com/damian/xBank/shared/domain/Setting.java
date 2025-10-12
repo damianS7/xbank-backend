@@ -35,8 +35,16 @@ public class Setting {
         this.settings = settings;
     }
 
+    public Setting(User user, Map<String, Object> settings) {
+        this(user.getCustomer(), settings);
+    }
+
     public static Setting create(Customer owner) {
         return new Setting(owner);
+    }
+
+    public static Setting create() {
+        return new Setting();
     }
 
     public Long getId() {
@@ -75,5 +83,9 @@ public class Setting {
 
     public void setSettings(Map<String, Object> settings) {
         this.settings = settings;
+    }
+
+    public String getSetting(String key) {
+        return settings.get(key).toString();
     }
 }

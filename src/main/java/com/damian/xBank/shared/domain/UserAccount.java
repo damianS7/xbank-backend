@@ -1,20 +1,20 @@
 package com.damian.xBank.shared.domain;
 
-import com.damian.xBank.modules.user.account.account.UserAccountStatus;
-import com.damian.xBank.modules.user.user.enums.UserRole;
+import com.damian.xBank.modules.user.account.account.enums.UserAccountRole;
+import com.damian.xBank.modules.user.account.account.enums.UserAccountStatus;
 import jakarta.persistence.*;
 
 import java.time.Instant;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user_accounts")
 public class UserAccount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    private UserRole role;
+    private UserAccountRole role;
 
     @Column
     private String email;
@@ -26,7 +26,7 @@ public class UserAccount {
     @Enumerated(EnumType.STRING)
     private UserAccountStatus accountStatus;
 
-    @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Customer customer;
 
     @Column
@@ -36,11 +36,15 @@ public class UserAccount {
     private Instant updatedAt;
 
     public UserAccount() {
-        this.customer = new Customer(this);
         this.createdAt = Instant.now();
         this.updatedAt = Instant.now();
-        this.role = UserRole.USER;
+        this.role = UserAccountRole.USER;
         this.accountStatus = UserAccountStatus.PENDING_VERIFICATION;
+    }
+
+    public UserAccount(Customer customer) {
+        this();
+        this.customer = customer;
     }
 
     public UserAccount(Long userId, String email, String password) {
@@ -77,15 +81,15 @@ public class UserAccount {
     }
 
     public UserAccount setPassword(String password) {
-        this.passwordHash = passwordHash;
+        this.passwordHash = password;
         return this;
     }
 
-    public UserRole getRole() {
+    public UserAccountRole getRole() {
         return this.role;
     }
 
-    public UserAccount setRole(UserRole role) {
+    public UserAccount setRole(UserAccountRole role) {
         this.role = role;
         return this;
     }

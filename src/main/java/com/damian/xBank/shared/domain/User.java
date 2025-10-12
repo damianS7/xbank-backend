@@ -1,7 +1,7 @@
 package com.damian.xBank.shared.domain;
 
-import com.damian.xBank.modules.user.account.account.UserAccountStatus;
-import com.damian.xBank.modules.user.user.enums.UserRole;
+import com.damian.xBank.modules.user.account.account.enums.UserAccountRole;
+import com.damian.xBank.modules.user.account.account.enums.UserAccountStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,11 +9,40 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
-public class UserPrincipal implements UserDetails {
+public class User implements UserDetails {
     private final UserAccount account;
 
-    public UserPrincipal(UserAccount account) {
+    public User(UserAccount account) {
         this.account = account;
+    }
+
+    public static User create() {
+        return new User(
+                UserAccount.create()
+        );
+    }
+
+    public Long getId() {
+        return account.getId();
+    }
+
+    public User setId(Long id) {
+        this.account.setId(id);
+        return this;
+    }
+
+    public User setEmail(String email) {
+        this.account.setEmail(email);
+        return this;
+    }
+
+    public User setPassword(String password) {
+        this.account.setPassword(password);
+        return this;
+    }
+
+    public Customer getCustomer() {
+        return account.getCustomer();
     }
 
     public UserAccount getAccount() {
@@ -24,7 +53,7 @@ public class UserPrincipal implements UserDetails {
         return account.getEmail();
     }
 
-    public UserRole getRole() {
+    public UserAccountRole getRole() {
         return account.getRole();
     }
 
