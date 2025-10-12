@@ -55,7 +55,7 @@ public class SettingIntegrationTest extends AbstractIntegrationTest {
     @DisplayName("Should get logged customer settings")
     void shouldGetSettings() throws Exception {
         // given
-        loginWithUser(customer.getAccount());
+        login(customer.getAccount());
 
         Map<String, Object> givenSettings = new HashMap<>();
         givenSettings.put("lang", "en");
@@ -89,7 +89,7 @@ public class SettingIntegrationTest extends AbstractIntegrationTest {
     @DisplayName("Should update customer settings")
     void shouldUpdateSettings() throws Exception {
         // given
-        loginWithUser(customer);
+        login(customer);
 
         Map<String, Object> givenSettings = new HashMap<>();
         givenSettings.put("lang", "en");
