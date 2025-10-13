@@ -1,6 +1,6 @@
 package com.damian.xBank.shared.infrastructure.storage;
 
-import com.damian.xBank.shared.domain.UserAccount;
+import com.damian.xBank.shared.domain.User;
 import com.damian.xBank.shared.utils.AuthHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +36,7 @@ public class ImageUploaderService {
      * Uploads an image to the server
      */
     public File uploadImage(MultipartFile file, String folder, String filename) {
-        final UserAccount currentUser = AuthHelper.getLoggedUser();
+        final User currentUser = AuthHelper.getCurrentUser();
         Path path = Paths.get(
                 getUserUploadFolder(currentUser.getId()),
                 folder
