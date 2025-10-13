@@ -4,8 +4,8 @@ import com.damian.xBank.modules.setting.dto.request.SettingsPatchRequest;
 import com.damian.xBank.modules.setting.exception.SettingNotFoundException;
 import com.damian.xBank.modules.setting.exception.SettingNotOwnerException;
 import com.damian.xBank.modules.setting.repository.SettingRepository;
-import com.damian.xBank.shared.domain.Customer;
 import com.damian.xBank.shared.domain.Setting;
+import com.damian.xBank.shared.domain.User;
 import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.utils.AuthHelper;
 import org.slf4j.Logger;
@@ -25,8 +25,8 @@ public class SettingService {
 
     // get all the settings for the current user
     public Setting getSettings() {
-        Customer currentCustomer = AuthHelper.getLoggedCustomer();
-        return settingRepository.findByCustomer_Id(currentCustomer.getId())
+        User currentUser = AuthHelper.getCurrentUser();
+        return settingRepository.findByUser_Id(currentUser.getId())
                                 .orElseThrow(
                                         () -> new SettingNotFoundException(
                                                 Exceptions.CUSTOMER.SETTINGS.NOT_FOUND
@@ -36,16 +36,16 @@ public class SettingService {
 
     // update only one setting
     public Setting updateSetting(String key, String value) {
-        Customer currentCustomer = AuthHelper.getLoggedCustomer();
+        User currentUser = AuthHelper.getCurrentUser();
 
         // find the setting by settingId
-        Setting setting = settingRepository.findByCustomer_Id(currentCustomer.getId()).orElseThrow(
-                () -> new SettingNotFoundException(Exceptions.CUSTOMER.SETTINGS.NOT_FOUND, currentCustomer.getId())
+        Setting setting = settingRepository.findByUser_Id(currentUser.getId()).orElseThrow(
+                () -> new SettingNotFoundException(Exceptions.CUSTOMER.SETTINGS.NOT_FOUND, currentUser.getId())
         );
 
         // check if the logged user is the owner of the setting.
-        if (!setting.isOwner(currentCustomer)) {
-            throw new SettingNotOwnerException(Exceptions.CUSTOMER.SETTINGS.NOT_OWNER, currentCustomer.getId());
+        if (!setting.isOwner(currentUser)) {
+            throw new SettingNotOwnerException(Exceptions.CUSTOMER.SETTINGS.NOT_OWNER, currentUser.getId());
         }
 
         //        setting.setSettings(request.value());
@@ -54,7 +54,7 @@ public class SettingService {
                 "Updated setting: {} with value: {} by user: {}",
                 key,
                 value,
-                currentCustomer.getId()
+                currentUser.getId()
         );
 
         setting.getSettings().put(key, value);

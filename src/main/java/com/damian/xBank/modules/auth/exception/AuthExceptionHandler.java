@@ -30,7 +30,7 @@ public class AuthExceptionHandler {
         log.warn("Failed login attempt. Bad credentials.", e);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                              .body(
-                                     ApiResponse.error(Exceptions.ACCOUNT.BAD_CREDENTIALS)
+                                     ApiResponse.error(Exceptions.USER.ACCOUNT.BAD_CREDENTIALS)
                              );
     }
 
@@ -44,7 +44,7 @@ public class AuthExceptionHandler {
         log.warn("Failed login attempt. Account is suspended.", e);
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                              .body(
-                                     ApiResponse.error(Exceptions.ACCOUNT.SUSPENDED)
+                                     ApiResponse.error(Exceptions.USER.ACCOUNT.SUSPENDED)
                              );
     }
 
@@ -58,7 +58,7 @@ public class AuthExceptionHandler {
         log.warn("Failed login attempt. Account not verified.", e);
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                              .body(
-                                     ApiResponse.error(Exceptions.ACCOUNT.NOT_VERIFIED)
+                                     ApiResponse.error(Exceptions.USER.ACCOUNT.NOT_VERIFIED)
                              );
     }
 }

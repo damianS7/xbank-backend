@@ -1,10 +1,10 @@
 package com.damian.xBank.modules.auth;
 
 import com.damian.xBank.modules.user.account.account.dto.request.UserAccountUpdateRequest;
-import com.damian.xBank.modules.user.account.account.enums.UserAccountRole;
 import com.damian.xBank.modules.user.account.account.enums.UserAccountStatus;
+import com.damian.xBank.modules.user.customer.CustomerGender;
 import com.damian.xBank.shared.AbstractIntegrationTest;
-import com.damian.xBank.shared.domain.UserAccount;
+import com.damian.xBank.shared.domain.Customer;
 import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.utils.JwtUtil;
 import org.junit.jupiter.api.BeforeAll;
@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,24 +32,24 @@ public class AuthorizationIntegrationTest extends AbstractIntegrationTest {
     @Autowired
     private JwtUtil jwtUtil;
 
-    private UserAccount user;
-    private UserAccount admin;
+    private Customer customer;
 
     @BeforeAll
     void setUp() {
-        user = UserAccount.create()
-                          .setEmail("customer@demo.com")
-                          .setPassword(passwordEncoder.encode(this.RAW_PASSWORD))
-                          .setRole(UserAccountRole.USER);
-        user.setAccountStatus(UserAccountStatus.VERIFIED);
-        userAccountRepository.save(user);
-
-        admin = UserAccount.create()
-                           .setEmail("admin@test.com")
+        customer = Customer.create()
+                           .setEmail("customer@demo.com")
                            .setPassword(passwordEncoder.encode(RAW_PASSWORD))
-                           .setRole(UserAccountRole.ADMIN);
-        admin.setAccountStatus(UserAccountStatus.VERIFIED);
-        userAccountRepository.save(admin);
+                           .setFirstName("David")
+                           .setLastName("Brow")
+                           .setBirthdate(LocalDate.now())
+                           .setPhotoPath("avatar.jpg")
+                           .setPhone("123 123 123")
+                           .setPostalCode("01003")
+                           .setAddress("Fake ave")
+                           .setCountry("US")
+                           .setGender(CustomerGender.MALE);
+        customer.getAccount().setAccountStatus(UserAccountStatus.VERIFIED);
+        customerRepository.save(customer);
     }
 
     @Test
@@ -56,7 +57,7 @@ public class AuthorizationIntegrationTest extends AbstractIntegrationTest {
     void shouldHaveAccessWhenTokenIsValid() throws Exception {
         // given
         final String givenToken = jwtUtil.generateToken(
-                user.getEmail(),
+                customer.getAccount().getEmail(),
                 new Date(System.currentTimeMillis() + 1000 * 60 * 60)
         );
 
@@ -85,7 +86,7 @@ public class AuthorizationIntegrationTest extends AbstractIntegrationTest {
     void shouldNotHaveAccessWhenTokenHasExpired() throws Exception {
         // given
         final String expiredToken = jwtUtil.generateToken(
-                user.getEmail(),
+                customer.getEmail(),
                 new Date(System.currentTimeMillis() - 1000 * 60 * 60)
         );
 

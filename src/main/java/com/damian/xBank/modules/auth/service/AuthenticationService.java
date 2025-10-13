@@ -4,8 +4,8 @@ import com.damian.xBank.modules.auth.dto.AuthenticationRequest;
 import com.damian.xBank.modules.auth.dto.AuthenticationResponse;
 import com.damian.xBank.modules.auth.exception.AccountNotVerifiedException;
 import com.damian.xBank.modules.auth.exception.AccountSuspendedException;
-import com.damian.xBank.modules.user.account.account.UserAccountStatus;
-import com.damian.xBank.shared.domain.UserPrincipal;
+import com.damian.xBank.modules.user.account.account.enums.UserAccountStatus;
+import com.damian.xBank.shared.domain.User;
 import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.utils.JwtUtil;
 import org.slf4j.Logger;
@@ -56,7 +56,7 @@ public class AuthenticationService {
         );
 
         // Get the authenticated user
-        final UserPrincipal currentUser = ((UserPrincipal) auth.getPrincipal());
+        final User currentUser = ((User) auth.getPrincipal());
         final HashMap<String, Object> claims = new HashMap<>();
         claims.put("email", currentUser.getEmail());
         claims.put("role", currentUser.getRole());
@@ -70,14 +70,14 @@ public class AuthenticationService {
         // check if the account is disabled
         if (currentUser.getAccount().getAccountStatus().equals(UserAccountStatus.SUSPENDED)) {
             throw new AccountSuspendedException(
-                    Exceptions.ACCOUNT.SUSPENDED
+                    Exceptions.USER.ACCOUNT.SUSPENDED
             );
         }
 
         // check if the account is verified
         if (currentUser.getAccount().getAccountStatus().equals(UserAccountStatus.PENDING_VERIFICATION)) {
             throw new AccountNotVerifiedException(
-                    Exceptions.ACCOUNT.NOT_VERIFIED
+                    Exceptions.USER.ACCOUNT.NOT_VERIFIED
             );
         }
 

@@ -4,8 +4,8 @@ import com.damian.xBank.modules.setting.dto.request.SettingsPatchRequest;
 import com.damian.xBank.modules.setting.repository.SettingRepository;
 import com.damian.xBank.modules.setting.service.SettingService;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.domain.Customer;
 import com.damian.xBank.shared.domain.Setting;
+import com.damian.xBank.shared.domain.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -27,22 +27,23 @@ public class SettingServiceTest extends AbstractServiceTest {
     private SettingService settingService;
 
     @Test
-    @DisplayName("Should get settings for the current customer")
+    @DisplayName("Should get settings for the current user")
     void shouldGetSettings() {
         // given
-        Customer currentCustomer = Customer.create()
-                                           .setId(1L)
-                                           .setEmail("user@demo.com");
-        setUpContext(currentCustomer);
+        User currentUser = User.create()
+                               .setId(1L)
+                               .setEmail("user@demo.com");
+        setUpContext(currentUser);
 
         Map<String, Object> settings = new HashMap<>();
         settings.put("key1", "value1");
         settings.put("key2", "value2");
 
-        Setting givenSettings = new Setting(currentCustomer, settings);
+        Setting givenSettings = Setting.create(currentUser)
+                                       .setSettings(settings);
 
         // when
-        when(settingRepository.findByCustomer_Id(currentCustomer.getId()))
+        when(settingRepository.findByUser_Id(currentUser.getId()))
                 .thenReturn(Optional.of(givenSettings));
         Setting result = settingService.getSettings();
 
@@ -54,29 +55,30 @@ public class SettingServiceTest extends AbstractServiceTest {
                         r -> r.getSetting("key2")
                 )
                 .containsExactly("value1", "value2");
-        verify(settingRepository, times(1)).findByCustomer_Id(currentCustomer.getId());
+        verify(settingRepository, times(1)).findByUser_Id(currentUser.getId());
     }
 
     @Test
     @DisplayName("Should update settings")
     void shouldUpdateSettings() {
         // given
-        Customer currentCustomer = Customer.create()
-                                           .setId(1L)
-                                           .setEmail("user@demo.com");
-        setUpContext(currentCustomer);
+        User currentUser = User.create()
+                               .setId(1L)
+                               .setEmail("user@demo.com");
+        setUpContext(currentUser);
 
         Map<String, Object> settings = new HashMap<>();
         settings.put("key1", "value1");
 
-        Setting givenSettings = new Setting(currentCustomer, settings);
+        Setting givenSettings = Setting.create(currentUser)
+                                       .setSettings(settings);
 
         SettingsPatchRequest request = new SettingsPatchRequest(
                 Map.of("key1", "newValue")
         );
 
         // when
-        when(settingRepository.findByCustomer_Id(currentCustomer.getId()))
+        when(settingRepository.findByUser_Id(currentUser.getId()))
                 .thenReturn(Optional.of(givenSettings));
         when(settingRepository.save(any(Setting.class))).thenReturn(givenSettings);
         Setting result = settingService.updateSettings(request);
@@ -88,7 +90,7 @@ public class SettingServiceTest extends AbstractServiceTest {
                         r -> r.getSetting("key1")
                 )
                 .isEqualTo(request.settings().get("key1"));
-        verify(settingRepository, times(2)).findByCustomer_Id(currentCustomer.getId());
+        verify(settingRepository, times(2)).findByUser_Id(currentUser.getId());
         verify(settingRepository, times(1)).save(any(Setting.class));
     }
 }

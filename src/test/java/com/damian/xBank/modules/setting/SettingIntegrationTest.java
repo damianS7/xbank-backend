@@ -53,16 +53,17 @@ public class SettingIntegrationTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisplayName("Should get logged customer settings")
+    @DisplayName("Should get logged user settings")
     void shouldGetSettings() throws Exception {
         // given
-        login(customer.getAccount());
+        login(customer);
 
         Map<String, Object> givenSettings = new HashMap<>();
         givenSettings.put("lang", "en");
         givenSettings.put("2fa", "enabled");
 
-        Setting givenSetting = new Setting(customer, givenSettings);
+        Setting givenSetting = Setting.create(customer)
+                                      .setSettings(givenSettings);
 
         settingRepository.save(givenSetting);
 
@@ -95,7 +96,8 @@ public class SettingIntegrationTest extends AbstractIntegrationTest {
         Map<String, Object> givenSettings = new HashMap<>();
         givenSettings.put("lang", "en");
 
-        Setting givenSetting = new Setting(customer, givenSettings);
+        Setting givenSetting = Setting.create(customer)
+                                      .setSettings(givenSettings);
         settingRepository.save(givenSetting);
 
         SettingsPatchRequest request = new SettingsPatchRequest(
