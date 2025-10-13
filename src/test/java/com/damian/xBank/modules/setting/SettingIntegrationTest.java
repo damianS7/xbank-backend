@@ -3,7 +3,7 @@ package com.damian.xBank.modules.setting;
 import com.damian.xBank.modules.setting.dto.request.SettingsPatchRequest;
 import com.damian.xBank.modules.setting.dto.response.SettingDto;
 import com.damian.xBank.modules.user.account.account.enums.UserAccountStatus;
-import com.damian.xBank.modules.user.customer.CustomerGender;
+import com.damian.xBank.modules.user.customer.enums.CustomerGender;
 import com.damian.xBank.shared.AbstractIntegrationTest;
 import com.damian.xBank.shared.domain.Customer;
 import com.damian.xBank.shared.domain.Setting;

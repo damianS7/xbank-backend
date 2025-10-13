@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.notification;
+package com.damian.xBank.modules.notification.enums;
 
 public enum NotificationType {
     LIKE,

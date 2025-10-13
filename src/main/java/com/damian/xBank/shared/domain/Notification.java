@@ -1,6 +1,6 @@
 package com.damian.xBank.shared.domain;
 
-import com.damian.xBank.modules.notification.NotificationType;
+import com.damian.xBank.modules.notification.enums.NotificationType;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;

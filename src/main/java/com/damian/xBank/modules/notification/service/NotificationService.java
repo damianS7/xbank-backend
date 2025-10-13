@@ -5,6 +5,7 @@ import com.damian.xBank.modules.notification.repository.NotificationRepository;
 import com.damian.xBank.modules.user.account.account.exception.UserAccountNotFoundException;
 import com.damian.xBank.modules.user.account.account.repository.UserAccountRepository;
 import com.damian.xBank.shared.domain.Notification;
+import com.damian.xBank.shared.domain.User;
 import com.damian.xBank.shared.domain.UserAccount;
 import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.utils.AuthHelper;
@@ -42,7 +43,7 @@ public class NotificationService {
      * @return Page<Notification> a page of notifications
      */
     public Page<Notification> getNotifications(Pageable pageable) {
-        UserAccount currentUser = AuthHelper.getLoggedUser();
+        User currentUser = AuthHelper.getCurrentUser();
         log.debug("Fetching notifications for user: {}", currentUser.getId());
         return notificationRepository.findAllByUserId(currentUser.getId(), pageable);
     }
@@ -52,7 +53,7 @@ public class NotificationService {
      */
     @Transactional
     public void deleteNotifications() {
-        UserAccount currentUser = AuthHelper.getLoggedUser();
+        User currentUser = AuthHelper.getCurrentUser();
         // delete all notifications
         notificationRepository.deleteAllByUser_Id(currentUser.getId());
         log.debug("Deleted all notifications from user: {}", currentUser.getId());
@@ -65,7 +66,7 @@ public class NotificationService {
      * @return Flux<NotificationEvent> a stream of notifications
      */
     public Flux<NotificationEvent> getNotificationsForUser() {
-        UserAccount currentUser = AuthHelper.getLoggedUser();
+        User currentUser = AuthHelper.getCurrentUser();
 
         // create a sink for the user if not exists
         Sinks.Many<NotificationEvent> sink = userSinks.computeIfAbsent(
@@ -85,7 +86,7 @@ public class NotificationService {
      * @param notificationEvent the notification event
      */
     public void publishNotification(NotificationEvent notificationEvent) {
-        UserAccount currentUser = AuthHelper.getLoggedUser();
+        User currentUser = AuthHelper.getCurrentUser();
         log.debug(
                 "Publishing Notification ({}) to user: {}",
                 notificationEvent.type(),

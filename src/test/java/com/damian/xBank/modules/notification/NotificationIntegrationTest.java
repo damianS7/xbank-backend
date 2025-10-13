@@ -2,9 +2,10 @@ package com.damian.xBank.modules.notification;
 
 import com.damian.xBank.modules.notification.dto.NotificationEvent;
 import com.damian.xBank.modules.notification.dto.response.NotificationDto;
+import com.damian.xBank.modules.notification.enums.NotificationType;
 import com.damian.xBank.modules.notification.service.NotificationService;
 import com.damian.xBank.modules.user.account.account.enums.UserAccountStatus;
-import com.damian.xBank.modules.user.customer.CustomerGender;
+import com.damian.xBank.modules.user.customer.enums.CustomerGender;
 import com.damian.xBank.shared.AbstractIntegrationTest;
 import com.damian.xBank.shared.domain.Customer;
 import com.damian.xBank.shared.domain.Notification;

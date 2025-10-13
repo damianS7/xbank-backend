@@ -38,7 +38,7 @@ public class UserAccount {
     public UserAccount() {
         this.createdAt = Instant.now();
         this.updatedAt = Instant.now();
-        this.role = UserAccountRole.USER;
+        this.role = UserAccountRole.CUSTOMER;
         this.accountStatus = UserAccountStatus.PENDING_VERIFICATION;
     }
 
@@ -131,7 +131,11 @@ public class UserAccount {
         return customer;
     }
 
-    public void setCustomer(Customer customer) {
+    public UserAccount setCustomer(Customer customer) {
         this.customer = customer;
+        if (this.customer.getAccount() == null) {
+            this.customer.setAccount(this);
+        }
+        return this;
     }
 }
