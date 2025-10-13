@@ -21,16 +21,20 @@ public class AuthHelper {
         }
     }
 
+    public static void validatePassword(User user, String rawPassword) {
+        AuthHelper.validatePassword(user.getAccount(), rawPassword);
+    }
+
     public static void validatePassword(Customer customer, String rawPassword) {
         AuthHelper.validatePassword(customer.getAccount(), rawPassword);
     }
 
-    public static Customer getLoggedCustomer() {
-        return AuthHelper.getUserPrincipal().getAccount().getCustomer();
+    public static Customer getCurrentCustomer() {
+        return AuthHelper.getUserPrincipal().getCustomer();
     }
 
-    public static UserAccount getLoggedUser() {
-        return AuthHelper.getUserPrincipal().getAccount();
+    public static User getCurrentUser() {
+        return AuthHelper.getUserPrincipal();
     }
 
     public static User getUserPrincipal() {
