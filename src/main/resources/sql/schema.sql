@@ -77,23 +77,23 @@ CREATE TYPE public."notification_type" AS ENUM (
 );
 CREATE CAST (varchar as notification_type) WITH INOUT AS IMPLICIT;
 
-CREATE TABLE public.customer_notifications (
+CREATE TABLE public.user_notifications (
 	id int4 GENERATED ALWAYS AS IDENTITY NOT NULL,
-	customer_id int4 NOT NULL,
+	user_id int4 NOT NULL,
 	type public."notification_type" NOT NULL,
 	message varchar(255) NOT NULL,
 	metadata jsonb NOT NULL,
     created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-	CONSTRAINT customer_notifications_pkey PRIMARY KEY (id),
-    CONSTRAINT customer_notifications_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES public.customers(id) ON DELETE CASCADE
+	CONSTRAINT user_notifications_pkey PRIMARY KEY (id),
+    CONSTRAINT user_notifications_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.user_accounts(id) ON DELETE CASCADE
 );
 
-CREATE TABLE public.customer_settings (
+CREATE TABLE public.user_settings (
 	id int4 GENERATED ALWAYS AS IDENTITY NOT NULL,
-	customer_id int4 NOT NULL,
+	user_id int4 NOT NULL,
 	settings jsonb NOT NULL,
 	CONSTRAINT settings_pkey PRIMARY KEY (id),
-    CONSTRAINT settings_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES public.customers(id) ON DELETE CASCADE
+    CONSTRAINT settings_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.user_accounts(id) ON DELETE CASCADE
 );
 
 -- Banking Account

@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Entity
-@Table(name = "customer_notifications")
+@Table(name = "user_notifications")
 public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,6 +44,10 @@ public class Notification {
 
     public static Notification create(UserAccount user) {
         return new Notification(user);
+    }
+
+    public static Notification create(Customer customer) {
+        return new Notification(customer.getAccount());
     }
 
     public Long getId() {

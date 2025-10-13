@@ -8,15 +8,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Entity
-@Table(name = "customer_settings")
+@Table(name = "user_settings")
 public class Setting {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id", referencedColumnName = "id")
-    private Customer customer;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private UserAccount user;
 
     @Column(columnDefinition = "jsonb")
     @JdbcTypeCode(SqlTypes.JSON)
@@ -26,17 +26,20 @@ public class Setting {
 
     }
 
-    public Setting(Customer customer) {
-        this.customer = customer;
+    public Setting(UserAccount userAccount) {
+        this.user = userAccount;
     }
 
-    public Setting(Customer customer, Map<String, Object> settings) {
-        this(customer);
-        this.settings = settings;
+    public Setting(User owner) {
+        this(owner.getAccount());
     }
 
-    public Setting(User user, Map<String, Object> settings) {
-        this(user.getCustomer(), settings);
+    public Setting(Customer owner) {
+        this(owner.getAccount());
+    }
+
+    public static Setting create(User owner) {
+        return new Setting(owner);
     }
 
     public static Setting create(Customer owner) {
@@ -60,29 +63,38 @@ public class Setting {
     public String toString() {
         return "Setting {" +
                "id=" + id +
-               "customerId=" + getCustomer().getId() +
+               "userId=" + user.getId() +
                "}";
     }
 
-    public Customer getCustomer() {
-        return customer;
+    public UserAccount getUserAccount() {
+        return user;
     }
 
-    public Setting setCustomer(Customer userAccount) {
-        this.customer = userAccount;
+    public Setting setUserAccount(UserAccount userAccount) {
+        this.user = userAccount;
         return this;
     }
 
     public boolean isOwner(Customer customer) {
-        return this.customer.getId().equals(customer.getId());
+        return this.isOwner(customer.getAccount());
+    }
+
+    public boolean isOwner(User user) {
+        return this.isOwner(user.getAccount());
+    }
+
+    public boolean isOwner(UserAccount user) {
+        return this.user.getId().equals(user.getId());
     }
 
     public Map<String, Object> getSettings() {
         return settings;
     }
 
-    public void setSettings(Map<String, Object> settings) {
+    public Setting setSettings(Map<String, Object> settings) {
         this.settings = settings;
+        return this;
     }
 
     public String getSetting(String key) {
