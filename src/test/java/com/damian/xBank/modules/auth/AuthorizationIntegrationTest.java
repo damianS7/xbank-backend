@@ -2,7 +2,7 @@ package com.damian.xBank.modules.auth;
 
 import com.damian.xBank.modules.user.account.account.dto.request.UserAccountUpdateRequest;
 import com.damian.xBank.modules.user.account.account.enums.UserAccountStatus;
-import com.damian.xBank.modules.user.customer.CustomerGender;
+import com.damian.xBank.modules.user.customer.enums.CustomerGender;
 import com.damian.xBank.shared.AbstractIntegrationTest;
 import com.damian.xBank.shared.domain.Customer;
 import com.damian.xBank.shared.exception.Exceptions;
