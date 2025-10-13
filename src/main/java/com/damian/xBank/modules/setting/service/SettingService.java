@@ -52,7 +52,8 @@ public class SettingService {
 
         log.debug(
                 "Updated setting: {} with value: {} by user: {}",
-                setting.getSettings(),
+                key,
+                value,
                 currentCustomer.getId()
         );
 

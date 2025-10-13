@@ -8,10 +8,7 @@ import com.damian.xBank.shared.AbstractIntegrationTest;
 import com.damian.xBank.shared.domain.Customer;
 import com.damian.xBank.shared.domain.Setting;
 import com.damian.xBank.shared.utils.JsonHelper;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -50,6 +47,10 @@ public class SettingIntegrationTest extends AbstractIntegrationTest {
         customerRepository.save(customer);
     }
 
+    @AfterEach
+    void tearDown() {
+        settingRepository.deleteAll();
+    }
 
     @Test
     @DisplayName("Should get logged customer settings")
@@ -95,7 +96,6 @@ public class SettingIntegrationTest extends AbstractIntegrationTest {
         givenSettings.put("lang", "en");
 
         Setting givenSetting = new Setting(customer, givenSettings);
-
         settingRepository.save(givenSetting);
 
         SettingsPatchRequest request = new SettingsPatchRequest(
