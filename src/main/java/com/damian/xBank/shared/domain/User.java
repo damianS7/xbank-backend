@@ -6,6 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 
@@ -51,6 +52,21 @@ public class User implements UserDetails {
 
     public String getEmail() {
         return account.getEmail();
+    }
+
+    public User setUpdatedAt(Instant updatedAt) {
+        this.account.setUpdatedAt(updatedAt);
+        return this;
+    }
+
+    public User setCreatedAt(Instant createdAt) {
+        this.account.setCreatedAt(createdAt);
+        return this;
+    }
+
+    public User setAccountStatus(UserAccountStatus status) {
+        this.account.setAccountStatus(status);
+        return this;
     }
 
     public UserAccountRole getRole() {

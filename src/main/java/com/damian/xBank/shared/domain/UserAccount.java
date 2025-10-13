@@ -47,13 +47,6 @@ public class UserAccount {
         this.customer = customer;
     }
 
-    public UserAccount(Long userId, String email, String password) {
-        this();
-        this.id = userId;
-        this.email = email;
-        this.passwordHash = password;
-    }
-
     public static UserAccount create() {
         return new UserAccount();
     }
@@ -101,7 +94,6 @@ public class UserAccount {
     public UserAccount setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
         return this;
-
     }
 
     public Instant getCreatedAt() {
