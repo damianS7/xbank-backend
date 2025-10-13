@@ -2,7 +2,7 @@ package com.damian.xBank.modules.notification.service;
 
 import com.damian.xBank.modules.notification.dto.NotificationEvent;
 import com.damian.xBank.modules.notification.repository.NotificationRepository;
-import com.damian.xBank.modules.user.account.account.exception.UserAccountException;
+import com.damian.xBank.modules.user.account.account.exception.UserAccountNotFoundException;
 import com.damian.xBank.modules.user.account.account.repository.UserAccountRepository;
 import com.damian.xBank.shared.domain.Notification;
 import com.damian.xBank.shared.domain.UserAccount;
@@ -108,8 +108,8 @@ public class NotificationService {
                             "Notification failed: recipient: {} not found.",
                             notificationEvent.recipientId()
                     );
-                    return new UserAccountException(
-                            Exceptions.USER_ACCOUNT.NOT_FOUND,
+                    return new UserAccountNotFoundException(
+                            Exceptions.USER.ACCOUNT.NOT_FOUND,
                             notificationEvent.recipientId()
                     );
                 });
