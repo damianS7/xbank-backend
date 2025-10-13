@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.customer.exception;
+package com.damian.xBank.modules.user.customer.exception;
 
 public class CustomerEmailTakenException extends CustomerException {
     public CustomerEmailTakenException(String message) {

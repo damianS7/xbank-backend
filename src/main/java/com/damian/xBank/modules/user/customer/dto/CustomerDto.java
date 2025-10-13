@@ -1,11 +1,11 @@
-package com.damian.xBank.modules.customer.profile;
+package com.damian.xBank.modules.user.customer.dto;
 
-import com.damian.xBank.modules.customer.CustomerGender;
+import com.damian.xBank.modules.user.customer.enums.CustomerGender;
 
 import java.time.Instant;
 import java.time.LocalDate;
 
-public record ProfileDTO(
+public record CustomerDto(
         Long id,
         String firstName,
         String lastName,

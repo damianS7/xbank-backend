@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.customer.profile.http.request;
+package com.damian.xBank.modules.user.customer.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 

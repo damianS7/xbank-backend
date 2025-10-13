@@ -1,16 +1,17 @@
-package com.damian.whatsapp.modules.user.user.service;
+package com.damian.xBank.modules.user.customer.service;
 
-import com.damian.whatsapp.modules.user.user.exception.UserImageNotFoundException;
-import com.damian.whatsapp.modules.user.user.exception.UserNotFoundException;
-import com.damian.whatsapp.modules.user.user.repository.UserRepository;
-import com.damian.whatsapp.shared.domain.User;
-import com.damian.whatsapp.shared.exception.Exceptions;
-import com.damian.whatsapp.shared.infrastructure.storage.FileStorageService;
-import com.damian.whatsapp.shared.infrastructure.storage.ImageProcessingService;
-import com.damian.whatsapp.shared.infrastructure.storage.ImageUploaderService;
-import com.damian.whatsapp.shared.infrastructure.storage.ImageValidationService;
-import com.damian.whatsapp.shared.infrastructure.storage.exception.ImageTooLargeException;
-import com.damian.whatsapp.shared.util.AuthHelper;
+import com.damian.xBank.modules.user.account.account.exception.UserAccountNotFoundException;
+import com.damian.xBank.modules.user.account.account.repository.UserAccountRepository;
+import com.damian.xBank.modules.user.customer.exception.CustomerImageNotFoundException;
+import com.damian.xBank.shared.domain.User;
+import com.damian.xBank.shared.domain.UserAccount;
+import com.damian.xBank.shared.exception.Exceptions;
+import com.damian.xBank.shared.infrastructure.storage.FileStorageService;
+import com.damian.xBank.shared.infrastructure.storage.ImageProcessingService;
+import com.damian.xBank.shared.infrastructure.storage.ImageUploaderService;
+import com.damian.xBank.shared.infrastructure.storage.ImageValidationService;
+import com.damian.xBank.shared.infrastructure.storage.exception.ImageTooLargeException;
+import com.damian.xBank.shared.utils.AuthHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -21,11 +22,11 @@ import java.io.File;
 import java.nio.file.Paths;
 
 @Service
-public class UserImageService {
+public class CustomerImageService {
 
     public static final String PROFILE_IMAGE_FOLDER = "";
-    private static final Logger log = LoggerFactory.getLogger(UserImageService.class);
-    private final UserRepository userRepository;
+    private static final Logger log = LoggerFactory.getLogger(CustomerImageService.class);
+    private final UserAccountRepository userAccountRepository;
     private final ImageUploaderService imageUploaderService;
     private final FileStorageService fileStorageService;
     private final ImageProcessingService imageProcessingService;
@@ -36,15 +37,15 @@ public class UserImageService {
     private final int MAX_HEIGHT = 500; // 500px
     private final String[] ALLOWED_IMAGE_TYPES = {"image/jpg", "image/jpeg", "image/png"};
 
-    public UserImageService(
+    public CustomerImageService(
             FileStorageService fileStorageService,
-            UserRepository userRepository,
+            UserAccountRepository userAccountRepository,
             ImageUploaderService imageUploaderService,
             ImageProcessingService imageProcessingService,
             ImageValidationService imageValidationService
     ) {
         this.fileStorageService = fileStorageService;
-        this.userRepository = userRepository;
+        this.userAccountRepository = userAccountRepository;
         this.imageUploaderService = imageUploaderService;
         this.imageProcessingService = imageProcessingService;
         this.imageValidationService = imageValidationService;
@@ -66,7 +67,7 @@ public class UserImageService {
      * @throws ImageTooLargeException if the image size exceeds the limit
      */
     public File uploadUserImage(String currentPassword, MultipartFile image) {
-        final User currentUser = AuthHelper.getLoggedUser();
+        final User currentUser = AuthHelper.getCurrentUser();
         log.debug("Uploading user: {} user image", currentUser.getId());
 
         // validate password
@@ -91,8 +92,8 @@ public class UserImageService {
         );
 
         // update user photo in db
-        currentUser.setImageFilename(uploadedImage.getName());
-        userRepository.save(currentUser);
+        currentUser.getCustomer().setPhotoPath(uploadedImage.getName());
+        userAccountRepository.save(currentUser.getAccount());
 
         return uploadedImage;
     }
@@ -102,28 +103,28 @@ public class UserImageService {
      *
      * @param userId the id of the user to get the photo for
      * @return the user photo resource
-     * @throws UserNotFoundException      if the user does not exist
-     * @throws UserImageNotFoundException if the user photo does not exist in the db
+     * @throws UserAccountNotFoundException   if the user does not exist
+     * @throws CustomerImageNotFoundException if the user photo does not exist in the db
      */
     public Resource getUserImage(Long userId) {
         // find the user
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException(Exceptions.USER.IMAGE.NOT_FOUND, userId)
+        UserAccount user = userAccountRepository.findById(userId).orElseThrow(
+                () -> new UserAccountNotFoundException(Exceptions.CUSTOMER.IMAGE.NOT_FOUND, userId)
         );
 
         // check if the user has a user photo filename stored in db
-        if (user.getImageFilename() == null) {
-            throw new UserImageNotFoundException(
-                    Exceptions.USER.IMAGE.NOT_FOUND,
+        if (user.getCustomer().getPhotoPath() == null) {
+            throw new CustomerImageNotFoundException(
+                    Exceptions.CUSTOMER.IMAGE.NOT_FOUND,
                     user.getId()
             );
         }
 
-        log.debug("Getting user: {} user image: {}", userId, user.getImageFilename());
+        log.debug("Getting user: {} user image: {}", userId, user.getCustomer().getPhotoPath());
 
         File file = fileStorageService.getFile(
                 getProfileImageFolder(userId),
-                user.getImageFilename()
+                user.getCustomer().getPhotoPath()
         );
 
         // return the image as resource
@@ -136,7 +137,7 @@ public class UserImageService {
      * @return the current user photo resource
      */
     public Resource getUserImage() {
-        final User currentUser = AuthHelper.getLoggedUser();
+        final User currentUser = AuthHelper.getCurrentUser();
 
         return this.getUserImage(currentUser.getId());
     }

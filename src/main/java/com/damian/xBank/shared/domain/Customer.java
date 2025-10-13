@@ -1,7 +1,8 @@
 package com.damian.xBank.shared.domain;
 
 import com.damian.xBank.modules.banking.account.BankingAccount;
-import com.damian.xBank.modules.user.customer.CustomerGender;
+import com.damian.xBank.modules.user.account.account.enums.UserAccountRole;
+import com.damian.xBank.modules.user.customer.enums.CustomerGender;
 import jakarta.persistence.*;
 
 import java.time.Instant;
@@ -68,7 +69,7 @@ public class Customer {
 
     public Customer(UserAccount account) {
         this();
-        this.account = account;
+        this.setAccount(account);
     }
 
     public static Customer create(UserAccount account) {
@@ -89,6 +90,11 @@ public class Customer {
 
     public Customer setPassword(String password) {
         this.account.setPassword(password);
+        return this;
+    }
+
+    public Customer setRole(UserAccountRole role) {
+        this.account.setRole(role);
         return this;
     }
 
@@ -238,6 +244,9 @@ public class Customer {
 
     public Customer setAccount(UserAccount account) {
         this.account = account;
+        if (this.account.getCustomer() == null) {
+            this.account.setCustomer(this);
+        }
         return this;
     }
 

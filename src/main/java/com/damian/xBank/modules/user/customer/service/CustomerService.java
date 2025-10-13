@@ -1,10 +1,13 @@
-package com.damian.xBank.modules.customer;
+package com.damian.xBank.modules.user.customer.service;
 
-import com.damian.xBank.modules.customer.exception.CustomerEmailTakenException;
-import com.damian.xBank.modules.customer.exception.CustomerException;
-import com.damian.xBank.modules.customer.exception.CustomerNotFoundException;
-import com.damian.xBank.modules.customer.http.request.CustomerEmailUpdateRequest;
-import com.damian.xBank.modules.customer.http.request.CustomerRegistrationRequest;
+import com.damian.xBank.modules.user.customer.dto.request.CustomerEmailUpdateRequest;
+import com.damian.xBank.modules.user.customer.dto.request.CustomerRegistrationRequest;
+import com.damian.xBank.modules.user.customer.exception.CustomerEmailTakenException;
+import com.damian.xBank.modules.user.customer.exception.CustomerException;
+import com.damian.xBank.modules.user.customer.exception.CustomerNotFoundException;
+import com.damian.xBank.modules.user.customer.repository.CustomerRepository;
+import com.damian.xBank.shared.domain.Customer;
+import com.damian.xBank.shared.domain.UserAccount;
 import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.exception.PasswordMismatchException;
 import com.damian.xBank.shared.utils.AuthHelper;
@@ -44,20 +47,25 @@ public class CustomerService {
             );
         }
 
+        UserAccount userAccount = UserAccount.create()
+                                             .setEmail(request.email())
+                                             .setPassword(
+                                                     bCryptPasswordEncoder.encode(request.password())
+                                             );
+
         // we create the customer and assign the data
         Customer customer = new Customer();
-        customer.setEmail(request.email());
-        customer.setPassword(bCryptPasswordEncoder.encode(request.password()));
-        customer.getProfile().setNationalId(request.nationalId());
-        customer.getProfile().setFirstName(request.firstName());
-        customer.getProfile().setLastName(request.lastName());
-        customer.getProfile().setPhone(request.phone());
-        customer.getProfile().setGender(request.gender());
-        customer.getProfile().setBirthdate(request.birthdate());
-        customer.getProfile().setCountry(request.country());
-        customer.getProfile().setAddress(request.address());
-        customer.getProfile().setPostalCode(request.postalCode());
-        customer.getProfile().setPhotoPath(request.photo());
+        customer.setAccount(userAccount);
+        customer.setNationalId(request.nationalId());
+        customer.setFirstName(request.firstName());
+        customer.setLastName(request.lastName());
+        customer.setPhone(request.phone());
+        customer.setGender(request.gender());
+        customer.setBirthdate(request.birthdate());
+        customer.setCountry(request.country());
+        customer.setAddress(request.address());
+        customer.setPostalCode(request.postalCode());
+        customer.setPhotoPath(request.photo());
 
         return customerRepository.save(customer);
     }
@@ -113,8 +121,8 @@ public class CustomerService {
 
     // returns the logged customer
     public Customer getCustomer() {
-        Customer loggedCustomer = AuthHelper.getLoggedCustomer();
-        return this.getCustomer(loggedCustomer.getId());
+        Customer currentCustomer = AuthHelper.getCurrentCustomer();
+        return this.getCustomer(currentCustomer.getId());
     }
 
     /**
@@ -125,7 +133,7 @@ public class CustomerService {
      */
     private boolean emailExist(String email) {
         // we search the email in the database
-        return customerRepository.findByEmail(email).isPresent();
+        return customerRepository.findByAccount_Email(email).isPresent();
     }
 
     /**
@@ -145,7 +153,7 @@ public class CustomerService {
         );
 
         // set the new email
-        customer.setEmail(email);
+        customer.getAccount().setEmail(email);
 
         // we change the updateAt timestamp field
         customer.setUpdatedAt(Instant.now());
@@ -163,11 +171,11 @@ public class CustomerService {
      */
     public Customer updateEmail(CustomerEmailUpdateRequest request) {
         // we extract the email from the Customer stored in the SecurityContext
-        final Customer loggedCustomer = AuthHelper.getLoggedCustomer();
+        final Customer currentCustomer = AuthHelper.getCurrentCustomer();
 
         // Before making any changes we check that the password sent by the customer matches the one in the entity
-        AuthHelper.validatePassword(loggedCustomer, request.currentPassword());
+        AuthHelper.validatePassword(currentCustomer.getAccount(), request.currentPassword());
 
-        return this.updateEmail(loggedCustomer.getId(), request.newEmail());
+        return this.updateEmail(currentCustomer.getId(), request.newEmail());
     }
 }

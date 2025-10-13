@@ -1,12 +1,11 @@
-package com.damian.whatsapp.modules.user.user.controller;
+package com.damian.xBank.modules.user.customer.controller;
 
-import com.damian.whatsapp.modules.user.user.dto.mapper.UserDtoMapper;
-import com.damian.whatsapp.modules.user.user.dto.request.UserUpdateRequest;
-import com.damian.whatsapp.modules.user.user.dto.response.UserDto;
-import com.damian.whatsapp.modules.user.user.service.UserImageService;
-import com.damian.whatsapp.modules.user.user.service.UserService;
-import com.damian.whatsapp.shared.domain.User;
-import com.damian.whatsapp.shared.util.ImageHelper;
+import com.damian.xBank.modules.user.customer.dto.CustomerDtoMapper;
+import com.damian.xBank.modules.user.customer.dto.CustomerWithAccountDto;
+import com.damian.xBank.modules.user.customer.service.CustomerImageService;
+import com.damian.xBank.modules.user.customer.service.CustomerService;
+import com.damian.xBank.shared.domain.Customer;
+import com.damian.xBank.shared.utils.ImageHelper;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -16,7 +15,6 @@ import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,51 +22,37 @@ import java.util.concurrent.TimeUnit;
 
 @RequestMapping("/api/v1")
 @RestController
-public class UserController {
-    private final UserService userService;
-    private final UserImageService userImageService;
+public class CustomerController {
+    private final CustomerService customerService;
+    private final CustomerImageService customerImageService;
 
     @Autowired
-    public UserController(
-            UserService userService,
-            UserImageService userImageService
+    public CustomerController(
+            CustomerService customerService,
+            CustomerImageService customerImageService
     ) {
-        this.userService = userService;
-        this.userImageService = userImageService;
+        this.customerService = customerService;
+        this.customerImageService = customerImageService;
     }
 
-    // endpoint to receive current user data
-    @GetMapping("/users")
-    public ResponseEntity<?> getUser() {
-        User user = userService.getUser();
-        UserDto dto = UserDtoMapper.toUserDto(user);
+    // endpoint to receive current customer
+    @GetMapping("/customers")
+    public ResponseEntity<?> getLoggedCustomerData() {
+        Customer customer = customerService.getCustomer();
+        CustomerWithAccountDto dto = CustomerDtoMapper.toCustomerWithAccountDto(customer);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(dto);
     }
 
-    // endpoint to modify the logged user data
-    @PatchMapping("/users")
-    public ResponseEntity<?> updateUser(
-            @Validated @RequestBody
-            UserUpdateRequest request
-    ) {
-        User user = userService.updateUser(request);
-        UserDto userDto = UserDtoMapper.toUserDto(user);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(userDto);
-    }
-
     // endpoint to get the current user profile image
-    @GetMapping("/users/{userId}/image")
+    @GetMapping("/customers/{customerId}/image")
     public ResponseEntity<?> getProfileImage(
             @PathVariable @NotNull @Positive
-            Long userId
+            Long customerId
     ) {
-        Resource resource = userImageService.getUserImage(userId);
+        Resource resource = customerImageService.getUserImage(customerId);
         String contentType = ImageHelper.getContentType(resource);
 
         return ResponseEntity
@@ -79,9 +63,9 @@ public class UserController {
     }
 
     // endpoint to get the current user profile image
-    @GetMapping("/users/image")
+    @GetMapping("/customers/image")
     public ResponseEntity<?> getProfileImage() {
-        Resource resource = userImageService.getUserImage();
+        Resource resource = customerImageService.getUserImage();
         String contentType = ImageHelper.getContentType(resource);
 
         return ResponseEntity
@@ -92,14 +76,14 @@ public class UserController {
     }
 
     // endpoint for the current user to upload his profile photo
-    @PostMapping("/users/image")
+    @PostMapping("/customers/image")
     public ResponseEntity<?> uploadProfileImage(
             @RequestParam("currentPassword") @NotBlank
             String currentPassword,
             @RequestParam("file") MultipartFile file
     ) {
-        userImageService.uploadUserImage(currentPassword, file);
-        Resource resource = userImageService.getUserImage();
+        customerImageService.uploadUserImage(currentPassword, file);
+        Resource resource = customerImageService.getUserImage();
         String contentType = ImageHelper.getContentType(resource);
 
         return ResponseEntity
@@ -107,7 +91,5 @@ public class UserController {
                 .contentType(MediaType.parseMediaType(contentType))
                 .body(resource);
     }
-
-
 }
 
