@@ -29,6 +29,8 @@ public class Exceptions {
     public static class CUSTOMER {
         public static final String EMAIL_TAKEN = "Email is already taken.";
         public static final String NOT_FOUND = "Customer not found.";
+        public static final String NOT_OWNER = "Customer ownership violation.";
+        public static final String UPDATE_FAILED = "Customer update failed.";
 
         public static class IMAGE {
             public static final String NOT_FOUND = "Profile photo not found.";
