@@ -1,7 +1,9 @@
 package com.damian.xBank.modules.user.customer.controller;
 
-import com.damian.xBank.modules.user.customer.dto.CustomerDtoMapper;
-import com.damian.xBank.modules.user.customer.dto.CustomerWithAccountDto;
+import com.damian.xBank.modules.user.customer.dto.mapper.CustomerDtoMapper;
+import com.damian.xBank.modules.user.customer.dto.request.CustomerUpdateRequest;
+import com.damian.xBank.modules.user.customer.dto.response.CustomerDto;
+import com.damian.xBank.modules.user.customer.dto.response.CustomerWithAccountDto;
 import com.damian.xBank.modules.user.customer.service.CustomerImageService;
 import com.damian.xBank.modules.user.customer.service.CustomerService;
 import com.damian.xBank.shared.domain.Customer;
@@ -15,6 +17,7 @@ import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -46,7 +49,21 @@ public class CustomerController {
                 .body(dto);
     }
 
-    // endpoint to get the current user profile image
+    // endpoint to modify current customer profile
+    @PatchMapping("/customers")
+    public ResponseEntity<CustomerDto> update(
+            @Validated @RequestBody
+            CustomerUpdateRequest request
+    ) {
+        Customer customer = customerService.updateCustomer(request);
+        CustomerDto customerDto = CustomerDtoMapper.toCustomerDto(customer);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(customerDto);
+    }
+
+    // endpoint to get the current customer profile image
     @GetMapping("/customers/{customerId}/image")
     public ResponseEntity<?> getProfileImage(
             @PathVariable @NotNull @Positive
