@@ -1,4 +1,4 @@
-package com.damian.whatsapp.modules.user.account.account.dto.request;
+package com.damian.xBank.modules.user.account.account.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
