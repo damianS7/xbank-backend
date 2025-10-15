@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 
 import java.util.Map;
 
-public record ProfileUpdateRequest(
+public record CustomerUpdateRequest(
         @NotBlank
         String currentPassword,
 
