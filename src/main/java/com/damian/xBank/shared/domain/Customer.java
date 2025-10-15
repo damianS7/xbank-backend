@@ -247,7 +247,6 @@ public class Customer {
 
     public Customer setAccount(UserAccount account) {
         this.account = account;
-        // TODO review this
         if (this.account.getCustomer() == null) {
             this.account.setCustomer(this);
         }

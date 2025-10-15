@@ -133,7 +133,6 @@ public class UserAccount {
 
     public UserAccount setCustomer(Customer customer) {
         this.customer = customer;
-        // TODO review this
         if (this.customer.getAccount() == null) {
             this.customer.setAccount(this);
         }
