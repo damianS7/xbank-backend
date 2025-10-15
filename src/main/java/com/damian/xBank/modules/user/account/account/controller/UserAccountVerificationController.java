@@ -1,10 +1,10 @@
-package com.damian.whatsapp.modules.user.account.account.controller;
+package com.damian.xBank.modules.user.account.account.controller;
 
-import com.damian.whatsapp.modules.user.account.account.dto.request.UserAccountVerificationResendRequest;
-import com.damian.whatsapp.modules.user.account.account.service.UserAccountPasswordService;
-import com.damian.whatsapp.modules.user.account.account.service.UserAccountVerificationService;
-import com.damian.whatsapp.shared.domain.UserAccount;
-import com.damian.whatsapp.shared.domain.UserAccountToken;
+import com.damian.xBank.modules.user.account.account.dto.request.UserAccountVerificationResendRequest;
+import com.damian.xBank.modules.user.account.account.service.UserAccountPasswordService;
+import com.damian.xBank.modules.user.account.account.service.UserAccountVerificationService;
+import com.damian.xBank.shared.domain.UserAccount;
+import com.damian.xBank.shared.domain.UserAccountToken;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +39,7 @@ public class UserAccountVerificationController {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(com.damian.whatsapp.shared.util.ApiResponse.success(
+                .body(com.damian.xBank.shared.utils.ApiResponse.success(
                         "Your account has been verified. You can now log in with your credentials."));
     }
 
@@ -57,7 +57,7 @@ public class UserAccountVerificationController {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(com.damian.whatsapp.shared.util.ApiResponse.success(
+                .body(com.damian.xBank.shared.utils.ApiResponse.success(
                         "A verification link has been sent to your email."));
     }
 }
