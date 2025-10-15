@@ -1,6 +1,6 @@
-package com.damian.whatsapp.modules.user.account.account.exception;
+package com.damian.xBank.modules.user.account.account.exception;
 
-import com.damian.whatsapp.shared.exception.ApplicationException;
+import com.damian.xBank.shared.exception.ApplicationException;
 
 public class UserAccountException extends ApplicationException {
     private final Long accountId;

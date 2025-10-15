@@ -1,9 +1,9 @@
-package com.damian.whatsapp.modules.user.account.account.exception;
+package com.damian.xBank.modules.user.account.account.exception;
 
-import com.damian.whatsapp.modules.user.account.token.exception.UserAccountTokenExpiredException;
-import com.damian.whatsapp.modules.user.account.token.exception.UserAccountTokenNotFoundException;
-import com.damian.whatsapp.modules.user.account.token.exception.UserAccountTokenUsedException;
-import com.damian.whatsapp.shared.util.ApiResponse;
+import com.damian.xBank.modules.user.account.token.exception.UserAccountTokenExpiredException;
+import com.damian.xBank.modules.user.account.token.exception.UserAccountTokenNotFoundException;
+import com.damian.xBank.modules.user.account.token.exception.UserAccountTokenUsedException;
+import com.damian.xBank.shared.utils.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
@@ -51,9 +51,23 @@ public class UserAccountExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handlAccountInvalidPasswordConfirmation(
             UserAccountInvalidPasswordConfirmationException ex
     ) {
-        log.warn("user: {} failed to confirm password.", ex.getUserId());
+        log.warn("user: {} failed to confirm password.", ex.getAccountId());
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                              .body(ApiResponse.error(ex.getMessage(), HttpStatus.FORBIDDEN));
+    }
+
+    @ExceptionHandler(UserAccountUpdateException.class) // 400
+    public ResponseEntity<ApiResponse<String>> handleUserAccountUpdate(
+            UserAccountUpdateException ex
+    ) {
+        log.warn(
+                "User id: {} failed to update field: {} with value: {}.",
+                ex.getAccountId(),
+                ex.getKey(),
+                ex.getValue()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                             .body(ApiResponse.error(ex.getMessage(), HttpStatus.BAD_REQUEST));
     }
 
     // Token Exceptions

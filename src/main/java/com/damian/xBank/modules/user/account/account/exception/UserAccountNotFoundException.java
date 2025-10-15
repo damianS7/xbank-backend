@@ -1,4 +1,4 @@
-package com.damian.whatsapp.modules.user.account.account.exception;
+package com.damian.xBank.modules.user.account.account.exception;
 
 public class UserAccountNotFoundException extends UserAccountException {
 
