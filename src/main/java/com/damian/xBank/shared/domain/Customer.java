@@ -76,13 +76,6 @@ public class Customer {
         return new Customer(account);
     }
 
-    public Customer(String email, String password) {
-        this();
-        this.account = new UserAccount();
-        this.account.setEmail(email);
-        this.account.setPassword(password);
-    }
-
     public Customer setEmail(String email) {
         this.account.setEmail(email);
         return this;
@@ -219,14 +212,24 @@ public class Customer {
         return this;
     }
 
-
     @Override
     public String toString() {
         return "Customer{" +
                "id=" + id +
+               ", bankingAccounts=" + bankingAccounts +
+               ", account=" + account.toString() +
+               ", firstName='" + firstName + '\'' +
+               ", lastName='" + lastName + '\'' +
+               ", phone='" + phone + '\'' +
+               ", birthdate=" + birthdate +
+               ", photo='" + photo + '\'' +
+               ", address='" + address + '\'' +
+               ", postalCode='" + postalCode + '\'' +
+               ", country='" + country + '\'' +
+               ", nationalId='" + nationalId + '\'' +
+               ", gender=" + gender +
                ", updatedAt=" + updatedAt +
                '}';
-
     }
 
     public CustomerGender getGender() {
@@ -244,6 +247,7 @@ public class Customer {
 
     public Customer setAccount(UserAccount account) {
         this.account = account;
+        // TODO review this
         if (this.account.getCustomer() == null) {
             this.account.setCustomer(this);
         }

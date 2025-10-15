@@ -116,12 +116,12 @@ public class UserAccount {
 
     @Override
     public String toString() {
-        return "User {" +
-               " id=" + id +
-               ", email=" + email +
-               ", password=" + passwordHash +
-               ", account_status=" + getAccountStatus() +
+        return "UserAccount{" +
+               "id=" + id +
                ", role=" + role +
+               ", email='" + email + '\'' +
+               ", passwordHash='" + passwordHash + '\'' +
+               ", accountStatus=" + accountStatus +
                ", createdAt=" + createdAt +
                ", updatedAt=" + updatedAt +
                '}';
@@ -133,6 +133,7 @@ public class UserAccount {
 
     public UserAccount setCustomer(Customer customer) {
         this.customer = customer;
+        // TODO review this
         if (this.customer.getAccount() == null) {
             this.customer.setAccount(this);
         }
