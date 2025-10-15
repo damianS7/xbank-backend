@@ -47,6 +47,7 @@ public class WebSecurityConfig {
                         .requestMatchers(
                                 "/api/v1/auth/**",
                                 "/api/v1/accounts/register",
+                                "/api/v1/customers/register",
                                 "/api/v1/accounts/verification/**",
                                 "/api/v1/accounts/password/reset/**",
                                 "/ws/**"
