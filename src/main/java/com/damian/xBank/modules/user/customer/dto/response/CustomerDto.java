@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.user.customer.dto;
+package com.damian.xBank.modules.user.customer.dto.response;
 
 import com.damian.xBank.modules.user.customer.enums.CustomerGender;
 

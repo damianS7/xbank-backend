@@ -1,10 +1,12 @@
-package com.damian.xBank.modules.user.customer.dto;
+package com.damian.xBank.modules.user.customer.dto.mapper;
 
 import com.damian.xBank.modules.banking.account.BankingAccountDTO;
 import com.damian.xBank.modules.banking.account.BankingAccountDTOMapper;
 import com.damian.xBank.modules.user.account.account.dto.mapper.UserAccountDtoMapper;
 import com.damian.xBank.modules.user.account.account.dto.response.UserAccountDto;
 import com.damian.xBank.modules.user.account.account.exception.UserAccountNotFoundException;
+import com.damian.xBank.modules.user.customer.dto.response.CustomerDto;
+import com.damian.xBank.modules.user.customer.dto.response.CustomerWithAccountDto;
 import com.damian.xBank.shared.domain.Customer;
 import com.damian.xBank.shared.exception.Exceptions;
 import org.springframework.data.domain.Page;
