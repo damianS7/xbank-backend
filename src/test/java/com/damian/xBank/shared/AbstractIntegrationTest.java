@@ -75,6 +75,7 @@ public abstract class AbstractIntegrationTest {
         userAccountTokenRepository.deleteAll();
         notificationRepository.deleteAll();
         settingRepository.deleteAll();
+        customerRepository.deleteAll();
         userAccountRepository.deleteAll();
     }
 
