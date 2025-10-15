@@ -1,73 +1,33 @@
 package com.damian.xBank.modules.user.customer.service;
 
-import com.damian.xBank.modules.user.customer.dto.request.CustomerEmailUpdateRequest;
-import com.damian.xBank.modules.user.customer.dto.request.CustomerRegistrationRequest;
-import com.damian.xBank.modules.user.customer.exception.CustomerEmailTakenException;
+import com.damian.xBank.modules.user.customer.dto.request.CustomerUpdateRequest;
+import com.damian.xBank.modules.user.customer.enums.CustomerGender;
 import com.damian.xBank.modules.user.customer.exception.CustomerException;
 import com.damian.xBank.modules.user.customer.exception.CustomerNotFoundException;
+import com.damian.xBank.modules.user.customer.exception.CustomerUpdateAuthorizationException;
+import com.damian.xBank.modules.user.customer.exception.CustomerUpdateException;
 import com.damian.xBank.modules.user.customer.repository.CustomerRepository;
 import com.damian.xBank.shared.domain.Customer;
-import com.damian.xBank.shared.domain.UserAccount;
 import com.damian.xBank.shared.exception.Exceptions;
-import com.damian.xBank.shared.exception.PasswordMismatchException;
 import com.damian.xBank.shared.utils.AuthHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.LocalDate;
 
 @Service
 public class CustomerService {
+    private static final Logger log = LoggerFactory.getLogger(CustomerService.class);
     private final CustomerRepository customerRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public CustomerService(
-            CustomerRepository customerRepository,
-            BCryptPasswordEncoder bCryptPasswordEncoder
+            CustomerRepository customerRepository
     ) {
         this.customerRepository = customerRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-    }
-
-    /**
-     * Creates a new customer
-     *
-     * @param request contains the fields needed for the customer creation
-     * @return the customer created
-     * @throws CustomerException if another user has the email
-     */
-    public Customer createCustomer(CustomerRegistrationRequest request) {
-
-        // check if the email is already taken
-        if (emailExist(request.email())) {
-            throw new CustomerEmailTakenException(
-                    Exceptions.CUSTOMER.EMAIL_TAKEN
-            );
-        }
-
-        UserAccount userAccount = UserAccount.create()
-                                             .setEmail(request.email())
-                                             .setPassword(
-                                                     bCryptPasswordEncoder.encode(request.password())
-                                             );
-
-        // we create the customer and assign the data
-        Customer customer = new Customer();
-        customer.setAccount(userAccount);
-        customer.setNationalId(request.nationalId());
-        customer.setFirstName(request.firstName());
-        customer.setLastName(request.lastName());
-        customer.setPhone(request.phone());
-        customer.setGender(request.gender());
-        customer.setBirthdate(request.birthdate());
-        customer.setCountry(request.country());
-        customer.setAddress(request.address());
-        customer.setPostalCode(request.postalCode());
-        customer.setPhotoPath(request.photo());
-
-        return customerRepository.save(customer);
     }
 
     /**
@@ -81,7 +41,7 @@ public class CustomerService {
         // if the customer does not exist we throw an exception
         if (!customerRepository.existsById(customerId)) {
             throw new CustomerNotFoundException(
-                    Exceptions.CUSTOMER.NOT_FOUND
+                    Exceptions.CUSTOMER.NOT_FOUND, customerId
             );
         }
 
@@ -114,7 +74,7 @@ public class CustomerService {
         // if the customer does not exist we throw an exception
         return customerRepository.findById(customerId).orElseThrow(
                 () -> new CustomerNotFoundException(
-                        Exceptions.CUSTOMER.NOT_FOUND
+                        Exceptions.CUSTOMER.NOT_FOUND, customerId
                 )
         );
     }
@@ -126,56 +86,69 @@ public class CustomerService {
     }
 
     /**
-     * It checks if an email exist in the database
+     * It updates the current customer profile
      *
-     * @param email the email to be checked
-     * @return true if the email exists, false otherwise
+     * @param request the request containing the updated profile information
+     * @return Customer the updated customer
      */
-    private boolean emailExist(String email) {
-        // we search the email in the database
-        return customerRepository.findByAccount_Email(email).isPresent();
+    public Customer updateCustomer(CustomerUpdateRequest request) {
+        final Customer currentCustomer = AuthHelper.getCurrentCustomer();
+
+        log.debug("Updating customer id: {}", currentCustomer.getId());
+        return this.updateCustomer(currentCustomer.getId(), request);
     }
 
     /**
-     * It updates the email of a customer
+     * It updates the customer profile by its ID.
      *
-     * @param customerId the id of the customer
-     * @param email      the new email to set
-     * @return the customer updated
-     * @throws CustomerException if the password does not match, or if the customer does not exist
+     * @param customerId the id of the profile to be updated
+     * @param request    the request containing the updated profile information
+     * @return Customer with the updated profile
+     * @throws CustomerNotFoundException if the profile is not found
      */
-    public Customer updateEmail(Long customerId, String email) {
-        // we get the Customer entity so we can save at the end
-        Customer customer = customerRepository.findById(customerId).orElseThrow(
-                () -> new CustomerNotFoundException(
-                        Exceptions.CUSTOMER.NOT_FOUND
-                )
-        );
+    public Customer updateCustomer(Long customerId, CustomerUpdateRequest request) {
+        final Customer currentCustomer = AuthHelper.getCurrentCustomer();
 
-        // set the new email
-        customer.getAccount().setEmail(email);
+        // find the customer we want to modify
+        Customer customer = customerRepository
+                .findById(customerId)
+                .orElseThrow(() -> new CustomerNotFoundException(
+                        Exceptions.CUSTOMER.NOT_FOUND, customerId)
+                );
+
+        // we make sure that this profile belongs to the current customer
+        if (!customer.getId().equals(currentCustomer.getId())) {
+            throw new CustomerUpdateAuthorizationException(
+                    Exceptions.CUSTOMER.NOT_OWNER,
+                    customerId
+            );
+        }
+
+        // we validate the password before updating the profile
+        AuthHelper.validatePassword(customer, request.currentPassword());
+
+        // we iterate over the fields (if any)
+        request.fieldsToUpdate().forEach((key, value) -> {
+            switch (key) {
+                case "firstName" -> customer.setFirstName((String) value);
+                case "lastName" -> customer.setLastName((String) value);
+                case "phone" -> customer.setPhone((String) value);
+                case "country" -> customer.setCountry((String) value);
+                case "postalCode" -> customer.setPostalCode((String) value);
+                case "address" -> customer.setAddress((String) value);
+                case "photo" -> customer.setPhotoPath((String) value);
+                case "gender" -> customer.setGender(CustomerGender.valueOf((String) value));
+                case "birthdate" -> customer.setBirthdate(LocalDate.parse((String) value));
+                default -> throw new CustomerUpdateException(
+                        Exceptions.CUSTOMER.UPDATE_FAILED, customerId, key, value.toString()
+                );
+            }
+        });
 
         // we change the updateAt timestamp field
         customer.setUpdatedAt(Instant.now());
 
-        // save the changes
+        // we save the updated profile to the database
         return customerRepository.save(customer);
-    }
-
-    /**
-     * It updates the email from the logged customer
-     *
-     * @param request that contains the current password and the new email.
-     * @return the customer updated
-     * @throws PasswordMismatchException if the password does not match
-     */
-    public Customer updateEmail(CustomerEmailUpdateRequest request) {
-        // we extract the email from the Customer stored in the SecurityContext
-        final Customer currentCustomer = AuthHelper.getCurrentCustomer();
-
-        // Before making any changes we check that the password sent by the customer matches the one in the entity
-        AuthHelper.validatePassword(currentCustomer.getAccount(), request.currentPassword());
-
-        return this.updateEmail(currentCustomer.getId(), request.newEmail());
     }
 }
