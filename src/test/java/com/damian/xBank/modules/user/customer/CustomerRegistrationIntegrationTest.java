@@ -33,6 +33,7 @@ public class CustomerRegistrationIntegrationTest extends AbstractIntegrationTest
 
     @AfterEach
     void tearDown() {
+        userAccountTokenRepository.deleteAll();
         userAccountRepository.deleteAll();
         customerRepository.deleteAll();
     }
@@ -155,7 +156,7 @@ public class CustomerRegistrationIntegrationTest extends AbstractIntegrationTest
         );
 
         // then
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/accounts/register")
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/customers/register")
                                                                  .contentType(MediaType.APPLICATION_JSON)
                                                                  .content(JsonHelper.toJson(request)))
                                   .andDo(print())
