@@ -1,20 +1,18 @@
-package com.damian.whatsapp.modules.user.account.account.service;
+package com.damian.xBank.modules.user.account.account.service;
 
-import com.damian.whatsapp.modules.user.account.account.UserAccountRepository;
-import com.damian.whatsapp.modules.user.account.account.UserAccountStatus;
-import com.damian.whatsapp.modules.user.account.account.exception.UserAccountNotFoundException;
-import com.damian.whatsapp.modules.user.account.account.exception.UserAccountVerificationNotPendingException;
-import com.damian.whatsapp.modules.user.account.token.UserAccountTokenRepository;
-import com.damian.whatsapp.modules.user.account.token.UserAccountTokenType;
-import com.damian.whatsapp.modules.user.account.token.exception.UserAccountTokenExpiredException;
-import com.damian.whatsapp.modules.user.account.token.exception.UserAccountTokenNotFoundException;
-import com.damian.whatsapp.modules.user.account.token.exception.UserAccountTokenUsedException;
-import com.damian.whatsapp.modules.user.user.repository.UserRepository;
-import com.damian.whatsapp.shared.domain.User;
-import com.damian.whatsapp.shared.domain.UserAccount;
-import com.damian.whatsapp.shared.domain.UserAccountToken;
-import com.damian.whatsapp.shared.exception.Exceptions;
-import com.damian.whatsapp.shared.infrastructure.mail.EmailSenderService;
+import com.damian.xBank.modules.user.account.account.enums.UserAccountStatus;
+import com.damian.xBank.modules.user.account.account.exception.UserAccountNotFoundException;
+import com.damian.xBank.modules.user.account.account.exception.UserAccountVerificationNotPendingException;
+import com.damian.xBank.modules.user.account.account.repository.UserAccountRepository;
+import com.damian.xBank.modules.user.account.token.UserAccountTokenRepository;
+import com.damian.xBank.modules.user.account.token.UserAccountTokenType;
+import com.damian.xBank.modules.user.account.token.exception.UserAccountTokenExpiredException;
+import com.damian.xBank.modules.user.account.token.exception.UserAccountTokenNotFoundException;
+import com.damian.xBank.modules.user.account.token.exception.UserAccountTokenUsedException;
+import com.damian.xBank.shared.domain.UserAccount;
+import com.damian.xBank.shared.domain.UserAccountToken;
+import com.damian.xBank.shared.exception.Exceptions;
+import com.damian.xBank.shared.infrastructure.mail.EmailSenderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
@@ -30,20 +28,17 @@ public class UserAccountVerificationService {
     private final Environment env;
     private final UserAccountTokenRepository userAccountTokenRepository;
     private final UserAccountRepository userAccountRepository;
-    private final UserRepository userRepository;
     private final EmailSenderService emailSenderService;
 
     public UserAccountVerificationService(
             Environment env,
             UserAccountTokenRepository userAccountTokenRepository,
             UserAccountRepository userAccountRepository,
-            UserRepository userRepository,
             EmailSenderService emailSenderService
     ) {
         this.env = env;
         this.userAccountTokenRepository = userAccountTokenRepository;
         this.userAccountRepository = userAccountRepository;
-        this.userRepository = userRepository;
         this.emailSenderService = emailSenderService;
     }
 
@@ -66,7 +61,7 @@ public class UserAccountVerificationService {
         if (!account.getAccountStatus().equals(UserAccountStatus.PENDING_VERIFICATION)) {
             log.warn("Failed to verify account. UserAccount is not awaiting verification.");
             throw new UserAccountVerificationNotPendingException(
-                    Exceptions.ACCOUNT.VERIFICATION.NOT_ELIGIBLE,
+                    Exceptions.USER.ACCOUNT.VERIFICATION.NOT_ELIGIBLE,
                     account.getId()
             );
         }
@@ -103,7 +98,7 @@ public class UserAccountVerificationService {
                         () -> {
                             log.error("Failed to validate token. Token not found.");
                             return new UserAccountTokenNotFoundException(
-                                    Exceptions.ACCOUNT.VERIFICATION.TOKEN.NOT_FOUND,
+                                    Exceptions.USER.ACCOUNT.VERIFICATION.TOKEN.NOT_FOUND,
                                     token,
                                     null
                             );
@@ -114,7 +109,7 @@ public class UserAccountVerificationService {
         if (!userAccountToken.getExpiresAt().isAfter(Instant.now())) {
             log.error("Failed to validate token. Token expired.");
             throw new UserAccountTokenExpiredException(
-                    Exceptions.ACCOUNT.VERIFICATION.TOKEN.EXPIRED,
+                    Exceptions.USER.ACCOUNT.VERIFICATION.TOKEN.EXPIRED,
                     token,
                     userAccountToken.getAccount().getId()
             );
@@ -124,7 +119,7 @@ public class UserAccountVerificationService {
         if (userAccountToken.isUsed()) {
             log.error("Failed to validate token. Token used.");
             throw new UserAccountTokenUsedException(
-                    Exceptions.ACCOUNT.VERIFICATION.TOKEN.USED,
+                    Exceptions.USER.ACCOUNT.VERIFICATION.TOKEN.USED,
                     token,
                     userAccountToken.getAccount().getId()
             );
@@ -138,16 +133,12 @@ public class UserAccountVerificationService {
      *
      * @param user The user to send a welcome message to.
      */
-    public void sendAccountVerifiedEmail(User user) {
+    public void sendAccountVerifiedEmail(UserAccount user) {
         emailSenderService.send(
-                user.getAccount().getEmail(),
+                user.getEmail(),
                 "Welcome to Photogram!",
                 "Your account has been verified successfully."
         );
-    }
-
-    public void sendAccountVerifiedEmail(UserAccount account) {
-        this.sendAccountVerifiedEmail(account.getOwner());
     }
 
     /**
@@ -161,31 +152,31 @@ public class UserAccountVerificationService {
     public UserAccountToken generateVerificationToken(String email) {
         log.debug("Generating verification token for: {}", email);
         // retrieve the user by email
-        User user = userRepository.findByUserAccount_Email(email).orElseThrow(
+        UserAccount userAccount = userAccountRepository.findByEmail(email).orElseThrow(
                 () -> {
                     log.error("Failed to generate verification token. UserAccount for: {} not found.", email);
-                    return new UserAccountNotFoundException(Exceptions.ACCOUNT.NOT_FOUND, email);
+                    return new UserAccountNotFoundException(Exceptions.USER.ACCOUNT.NOT_FOUND, email);
                 }
         );
 
         // only account pending for verification can request the email
-        if (!user.getAccount().getAccountStatus().equals(UserAccountStatus.PENDING_VERIFICATION)) {
+        if (!userAccount.getAccountStatus().equals(UserAccountStatus.PENDING_VERIFICATION)) {
             log.error(
                     "Failed to generate verification token. UserAccount for: {} is not awaiting verification.",
                     email
             );
             throw new UserAccountVerificationNotPendingException(
-                    Exceptions.ACCOUNT.VERIFICATION.NOT_ELIGIBLE,
+                    Exceptions.USER.ACCOUNT.VERIFICATION.NOT_ELIGIBLE,
                     email
             );
         }
 
         // check if AccountToken exists orElse create a new one
         UserAccountToken userAccountToken = userAccountTokenRepository
-                .findByAccount_Id(user.getAccount().getId())
+                .findByAccount_Id(userAccount.getId())
                 .orElseGet(() -> {
                     log.debug("No previous token found. A new one will be created.");
-                    return userAccountTokenRepository.save(new UserAccountToken(user.getAccount()));
+                    return userAccountTokenRepository.save(new UserAccountToken(userAccount));
                 });
 
         // we set the accountToken data
