@@ -1,9 +1,14 @@
 package com.damian.xBank.modules.user.customer;
 
-import com.damian.xBank.modules.user.customer.dto.request.CustomerRegistrationRequest;
+import com.damian.xBank.modules.user.account.account.enums.UserAccountRole;
+import com.damian.xBank.modules.user.account.account.exception.UserAccountInvalidPasswordConfirmationException;
+import com.damian.xBank.modules.user.account.account.repository.UserAccountRepository;
+import com.damian.xBank.modules.user.account.account.service.UserAccountService;
+import com.damian.xBank.modules.user.customer.dto.request.CustomerUpdateRequest;
 import com.damian.xBank.modules.user.customer.enums.CustomerGender;
-import com.damian.xBank.modules.user.customer.exception.CustomerEmailTakenException;
 import com.damian.xBank.modules.user.customer.exception.CustomerNotFoundException;
+import com.damian.xBank.modules.user.customer.exception.CustomerUpdateAuthorizationException;
+import com.damian.xBank.modules.user.customer.exception.CustomerUpdateException;
 import com.damian.xBank.modules.user.customer.repository.CustomerRepository;
 import com.damian.xBank.modules.user.customer.service.CustomerService;
 import com.damian.xBank.shared.AbstractServiceTest;
@@ -13,7 +18,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -24,7 +28,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -38,16 +44,31 @@ public class CustomerServiceTest extends AbstractServiceTest {
     private CustomerRepository customerRepository;
 
     @Mock
+    private UserAccountRepository userAccountRepository;
+
+    @Mock
+    private UserAccountService userAccountService;
+
+    @Mock
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-    private BCryptPasswordEncoder passwordEncoder;
 
     @InjectMocks
     private CustomerService customerService;
 
+    private Customer customer;
+
     @BeforeEach
     void setUp() {
-        passwordEncoder = new BCryptPasswordEncoder();
-        customerRepository.deleteAll();
+        customer = Customer.create()
+                           .setId(1L)
+                           .setEmail("customer@test.com")
+                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setRole(UserAccountRole.USER)
+                           .setFirstName("John")
+                           .setLastName("Wick")
+                           .setGender(CustomerGender.MALE)
+                           .setBirthdate(LocalDate.of(1989, 1, 1))
+                           .setPhotoPath("avatar.jpg");
     }
 
     @Test
@@ -90,7 +111,7 @@ public class CustomerServiceTest extends AbstractServiceTest {
 
     @Test
     @DisplayName("Should find customer")
-    void shouldFindCustomer() {
+    void shouldGetCustomer() {
         // given
         Customer customer = Customer.create()
                                     .setId(1L)
@@ -109,7 +130,7 @@ public class CustomerServiceTest extends AbstractServiceTest {
 
     @Test
     @DisplayName("Should not find customer when not exist")
-    void shouldNotFindCustomerWhenNotExist() {
+    void shouldNotGetCustomerWhenNotExist() {
         // given
         Long id = -1L;
 
@@ -121,73 +142,6 @@ public class CustomerServiceTest extends AbstractServiceTest {
 
         // then
         assertTrue(exception.getMessage().contains("Customer not found"));
-    }
-
-    @Test
-    @DisplayName("Should create customer")
-    void shouldCreateCustomer() {
-        // given
-        final String passwordHash = "¢5554ml;f;lsd";
-        CustomerRegistrationRequest request = new CustomerRegistrationRequest(
-                "david@gmail.com",
-                "123456",
-                "david",
-                "white",
-                "123 123 123",
-                LocalDate.of(1989, 1, 1),
-                CustomerGender.MALE,
-                "",
-                "Fake AV",
-                "50120",
-                "USA",
-                "123123123Z"
-        );
-
-        // when
-        when(bCryptPasswordEncoder.encode(request.password())).thenReturn(passwordHash);
-        when(customerRepository.findByAccount_Email(request.email())).thenReturn(Optional.empty());
-        customerService.createCustomer(request);
-
-        // then
-        ArgumentCaptor<Customer> customerArgumentCaptor = ArgumentCaptor.forClass(Customer.class);
-        verify(customerRepository).save(customerArgumentCaptor.capture());
-
-        Customer customer = customerArgumentCaptor.getValue();
-        verify(customerRepository, times(1)).save(customer);
-        assertThat(customer.getId()).isNull();
-        assertThat(customer.getAccount().getEmail()).isEqualTo(request.email());
-        assertThat(customer.getAccount().getPassword()).isEqualTo(passwordHash);
-    }
-
-    @Test
-    @DisplayName("Should not create any customer when email is taken")
-    void shouldNotCreateCustomerWhenEmailIsTaken() {
-        // given
-        CustomerRegistrationRequest request = new CustomerRegistrationRequest(
-                "david@gmail.com",
-                "123456",
-                "david",
-                "white",
-                "123 123 123",
-                LocalDate.of(1989, 1, 1),
-                CustomerGender.MALE,
-                "",
-                "Fake AV",
-                "50120",
-                "USA",
-                "123123123Z"
-        );
-
-        // when
-        when(customerRepository.findByAccount_Email(request.email())).thenReturn(Optional.of(new Customer()));
-        CustomerEmailTakenException exception = assertThrows(
-                CustomerEmailTakenException.class,
-                () -> customerService.createCustomer(request)
-        );
-
-        // then
-        verify(customerRepository, times(0)).save(any());
-        assertEquals(Exceptions.CUSTOMER.EMAIL_TAKEN, exception.getMessage());
     }
 
     @Test
@@ -222,5 +176,140 @@ public class CustomerServiceTest extends AbstractServiceTest {
         );
         assertTrue(exception.getMessage().contains("Customer not found"));
         verify(customerRepository, never()).deleteById(anyLong());
+    }
+
+    @Test
+    @DisplayName("Should update customer")
+    void shouldUpdateCustomer() {
+        // given
+        setUpContext(customer);
+
+        Map<String, Object> fields = new HashMap<>();
+        fields.put("firstName", "David");
+        fields.put("lastName", "David");
+        fields.put("birthdate", "1904-01-02");
+        fields.put("gender", "MALE");
+        fields.put("phone", "9199191919");
+        CustomerUpdateRequest givenRequest = new CustomerUpdateRequest(
+                RAW_PASSWORD,
+                fields
+        );
+
+        // when
+        when(customerRepository.findById(customer.getId())).thenReturn(Optional.of(customer));
+        when(customerRepository.save(any(Customer.class))).thenReturn(customer);
+
+        Customer result = customerService.updateCustomer(givenRequest);
+
+        // Then
+        assertThat(result).isNotNull();
+        assertThat(result.getFirstName()).isEqualTo(givenRequest.fieldsToUpdate().get("firstName"));
+        assertThat(result.getLastName()).isEqualTo(givenRequest.fieldsToUpdate().get("lastName"));
+        assertThat(result.getPhone()).isEqualTo(givenRequest.fieldsToUpdate().get("phone"));
+        assertThat(result.getBirthdate().toString()).isEqualTo(givenRequest.fieldsToUpdate().get("birthdate"));
+        assertThat(result.getGender().toString()).isEqualTo(givenRequest.fieldsToUpdate().get("gender"));
+        verify(customerRepository, times(1)).save(customer);
+    }
+
+    @Test
+    @DisplayName("Should not update customer when password is wrong")
+    void shouldNotUpdateUserWhenPasswordIsWrong() {
+        // given
+        setUpContext(customer);
+
+        Map<String, Object> fields = new HashMap<>();
+        fields.put("firstName", "David");
+        CustomerUpdateRequest givenRequest = new CustomerUpdateRequest(
+                "wrongPassword1",
+                fields
+        );
+
+        // when
+        when(customerRepository.findById(customer.getId())).thenReturn(Optional.of(customer));
+        UserAccountInvalidPasswordConfirmationException exception = assertThrows(
+                UserAccountInvalidPasswordConfirmationException.class,
+                () -> customerService.updateCustomer(givenRequest)
+        );
+
+        // Then
+        assertEquals(Exceptions.USER.ACCOUNT.INVALID_PASSWORD, exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should not update customer when customer not found")
+    void shouldNotUpdateUserWhenUserNotFound() {
+        // given
+        setUpContext(customer);
+
+        Map<String, Object> fields = new HashMap<>();
+        fields.put("firstName", "David");
+        CustomerUpdateRequest givenRequest = new CustomerUpdateRequest(
+                RAW_PASSWORD,
+                fields
+        );
+
+        // when
+        when(customerRepository.findById(customer.getId())).thenReturn(Optional.empty());
+        CustomerNotFoundException exception = assertThrows(
+                CustomerNotFoundException.class,
+                () -> customerService.updateCustomer(givenRequest)
+        );
+
+        // Then
+        assertEquals(Exceptions.CUSTOMER.NOT_FOUND, exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should not update customer when customer not found")
+    void shouldNotUpdateUserWhenYouAreNotOwner() {
+        // given
+        setUpContext(customer);
+
+        Map<String, Object> fields = new HashMap<>();
+        fields.put("firstName", "David");
+        CustomerUpdateRequest givenRequest = new CustomerUpdateRequest(
+                RAW_PASSWORD,
+                fields
+        );
+
+        Customer givenCustomer = Customer.create()
+                                         .setId(5L)
+                                         .setEmail("customer@test.com")
+                                         .setPassword(RAW_PASSWORD);
+
+        // when
+        when(customerRepository.findById(customer.getId())).thenReturn(Optional.of(givenCustomer));
+        CustomerUpdateAuthorizationException exception = assertThrows(
+                CustomerUpdateAuthorizationException.class,
+                () -> customerService.updateCustomer(givenRequest)
+        );
+
+        // Then
+        assertEquals(Exceptions.CUSTOMER.NOT_OWNER, exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should not update customer when customer not found")
+    void shouldNotUpdateUserWhenInvalidField() {
+        // given
+        setUpContext(customer);
+
+        Map<String, Object> fields = new HashMap<>();
+        fields.put("firstName", "David");
+        fields.put("fakeField", "1234");
+        CustomerUpdateRequest givenRequest = new CustomerUpdateRequest(
+                RAW_PASSWORD,
+                fields
+        );
+
+        // when
+        when(customerRepository.findById(customer.getId())).thenReturn(Optional.of(customer));
+        CustomerUpdateException exception = assertThrows(
+                CustomerUpdateException.class,
+                () -> customerService.updateCustomer(givenRequest)
+        );
+
+        // Then
+        assertEquals(Exceptions.CUSTOMER.UPDATE_FAILED, exception.getMessage());
     }
 }
