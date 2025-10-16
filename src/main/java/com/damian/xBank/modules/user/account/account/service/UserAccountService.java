@@ -6,6 +6,7 @@ import com.damian.xBank.modules.user.account.account.exception.UserAccountEmailT
 import com.damian.xBank.modules.user.account.account.exception.UserAccountInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.account.account.exception.UserAccountNotFoundException;
 import com.damian.xBank.modules.user.account.account.repository.UserAccountRepository;
+import com.damian.xBank.modules.user.account.token.service.UserAccountTokenService;
 import com.damian.xBank.shared.domain.User;
 import com.damian.xBank.shared.domain.UserAccount;
 import com.damian.xBank.shared.domain.UserAccountToken;
@@ -26,15 +27,18 @@ public class UserAccountService {
     private final UserAccountRepository userAccountRepository;
     private final UserAccountVerificationService userAccountVerificationService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final UserAccountTokenService userAccountTokenService;
 
     public UserAccountService(
             UserAccountRepository userAccountRepository,
             UserAccountVerificationService userAccountVerificationService,
-            BCryptPasswordEncoder bCryptPasswordEncoder
+            BCryptPasswordEncoder bCryptPasswordEncoder,
+            UserAccountTokenService userAccountTokenService
     ) {
         this.userAccountRepository = userAccountRepository;
         this.userAccountVerificationService = userAccountVerificationService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.userAccountTokenService = userAccountTokenService;
     }
 
     /**
@@ -64,7 +68,7 @@ public class UserAccountService {
         UserAccount registeredUser = userAccountRepository.save(user);
 
         // Create a token for the account activation
-        UserAccountToken userAccountToken = userAccountVerificationService.generateVerificationToken(email);
+        UserAccountToken userAccountToken = userAccountTokenService.generateVerificationToken(email);
 
         // send the account activation link
         userAccountVerificationService.sendAccountVerificationLinkEmail(email, userAccountToken.getToken());

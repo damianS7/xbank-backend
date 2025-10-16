@@ -6,7 +6,7 @@ import com.damian.xBank.modules.auth.dto.AuthenticationResponse;
 import com.damian.xBank.modules.notification.repository.NotificationRepository;
 import com.damian.xBank.modules.setting.repository.SettingRepository;
 import com.damian.xBank.modules.user.account.account.repository.UserAccountRepository;
-import com.damian.xBank.modules.user.account.token.UserAccountTokenRepository;
+import com.damian.xBank.modules.user.account.token.repository.UserAccountTokenRepository;
 import com.damian.xBank.modules.user.customer.repository.CustomerRepository;
 import com.damian.xBank.shared.domain.Customer;
 import com.damian.xBank.shared.domain.User;

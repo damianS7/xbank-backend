@@ -1,13 +1,12 @@
 package com.damian.xBank.modules.user.account.account.service;
 
-import com.damian.xBank.modules.user.account.account.dto.request.UserAccountPasswordResetRequest;
 import com.damian.xBank.modules.user.account.account.dto.request.UserAccountPasswordResetSetRequest;
 import com.damian.xBank.modules.user.account.account.dto.request.UserAccountPasswordUpdateRequest;
 import com.damian.xBank.modules.user.account.account.exception.UserAccountInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.account.account.exception.UserAccountNotFoundException;
 import com.damian.xBank.modules.user.account.account.repository.UserAccountRepository;
-import com.damian.xBank.modules.user.account.token.UserAccountTokenRepository;
-import com.damian.xBank.modules.user.account.token.UserAccountTokenType;
+import com.damian.xBank.modules.user.account.token.repository.UserAccountTokenRepository;
+import com.damian.xBank.modules.user.account.token.service.UserAccountTokenService;
 import com.damian.xBank.shared.domain.User;
 import com.damian.xBank.shared.domain.UserAccount;
 import com.damian.xBank.shared.domain.UserAccountToken;
@@ -31,6 +30,7 @@ public class UserAccountPasswordService {
     private final UserAccountTokenRepository userAccountTokenRepository;
     private final Environment env;
     private final UserAccountVerificationService userAccountVerificationService;
+    private final UserAccountTokenService userAccountTokenService;
 
     public UserAccountPasswordService(
             BCryptPasswordEncoder bCryptPasswordEncoder,
@@ -38,7 +38,8 @@ public class UserAccountPasswordService {
             EmailSenderService emailSenderService,
             UserAccountTokenRepository userAccountTokenRepository,
             Environment env,
-            UserAccountVerificationService userAccountVerificationService
+            UserAccountVerificationService userAccountVerificationService,
+            UserAccountTokenService userAccountTokenService
     ) {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userAccountRepository = userAccountRepository;
@@ -46,6 +47,7 @@ public class UserAccountPasswordService {
         this.userAccountTokenRepository = userAccountTokenRepository;
         this.env = env;
         this.userAccountVerificationService = userAccountVerificationService;
+        this.userAccountTokenService = userAccountTokenService;
     }
 
     /**
@@ -107,7 +109,7 @@ public class UserAccountPasswordService {
     public void passwordResetWithToken(String token, UserAccountPasswordResetSetRequest request) {
         log.debug("Resetting password using a token.");
         // verify the token
-        final UserAccountToken userAccountToken = userAccountVerificationService.validateToken(token);
+        final UserAccountToken userAccountToken = userAccountTokenService.validateToken(token);
 
         // update the password
         this.updatePassword(userAccountToken.getAccount().getId(), request.password());
@@ -119,34 +121,6 @@ public class UserAccountPasswordService {
         // send the email notifying the user that his password is successfully changed
         this.sendResetPasswordSuccessEmail(userAccountToken.getAccount().getEmail());
         log.debug("Password reset successfully.");
-    }
-
-    /**
-     * Generate a token for password reset
-     *
-     * @param request the request containing the email of the user and password
-     * @return AccountToken with the token
-     */
-    public UserAccountToken generatePasswordResetToken(UserAccountPasswordResetRequest request) {
-        log.debug("Generating password reset token for email: {}", request.email());
-        UserAccount userAccount = userAccountRepository
-                .findByEmail(request.email())
-                .orElseThrow(
-                        () -> {
-                            log.error(
-                                    "Failed to generate password reset token. No account found for: {}",
-                                    request.email()
-                            );
-                            return new UserAccountNotFoundException(Exceptions.USER.ACCOUNT.NOT_FOUND, request.email());
-                        }
-                );
-
-        // generate the token for password reset
-        UserAccountToken token = new UserAccountToken(userAccount);
-        token.setType(UserAccountTokenType.RESET_PASSWORD);
-
-        log.debug("Password reset token generated successfully for email: {}", request.email());
-        return userAccountTokenRepository.save(token);
     }
 
     /**
