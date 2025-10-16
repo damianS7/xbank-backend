@@ -1,6 +1,5 @@
 package com.damian.xBank.modules.user.account;
 
-import com.damian.xBank.modules.user.account.account.dto.request.UserAccountPasswordResetRequest;
 import com.damian.xBank.modules.user.account.account.dto.request.UserAccountPasswordResetSetRequest;
 import com.damian.xBank.modules.user.account.account.dto.request.UserAccountPasswordUpdateRequest;
 import com.damian.xBank.modules.user.account.account.exception.UserAccountInvalidPasswordConfirmationException;
@@ -8,8 +7,9 @@ import com.damian.xBank.modules.user.account.account.exception.UserAccountNotFou
 import com.damian.xBank.modules.user.account.account.repository.UserAccountRepository;
 import com.damian.xBank.modules.user.account.account.service.UserAccountPasswordService;
 import com.damian.xBank.modules.user.account.account.service.UserAccountVerificationService;
-import com.damian.xBank.modules.user.account.token.UserAccountTokenRepository;
-import com.damian.xBank.modules.user.account.token.UserAccountTokenType;
+import com.damian.xBank.modules.user.account.token.enums.UserAccountTokenType;
+import com.damian.xBank.modules.user.account.token.repository.UserAccountTokenRepository;
+import com.damian.xBank.modules.user.account.token.service.UserAccountTokenService;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.domain.UserAccount;
 import com.damian.xBank.shared.domain.UserAccountToken;
@@ -44,6 +44,9 @@ public class UserAccountPasswordServiceTest extends AbstractServiceTest {
 
     @Mock
     private UserAccountVerificationService userAccountVerificationService;
+
+    @Mock
+    private UserAccountTokenService userAccountTokenService;
 
     @Mock
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -141,63 +144,6 @@ public class UserAccountPasswordServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should reset password")
-    void shouldGeneratePasswordResetToken() {
-        // given
-        UserAccount user = UserAccount
-                .create()
-                .setId(10L)
-                .setEmail("user@demo.com")
-                .setPassword(passwordEncoder.encode(RAW_PASSWORD));
-
-        UserAccountPasswordResetRequest passwordResetRequest = new UserAccountPasswordResetRequest(
-                user.getEmail()
-        );
-
-        // when
-        when(userAccountRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
-        when(userAccountTokenRepository.save(any(UserAccountToken.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
-
-        UserAccountToken generatedToken = userAccountPasswordService.generatePasswordResetToken(passwordResetRequest);
-
-        // then
-        assertThat(generatedToken)
-                .isNotNull();
-        assertThat(generatedToken.getToken().length()).isGreaterThanOrEqualTo(5);
-        verify(userAccountTokenRepository, times(1)).save(any(UserAccountToken.class));
-    }
-
-    @Test
-    @DisplayName("Should not create password reset token when account not found")
-    void shouldNotGeneratePasswordResetTokenWhenAccountNotFound() {
-        // given
-        UserAccount userAccount = UserAccount
-                .create()
-                .setId(10L)
-                .setEmail("user@demo.com")
-                .setPassword(passwordEncoder.encode(RAW_PASSWORD));
-
-        UserAccountPasswordResetRequest passwordResetRequest = new UserAccountPasswordResetRequest(
-                userAccount.getEmail()
-        );
-
-        UserAccountToken token = new UserAccountToken(userAccount);
-        token.setToken(token.generateToken());
-        token.setType(UserAccountTokenType.RESET_PASSWORD);
-
-        // when
-        when(userAccountRepository.findByEmail(userAccount.getEmail())).thenReturn(Optional.empty());
-        assertThrows(
-                UserAccountNotFoundException.class,
-                () -> userAccountPasswordService.generatePasswordResetToken(passwordResetRequest)
-        );
-
-        // then
-        verify(userAccountRepository, times(1)).findByEmail(anyString());
-    }
-
-    @Test
     @DisplayName("Should set a new password after reset password")
     void shouldSetPasswordAfterGeneratePasswordResetToken() {
         // given
@@ -221,7 +167,7 @@ public class UserAccountPasswordServiceTest extends AbstractServiceTest {
         // when
         //        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(userAccountRepository.findById(userAccount.getId())).thenReturn(Optional.of(userAccount));
-        when(userAccountVerificationService.validateToken(token.getToken())).thenReturn(token);
+        when(userAccountTokenService.validateToken(token.getToken())).thenReturn(token);
         when(bCryptPasswordEncoder.encode(rawNewPassword)).thenReturn(encodedNewPassword);
         when(userAccountRepository.save(any(UserAccount.class))).thenReturn(userAccount);
         doNothing().when(emailSenderService).send(anyString(), anyString(), anyString());

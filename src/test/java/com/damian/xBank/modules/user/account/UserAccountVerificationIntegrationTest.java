@@ -3,7 +3,7 @@ package com.damian.xBank.modules.user.account;
 import com.damian.xBank.modules.user.account.account.dto.request.UserAccountPasswordResetSetRequest;
 import com.damian.xBank.modules.user.account.account.enums.UserAccountRole;
 import com.damian.xBank.modules.user.account.account.enums.UserAccountStatus;
-import com.damian.xBank.modules.user.account.token.UserAccountTokenType;
+import com.damian.xBank.modules.user.account.token.enums.UserAccountTokenType;
 import com.damian.xBank.shared.AbstractIntegrationTest;
 import com.damian.xBank.shared.domain.UserAccount;
 import com.damian.xBank.shared.domain.UserAccountToken;
