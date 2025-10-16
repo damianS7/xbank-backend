@@ -1,8 +1,8 @@
 package com.damian.xBank.modules.user.account.account.controller;
 
 import com.damian.xBank.modules.user.account.account.dto.request.UserAccountVerificationResendRequest;
-import com.damian.xBank.modules.user.account.account.service.UserAccountPasswordService;
 import com.damian.xBank.modules.user.account.account.service.UserAccountVerificationService;
+import com.damian.xBank.modules.user.account.token.service.UserAccountTokenService;
 import com.damian.xBank.shared.domain.UserAccount;
 import com.damian.xBank.shared.domain.UserAccountToken;
 import jakarta.validation.constraints.NotBlank;
@@ -14,14 +14,14 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1")
 public class UserAccountVerificationController {
-    private final UserAccountPasswordService userAccountPasswordService;
+    private final UserAccountTokenService userAccountTokenService;
     private final UserAccountVerificationService userAccountVerificationService;
 
     public UserAccountVerificationController(
-            UserAccountPasswordService userAccountPasswordService,
+            UserAccountTokenService userAccountTokenService,
             UserAccountVerificationService userAccountVerificationService
     ) {
-        this.userAccountPasswordService = userAccountPasswordService;
+        this.userAccountTokenService = userAccountTokenService;
         this.userAccountVerificationService = userAccountVerificationService;
     }
 
@@ -50,7 +50,7 @@ public class UserAccountVerificationController {
             UserAccountVerificationResendRequest request
     ) {
         // generate a new verification token
-        UserAccountToken userAccountToken = userAccountVerificationService.generateVerificationToken(request.email());
+        UserAccountToken userAccountToken = userAccountTokenService.generateVerificationToken(request.email());
 
         // send the account verification link
         userAccountVerificationService.sendAccountVerificationLinkEmail(request.email(), userAccountToken.getToken());

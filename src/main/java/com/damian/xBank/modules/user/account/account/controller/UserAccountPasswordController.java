@@ -4,6 +4,7 @@ import com.damian.xBank.modules.user.account.account.dto.request.UserAccountPass
 import com.damian.xBank.modules.user.account.account.dto.request.UserAccountPasswordResetSetRequest;
 import com.damian.xBank.modules.user.account.account.dto.request.UserAccountPasswordUpdateRequest;
 import com.damian.xBank.modules.user.account.account.service.UserAccountPasswordService;
+import com.damian.xBank.modules.user.account.token.service.UserAccountTokenService;
 import com.damian.xBank.shared.domain.UserAccountToken;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.HttpStatus;
@@ -14,11 +15,14 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1")
 public class UserAccountPasswordController {
+    private final UserAccountTokenService userAccountTokenService;
     private final UserAccountPasswordService userAccountPasswordService;
 
     public UserAccountPasswordController(
+            UserAccountTokenService userAccountTokenService,
             UserAccountPasswordService userAccountPasswordService
     ) {
+        this.userAccountTokenService = userAccountTokenService;
         this.userAccountPasswordService = userAccountPasswordService;
     }
 
@@ -42,7 +46,7 @@ public class UserAccountPasswordController {
             UserAccountPasswordResetRequest request
     ) {
         // generate a new password reset token
-        UserAccountToken userAccountToken = userAccountPasswordService.generatePasswordResetToken(request);
+        UserAccountToken userAccountToken = userAccountTokenService.generatePasswordResetToken(request);
 
         // send the email with the link to reset the password
         userAccountPasswordService.sendResetPasswordEmail(
