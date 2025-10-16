@@ -1,4 +1,4 @@
-package com.damian.whatsapp.modules.user.account.token.exception;
+package com.damian.xBank.modules.user.account.token.exception;
 
 public class UserAccountTokenExpiredException extends UserAccountTokenException {
     public UserAccountTokenExpiredException(String message, String token, String email) {

@@ -1,6 +1,6 @@
-package com.damian.whatsapp.modules.user.account.token.exception;
+package com.damian.xBank.modules.user.account.token.exception;
 
-import com.damian.whatsapp.modules.user.account.account.exception.UserAccountException;
+import com.damian.xBank.modules.user.account.account.exception.UserAccountException;
 
 public class UserAccountTokenException extends UserAccountException {
     private final String token;

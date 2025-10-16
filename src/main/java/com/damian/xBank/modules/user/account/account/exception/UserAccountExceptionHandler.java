@@ -1,8 +1,5 @@
 package com.damian.xBank.modules.user.account.account.exception;
 
-import com.damian.xBank.modules.user.account.token.exception.UserAccountTokenExpiredException;
-import com.damian.xBank.modules.user.account.token.exception.UserAccountTokenNotFoundException;
-import com.damian.xBank.modules.user.account.token.exception.UserAccountTokenUsedException;
 import com.damian.xBank.shared.utils.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,46 +65,5 @@ public class UserAccountExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                              .body(ApiResponse.error(ex.getMessage(), HttpStatus.BAD_REQUEST));
-    }
-
-    // Token Exceptions
-
-    @ExceptionHandler(UserAccountTokenNotFoundException.class) // 404
-    public ResponseEntity<ApiResponse<String>> handleAccountTokenNotFound(
-            UserAccountTokenNotFoundException ex
-    ) {
-        log.warn(
-                "user: {} account token: {} not found.",
-                ex.getAccountId(),
-                ex.getToken()
-        );
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body(ApiResponse.error(ex.getMessage(), HttpStatus.NOT_FOUND));
-    }
-
-    @ExceptionHandler(UserAccountTokenUsedException.class) // 403
-    public ResponseEntity<ApiResponse<String>> handleAccountVerificationTokenUsed(
-            UserAccountTokenUsedException ex
-    ) {
-        log.warn(
-                "User: {} account token: {} is already used.",
-                ex.getAccountId(),
-                ex.getToken()
-        );
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                             .body(ApiResponse.error(ex.getMessage(), HttpStatus.FORBIDDEN));
-    }
-
-    @ExceptionHandler(UserAccountTokenExpiredException.class) // 410
-    public ResponseEntity<ApiResponse<String>> handleAccountVerificationTokenExpired(
-            UserAccountTokenExpiredException ex
-    ) {
-        log.warn(
-                "account: {} account token: {} is expired.",
-                ex.getAccountId(),
-                ex.getToken()
-        );
-        return ResponseEntity.status(HttpStatus.GONE)
-                             .body(ApiResponse.error(ex.getMessage(), HttpStatus.GONE));
     }
 }
