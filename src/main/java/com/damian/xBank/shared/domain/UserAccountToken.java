@@ -1,6 +1,6 @@
 package com.damian.xBank.shared.domain;
 
-import com.damian.xBank.modules.user.account.token.UserAccountTokenType;
+import com.damian.xBank.modules.user.account.token.enums.UserAccountTokenType;
 import jakarta.persistence.*;
 
 import java.time.Instant;

@@ -1,6 +1,6 @@
-package com.damian.whatsapp.modules.user.account.token;
+package com.damian.xBank.modules.user.account.token.repository;
 
-import com.damian.whatsapp.shared.domain.UserAccountToken;
+import com.damian.xBank.shared.domain.UserAccountToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
