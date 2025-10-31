@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.user.token;
+package com.damian.xBank.modules.user.account.token;
 
 import com.damian.xBank.modules.user.account.account.dto.request.UserAccountPasswordResetRequest;
 import com.damian.xBank.modules.user.account.account.exception.UserAccountNotFoundException;

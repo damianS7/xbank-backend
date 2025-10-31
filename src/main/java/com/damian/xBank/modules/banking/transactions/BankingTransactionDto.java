@@ -3,12 +3,12 @@ package com.damian.xBank.modules.banking.transactions;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-public record BankingTransactionDTO(
+public record BankingTransactionDto(
         Long id,
-        Long bankingAccountId,
-        Long bankingCardId,
+        Long accountId,
+        Long cardId,
         BigDecimal amount,
-        BigDecimal accountBalance,
+        BigDecimal lastBalance,
         BankingTransactionType transactionType,
         BankingTransactionStatus transactionStatus,
         String description,

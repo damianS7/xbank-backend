@@ -3,9 +3,9 @@ package com.damian.xBank.modules.banking.card;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class BankingCardDTOMapper {
-    public static BankingCardDTO toBankingCardDTO(BankingCard bankingCard) {
-        return new BankingCardDTO(
+public class BankingCardDtoMapper {
+    public static BankingCardDto toBankingCardDto(BankingCard bankingCard) {
+        return new BankingCardDto(
                 bankingCard.getId(),
                 bankingCard.getAssociatedBankingAccount().getId(),
                 bankingCard.getHolderName(),
@@ -22,9 +22,9 @@ public class BankingCardDTOMapper {
         );
     }
 
-    public static Set<BankingCardDTO> toBankingCardSetDTO(Set<BankingCard> bankingCards) {
+    public static Set<BankingCardDto> toBankingCardSetDTO(Set<BankingCard> bankingCards) {
         return bankingCards.stream().map(
-                BankingCardDTOMapper::toBankingCardDTO
+                BankingCardDtoMapper::toBankingCardDto
         ).collect(Collectors.toSet());
     }
 }

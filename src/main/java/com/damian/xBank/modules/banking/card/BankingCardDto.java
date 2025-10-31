@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 
-public record BankingCardDTO(
+public record BankingCardDto(
         Long id,
         Long bankingAccountId,
         String cardHolder,
