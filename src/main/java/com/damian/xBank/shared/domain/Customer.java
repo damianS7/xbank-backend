@@ -61,6 +61,7 @@ public class Customer {
     public Customer() {
         this.account = new UserAccount(this);
         this.bankingAccounts = new HashSet<>();
+        this.updatedAt = Instant.now();
     }
 
     public static Customer create() {
@@ -220,11 +221,11 @@ public class Customer {
                ", account=" + account.toString() +
                ", firstName='" + firstName + '\'' +
                ", lastName='" + lastName + '\'' +
-               ", phone='" + phone + '\'' +
+               ", phoneNumber='" + phone + '\'' +
                ", birthdate=" + birthdate +
                ", photo='" + photo + '\'' +
                ", address='" + address + '\'' +
-               ", postalCode='" + postalCode + '\'' +
+               ", zipCode='" + postalCode + '\'' +
                ", country='" + country + '\'' +
                ", nationalId='" + nationalId + '\'' +
                ", gender=" + gender +
