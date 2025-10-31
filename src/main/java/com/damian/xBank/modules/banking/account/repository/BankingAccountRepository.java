@@ -1,5 +1,6 @@
-package com.damian.xBank.modules.banking.account;
+package com.damian.xBank.modules.banking.account.repository;
 
+import com.damian.xBank.modules.banking.account.BankingAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

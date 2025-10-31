@@ -1,13 +1,19 @@
-package com.damian.xBank.modules.banking.account;
+package com.damian.xBank.modules.banking.account.service;
 
+import com.damian.xBank.modules.banking.account.BankingAccount;
+import com.damian.xBank.modules.banking.account.BankingAccountAuthorizationHelper;
+import com.damian.xBank.modules.banking.account.dto.request.BankingAccountAliasUpdateRequest;
+import com.damian.xBank.modules.banking.account.dto.request.BankingAccountCloseRequest;
+import com.damian.xBank.modules.banking.account.dto.request.BankingAccountCreateRequest;
+import com.damian.xBank.modules.banking.account.dto.request.BankingAccountOpenRequest;
+import com.damian.xBank.modules.banking.account.enums.BankingAccountCurrency;
+import com.damian.xBank.modules.banking.account.enums.BankingAccountStatus;
+import com.damian.xBank.modules.banking.account.enums.BankingAccountType;
 import com.damian.xBank.modules.banking.account.exception.BankingAccountNotFoundException;
-import com.damian.xBank.modules.banking.account.http.request.BankingAccountAliasUpdateRequest;
-import com.damian.xBank.modules.banking.account.http.request.BankingAccountCloseRequest;
-import com.damian.xBank.modules.banking.account.http.request.BankingAccountCreateRequest;
-import com.damian.xBank.modules.banking.account.http.request.BankingAccountOpenRequest;
-import com.damian.xBank.modules.customer.Customer;
-import com.damian.xBank.modules.customer.CustomerRepository;
-import com.damian.xBank.modules.customer.exception.CustomerNotFoundException;
+import com.damian.xBank.modules.banking.account.repository.BankingAccountRepository;
+import com.damian.xBank.modules.user.customer.exception.CustomerNotFoundException;
+import com.damian.xBank.modules.user.customer.repository.CustomerRepository;
+import com.damian.xBank.shared.domain.Customer;
 import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.utils.AuthHelper;
 import net.datafaker.Faker;
@@ -35,9 +41,9 @@ public class BankingAccountService {
     // return all the BankingAccounts that belongs to the logged customer.
     public Set<BankingAccount> getLoggedCustomerBankingAccounts() {
         // we extract the customer logged from the SecurityContext
-        final Customer customerLogged = AuthHelper.getLoggedCustomer();
+        final Customer currentCustomer = AuthHelper.getCurrentCustomer();
 
-        return this.getCustomerBankingAccounts(customerLogged.getId());
+        return this.getCustomerBankingAccounts(currentCustomer.getId());
     }
 
     // return all the BankingAccounts that belongs to customerId.
@@ -64,19 +70,19 @@ public class BankingAccountService {
         // we get the Customer entity so we can save at the end
         final Customer customer = customerRepository.findById(customerId).orElseThrow(
                 () -> new CustomerNotFoundException(
-                        Exceptions.CUSTOMER.NOT_FOUND
+                        Exceptions.CUSTOMER.NOT_FOUND, customerId
                 )
         );
 
-        return this.createBankingAccount(customer, request.accountType(), request.accountCurrency());
+        return this.createBankingAccount(customer, request.type(), request.currency());
     }
 
     // create a BankingAccount for the logged customer
     public BankingAccount createBankingAccount(BankingAccountCreateRequest request) {
         // we extract the customer logged from the SecurityContext
-        final Customer customerLogged = AuthHelper.getLoggedCustomer();
+        final Customer currentCustomer = AuthHelper.getCurrentCustomer();
 
-        return this.createBankingAccount(customerLogged.getId(), request);
+        return this.createBankingAccount(currentCustomer.getId(), request);
     }
 
     private BankingAccount updateBankingAccountStatus(
@@ -98,11 +104,11 @@ public class BankingAccountService {
         // Banking account to to open
         final BankingAccount bankingAccount = bankingAccountRepository.findById(bankingAccountId).orElseThrow(
                 () -> new BankingAccountNotFoundException(
-                        Exceptions.ACCOUNT.NOT_FOUND
+                        Exceptions.BANKING.ACCOUNT.NOT_FOUND
                 ) // Banking account not found
         );
 
-        return this.updateBankingAccountStatus(bankingAccount, BankingAccountStatus.OPEN);
+        return this.updateBankingAccountStatus(bankingAccount, BankingAccountStatus.ACTIVE);
     }
 
     // Logged customer open a BankingAccount
@@ -111,24 +117,24 @@ public class BankingAccountService {
             BankingAccountOpenRequest request
     ) {
         // Customer logged
-        final Customer customerLogged = AuthHelper.getLoggedCustomer();
+        final Customer currentCustomer = AuthHelper.getCurrentCustomer();
 
         // Banking account to be open
         final BankingAccount bankingAccount = bankingAccountRepository.findById(bankingAccountId).orElseThrow(
                 () -> new BankingAccountNotFoundException(
-                        Exceptions.ACCOUNT.NOT_FOUND
+                        Exceptions.BANKING.ACCOUNT.NOT_FOUND
                 ) // Banking account not found
         );
 
         // check if the account belongs to this customer.
         BankingAccountAuthorizationHelper
-                .authorize(customerLogged, bankingAccount)
+                .authorize(currentCustomer, bankingAccount)
                 .checkOwner()
                 .checkAccountStatus();
 
-        AuthHelper.validatePassword(customerLogged, request.password());
+        AuthHelper.validatePassword(currentCustomer.getAccount(), request.password());
 
-        return this.updateBankingAccountStatus(bankingAccount, BankingAccountStatus.OPEN);
+        return this.updateBankingAccountStatus(bankingAccount, BankingAccountStatus.ACTIVE);
     }
 
     // (admin) close a BankingAccount
@@ -136,7 +142,7 @@ public class BankingAccountService {
         // Banking account to to close
         final BankingAccount bankingAccount = bankingAccountRepository.findById(bankingAccountId).orElseThrow(
                 () -> new BankingAccountNotFoundException(
-                        Exceptions.ACCOUNT.NOT_FOUND
+                        Exceptions.BANKING.ACCOUNT.NOT_FOUND
                 ) // Banking account not found
         );
 
@@ -149,22 +155,22 @@ public class BankingAccountService {
             BankingAccountCloseRequest request
     ) {
         // Customer logged
-        final Customer customerLogged = AuthHelper.getLoggedCustomer();
+        final Customer currentCustomer = AuthHelper.getCurrentCustomer();
 
         // Banking account to be closed
         final BankingAccount bankingAccount = bankingAccountRepository.findById(bankingAccountId).orElseThrow(
                 () -> new BankingAccountNotFoundException(
-                        Exceptions.ACCOUNT.NOT_FOUND
+                        Exceptions.BANKING.ACCOUNT.NOT_FOUND
                 ) // Banking account not found
         );
 
         // check if the account belongs to this customer.
         BankingAccountAuthorizationHelper
-                .authorize(customerLogged, bankingAccount)
+                .authorize(currentCustomer, bankingAccount)
                 .checkOwner()
                 .checkAccountStatus();
 
-        AuthHelper.validatePassword(customerLogged, request.password());
+        AuthHelper.validatePassword(currentCustomer.getAccount(), request.password());
 
         return this.updateBankingAccountStatus(bankingAccount, BankingAccountStatus.CLOSED);
     }
@@ -190,7 +196,7 @@ public class BankingAccountService {
         // Banking account to set an alias
         final BankingAccount bankingAccount = bankingAccountRepository.findById(bankingAccountId).orElseThrow(
                 () -> new BankingAccountNotFoundException(
-                        Exceptions.ACCOUNT.NOT_FOUND
+                        Exceptions.BANKING.ACCOUNT.NOT_FOUND
                 ) // Banking account not found
         );
 
@@ -203,22 +209,21 @@ public class BankingAccountService {
             BankingAccountAliasUpdateRequest request
     ) {
         // Customer logged
-        final Customer customerLogged = AuthHelper.getLoggedCustomer();
+        final Customer currentCustomer = AuthHelper.getCurrentCustomer();
 
         // Banking account to set alias
         final BankingAccount bankingAccount = bankingAccountRepository.findById(bankingAccountId).orElseThrow(
                 () -> new BankingAccountNotFoundException(
-                        Exceptions.ACCOUNT.NOT_FOUND
+                        Exceptions.BANKING.ACCOUNT.NOT_FOUND
                 ) // Banking account not found
         );
 
         // check if the account belongs to this customer.
         BankingAccountAuthorizationHelper
-                .authorize(customerLogged, bankingAccount)
+                .authorize(currentCustomer, bankingAccount)
                 .checkOwner();
 
-        AuthHelper.validatePassword(customerLogged, request.password());
-
+        //        AuthHelper.validatePassword(currentCustomer.getAccount(), request.password());
         return this.setBankingAccountAlias(bankingAccount, request.alias());
     }
 
