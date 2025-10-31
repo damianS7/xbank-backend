@@ -1,7 +1,8 @@
 package com.damian.xBank.modules.banking.account;
 
+import com.damian.xBank.modules.banking.account.enums.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.exception.BankingAccountAuthorizationException;
-import com.damian.xBank.modules.customer.Customer;
+import com.damian.xBank.shared.domain.Customer;
 import com.damian.xBank.shared.exception.Exceptions;
 
 public class BankingAccountAuthorizationHelper {
@@ -25,7 +26,7 @@ public class BankingAccountAuthorizationHelper {
         if (!account.getOwner().getId().equals(customer.getId())) {
             // banking account does not belong to this customer
             throw new BankingAccountAuthorizationException(
-                    Exceptions.ACCOUNT.ACCESS_FORBIDDEN
+                    Exceptions.BANKING.ACCOUNT.ACCESS_FORBIDDEN
             );
         }
         return this;
@@ -42,14 +43,14 @@ public class BankingAccountAuthorizationHelper {
         final boolean isAccountClosed = account.getAccountStatus().equals(BankingAccountStatus.CLOSED);
         if (isAccountClosed) {
             throw new BankingAccountAuthorizationException(
-                    Exceptions.ACCOUNT.CLOSED
+                    Exceptions.BANKING.ACCOUNT.CLOSED
             );
         }
 
         final boolean isAccountSuspended = account.getAccountStatus().equals(BankingAccountStatus.SUSPENDED);
         if (isAccountSuspended) {
             throw new BankingAccountAuthorizationException(
-                    Exceptions.ACCOUNT.SUSPENDED
+                    Exceptions.BANKING.ACCOUNT.SUSPENDED
             );
         }
         return this;

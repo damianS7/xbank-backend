@@ -1,5 +1,8 @@
 package com.damian.xBank.modules.banking.account;
 
+import com.damian.xBank.modules.banking.account.enums.BankingAccountCurrency;
+import com.damian.xBank.modules.banking.account.enums.BankingAccountStatus;
+import com.damian.xBank.modules.banking.account.enums.BankingAccountType;
 import com.damian.xBank.modules.banking.card.BankingCard;
 import com.damian.xBank.modules.banking.transactions.BankingTransaction;
 import com.damian.xBank.shared.domain.Customer;
@@ -22,11 +25,11 @@ public class BankingAccount {
     private Customer customer;
 
     // FIXME switch to LAZY?
-    @OneToMany(mappedBy = "bankingAccount", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "bankingAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<BankingTransaction> accountTransactions;
 
     // FIXME switch to LAZY?
-    @OneToMany(mappedBy = "bankingAccount", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "bankingAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<BankingCard> bankingCards;
 
     @Column(length = 64)
