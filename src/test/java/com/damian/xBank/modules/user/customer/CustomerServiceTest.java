@@ -189,7 +189,7 @@ public class CustomerServiceTest extends AbstractServiceTest {
         fields.put("lastName", "David");
         fields.put("birthdate", "1904-01-02");
         fields.put("gender", "MALE");
-        fields.put("phone", "9199191919");
+        fields.put("phoneNumber", "9199191919");
         CustomerUpdateRequest givenRequest = new CustomerUpdateRequest(
                 RAW_PASSWORD,
                 fields
@@ -205,7 +205,7 @@ public class CustomerServiceTest extends AbstractServiceTest {
         assertThat(result).isNotNull();
         assertThat(result.getFirstName()).isEqualTo(givenRequest.fieldsToUpdate().get("firstName"));
         assertThat(result.getLastName()).isEqualTo(givenRequest.fieldsToUpdate().get("lastName"));
-        assertThat(result.getPhone()).isEqualTo(givenRequest.fieldsToUpdate().get("phone"));
+        assertThat(result.getPhone()).isEqualTo(givenRequest.fieldsToUpdate().get("phoneNumber"));
         assertThat(result.getBirthdate().toString()).isEqualTo(givenRequest.fieldsToUpdate().get("birthdate"));
         assertThat(result.getGender().toString()).isEqualTo(givenRequest.fieldsToUpdate().get("gender"));
         verify(customerRepository, times(1)).save(customer);

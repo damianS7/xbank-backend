@@ -108,7 +108,7 @@ public class CustomerIntegrationTest extends AbstractIntegrationTest {
         Map<String, Object> fields = new HashMap<>();
         fields.put("firstName", "alice");
         fields.put("lastName", "white");
-        fields.put("phone", "999 999 999");
+        fields.put("phoneNumber", "999 999 999");
         fields.put("birthdate", LocalDate.of(1989, 1, 1));
         fields.put("gender", CustomerGender.FEMALE);
 
@@ -146,7 +146,7 @@ public class CustomerIntegrationTest extends AbstractIntegrationTest {
                 ).containsExactly(
                         givenRequest.fieldsToUpdate().get("firstName"),
                         givenRequest.fieldsToUpdate().get("lastName"),
-                        givenRequest.fieldsToUpdate().get("phone"),
+                        givenRequest.fieldsToUpdate().get("phoneNumber"),
                         givenRequest.fieldsToUpdate().get("birthdate"),
                         givenRequest.fieldsToUpdate().get("gender")
                 );
