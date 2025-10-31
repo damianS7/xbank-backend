@@ -1,10 +1,16 @@
-package com.damian.xBank.modules.banking.account;
+package com.damian.xBank.modules.banking.account.controller;
 
-import com.damian.xBank.modules.banking.account.http.request.BankingAccountAliasUpdateRequest;
-import com.damian.xBank.modules.banking.account.http.request.BankingAccountCreateRequest;
+import com.damian.xBank.modules.banking.account.BankingAccount;
+import com.damian.xBank.modules.banking.account.dto.mapper.BankingAccountDtoMapper;
+import com.damian.xBank.modules.banking.account.dto.request.BankingAccountAliasUpdateRequest;
+import com.damian.xBank.modules.banking.account.dto.request.BankingAccountCreateRequest;
+import com.damian.xBank.modules.banking.account.dto.response.BankingAccountDto;
+import com.damian.xBank.modules.banking.account.dto.response.BankingAccountSummaryDto;
+import com.damian.xBank.modules.banking.account.service.BankingAccountCardManagerService;
+import com.damian.xBank.modules.banking.account.service.BankingAccountService;
 import com.damian.xBank.modules.banking.card.BankingCard;
-import com.damian.xBank.modules.banking.card.BankingCardDTO;
-import com.damian.xBank.modules.banking.card.BankingCardDTOMapper;
+import com.damian.xBank.modules.banking.card.BankingCardDto;
+import com.damian.xBank.modules.banking.card.BankingCardDtoMapper;
 import com.damian.xBank.modules.banking.card.http.BankingCardRequest;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -35,7 +41,9 @@ public class BankingAccountController {
     @GetMapping("/customers/me/banking/accounts")
     public ResponseEntity<?> getCustomerBankingAccounts() {
         Set<BankingAccount> bankingAccounts = bankingAccountService.getLoggedCustomerBankingAccounts();
-        Set<BankingAccountDTO> bankingAccountDTO = BankingAccountDTOMapper.toBankingAccountSetDTO(bankingAccounts);
+        Set<BankingAccountSummaryDto> bankingAccountDTO = BankingAccountDtoMapper.toBankingAccountSummaryDtoSet(
+                bankingAccounts
+        );
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -49,7 +57,7 @@ public class BankingAccountController {
             BankingAccountCreateRequest request
     ) {
         BankingAccount bankingAccount = bankingAccountService.createBankingAccount(request);
-        BankingAccountDTO bankingAccountDTO = BankingAccountDTOMapper.toBankingAccountDTO(bankingAccount);
+        BankingAccountDto bankingAccountDTO = BankingAccountDtoMapper.toBankingAccountDto(bankingAccount);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -66,7 +74,7 @@ public class BankingAccountController {
             BankingAccountAliasUpdateRequest request
     ) {
         BankingAccount bankingAccount = bankingAccountService.setBankingAccountAlias(id, request);
-        BankingAccountDTO bankingAccountDTO = BankingAccountDTOMapper.toBankingAccountDTO(bankingAccount);
+        BankingAccountDto bankingAccountDTO = BankingAccountDtoMapper.toBankingAccountDto(bankingAccount);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -82,7 +90,7 @@ public class BankingAccountController {
             BankingCardRequest request
     ) {
         BankingCard bankingCard = bankingAccountCardManagerService.requestBankingCard(id, request);
-        BankingCardDTO bankingCardDTO = BankingCardDTOMapper.toBankingCardDTO(bankingCard);
+        BankingCardDto bankingCardDTO = BankingCardDtoMapper.toBankingCardDto(bankingCard);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
