@@ -7,9 +7,9 @@ COMMENT ON SCHEMA public IS 'standard public schema';
 -- User tables
 
 CREATE TYPE public."user_account_status_type" AS ENUM (
-	'DISABLED',
-	'ENABLED',
-	'PENDING_VERIFICATION'
+	'PENDING_VERIFICATION',
+	'VERIFIED',
+	'SUSPENDED'
 );
 CREATE CAST (varchar as user_account_status_type) WITH INOUT AS IMPLICIT;
 
@@ -24,7 +24,7 @@ CREATE TABLE public.user_accounts (
   email VARCHAR(80) UNIQUE NOT NULL,
   password_hash VARCHAR(60) NOT NULL,
   role public.user_role_type DEFAULT 'CUSTOMER'::user_role_type NOT NULL,
-  account_status public.user_account_status_type DEFAULT 'ENABLED'::user_account_status_type NOT NULL,
+  account_status public.user_account_status_type DEFAULT 'PENDING_VERIFICATION'::user_account_status_type NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

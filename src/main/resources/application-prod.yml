@@ -1,6 +1,6 @@
 app:
   frontend:
-    host: "whatsapp.local"
+    host: "xbank.local"
     port: 8081
 spring:
   rabbitmq:
