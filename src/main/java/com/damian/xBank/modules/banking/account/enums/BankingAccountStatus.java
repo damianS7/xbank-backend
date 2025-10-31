@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.banking.account;
+package com.damian.xBank.modules.banking.account.enums;
 
 public enum BankingAccountStatus {
     PENDING_ACTIVATION,
