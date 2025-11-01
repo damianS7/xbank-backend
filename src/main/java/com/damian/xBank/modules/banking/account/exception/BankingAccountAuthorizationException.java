@@ -1,10 +1,14 @@
 package com.damian.xBank.modules.banking.account.exception;
 
-import com.damian.xBank.shared.exception.ApplicationException;
+public class BankingAccountAuthorizationException extends BankingAccountException {
+    private Long customerId;
 
-public class BankingAccountAuthorizationException extends ApplicationException {
-    public BankingAccountAuthorizationException(String message) {
-        super(message);
+    public BankingAccountAuthorizationException(String message, Long bankingAccountId, Long customerId) {
+        super(message, bankingAccountId);
+        this.customerId = customerId;
     }
 
+    public Long getCustomerId() {
+        return customerId;
+    }
 }
