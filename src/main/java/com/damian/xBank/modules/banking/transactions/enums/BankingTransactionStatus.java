@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.banking.transactions;
+package com.damian.xBank.modules.banking.transactions.enums;
 
 public enum BankingTransactionStatus {
     PENDING,

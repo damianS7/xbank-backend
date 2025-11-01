@@ -27,7 +27,9 @@ public class BankingCardAuthorizationHelper {
         if (!card.getOwner().getId().equals(customer.getId())) {
             // banking card does not belong to this customer
             throw new BankingCardAuthorizationException(
-                    Exceptions.BANKING.CARD.ACCESS_FORBIDDEN
+                    Exceptions.BANKING.CARD.ACCESS_FORBIDDEN,
+                    card.getId(),
+                    customer.getId()
             );
         }
         return this;
@@ -45,7 +47,7 @@ public class BankingCardAuthorizationHelper {
 
         if (isCardDisabled) {
             throw new BankingCardAuthorizationException(
-                    Exceptions.BANKING.CARD.DISABLED
+                    Exceptions.BANKING.CARD.DISABLED, card.getId(), 0L // TODO
             );
         }
 
@@ -53,7 +55,7 @@ public class BankingCardAuthorizationHelper {
         final boolean isCardLocked = card.getLockStatus().equals(BankingCardLockStatus.LOCKED);
         if (isCardLocked) {
             throw new BankingCardAuthorizationException(
-                    Exceptions.BANKING.CARD.LOCKED
+                    Exceptions.BANKING.CARD.LOCKED, card.getId(), 0L // TODO
             );
         }
         return this;
@@ -63,7 +65,7 @@ public class BankingCardAuthorizationHelper {
         // check card pin
         if (!card.getCardPin().equals(PIN)) {
             throw new BankingCardAuthorizationException(
-                    Exceptions.BANKING.CARD.INVALID_PIN
+                    Exceptions.BANKING.CARD.INVALID_PIN, card.getId(), 0L // TODO
             );
         }
         return this;

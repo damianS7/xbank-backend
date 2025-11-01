@@ -1,7 +1,7 @@
-package com.damian.xBank.modules.banking.transactions;
+package com.damian.xBank.shared.domain;
 
-import com.damian.xBank.modules.banking.account.BankingAccount;
-import com.damian.xBank.modules.banking.card.BankingCard;
+import com.damian.xBank.modules.banking.transactions.enums.BankingTransactionStatus;
+import com.damian.xBank.modules.banking.transactions.enums.BankingTransactionType;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -15,18 +15,18 @@ public class BankingTransaction {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "banking_account_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "account_id", referencedColumnName = "id", nullable = false)
     private BankingAccount bankingAccount;
 
     @ManyToOne
-    @JoinColumn(name = "banking_card_id", referencedColumnName = "id", nullable = true)
+    @JoinColumn(name = "card_id", referencedColumnName = "id")
     private BankingCard bankingCard;
 
     @Column(precision = 15, scale = 2)
     private BigDecimal amount;
 
     @Column(precision = 15, scale = 2)
-    private BigDecimal accountBalance;
+    private BigDecimal lastBalance;
 
     @Column
     private String description;
@@ -35,7 +35,7 @@ public class BankingTransaction {
     private BankingTransactionType transactionType;
 
     @Enumerated(EnumType.STRING)
-    private BankingTransactionStatus transactionStatus;
+    private BankingTransactionStatus status;
 
     @Column
     private Instant createdAt;
@@ -54,7 +54,7 @@ public class BankingTransaction {
 
     public BankingTransaction() {
         this.amount = BigDecimal.valueOf(0);
-        this.transactionStatus = BankingTransactionStatus.PENDING;
+        this.status = BankingTransactionStatus.PENDING;
         this.createdAt = Instant.now();
     }
 
@@ -96,12 +96,12 @@ public class BankingTransaction {
     }
 
 
-    public BankingTransactionStatus getTransactionStatus() {
-        return transactionStatus;
+    public BankingTransactionStatus getStatus() {
+        return status;
     }
 
-    public void setTransactionStatus(BankingTransactionStatus transactionStatus) {
-        this.transactionStatus = transactionStatus;
+    public void setStatus(BankingTransactionStatus status) {
+        this.status = status;
     }
 
     public Instant getCreatedAt() {
@@ -136,11 +136,11 @@ public class BankingTransaction {
         this.bankingCard = bankingCard;
     }
 
-    public BigDecimal getAccountBalance() {
-        return accountBalance;
+    public BigDecimal getLastBalance() {
+        return lastBalance;
     }
 
-    public void setAccountBalance(BigDecimal accountBalance) {
-        this.accountBalance = accountBalance;
+    public void setLastBalance(BigDecimal lastBalance) {
+        this.lastBalance = lastBalance;
     }
 }

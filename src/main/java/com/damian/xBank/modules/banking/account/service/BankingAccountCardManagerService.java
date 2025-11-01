@@ -1,14 +1,14 @@
 package com.damian.xBank.modules.banking.account.service;
 
-import com.damian.xBank.shared.domain.BankingAccount;
 import com.damian.xBank.modules.banking.account.BankingAccountAuthorizationHelper;
 import com.damian.xBank.modules.banking.account.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.repository.BankingAccountRepository;
-import com.damian.xBank.shared.domain.BankingCard;
-import com.damian.xBank.modules.banking.card.service.BankingCardService;
-import com.damian.xBank.modules.banking.card.enums.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.dto.request.BankingCardRequest;
-import com.damian.xBank.modules.banking.card.exception.BankingCardMaximumCardsPerAccountLimitReached;
+import com.damian.xBank.modules.banking.card.enums.BankingCardStatus;
+import com.damian.xBank.modules.banking.card.exception.BankingAccountCardsLimitException;
+import com.damian.xBank.modules.banking.card.service.BankingCardService;
+import com.damian.xBank.shared.domain.BankingAccount;
+import com.damian.xBank.shared.domain.BankingCard;
 import com.damian.xBank.shared.domain.Customer;
 import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.utils.AuthHelper;
@@ -37,7 +37,7 @@ public class BankingAccountCardManagerService {
                 .findById(bankingAccountId)
                 .orElseThrow(
                         () -> new BankingAccountNotFoundException(
-                                Exceptions.BANKING.ACCOUNT.NOT_FOUND
+                                Exceptions.BANKING.ACCOUNT.NOT_FOUND, bankingAccountId
                         )
                 );
 
@@ -51,8 +51,8 @@ public class BankingAccountCardManagerService {
 
         // if customer has reached the maximum amount of cards per account.
         if (countActiveCards(bankingAccount) >= MAX_CARDS_PER_ACCOUNT) {
-            throw new BankingCardMaximumCardsPerAccountLimitReached(
-                    Exceptions.BANKING.ACCOUNT.CARD_LIMIT
+            throw new BankingAccountCardsLimitException(
+                    Exceptions.BANKING.ACCOUNT.CARD_LIMIT, bankingAccountId
             );
         }
 

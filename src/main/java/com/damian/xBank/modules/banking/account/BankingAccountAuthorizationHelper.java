@@ -27,7 +27,7 @@ public class BankingAccountAuthorizationHelper {
         if (!account.getOwner().getId().equals(customer.getId())) {
             // banking account does not belong to this customer
             throw new BankingAccountAuthorizationException(
-                    Exceptions.BANKING.ACCOUNT.ACCESS_FORBIDDEN
+                    Exceptions.BANKING.ACCOUNT.ACCESS_FORBIDDEN, account.getId(), customer.getId()
             );
         }
         return this;
@@ -44,14 +44,14 @@ public class BankingAccountAuthorizationHelper {
         final boolean isAccountClosed = account.getAccountStatus().equals(BankingAccountStatus.CLOSED);
         if (isAccountClosed) {
             throw new BankingAccountAuthorizationException(
-                    Exceptions.BANKING.ACCOUNT.CLOSED
+                    Exceptions.BANKING.ACCOUNT.CLOSED, account.getId(), customer.getId()
             );
         }
 
         final boolean isAccountSuspended = account.getAccountStatus().equals(BankingAccountStatus.SUSPENDED);
         if (isAccountSuspended) {
             throw new BankingAccountAuthorizationException(
-                    Exceptions.BANKING.ACCOUNT.SUSPENDED
+                    Exceptions.BANKING.ACCOUNT.SUSPENDED, account.getId(), customer.getId()
             );
         }
         return this;

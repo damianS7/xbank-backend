@@ -1,4 +1,7 @@
-package com.damian.xBank.modules.banking.transactions;
+package com.damian.xBank.modules.banking.transactions.dto.response;
+
+import com.damian.xBank.modules.banking.transactions.enums.BankingTransactionStatus;
+import com.damian.xBank.modules.banking.transactions.enums.BankingTransactionType;
 
 import java.math.BigDecimal;
 import java.time.Instant;

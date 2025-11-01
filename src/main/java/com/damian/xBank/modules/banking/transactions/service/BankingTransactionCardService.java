@@ -1,13 +1,16 @@
-package com.damian.xBank.modules.banking.transactions;
+package com.damian.xBank.modules.banking.transactions.service;
 
-import com.damian.xBank.modules.banking.card.BankingCard;
 import com.damian.xBank.modules.banking.card.BankingCardAuthorizationHelper;
-import com.damian.xBank.modules.banking.card.BankingCardRepository;
 import com.damian.xBank.modules.banking.card.exception.BankingCardAuthorizationException;
 import com.damian.xBank.modules.banking.card.exception.BankingCardNotFoundException;
+import com.damian.xBank.modules.banking.card.repository.BankingCardRepository;
+import com.damian.xBank.modules.banking.transactions.dto.request.BankingCardTransactionRequest;
+import com.damian.xBank.modules.banking.transactions.enums.BankingTransactionStatus;
+import com.damian.xBank.modules.banking.transactions.enums.BankingTransactionType;
 import com.damian.xBank.modules.banking.transactions.exception.BankingTransactionException;
-import com.damian.xBank.modules.banking.transactions.http.BankingCardTransactionRequest;
-import com.damian.xBank.modules.customer.Customer;
+import com.damian.xBank.shared.domain.BankingCard;
+import com.damian.xBank.shared.domain.BankingTransaction;
+import com.damian.xBank.shared.domain.Customer;
 import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.utils.AuthHelper;
 import org.springframework.stereotype.Service;
@@ -36,7 +39,7 @@ public class BankingTransactionCardService {
         // BankingCard to operate
         BankingCard bankingCard = bankingCardRepository.findById(cardId).orElseThrow(
                 () -> new BankingCardNotFoundException(
-                        Exceptions.CARD.NOT_FOUND
+                        Exceptions.BANKING.CARD.NOT_FOUND, cardId
                 )
         );
 
@@ -44,7 +47,7 @@ public class BankingTransactionCardService {
             case CARD_CHARGE -> this.spend(bankingCard, request.cardPin(), request.amount(), request.description());
             case WITHDRAWAL -> this.withdrawal(bankingCard, request.cardPin(), request.amount());
             default -> throw new BankingTransactionException(
-                    Exceptions.TRANSACTION.INVALID_TYPE
+                    Exceptions.BANKING.TRANSACTION.INVALID_TYPE, -1L
             );
         };
     }
@@ -70,7 +73,7 @@ public class BankingTransactionCardService {
     public void checkFunds(BankingCard card, BigDecimal amount) {
         if (!card.hasEnoughFundsToSpend(amount)) {
             throw new BankingCardAuthorizationException(
-                    Exceptions.CARD.INSUFFICIENT_FUNDS
+                    Exceptions.BANKING.CARD.INSUFFICIENT_FUNDS, card.getId(), 0L // TODO
             );
         }
     }
@@ -88,7 +91,7 @@ public class BankingTransactionCardService {
                 amount,
                 description
         );
-        final Customer customerLogged = AuthHelper.getLoggedCustomer();
+        final Customer customerLogged = AuthHelper.getCurrentCustomer();
 
         // run validations and throw if any throw exception
         this.canCarryOperationOrElseThrow(card, customerLogged, cardPIN, amount);
@@ -97,7 +100,7 @@ public class BankingTransactionCardService {
         card.chargeAmount(amount);
 
         // transaction is completed
-        transaction.setTransactionStatus(BankingTransactionStatus.COMPLETED);
+        transaction.setStatus(BankingTransactionStatus.COMPLETED);
 
         // save the transaction
         return bankingTransactionService.persistTransaction(transaction);
@@ -116,7 +119,7 @@ public class BankingTransactionCardService {
                 "ATM withdrawal."
         );
 
-        final Customer customerLogged = AuthHelper.getLoggedCustomer();
+        final Customer customerLogged = AuthHelper.getCurrentCustomer();
         this.canCarryOperationOrElseThrow(card, customerLogged, cardPIN, amount);
 
         // check balance
@@ -126,7 +129,7 @@ public class BankingTransactionCardService {
         card.chargeAmount(amount);
 
         // transaction is completed
-        transaction.setTransactionStatus(BankingTransactionStatus.COMPLETED);
+        transaction.setStatus(BankingTransactionStatus.COMPLETED);
 
         // save the transaction
         return bankingTransactionService.persistTransaction(transaction);

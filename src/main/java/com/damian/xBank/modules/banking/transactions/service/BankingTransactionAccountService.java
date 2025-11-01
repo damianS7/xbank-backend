@@ -1,13 +1,16 @@
-package com.damian.xBank.modules.banking.transactions;
+package com.damian.xBank.modules.banking.transactions.service;
 
-import com.damian.xBank.modules.banking.account.BankingAccount;
 import com.damian.xBank.modules.banking.account.BankingAccountAuthorizationHelper;
-import com.damian.xBank.modules.banking.account.BankingAccountRepository;
 import com.damian.xBank.modules.banking.account.exception.BankingAccountAuthorizationException;
 import com.damian.xBank.modules.banking.account.exception.BankingAccountNotFoundException;
+import com.damian.xBank.modules.banking.account.repository.BankingAccountRepository;
+import com.damian.xBank.modules.banking.transactions.dto.request.BankingAccountTransactionRequest;
+import com.damian.xBank.modules.banking.transactions.enums.BankingTransactionStatus;
+import com.damian.xBank.modules.banking.transactions.enums.BankingTransactionType;
 import com.damian.xBank.modules.banking.transactions.exception.BankingTransactionException;
-import com.damian.xBank.modules.banking.transactions.http.BankingAccountTransactionRequest;
-import com.damian.xBank.modules.customer.Customer;
+import com.damian.xBank.shared.domain.BankingAccount;
+import com.damian.xBank.shared.domain.BankingTransaction;
+import com.damian.xBank.shared.domain.Customer;
 import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.utils.AuthHelper;
 import org.springframework.stereotype.Service;
@@ -35,7 +38,7 @@ public class BankingTransactionAccountService {
         // BankingAccount to operate
         BankingAccount bankingAccount = bankingAccountRepository.findById(fromAccountId).orElseThrow(
                 () -> new BankingAccountNotFoundException(
-                        Exceptions.ACCOUNT.NOT_FOUND
+                        fromAccountId
                 )
         );
 
@@ -49,7 +52,7 @@ public class BankingTransactionAccountService {
             );
             case DEPOSIT -> this.deposit(bankingAccount, request.password(), request.amount());
             default -> throw new BankingTransactionException(
-                    Exceptions.TRANSACTION.INVALID_TYPE
+                    Exceptions.BANKING.TRANSACTION.INVALID_TYPE, -1L
             );
         };
     }
@@ -63,7 +66,9 @@ public class BankingTransactionAccountService {
         // check bankingAccount and toBankingAccount are not the same
         if (fromBankingAccount.getId().equals(toBankingAccount.getId())) {
             throw new BankingAccountAuthorizationException(
-                    Exceptions.ACCOUNT.SAME_DESTINATION
+                    Exceptions.BANKING.ACCOUNT.SAME_DESTINATION,
+                    toBankingAccount.getId(),
+                    fromBankingAccount.getOwner().getId()
             );
         }
 
@@ -88,7 +93,7 @@ public class BankingTransactionAccountService {
     private void checkFunds(BankingAccount bankingAccount, BigDecimal amount) {
         if (!bankingAccount.hasEnoughFunds(amount)) {
             throw new BankingAccountAuthorizationException(
-                    Exceptions.ACCOUNT.INSUFFICIENT_FUNDS
+                    Exceptions.BANKING.ACCOUNT.INSUFFICIENT_FUNDS, bankingAccount.getId(), 0L // TODO
             );
         }
     }
@@ -99,7 +104,9 @@ public class BankingTransactionAccountService {
                                .equals(toBankingAccount.getAccountCurrency())
         ) {
             throw new BankingAccountAuthorizationException(
-                    Exceptions.TRANSACTION.DIFFERENT_CURRENCY
+                    Exceptions.BANKING.TRANSACTION.DIFFERENT_CURRENCY,
+                    toBankingAccount.getId(),
+                    fromBankingAccount.getOwner().getId()
             );
         }
     }
@@ -117,11 +124,11 @@ public class BankingTransactionAccountService {
                 .findByAccountNumber(toBankingAccountNumber)
                 .orElseThrow(
                         () -> new BankingAccountNotFoundException(
-                                Exceptions.ACCOUNT.NOT_FOUND
+                                Exceptions.BANKING.ACCOUNT.NOT_FOUND, toBankingAccountNumber
                         )
                 );
 
-        final Customer customer = AuthHelper.getLoggedCustomer();
+        final Customer customer = AuthHelper.getCurrentCustomer();
 
         // check if the account belongs to this customer.
         BankingAccountAuthorizationHelper
@@ -151,7 +158,7 @@ public class BankingTransactionAccountService {
         );
 
         fromBankingAccount.subtractAmount(amount);
-        fromTransaction.setTransactionStatus(BankingTransactionStatus.COMPLETED);
+        fromTransaction.setStatus(BankingTransactionStatus.COMPLETED);
         this.bankingTransactionService.persistTransaction(fromTransaction);
 
         // create transfer transaction for the receiver of the funds
@@ -163,7 +170,7 @@ public class BankingTransactionAccountService {
         );
 
         toBankingAccount.deposit(amount);
-        toTransaction.setTransactionStatus(BankingTransactionStatus.COMPLETED);
+        toTransaction.setStatus(BankingTransactionStatus.COMPLETED);
         this.bankingTransactionService.persistTransaction(toTransaction);
 
         return fromTransaction;
@@ -182,7 +189,7 @@ public class BankingTransactionAccountService {
                 "DEPOSIT"
         );
 
-        final Customer customer = AuthHelper.getLoggedCustomer();
+        final Customer customer = AuthHelper.getCurrentCustomer();
 
         // check if the account belongs to this customer.
         BankingAccountAuthorizationHelper
@@ -194,7 +201,7 @@ public class BankingTransactionAccountService {
         account.deposit(amount);
 
         // transaction is completed
-        transaction.setTransactionStatus(BankingTransactionStatus.COMPLETED);
+        transaction.setStatus(BankingTransactionStatus.COMPLETED);
 
         // save the transaction
         return bankingTransactionService.persistTransaction(transaction);

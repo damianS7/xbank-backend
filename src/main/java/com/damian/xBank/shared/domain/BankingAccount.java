@@ -3,7 +3,6 @@ package com.damian.xBank.shared.domain;
 import com.damian.xBank.modules.banking.account.enums.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.enums.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.enums.BankingAccountType;
-import com.damian.xBank.modules.banking.transactions.BankingTransaction;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;

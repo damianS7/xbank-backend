@@ -1,6 +1,5 @@
 package com.damian.xBank.modules.banking.account.service;
 
-import com.damian.xBank.shared.domain.BankingAccount;
 import com.damian.xBank.modules.banking.account.BankingAccountAuthorizationHelper;
 import com.damian.xBank.modules.banking.account.dto.request.BankingAccountAliasUpdateRequest;
 import com.damian.xBank.modules.banking.account.dto.request.BankingAccountCloseRequest;
@@ -13,6 +12,7 @@ import com.damian.xBank.modules.banking.account.exception.BankingAccountNotFound
 import com.damian.xBank.modules.banking.account.repository.BankingAccountRepository;
 import com.damian.xBank.modules.user.customer.exception.CustomerNotFoundException;
 import com.damian.xBank.modules.user.customer.repository.CustomerRepository;
+import com.damian.xBank.shared.domain.BankingAccount;
 import com.damian.xBank.shared.domain.Customer;
 import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.utils.AuthHelper;
@@ -104,7 +104,7 @@ public class BankingAccountService {
         // Banking account to to open
         final BankingAccount bankingAccount = bankingAccountRepository.findById(bankingAccountId).orElseThrow(
                 () -> new BankingAccountNotFoundException(
-                        Exceptions.BANKING.ACCOUNT.NOT_FOUND
+                        bankingAccountId
                 ) // Banking account not found
         );
 
@@ -122,7 +122,7 @@ public class BankingAccountService {
         // Banking account to be open
         final BankingAccount bankingAccount = bankingAccountRepository.findById(bankingAccountId).orElseThrow(
                 () -> new BankingAccountNotFoundException(
-                        Exceptions.BANKING.ACCOUNT.NOT_FOUND
+                        bankingAccountId
                 ) // Banking account not found
         );
 
@@ -142,7 +142,7 @@ public class BankingAccountService {
         // Banking account to to close
         final BankingAccount bankingAccount = bankingAccountRepository.findById(bankingAccountId).orElseThrow(
                 () -> new BankingAccountNotFoundException(
-                        Exceptions.BANKING.ACCOUNT.NOT_FOUND
+                        bankingAccountId
                 ) // Banking account not found
         );
 
@@ -160,7 +160,7 @@ public class BankingAccountService {
         // Banking account to be closed
         final BankingAccount bankingAccount = bankingAccountRepository.findById(bankingAccountId).orElseThrow(
                 () -> new BankingAccountNotFoundException(
-                        Exceptions.BANKING.ACCOUNT.NOT_FOUND
+                        bankingAccountId
                 ) // Banking account not found
         );
 
@@ -196,7 +196,7 @@ public class BankingAccountService {
         // Banking account to set an alias
         final BankingAccount bankingAccount = bankingAccountRepository.findById(bankingAccountId).orElseThrow(
                 () -> new BankingAccountNotFoundException(
-                        Exceptions.BANKING.ACCOUNT.NOT_FOUND
+                        bankingAccountId
                 ) // Banking account not found
         );
 
@@ -214,7 +214,7 @@ public class BankingAccountService {
         // Banking account to set alias
         final BankingAccount bankingAccount = bankingAccountRepository.findById(bankingAccountId).orElseThrow(
                 () -> new BankingAccountNotFoundException(
-                        Exceptions.BANKING.ACCOUNT.NOT_FOUND
+                        bankingAccountId
                 ) // Banking account not found
         );
 

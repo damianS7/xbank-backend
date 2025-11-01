@@ -1,8 +1,6 @@
 package com.damian.xBank.modules.banking.card.service;
 
 import com.damian.xBank.modules.auth.dto.PasswordConfirmationRequest;
-import com.damian.xBank.shared.domain.BankingAccount;
-import com.damian.xBank.shared.domain.BankingCard;
 import com.damian.xBank.modules.banking.card.BankingCardAuthorizationHelper;
 import com.damian.xBank.modules.banking.card.dto.request.BankingCardSetDailyLimitRequest;
 import com.damian.xBank.modules.banking.card.dto.request.BankingCardSetLockStatusRequest;
@@ -12,6 +10,8 @@ import com.damian.xBank.modules.banking.card.enums.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.enums.BankingCardType;
 import com.damian.xBank.modules.banking.card.exception.BankingCardNotFoundException;
 import com.damian.xBank.modules.banking.card.repository.BankingCardRepository;
+import com.damian.xBank.shared.domain.BankingAccount;
+import com.damian.xBank.shared.domain.BankingCard;
 import com.damian.xBank.shared.domain.Customer;
 import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.utils.AuthHelper;
@@ -94,7 +94,7 @@ public class BankingCardService {
         final BankingCard bankingCard = bankingCardRepository.findById(bankingCardId).orElseThrow(
                 // Banking card not found
                 () -> new BankingCardNotFoundException(
-                        Exceptions.BANKING.CARD.NOT_FOUND
+                        Exceptions.BANKING.CARD.NOT_FOUND, bankingCardId
                 ));
 
         return this.setCardLockStatus(bankingCard, cardLockStatus);
@@ -109,7 +109,7 @@ public class BankingCardService {
         final BankingCard bankingCard = bankingCardRepository.findById(bankingCardId).orElseThrow(
                 // Banking card not found
                 () -> new BankingCardNotFoundException(
-                        Exceptions.BANKING.CARD.NOT_FOUND
+                        Exceptions.BANKING.CARD.NOT_FOUND, bankingCardId
                 ));
 
         // Customer logged
@@ -149,7 +149,7 @@ public class BankingCardService {
         final BankingCard bankingCard = bankingCardRepository.findById(bankingCardId).orElseThrow(
                 // Banking card not found
                 () -> new BankingCardNotFoundException(
-                        Exceptions.BANKING.CARD.NOT_FOUND
+                        Exceptions.BANKING.CARD.NOT_FOUND, bankingCardId
                 ));
 
         return this.setDailyLimit(bankingCard, dailyLimit);
@@ -167,7 +167,7 @@ public class BankingCardService {
         final BankingCard bankingCard = bankingCardRepository.findById(bankingCardId).orElseThrow(
                 // Banking card not found
                 () -> new BankingCardNotFoundException(
-                        Exceptions.BANKING.CARD.NOT_FOUND
+                        Exceptions.BANKING.CARD.NOT_FOUND, bankingCardId
                 ));
 
         // check if customer is the owner
@@ -198,7 +198,7 @@ public class BankingCardService {
         final BankingCard bankingCard = bankingCardRepository.findById(bankingCardId).orElseThrow(
                 // Banking card not found
                 () -> new BankingCardNotFoundException(
-                        Exceptions.BANKING.CARD.NOT_FOUND
+                        Exceptions.BANKING.CARD.NOT_FOUND, bankingCardId
                 ));
 
         return this.cancelCard(bankingCard);
@@ -216,7 +216,7 @@ public class BankingCardService {
         final BankingCard bankingCard = bankingCardRepository.findById(bankingCardId).orElseThrow(
                 // Banking card not found
                 () -> new BankingCardNotFoundException(
-                        Exceptions.BANKING.CARD.NOT_FOUND
+                        Exceptions.BANKING.CARD.NOT_FOUND, bankingCardId
                 ));
 
         // check if customer is the owner
@@ -247,7 +247,7 @@ public class BankingCardService {
         final BankingCard bankingCard = bankingCardRepository.findById(bankingCardId).orElseThrow(
                 // Banking card not found
                 () -> new BankingCardNotFoundException(
-                        Exceptions.BANKING.CARD.NOT_FOUND
+                        Exceptions.BANKING.CARD.NOT_FOUND, bankingCardId
                 ));
 
         return this.setBankingCardPin(bankingCard, pin);
@@ -262,7 +262,7 @@ public class BankingCardService {
         final BankingCard bankingCard = bankingCardRepository.findById(bankingCardId).orElseThrow(
                 // Banking card not found
                 () -> new BankingCardNotFoundException(
-                        Exceptions.BANKING.CARD.NOT_FOUND
+                        Exceptions.BANKING.CARD.NOT_FOUND, bankingCardId
                 ));
 
         // check if customer is the owner

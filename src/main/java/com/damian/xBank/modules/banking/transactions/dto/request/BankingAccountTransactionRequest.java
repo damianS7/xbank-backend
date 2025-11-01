@@ -1,6 +1,6 @@
-package com.damian.xBank.modules.banking.transactions.http;
+package com.damian.xBank.modules.banking.transactions.dto.request;
 
-import com.damian.xBank.modules.banking.transactions.BankingTransactionType;
+import com.damian.xBank.modules.banking.transactions.enums.BankingTransactionType;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
@@ -14,7 +14,7 @@ public record BankingAccountTransactionRequest(
 
         @NotNull(message = "Description must not be null")
         String description,
-        
+
         @Positive
         BigDecimal amount,
 

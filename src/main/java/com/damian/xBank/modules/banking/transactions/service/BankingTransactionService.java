@@ -1,12 +1,15 @@
-package com.damian.xBank.modules.banking.transactions;
+package com.damian.xBank.modules.banking.transactions.service;
 
-import com.damian.xBank.modules.banking.account.BankingAccount;
-import com.damian.xBank.modules.banking.card.BankingCard;
+import com.damian.xBank.modules.banking.transactions.dto.request.BankingTransactionUpdateStatusRequest;
+import com.damian.xBank.modules.banking.transactions.enums.BankingTransactionType;
 import com.damian.xBank.modules.banking.transactions.exception.BankingTransactionAuthorizationException;
 import com.damian.xBank.modules.banking.transactions.exception.BankingTransactionNotFoundException;
-import com.damian.xBank.modules.banking.transactions.http.BankingTransactionUpdateStatusRequest;
-import com.damian.xBank.modules.customer.Customer;
-import com.damian.xBank.modules.customer.CustomerRole;
+import com.damian.xBank.modules.banking.transactions.repository.BankingTransactionRepository;
+import com.damian.xBank.modules.user.account.account.enums.UserAccountRole;
+import com.damian.xBank.shared.domain.BankingAccount;
+import com.damian.xBank.shared.domain.BankingCard;
+import com.damian.xBank.shared.domain.BankingTransaction;
+import com.damian.xBank.shared.domain.Customer;
 import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.utils.AuthHelper;
 import org.springframework.data.domain.Page;
@@ -56,7 +59,7 @@ public class BankingTransactionService {
     ) {
         BankingTransaction transaction = new BankingTransaction(bankingAccount);
         transaction.setTransactionType(transactionType);
-        transaction.setAccountBalance(bankingAccount.getBalance());
+        transaction.setLastBalance(bankingAccount.getBalance());
         transaction.setAmount(amount);
         transaction.setDescription(description);
         return transaction;
@@ -88,13 +91,13 @@ public class BankingTransactionService {
             BankingTransactionUpdateStatusRequest request
     ) {
         // Customer logged
-        final Customer customerLogged = AuthHelper.getLoggedCustomer();
+        final Customer currentCustomer = AuthHelper.getCurrentCustomer();
 
         // if the logged customer is not admin
-        if (!customerLogged.getRole().equals(CustomerRole.ADMIN)) {
+        if (!currentCustomer.getAccount().getRole().equals(UserAccountRole.ADMIN)) {
             // banking transaction does not belong to this customer
             throw new BankingTransactionAuthorizationException(
-                    Exceptions.AUTH.NOT_ADMIN
+                    Exceptions.BANKING.TRANSACTION.ACCESS_FORBIDDEN, bankingTransactionId
             );
         }
 
@@ -103,12 +106,12 @@ public class BankingTransactionService {
                 .findById(bankingTransactionId)
                 .orElseThrow(
                         () -> new BankingTransactionNotFoundException(
-                                Exceptions.TRANSACTION.NOT_FOUND
+                                bankingTransactionId
                         )
                 );
 
         // we mark the account as closed
-        bankingTransaction.setTransactionStatus(request.transactionStatus());
+        bankingTransaction.setStatus(request.transactionStatus());
 
         // we change the updateAt timestamp field
         bankingTransaction.setUpdatedAt(Instant.now());

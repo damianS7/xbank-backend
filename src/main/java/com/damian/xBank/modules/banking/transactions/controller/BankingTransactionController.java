@@ -1,7 +1,13 @@
-package com.damian.xBank.modules.banking.transactions;
+package com.damian.xBank.modules.banking.transactions.controller;
 
-import com.damian.xBank.modules.banking.transactions.http.BankingAccountTransactionRequest;
-import com.damian.xBank.modules.banking.transactions.http.BankingCardTransactionRequest;
+import com.damian.xBank.modules.banking.transactions.dto.mapper.BankingTransactionDtoMapper;
+import com.damian.xBank.modules.banking.transactions.dto.request.BankingAccountTransactionRequest;
+import com.damian.xBank.modules.banking.transactions.dto.request.BankingCardTransactionRequest;
+import com.damian.xBank.modules.banking.transactions.dto.response.BankingTransactionDto;
+import com.damian.xBank.modules.banking.transactions.service.BankingTransactionAccountService;
+import com.damian.xBank.modules.banking.transactions.service.BankingTransactionCardService;
+import com.damian.xBank.modules.banking.transactions.service.BankingTransactionService;
+import com.damian.xBank.shared.domain.BankingTransaction;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +47,8 @@ public class BankingTransactionController {
             Pageable pageable
     ) {
         Page<BankingTransaction> transactions = bankingTransactionService.getBankingCardTransactions(id, pageable);
-        Page<BankingTransactionDTO> transactionDTOS = BankingTransactionDTOMapper
-                .toBankingTransactionPageDTO(transactions);
+        Page<BankingTransactionDto> transactionDTOS = BankingTransactionDtoMapper
+                .toBankingTransactionPageDto(transactions);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -58,8 +64,8 @@ public class BankingTransactionController {
             Pageable pageable
     ) {
         Page<BankingTransaction> transactions = bankingTransactionService.getBankingAccountTransactions(id, pageable);
-        Page<BankingTransactionDTO> transactionDTOS = BankingTransactionDTOMapper
-                .toBankingTransactionPageDTO(transactions);
+        Page<BankingTransactionDto> transactionDTOS = BankingTransactionDtoMapper
+                .toBankingTransactionPageDto(transactions);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -75,7 +81,7 @@ public class BankingTransactionController {
             BankingCardTransactionRequest request
     ) {
         BankingTransaction transaction = bankingTransactionCardService.processTransactionRequest(id, request);
-        BankingTransactionDTO transactionDTO = BankingTransactionDTOMapper.toBankingTransactionDTO(transaction);
+        BankingTransactionDto transactionDTO = BankingTransactionDtoMapper.toBankingTransactionDto(transaction);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -91,7 +97,7 @@ public class BankingTransactionController {
             BankingAccountTransactionRequest request
     ) {
         BankingTransaction transaction = bankingTransactionAccountService.processTransactionRequest(id, request);
-        BankingTransactionDTO transactionDTO = BankingTransactionDTOMapper.toBankingTransactionDTO(transaction);
+        BankingTransactionDto transactionDTO = BankingTransactionDtoMapper.toBankingTransactionDto(transaction);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)

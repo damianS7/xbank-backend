@@ -1,5 +1,7 @@
-package com.damian.xBank.modules.banking.transactions;
+package com.damian.xBank.modules.banking.transactions.dto.mapper;
 
+import com.damian.xBank.modules.banking.transactions.dto.response.BankingTransactionDto;
+import com.damian.xBank.shared.domain.BankingTransaction;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
