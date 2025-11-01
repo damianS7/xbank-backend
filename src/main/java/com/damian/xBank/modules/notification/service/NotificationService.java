@@ -1,6 +1,7 @@
 package com.damian.xBank.modules.notification.service;
 
 import com.damian.xBank.modules.notification.dto.NotificationEvent;
+import com.damian.xBank.modules.notification.exception.NotificationNotFoundException;
 import com.damian.xBank.modules.notification.repository.NotificationRepository;
 import com.damian.xBank.modules.user.account.account.exception.UserAccountNotFoundException;
 import com.damian.xBank.modules.user.account.account.repository.UserAccountRepository;
@@ -57,6 +58,32 @@ public class NotificationService {
         // delete all notifications
         notificationRepository.deleteAllByUser_Id(currentUser.getId());
         log.debug("Deleted all notifications from user: {}", currentUser.getId());
+    }
+
+    /**
+     * Delete notification for the current user.
+     *
+     * @param id Notification id
+     */
+    @Transactional
+    public void deleteNotification(Long id) {
+        User currentUser = AuthHelper.getCurrentUser();
+
+        Notification notification = notificationRepository
+                .findById(id)
+                .orElseThrow(
+                        () -> new NotificationNotFoundException(id)
+                );
+
+        // TODO check ownership
+        if (!notification.getOwner().getId().equals(currentUser.getAccount().getId())) {
+            // throw
+        }
+
+        // delete notification
+        notificationRepository.delete(notification);
+
+        log.debug("Deleted notification: {}", notification.getId());
     }
 
     /**
