@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 public class SettingDtoMapper {
     public static SettingDto toSettingDto(Setting setting) {
         return new SettingDto(
-                setting.getId(),
                 setting.getSettings()
         );
     }

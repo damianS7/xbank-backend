@@ -35,7 +35,7 @@ public class SettingService {
     }
 
     // update only one setting
-    public Setting updateSetting(String key, String value) {
+    public Setting updateSetting(String key, Object value) {
         User currentUser = AuthHelper.getCurrentUser();
 
         // find the setting by settingId
@@ -47,8 +47,6 @@ public class SettingService {
         if (!setting.isOwner(currentUser)) {
             throw new SettingNotOwnerException(Exceptions.CUSTOMER.SETTINGS.NOT_OWNER, currentUser.getId());
         }
-
-        //        setting.setSettings(request.value());
 
         log.debug(
                 "Updated setting: {} with value: {} by user: {}",

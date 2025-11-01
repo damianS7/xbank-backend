@@ -23,7 +23,9 @@ public class Setting {
     private Map<String, Object> settings = new HashMap<>();
 
     public Setting() {
-
+        settings.put("TWO_FACTOR_AUTH", false);
+        settings.put("LANG", "EN");
+        settings.put("EMAIL_NOTIFICATIONS", false);
     }
 
     public Setting(UserAccount userAccount) {
