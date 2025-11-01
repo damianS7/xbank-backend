@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.banking.card.http;
+package com.damian.xBank.modules.banking.card.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;

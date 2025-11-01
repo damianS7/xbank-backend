@@ -1,4 +1,7 @@
-package com.damian.xBank.modules.banking.card;
+package com.damian.xBank.modules.banking.card.dto.mapper;
+
+import com.damian.xBank.shared.domain.BankingCard;
+import com.damian.xBank.modules.banking.card.dto.response.BankingCardDto;
 
 import java.util.Set;
 import java.util.stream.Collectors;

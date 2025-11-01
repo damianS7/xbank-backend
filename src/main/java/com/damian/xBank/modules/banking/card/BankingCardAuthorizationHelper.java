@@ -1,7 +1,10 @@
 package com.damian.xBank.modules.banking.card;
 
+import com.damian.xBank.modules.banking.card.enums.BankingCardLockStatus;
+import com.damian.xBank.modules.banking.card.enums.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.exception.BankingCardAuthorizationException;
-import com.damian.xBank.modules.customer.Customer;
+import com.damian.xBank.shared.domain.BankingCard;
+import com.damian.xBank.shared.domain.Customer;
 import com.damian.xBank.shared.exception.Exceptions;
 
 public class BankingCardAuthorizationHelper {
@@ -24,7 +27,7 @@ public class BankingCardAuthorizationHelper {
         if (!card.getOwner().getId().equals(customer.getId())) {
             // banking card does not belong to this customer
             throw new BankingCardAuthorizationException(
-                    Exceptions.CARD.ACCESS_FORBIDDEN
+                    Exceptions.BANKING.CARD.ACCESS_FORBIDDEN
             );
         }
         return this;
@@ -42,7 +45,7 @@ public class BankingCardAuthorizationHelper {
 
         if (isCardDisabled) {
             throw new BankingCardAuthorizationException(
-                    Exceptions.CARD.DISABLED
+                    Exceptions.BANKING.CARD.DISABLED
             );
         }
 
@@ -50,7 +53,7 @@ public class BankingCardAuthorizationHelper {
         final boolean isCardLocked = card.getLockStatus().equals(BankingCardLockStatus.LOCKED);
         if (isCardLocked) {
             throw new BankingCardAuthorizationException(
-                    Exceptions.CARD.LOCKED
+                    Exceptions.BANKING.CARD.LOCKED
             );
         }
         return this;
@@ -60,7 +63,7 @@ public class BankingCardAuthorizationHelper {
         // check card pin
         if (!card.getCardPin().equals(PIN)) {
             throw new BankingCardAuthorizationException(
-                    Exceptions.CARD.INVALID_PIN
+                    Exceptions.BANKING.CARD.INVALID_PIN
             );
         }
         return this;

@@ -1,9 +1,13 @@
-package com.damian.xBank.modules.banking.card;
+package com.damian.xBank.modules.banking.card.controller;
 
-import com.damian.xBank.modules.auth.http.PasswordConfirmationRequest;
-import com.damian.xBank.modules.banking.card.http.BankingCardSetDailyLimitRequest;
-import com.damian.xBank.modules.banking.card.http.BankingCardSetLockStatusRequest;
-import com.damian.xBank.modules.banking.card.http.BankingCardSetPinRequest;
+import com.damian.xBank.modules.auth.dto.PasswordConfirmationRequest;
+import com.damian.xBank.shared.domain.BankingCard;
+import com.damian.xBank.modules.banking.card.service.BankingCardService;
+import com.damian.xBank.modules.banking.card.dto.request.BankingCardSetDailyLimitRequest;
+import com.damian.xBank.modules.banking.card.dto.request.BankingCardSetLockStatusRequest;
+import com.damian.xBank.modules.banking.card.dto.request.BankingCardSetPinRequest;
+import com.damian.xBank.modules.banking.card.dto.mapper.BankingCardDtoMapper;
+import com.damian.xBank.modules.banking.card.dto.response.BankingCardDto;
 import jakarta.validation.constraints.Positive;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,7 +33,7 @@ public class BankingCardController {
     @GetMapping("/customers/me/banking/cards")
     public ResponseEntity<?> getCustomerBankingCards() {
         Set<BankingCard> bankingCards = bankingCardService.getCustomerBankingCards();
-        Set<BankingCardDTO> bankingCardsDTO = BankingCardDTOMapper.toBankingCardSetDTO(bankingCards);
+        Set<BankingCardDto> bankingCardsDTO = BankingCardDtoMapper.toBankingCardSetDTO(bankingCards);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -45,7 +49,7 @@ public class BankingCardController {
             PasswordConfirmationRequest request
     ) {
         BankingCard bankingCard = bankingCardService.cancelCard(id, request);
-        BankingCardDTO bankingCardDTO = BankingCardDTOMapper.toBankingCardDTO(bankingCard);
+        BankingCardDto bankingCardDTO = BankingCardDtoMapper.toBankingCardDto(bankingCard);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -61,7 +65,7 @@ public class BankingCardController {
             BankingCardSetPinRequest request
     ) {
         BankingCard bankingCard = bankingCardService.setBankingCardPin(id, request);
-        BankingCardDTO bankingCardDTO = BankingCardDTOMapper.toBankingCardDTO(bankingCard);
+        BankingCardDto bankingCardDTO = BankingCardDtoMapper.toBankingCardDto(bankingCard);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -77,7 +81,7 @@ public class BankingCardController {
             BankingCardSetDailyLimitRequest request
     ) {
         BankingCard bankingCard = bankingCardService.setDailyLimit(id, request);
-        BankingCardDTO bankingCardDTO = BankingCardDTOMapper.toBankingCardDTO(bankingCard);
+        BankingCardDto bankingCardDTO = BankingCardDtoMapper.toBankingCardDto(bankingCard);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -96,7 +100,7 @@ public class BankingCardController {
                 id,
                 request
         );
-        BankingCardDTO bankingCardDTO = BankingCardDTOMapper.toBankingCardDTO(bankingCard);
+        BankingCardDto bankingCardDTO = BankingCardDtoMapper.toBankingCardDto(bankingCard);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

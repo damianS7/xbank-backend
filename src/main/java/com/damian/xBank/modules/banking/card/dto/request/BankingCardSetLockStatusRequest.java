@@ -1,6 +1,6 @@
-package com.damian.xBank.modules.banking.card.http;
+package com.damian.xBank.modules.banking.card.dto.request;
 
-import com.damian.xBank.modules.banking.card.BankingCardLockStatus;
+import com.damian.xBank.modules.banking.card.enums.BankingCardLockStatus;
 import jakarta.validation.constraints.NotNull;
 
 public record BankingCardSetLockStatusRequest(

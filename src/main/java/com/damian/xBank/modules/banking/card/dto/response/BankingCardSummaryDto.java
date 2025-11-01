@@ -1,10 +1,14 @@
-package com.damian.xBank.modules.banking.card;
+package com.damian.xBank.modules.banking.card.dto.response;
+
+import com.damian.xBank.modules.banking.card.enums.BankingCardLockStatus;
+import com.damian.xBank.modules.banking.card.enums.BankingCardStatus;
+import com.damian.xBank.modules.banking.card.enums.BankingCardType;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 
-public record BankingCardDto(
+public record BankingCardSummaryDto(
         Long id,
         Long bankingAccountId,
         String cardHolder,
