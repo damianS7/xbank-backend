@@ -1,6 +1,5 @@
 package com.damian.xBank.shared.domain;
 
-import com.damian.xBank.modules.banking.account.BankingAccount;
 import com.damian.xBank.modules.user.account.account.enums.UserAccountRole;
 import com.damian.xBank.modules.user.customer.enums.CustomerGender;
 import jakarta.persistence.*;

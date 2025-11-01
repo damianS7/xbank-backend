@@ -1,7 +1,8 @@
-package com.damian.xBank.modules.banking.card;
+package com.damian.xBank.shared.domain;
 
-import com.damian.xBank.modules.banking.account.BankingAccount;
-import com.damian.xBank.modules.customer.Customer;
+import com.damian.xBank.modules.banking.card.enums.BankingCardLockStatus;
+import com.damian.xBank.modules.banking.card.enums.BankingCardStatus;
+import com.damian.xBank.modules.banking.card.enums.BankingCardType;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -16,7 +17,7 @@ public class BankingCard {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "banking_account_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "account_id", referencedColumnName = "id", nullable = false)
     private BankingAccount bankingAccount;
 
     @Column(length = 20, nullable = false)
