@@ -103,12 +103,12 @@ public class UserAccountVerificationService {
         String host = env.getProperty("app.frontend.host");
         String port = env.getProperty("app.frontend.port");
         String url = String.format("http://%s:%s", host, port);
-        String activationLink = url + "/accounts/verification/" + token;
+        String activationLink = url + "/customers/accounts/verification/" + token;
 
         // Send email to confirm registration
         emailSenderService.send(
                 email,
-                "Photogram account verification link.",
+                "xBank account verification link.",
                 "Please click on the link below to confirm your registration: \n\n" + activationLink
         );
     }
