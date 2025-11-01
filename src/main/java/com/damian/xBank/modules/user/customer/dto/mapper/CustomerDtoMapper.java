@@ -1,7 +1,5 @@
 package com.damian.xBank.modules.user.customer.dto.mapper;
 
-import com.damian.xBank.modules.banking.account.BankingAccountDTO;
-import com.damian.xBank.modules.banking.account.BankingAccountDTOMapper;
 import com.damian.xBank.modules.user.account.account.dto.mapper.UserAccountDtoMapper;
 import com.damian.xBank.modules.user.account.account.dto.response.UserAccountDto;
 import com.damian.xBank.modules.user.account.account.exception.UserAccountNotFoundException;
@@ -11,11 +9,8 @@ import com.damian.xBank.shared.domain.Customer;
 import com.damian.xBank.shared.exception.Exceptions;
 import org.springframework.data.domain.Page;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class CustomerDtoMapper {
     public static CustomerDto toCustomerDto(Customer customer) {
@@ -41,11 +36,11 @@ public class CustomerDtoMapper {
         ).orElseThrow(() -> new UserAccountNotFoundException(
                 Exceptions.USER.ACCOUNT.NOT_FOUND, 0L));
 
-        Set<BankingAccountDTO> bankingAccountsDTO = Optional.ofNullable(customer.getBankingAccounts())
-                                                            .orElseGet(Collections::emptySet)
-                                                            .stream()
-                                                            .map(BankingAccountDTOMapper::toBankingAccountDTO)
-                                                            .collect(Collectors.toSet());
+        //        Set<BankingAccountDto> bankingAccountsDTO = Optional.ofNullable(customer.getBankingAccounts())
+        //                                                            .orElseGet(Collections::emptySet)
+        //                                                            .stream()
+        //                                                            .map(BankingAccountDtoMapper::toBankingAccountDTO)
+        //                                                            .collect(Collectors.toSet());
 
         return new CustomerWithAccountDto(
                 customer.getId(),

@@ -24,14 +24,14 @@ public record CustomerRegistrationRequest(
         )
         String password,
 
-        @NotBlank(message = "Name must not be blank.")
+        @NotBlank(message = "Firstname must not be blank.")
         String firstName,
 
-        @NotBlank(message = "Surname must not be blank.")
+        @NotBlank(message = "Lastname must not be blank.")
         String lastName,
 
         @NotBlank(message = "Phone must not be blank.")
-        String phone,
+        String phoneNumber,
 
         @NotNull(message = "Birthdate must not be null.")
         LocalDate birthdate,
@@ -39,13 +39,11 @@ public record CustomerRegistrationRequest(
         @NotNull(message = "Gender must not be null")
         CustomerGender gender,
 
-        String photo,
-
         @NotBlank(message = "Address must not be blank.")
         String address,
 
         @NotBlank(message = "Postal code must not be blank.")
-        String postalCode,
+        String zipCode,
 
         @NotBlank(message = "Country must not be blank.")
         String country,

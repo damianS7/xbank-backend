@@ -132,9 +132,9 @@ public class CustomerService {
             switch (key) {
                 case "firstName" -> customer.setFirstName((String) value);
                 case "lastName" -> customer.setLastName((String) value);
-                case "phone" -> customer.setPhone((String) value);
+                case "phoneNumber" -> customer.setPhone((String) value);
                 case "country" -> customer.setCountry((String) value);
-                case "postalCode" -> customer.setPostalCode((String) value);
+                case "zipCode" -> customer.setPostalCode((String) value);
                 case "address" -> customer.setAddress((String) value);
                 case "photo" -> customer.setPhotoPath((String) value);
                 case "gender" -> customer.setGender(CustomerGender.valueOf((String) value));

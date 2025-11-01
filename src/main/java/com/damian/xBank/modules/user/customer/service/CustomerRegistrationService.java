@@ -46,12 +46,12 @@ public class CustomerRegistrationService {
         customer.setNationalId(request.nationalId());
         customer.setFirstName(request.firstName());
         customer.setLastName(request.lastName());
-        customer.setPhone(request.phone());
+        customer.setPhone(request.phoneNumber());
         customer.setGender(request.gender());
         customer.setBirthdate(request.birthdate());
         customer.setCountry(request.country());
         customer.setAddress(request.address());
-        customer.setPostalCode(request.postalCode());
+        customer.setPostalCode(request.zipCode());
         customer.setPhotoPath("avatar.jpg");
 
         return customerRepository.save(customer);
