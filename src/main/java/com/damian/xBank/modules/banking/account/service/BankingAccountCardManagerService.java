@@ -1,14 +1,14 @@
 package com.damian.xBank.modules.banking.account.service;
 
-import com.damian.xBank.modules.banking.account.BankingAccount;
+import com.damian.xBank.shared.domain.BankingAccount;
 import com.damian.xBank.modules.banking.account.BankingAccountAuthorizationHelper;
 import com.damian.xBank.modules.banking.account.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.repository.BankingAccountRepository;
-import com.damian.xBank.modules.banking.card.BankingCard;
-import com.damian.xBank.modules.banking.card.BankingCardService;
-import com.damian.xBank.modules.banking.card.BankingCardStatus;
+import com.damian.xBank.shared.domain.BankingCard;
+import com.damian.xBank.modules.banking.card.service.BankingCardService;
+import com.damian.xBank.modules.banking.card.enums.BankingCardStatus;
+import com.damian.xBank.modules.banking.card.dto.request.BankingCardRequest;
 import com.damian.xBank.modules.banking.card.exception.BankingCardMaximumCardsPerAccountLimitReached;
-import com.damian.xBank.modules.banking.card.http.BankingCardRequest;
 import com.damian.xBank.shared.domain.Customer;
 import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.utils.AuthHelper;

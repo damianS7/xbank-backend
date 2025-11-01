@@ -2,6 +2,7 @@ package com.damian.xBank.modules.banking.account;
 
 import com.damian.xBank.modules.banking.account.enums.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.exception.BankingAccountAuthorizationException;
+import com.damian.xBank.shared.domain.BankingAccount;
 import com.damian.xBank.shared.domain.Customer;
 import com.damian.xBank.shared.exception.Exceptions;
 

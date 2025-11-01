@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.banking.account.service;
 
-import com.damian.xBank.modules.banking.account.BankingAccount;
+import com.damian.xBank.shared.domain.BankingAccount;
 import com.damian.xBank.modules.banking.account.BankingAccountAuthorizationHelper;
 import com.damian.xBank.modules.banking.account.dto.request.BankingAccountAliasUpdateRequest;
 import com.damian.xBank.modules.banking.account.dto.request.BankingAccountCloseRequest;

@@ -1,11 +1,11 @@
 package com.damian.xBank.modules.banking.account.dto.mapper;
 
-import com.damian.xBank.modules.banking.account.BankingAccount;
+import com.damian.xBank.shared.domain.BankingAccount;
 import com.damian.xBank.modules.banking.account.dto.response.BankingAccountDetailDto;
 import com.damian.xBank.modules.banking.account.dto.response.BankingAccountDto;
 import com.damian.xBank.modules.banking.account.dto.response.BankingAccountSummaryDto;
-import com.damian.xBank.modules.banking.card.BankingCardDto;
-import com.damian.xBank.modules.banking.card.BankingCardDtoMapper;
+import com.damian.xBank.modules.banking.card.dto.response.BankingCardDto;
+import com.damian.xBank.modules.banking.card.dto.mapper.BankingCardDtoMapper;
 import com.damian.xBank.modules.banking.transactions.BankingTransactionDto;
 import com.damian.xBank.modules.banking.transactions.BankingTransactionDtoMapper;
 import org.springframework.data.domain.Page;

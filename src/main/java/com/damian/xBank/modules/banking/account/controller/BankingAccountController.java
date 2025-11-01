@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.banking.account.controller;
 
-import com.damian.xBank.modules.banking.account.BankingAccount;
+import com.damian.xBank.shared.domain.BankingAccount;
 import com.damian.xBank.modules.banking.account.dto.mapper.BankingAccountDtoMapper;
 import com.damian.xBank.modules.banking.account.dto.request.BankingAccountAliasUpdateRequest;
 import com.damian.xBank.modules.banking.account.dto.request.BankingAccountCreateRequest;
@@ -8,10 +8,10 @@ import com.damian.xBank.modules.banking.account.dto.response.BankingAccountDto;
 import com.damian.xBank.modules.banking.account.dto.response.BankingAccountSummaryDto;
 import com.damian.xBank.modules.banking.account.service.BankingAccountCardManagerService;
 import com.damian.xBank.modules.banking.account.service.BankingAccountService;
-import com.damian.xBank.modules.banking.card.BankingCard;
-import com.damian.xBank.modules.banking.card.BankingCardDto;
-import com.damian.xBank.modules.banking.card.BankingCardDtoMapper;
-import com.damian.xBank.modules.banking.card.http.BankingCardRequest;
+import com.damian.xBank.shared.domain.BankingCard;
+import com.damian.xBank.modules.banking.card.dto.response.BankingCardDto;
+import com.damian.xBank.modules.banking.card.dto.request.BankingCardRequest;
+import com.damian.xBank.modules.banking.card.dto.mapper.BankingCardDtoMapper;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import org.springframework.beans.factory.annotation.Autowired;
