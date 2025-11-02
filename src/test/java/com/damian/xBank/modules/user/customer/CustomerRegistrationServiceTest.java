@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.user.customer;
 
+import com.damian.xBank.modules.setting.service.SettingService;
 import com.damian.xBank.modules.user.account.account.enums.UserAccountRole;
 import com.damian.xBank.modules.user.account.account.service.UserAccountService;
 import com.damian.xBank.modules.user.customer.dto.request.CustomerRegistrationRequest;
@@ -28,6 +29,9 @@ public class CustomerRegistrationServiceTest extends AbstractServiceTest {
 
     @Mock
     private CustomerRepository customerRepository;
+
+    @Mock
+    private SettingService settingService;
 
     @Mock
     private UserAccountService userAccountService;
@@ -63,7 +67,6 @@ public class CustomerRegistrationServiceTest extends AbstractServiceTest {
                 "123 123 123",
                 LocalDate.of(1989, 1, 1),
                 CustomerGender.MALE,
-                "",
                 "Fake AV",
                 "50120",
                 "USA",
@@ -74,6 +77,7 @@ public class CustomerRegistrationServiceTest extends AbstractServiceTest {
                                                   .setEmail(request.email());
 
         // when
+        doNothing().when(settingService).createDefaultSettings(any(UserAccount.class));
         when(userAccountService.createUserAccount(anyString(), anyString(), any()))
                 .thenReturn(givenUserAccount);
 

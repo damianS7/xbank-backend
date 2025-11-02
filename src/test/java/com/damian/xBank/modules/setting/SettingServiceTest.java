@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.setting;
 
-import com.damian.xBank.modules.setting.dto.request.SettingsPatchRequest;
+import com.damian.xBank.modules.setting.dto.request.SettingsUpdateRequest;
 import com.damian.xBank.modules.setting.repository.SettingRepository;
 import com.damian.xBank.modules.setting.service.SettingService;
 import com.damian.xBank.shared.AbstractServiceTest;
@@ -11,8 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,14 +31,18 @@ public class SettingServiceTest extends AbstractServiceTest {
         User currentUser = User.create()
                                .setId(1L)
                                .setEmail("user@demo.com");
+
         setUpContext(currentUser);
 
-        Map<String, Object> settings = new HashMap<>();
-        settings.put("key1", "value1");
-        settings.put("key2", "value2");
+        UserSettings givenUserSettings = new UserSettings(
+                true,
+                false,
+                "",
+                "EN"
+        );
 
         Setting givenSettings = Setting.create(currentUser)
-                                       .setSettings(settings);
+                                       .setSettings(givenUserSettings);
 
         // when
         when(settingRepository.findByUser_Id(currentUser.getId()))
@@ -51,10 +53,13 @@ public class SettingServiceTest extends AbstractServiceTest {
         assertThat(result)
                 .isNotNull()
                 .extracting(
-                        r -> r.getSetting("key1"),
-                        r -> r.getSetting("key2")
+                        r -> r.getSettings().LANGUAGE(),
+                        r -> r.getSettings().EMAIL_NOTIFICATIONS()
                 )
-                .containsExactly("value1", "value2");
+                .containsExactly(
+                        givenUserSettings.LANGUAGE(),
+                        givenUserSettings.EMAIL_NOTIFICATIONS()
+                );
         verify(settingRepository, times(1)).findByUser_Id(currentUser.getId());
     }
 
@@ -67,14 +72,25 @@ public class SettingServiceTest extends AbstractServiceTest {
                                .setEmail("user@demo.com");
         setUpContext(currentUser);
 
-        Map<String, Object> settings = new HashMap<>();
-        settings.put("key1", "value1");
+        UserSettings userSettings = new UserSettings(
+                true,
+                false,
+                "",
+                "EN"
+        );
 
         Setting givenSettings = Setting.create(currentUser)
-                                       .setSettings(settings);
+                                       .setSettings(userSettings);
 
-        SettingsPatchRequest request = new SettingsPatchRequest(
-                Map.of("key1", "newValue")
+        UserSettings updatedUserSettings = new UserSettings(
+                false,
+                false,
+                "",
+                "ES"
+        );
+
+        SettingsUpdateRequest request = new SettingsUpdateRequest(
+                updatedUserSettings
         );
 
         // when
@@ -87,10 +103,14 @@ public class SettingServiceTest extends AbstractServiceTest {
         assertThat(result)
                 .isNotNull()
                 .extracting(
-                        r -> r.getSetting("key1")
+                        r -> r.getSettings().LANGUAGE(),
+                        r -> r.getSettings().EMAIL_NOTIFICATIONS()
                 )
-                .isEqualTo(request.settings().get("key1"));
-        verify(settingRepository, times(2)).findByUser_Id(currentUser.getId());
+                .containsExactly(
+                        updatedUserSettings.LANGUAGE(),
+                        updatedUserSettings.EMAIL_NOTIFICATIONS()
+                );
+        verify(settingRepository, times(1)).findByUser_Id(currentUser.getId());
         verify(settingRepository, times(1)).save(any(Setting.class));
     }
 }

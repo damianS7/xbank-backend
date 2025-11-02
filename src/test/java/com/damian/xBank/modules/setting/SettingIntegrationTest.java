@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.setting;
 
-import com.damian.xBank.modules.setting.dto.request.SettingsPatchRequest;
+import com.damian.xBank.modules.setting.dto.request.SettingsUpdateRequest;
 import com.damian.xBank.modules.setting.dto.response.SettingDto;
 import com.damian.xBank.modules.user.account.account.enums.UserAccountStatus;
 import com.damian.xBank.modules.user.customer.enums.CustomerGender;
@@ -16,8 +16,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -29,7 +27,7 @@ public class SettingIntegrationTest extends AbstractIntegrationTest {
 
     private Customer customer;
 
-    @BeforeAll
+    @BeforeEach
     void setUp() {
         customer = Customer.create()
                            .setEmail("customer@demo.com")
@@ -58,9 +56,12 @@ public class SettingIntegrationTest extends AbstractIntegrationTest {
         // given
         login(customer);
 
-        Map<String, Object> givenSettings = new HashMap<>();
-        givenSettings.put("lang", "en");
-        givenSettings.put("2fa", "enabled");
+        UserSettings givenSettings = new UserSettings(
+                true,
+                false,
+                "",
+                "EN"
+        );
 
         Setting givenSetting = Setting.create(customer)
                                       .setSettings(givenSettings);
@@ -84,7 +85,7 @@ public class SettingIntegrationTest extends AbstractIntegrationTest {
         );
 
         // then
-        assertThat(settings).isNotNull();
+        assertThat(settings.settings()).isNotNull();
     }
 
     @Test
@@ -93,15 +94,25 @@ public class SettingIntegrationTest extends AbstractIntegrationTest {
         // given
         login(customer);
 
-        Map<String, Object> givenSettings = new HashMap<>();
-        givenSettings.put("lang", "en");
+        UserSettings givenSettings = new UserSettings(
+                true,
+                false,
+                "",
+                "EN"
+        );
 
         Setting givenSetting = Setting.create(customer)
                                       .setSettings(givenSettings);
+
         settingRepository.save(givenSetting);
 
-        SettingsPatchRequest request = new SettingsPatchRequest(
-                Map.of("lang", "es")
+        SettingsUpdateRequest request = new SettingsUpdateRequest(
+                new UserSettings(
+                        true,
+                        false,
+                        "",
+                        "ES"
+                )
         );
 
         // when
@@ -126,8 +137,8 @@ public class SettingIntegrationTest extends AbstractIntegrationTest {
         assertThat(settings)
                 .isNotNull()
                 .extracting(
-                        r -> r.settings().get("lang")
+                        r -> r.settings().LANGUAGE()
                 )
-                .isEqualTo("es");
+                .isEqualTo(request.settings().LANGUAGE());
     }
 }

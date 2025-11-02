@@ -10,7 +10,7 @@ import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.utils.ApiResponse;
 import com.damian.xBank.shared.utils.JsonHelper;
 import com.fasterxml.jackson.core.type.TypeReference;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 public class AuthenticationIntegrationTest extends AbstractIntegrationTest {
     private UserAccount userAccount;
 
-    @BeforeAll
+    @BeforeEach
     void setUp() {
         userAccount = UserAccount.create()
                                  .setEmail("user@demo.com")

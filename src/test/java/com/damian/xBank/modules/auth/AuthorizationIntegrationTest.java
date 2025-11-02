@@ -7,7 +7,7 @@ import com.damian.xBank.shared.AbstractIntegrationTest;
 import com.damian.xBank.shared.domain.Customer;
 import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.utils.JwtUtil;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -34,7 +34,7 @@ public class AuthorizationIntegrationTest extends AbstractIntegrationTest {
 
     private Customer customer;
 
-    @BeforeAll
+    @BeforeEach
     void setUp() {
         customer = Customer.create()
                            .setEmail("customer@demo.com")

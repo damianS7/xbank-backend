@@ -1,8 +1,7 @@
 package com.damian.xBank.modules.user.customer;
 
 import com.damian.xBank.modules.user.customer.dto.request.CustomerUpdateRequest;
-import com.damian.xBank.modules.user.customer.dto.response.CustomerDto;
-import com.damian.xBank.modules.user.customer.dto.response.CustomerWithAccountDto;
+import com.damian.xBank.modules.user.customer.dto.response.CustomerDetailDto;
 import com.damian.xBank.modules.user.customer.enums.CustomerGender;
 import com.damian.xBank.shared.AbstractIntegrationTest;
 import com.damian.xBank.shared.domain.Customer;
@@ -11,7 +10,7 @@ import com.damian.xBank.shared.infrastructure.storage.ImageUploaderService;
 import com.damian.xBank.shared.infrastructure.storage.exception.FileStorageNotFoundException;
 import com.damian.xBank.shared.utils.ImageTestHelper;
 import com.damian.xBank.shared.utils.JsonHelper;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -55,7 +54,7 @@ public class CustomerIntegrationTest extends AbstractIntegrationTest {
     @MockitoBean
     private ImageUploaderService imageUploaderService;
 
-    @BeforeAll
+    @BeforeEach
     void setUp() {
         customer = Customer.create()
                            .setEmail("customer@test.com")
@@ -89,9 +88,9 @@ public class CustomerIntegrationTest extends AbstractIntegrationTest {
                 .andReturn();
 
         // then
-        CustomerWithAccountDto customerWithProfileDTO = objectMapper.readValue(
+        CustomerDetailDto customerWithProfileDTO = objectMapper.readValue(
                 result.getResponse().getContentAsString(),
-                CustomerWithAccountDto.class
+                CustomerDetailDto.class
         );
 
         // then
@@ -130,19 +129,19 @@ public class CustomerIntegrationTest extends AbstractIntegrationTest {
                 .andReturn();
 
         // then
-        CustomerDto userDto = JsonHelper.fromJson(
+        CustomerDetailDto customerDto = JsonHelper.fromJson(
                 result.getResponse().getContentAsString(),
-                CustomerDto.class
+                CustomerDetailDto.class
         );
 
-        assertThat(userDto)
+        assertThat(customerDto)
                 .isNotNull()
                 .extracting(
-                        CustomerDto::firstName,
-                        CustomerDto::lastName,
-                        CustomerDto::phone,
-                        CustomerDto::birthdate,
-                        CustomerDto::gender
+                        CustomerDetailDto::firstName,
+                        CustomerDetailDto::lastName,
+                        CustomerDetailDto::phone,
+                        CustomerDetailDto::birthdate,
+                        CustomerDetailDto::gender
                 ).containsExactly(
                         givenRequest.fieldsToUpdate().get("firstName"),
                         givenRequest.fieldsToUpdate().get("lastName"),

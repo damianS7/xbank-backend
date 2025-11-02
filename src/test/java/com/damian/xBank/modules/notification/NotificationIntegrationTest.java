@@ -12,7 +12,7 @@ import com.damian.xBank.shared.domain.Notification;
 import com.damian.xBank.shared.domain.User;
 import com.damian.xBank.shared.utils.JwtUtil;
 import com.fasterxml.jackson.databind.JsonNode;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -49,7 +49,7 @@ public class NotificationIntegrationTest extends AbstractIntegrationTest {
     @SpyBean
     private NotificationService notificationService;
 
-    @BeforeAll
+    @BeforeEach
     void setUp() {
         customer = Customer.create()
                            .setEmail("customer@demo.com")

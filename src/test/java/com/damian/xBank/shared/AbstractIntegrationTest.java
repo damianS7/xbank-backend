@@ -5,6 +5,7 @@ import com.damian.xBank.modules.auth.dto.AuthenticationRequest;
 import com.damian.xBank.modules.auth.dto.AuthenticationResponse;
 import com.damian.xBank.modules.notification.repository.NotificationRepository;
 import com.damian.xBank.modules.setting.repository.SettingRepository;
+import com.damian.xBank.modules.user.account.account.enums.UserAccountRole;
 import com.damian.xBank.modules.user.account.account.repository.UserAccountRepository;
 import com.damian.xBank.modules.user.account.token.repository.UserAccountTokenRepository;
 import com.damian.xBank.modules.user.customer.repository.CustomerRepository;
@@ -13,7 +14,7 @@ import com.damian.xBank.shared.domain.User;
 import com.damian.xBank.shared.domain.UserAccount;
 import com.damian.xBank.shared.utils.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -70,13 +71,22 @@ public abstract class AbstractIntegrationTest {
 
     protected String token;
 
-    @AfterAll
+    @AfterEach
     void tearDown() {
-        userAccountTokenRepository.deleteAll();
         notificationRepository.deleteAll();
         settingRepository.deleteAll();
-        customerRepository.deleteAll();
+        userAccountTokenRepository.deleteAll();
         userAccountRepository.deleteAll();
+        customerRepository.deleteAll();
+    }
+
+    protected void login(String email) throws Exception {
+        // given
+        final HashMap<String, Object> claims = new HashMap<>();
+        claims.put("email", email);
+        claims.put("role", UserAccountRole.CUSTOMER);
+
+        token = jwtUtil.generateToken(claims, email);
     }
 
     protected void login(UserAccount userAccount) throws Exception {
