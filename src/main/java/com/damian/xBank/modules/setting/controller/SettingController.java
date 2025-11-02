@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.setting.controller;
 
 import com.damian.xBank.modules.setting.dto.mapper.SettingDtoMapper;
-import com.damian.xBank.modules.setting.dto.request.SettingsPatchRequest;
+import com.damian.xBank.modules.setting.dto.request.SettingsUpdateRequest;
 import com.damian.xBank.modules.setting.dto.response.SettingDto;
 import com.damian.xBank.modules.setting.service.SettingService;
 import com.damian.xBank.shared.domain.Setting;
@@ -36,7 +36,7 @@ public class SettingController {
     @PatchMapping("/settings")
     public ResponseEntity<?> updateSettings(
             @Validated @RequestBody
-            SettingsPatchRequest request
+            SettingsUpdateRequest request
     ) {
         Setting setting = settingService.updateSettings(request);
         SettingDto settingDto = SettingDtoMapper.toSettingDto(setting);

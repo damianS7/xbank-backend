@@ -1,11 +1,10 @@
 package com.damian.xBank.shared.domain;
 
+import com.damian.xBank.modules.setting.UserSettings;
+import com.damian.xBank.modules.setting.UserSettingsConverter;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Entity
 @Table(name = "user_settings")
@@ -18,14 +17,12 @@ public class Setting {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private UserAccount user;
 
-    @Column(columnDefinition = "jsonb")
+    @Convert(converter = UserSettingsConverter.class)
     @JdbcTypeCode(SqlTypes.JSON)
-    private Map<String, Object> settings = new HashMap<>();
+    @Column(columnDefinition = "jsonb")
+    private UserSettings settings;
 
     public Setting() {
-        settings.put("TWO_FACTOR_AUTH", false);
-        settings.put("LANG", "EN");
-        settings.put("EMAIL_NOTIFICATIONS", false);
     }
 
     public Setting(UserAccount userAccount) {
@@ -90,16 +87,12 @@ public class Setting {
         return this.user.getId().equals(user.getId());
     }
 
-    public Map<String, Object> getSettings() {
+    public UserSettings getSettings() {
         return settings;
     }
 
-    public Setting setSettings(Map<String, Object> settings) {
+    public Setting setSettings(UserSettings settings) {
         this.settings = settings;
         return this;
-    }
-
-    public String getSetting(String key) {
-        return settings.get(key).toString();
     }
 }

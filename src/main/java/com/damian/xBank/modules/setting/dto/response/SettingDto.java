@@ -1,8 +1,10 @@
 package com.damian.xBank.modules.setting.dto.response;
 
-import java.util.Map;
+import com.damian.xBank.modules.setting.UserSettings;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 public record SettingDto(
-        Map<String, Object> settings
+        @JsonUnwrapped
+        UserSettings settings
 ) {
 }

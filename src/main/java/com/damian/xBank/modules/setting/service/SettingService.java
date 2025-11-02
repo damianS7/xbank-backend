@@ -1,11 +1,13 @@
 package com.damian.xBank.modules.setting.service;
 
-import com.damian.xBank.modules.setting.dto.request.SettingsPatchRequest;
+import com.damian.xBank.modules.setting.UserSettings;
+import com.damian.xBank.modules.setting.dto.request.SettingsUpdateRequest;
 import com.damian.xBank.modules.setting.exception.SettingNotFoundException;
 import com.damian.xBank.modules.setting.exception.SettingNotOwnerException;
 import com.damian.xBank.modules.setting.repository.SettingRepository;
 import com.damian.xBank.shared.domain.Setting;
 import com.damian.xBank.shared.domain.User;
+import com.damian.xBank.shared.domain.UserAccount;
 import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.utils.AuthHelper;
 import org.slf4j.Logger;
@@ -34,37 +36,38 @@ public class SettingService {
                                 );
     }
 
-    // update only one setting
-    public Setting updateSetting(String key, Object value) {
+    // Update settings for the current user
+    public Setting updateSettings(SettingsUpdateRequest request) {
         User currentUser = AuthHelper.getCurrentUser();
 
         // find the setting by settingId
-        Setting setting = settingRepository.findByUser_Id(currentUser.getId()).orElseThrow(
-                () -> new SettingNotFoundException(Exceptions.CUSTOMER.SETTINGS.NOT_FOUND, currentUser.getId())
-        );
+        Setting userSettings = settingRepository
+                .findByUser_Id(currentUser.getId())
+                .orElseThrow(
+                        () -> new SettingNotFoundException(Exceptions.CUSTOMER.SETTINGS.NOT_FOUND, currentUser.getId())
+                );
 
         // check if the logged user is the owner of the setting.
-        if (!setting.isOwner(currentUser)) {
+        if (!userSettings.isOwner(currentUser)) {
             throw new SettingNotOwnerException(Exceptions.CUSTOMER.SETTINGS.NOT_OWNER, currentUser.getId());
         }
 
         log.debug(
-                "Updated setting: {} with value: {} by user: {}",
-                key,
-                value,
+                "Updated settings: {} by user: {}",
+                request.settings().toString(),
                 currentUser.getId()
         );
 
-        setting.getSettings().put(key, value);
-        return settingRepository.save(setting);
+        userSettings.setSettings(request.settings());
+        return settingRepository.save(userSettings);
     }
 
-    // update multiple settings at once
-    public Setting updateSettings(SettingsPatchRequest request) {
-        request.settings().forEach((key, value) -> {
-            this.updateSetting(key, value);
-        });
-
-        return this.getSettings();
+    // TODO
+    public void createDefaultSettingsForUser(UserAccount userAccount) {
+        UserSettings defaultSettings = UserSettings.defaults();
+        Setting setting = new Setting();
+        setting.setUserAccount(userAccount);
+        setting.setSettings(defaultSettings);
+        settingRepository.save(setting);
     }
 }
