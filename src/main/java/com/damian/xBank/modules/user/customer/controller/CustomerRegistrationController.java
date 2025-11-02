@@ -2,7 +2,7 @@ package com.damian.xBank.modules.user.customer.controller;
 
 import com.damian.xBank.modules.user.customer.dto.mapper.CustomerDtoMapper;
 import com.damian.xBank.modules.user.customer.dto.request.CustomerRegistrationRequest;
-import com.damian.xBank.modules.user.customer.dto.response.CustomerWithAccountDto;
+import com.damian.xBank.modules.user.customer.dto.response.CustomerDetailDto;
 import com.damian.xBank.modules.user.customer.service.CustomerRegistrationService;
 import com.damian.xBank.shared.domain.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,7 @@ public class CustomerRegistrationController {
     ) {
 
         Customer registeredCustomer = customerRegistrationService.registerCustomer(request);
-        CustomerWithAccountDto customerDto = CustomerDtoMapper.toCustomerWithAccountDto(registeredCustomer);
+        CustomerDetailDto customerDto = CustomerDtoMapper.toCustomerWithAccountDto(registeredCustomer);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)

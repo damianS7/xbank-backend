@@ -6,7 +6,7 @@ import com.damian.xBank.modules.user.customer.enums.CustomerGender;
 import java.time.Instant;
 import java.time.LocalDate;
 
-public record CustomerWithAccountDto(
+public record CustomerDetailDto(
         Long id,
         UserAccountRole role,
         String email,

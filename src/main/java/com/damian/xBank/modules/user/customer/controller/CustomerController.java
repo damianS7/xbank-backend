@@ -2,7 +2,7 @@ package com.damian.xBank.modules.user.customer.controller;
 
 import com.damian.xBank.modules.user.customer.dto.mapper.CustomerDtoMapper;
 import com.damian.xBank.modules.user.customer.dto.request.CustomerUpdateRequest;
-import com.damian.xBank.modules.user.customer.dto.response.CustomerWithAccountDto;
+import com.damian.xBank.modules.user.customer.dto.response.CustomerDetailDto;
 import com.damian.xBank.modules.user.customer.service.CustomerImageService;
 import com.damian.xBank.modules.user.customer.service.CustomerService;
 import com.damian.xBank.shared.domain.Customer;
@@ -41,7 +41,7 @@ public class CustomerController {
     @GetMapping("/customers")
     public ResponseEntity<?> getLoggedCustomerData() {
         Customer customer = customerService.getCustomer();
-        CustomerWithAccountDto dto = CustomerDtoMapper.toCustomerWithAccountDto(customer);
+        CustomerDetailDto dto = CustomerDtoMapper.toCustomerWithAccountDto(customer);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -50,13 +50,13 @@ public class CustomerController {
 
     // endpoint to modify current customer profile
     @PatchMapping("/customers")
-    public ResponseEntity<CustomerWithAccountDto> update(
+    public ResponseEntity<CustomerDetailDto> update(
             @Validated @RequestBody
             CustomerUpdateRequest request
     ) {
         Customer customer = customerService.updateCustomer(request);
         //        CustomerDto customerDto = CustomerDtoMapper.toCustomerDto(customer);
-        CustomerWithAccountDto customerDto = CustomerDtoMapper.toCustomerWithAccountDto(customer);
+        CustomerDetailDto customerDto = CustomerDtoMapper.toCustomerWithAccountDto(customer);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

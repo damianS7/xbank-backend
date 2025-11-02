@@ -3,8 +3,8 @@ package com.damian.xBank.modules.user.customer.dto.mapper;
 import com.damian.xBank.modules.user.account.account.dto.mapper.UserAccountDtoMapper;
 import com.damian.xBank.modules.user.account.account.dto.response.UserAccountDto;
 import com.damian.xBank.modules.user.account.account.exception.UserAccountNotFoundException;
+import com.damian.xBank.modules.user.customer.dto.response.CustomerDetailDto;
 import com.damian.xBank.modules.user.customer.dto.response.CustomerDto;
-import com.damian.xBank.modules.user.customer.dto.response.CustomerWithAccountDto;
 import com.damian.xBank.shared.domain.Customer;
 import com.damian.xBank.shared.exception.Exceptions;
 import org.springframework.data.domain.Page;
@@ -30,7 +30,7 @@ public class CustomerDtoMapper {
         );
     }
 
-    public static CustomerWithAccountDto toCustomerWithAccountDto(Customer customer) {
+    public static CustomerDetailDto toCustomerWithAccountDto(Customer customer) {
         UserAccountDto customerAccountDto = Optional.ofNullable(
                 UserAccountDtoMapper.toUserDto(customer.getAccount())
         ).orElseThrow(() -> new UserAccountNotFoundException(
@@ -42,7 +42,7 @@ public class CustomerDtoMapper {
         //                                                            .map(BankingAccountDtoMapper::toBankingAccountDTO)
         //                                                            .collect(Collectors.toSet());
 
-        return new CustomerWithAccountDto(
+        return new CustomerDetailDto(
                 customer.getId(),
                 customerAccountDto.role(),
                 customerAccountDto.email(),
