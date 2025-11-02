@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.user.customer.service;
 
+import com.damian.xBank.modules.setting.service.SettingService;
 import com.damian.xBank.modules.user.account.account.enums.UserAccountRole;
 import com.damian.xBank.modules.user.account.account.service.UserAccountService;
 import com.damian.xBank.modules.user.customer.dto.request.CustomerRegistrationRequest;
@@ -10,19 +11,23 @@ import com.damian.xBank.shared.domain.UserAccount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CustomerRegistrationService {
     private static final Logger log = LoggerFactory.getLogger(CustomerRegistrationService.class);
     private final CustomerRepository customerRepository;
     private final UserAccountService userAccountService;
+    private final SettingService settingService;
 
     public CustomerRegistrationService(
             CustomerRepository customerRepository,
-            UserAccountService userAccountService
+            UserAccountService userAccountService,
+            SettingService settingService
     ) {
         this.customerRepository = customerRepository;
         this.userAccountService = userAccountService;
+        this.settingService = settingService;
     }
 
     /**
@@ -32,6 +37,7 @@ public class CustomerRegistrationService {
      * @return the customer created
      * @throws CustomerException if another user has the email
      */
+    @Transactional
     public Customer registerCustomer(CustomerRegistrationRequest request) {
 
         UserAccount userAccount = userAccountService.createUserAccount(
@@ -53,6 +59,9 @@ public class CustomerRegistrationService {
         customer.setAddress(request.address());
         customer.setPostalCode(request.zipCode());
         customer.setPhotoPath("avatar.jpg");
+
+        // Create default settings for the new customer
+        settingService.createDefaultSettings(customer.getAccount());
 
         return customerRepository.save(customer);
     }

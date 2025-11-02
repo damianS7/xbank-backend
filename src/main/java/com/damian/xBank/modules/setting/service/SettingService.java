@@ -63,7 +63,7 @@ public class SettingService {
     }
 
     // TODO
-    public void createDefaultSettingsForUser(UserAccount userAccount) {
+    public void createDefaultSettings(UserAccount userAccount) {
         UserSettings defaultSettings = UserSettings.defaults();
         Setting setting = new Setting();
         setting.setUserAccount(userAccount);
