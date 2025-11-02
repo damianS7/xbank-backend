@@ -1,10 +1,10 @@
 package com.damian.xBank.modules.setting.dto.response;
 
 import com.damian.xBank.modules.setting.UserSettings;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import jakarta.validation.constraints.NotNull;
 
 public record SettingDto(
-        @JsonUnwrapped
+        @NotNull(message = "Settings cannot be null")
         UserSettings settings
 ) {
 }
