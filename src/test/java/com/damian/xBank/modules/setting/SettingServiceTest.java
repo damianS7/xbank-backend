@@ -1,6 +1,9 @@
 package com.damian.xBank.modules.setting;
 
 import com.damian.xBank.modules.setting.dto.request.SettingsUpdateRequest;
+import com.damian.xBank.modules.setting.enums.SettingLanguage;
+import com.damian.xBank.modules.setting.enums.SettingMultifactor;
+import com.damian.xBank.modules.setting.enums.SettingTheme;
 import com.damian.xBank.modules.setting.repository.SettingRepository;
 import com.damian.xBank.modules.setting.service.SettingService;
 import com.damian.xBank.shared.AbstractServiceTest;
@@ -34,12 +37,7 @@ public class SettingServiceTest extends AbstractServiceTest {
 
         setUpContext(currentUser);
 
-        UserSettings givenUserSettings = new UserSettings(
-                true,
-                false,
-                "",
-                "EN"
-        );
+        UserSettings givenUserSettings = UserSettings.defaults();
 
         Setting givenSettings = Setting.create(currentUser)
                                        .setSettings(givenUserSettings);
@@ -53,12 +51,12 @@ public class SettingServiceTest extends AbstractServiceTest {
         assertThat(result)
                 .isNotNull()
                 .extracting(
-                        r -> r.getSettings().LANGUAGE(),
-                        r -> r.getSettings().EMAIL_NOTIFICATIONS()
+                        r -> r.getSettings().language(),
+                        r -> r.getSettings().emailNotifications()
                 )
                 .containsExactly(
-                        givenUserSettings.LANGUAGE(),
-                        givenUserSettings.EMAIL_NOTIFICATIONS()
+                        givenUserSettings.language(),
+                        givenUserSettings.emailNotifications()
                 );
         verify(settingRepository, times(1)).findByUser_Id(currentUser.getId());
     }
@@ -74,19 +72,29 @@ public class SettingServiceTest extends AbstractServiceTest {
 
         UserSettings userSettings = new UserSettings(
                 true,
+                true,
+                false,
                 false,
                 "",
-                "EN"
+                60,
+                SettingMultifactor.EMAIL,
+                SettingLanguage.EN,
+                SettingTheme.LIGHT
         );
 
         Setting givenSettings = Setting.create(currentUser)
                                        .setSettings(userSettings);
 
         UserSettings updatedUserSettings = new UserSettings(
+                true,
+                true,
                 false,
                 false,
                 "",
-                "ES"
+                60,
+                SettingMultifactor.EMAIL,
+                SettingLanguage.ES,
+                SettingTheme.LIGHT
         );
 
         SettingsUpdateRequest request = new SettingsUpdateRequest(
@@ -103,12 +111,12 @@ public class SettingServiceTest extends AbstractServiceTest {
         assertThat(result)
                 .isNotNull()
                 .extracting(
-                        r -> r.getSettings().LANGUAGE(),
-                        r -> r.getSettings().EMAIL_NOTIFICATIONS()
+                        r -> r.getSettings().language(),
+                        r -> r.getSettings().emailNotifications()
                 )
                 .containsExactly(
-                        updatedUserSettings.LANGUAGE(),
-                        updatedUserSettings.EMAIL_NOTIFICATIONS()
+                        updatedUserSettings.language(),
+                        updatedUserSettings.emailNotifications()
                 );
         verify(settingRepository, times(1)).findByUser_Id(currentUser.getId());
         verify(settingRepository, times(1)).save(any(Setting.class));

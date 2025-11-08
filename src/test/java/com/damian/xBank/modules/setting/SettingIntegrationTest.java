@@ -2,6 +2,9 @@ package com.damian.xBank.modules.setting;
 
 import com.damian.xBank.modules.setting.dto.request.SettingsUpdateRequest;
 import com.damian.xBank.modules.setting.dto.response.SettingDto;
+import com.damian.xBank.modules.setting.enums.SettingLanguage;
+import com.damian.xBank.modules.setting.enums.SettingMultifactor;
+import com.damian.xBank.modules.setting.enums.SettingTheme;
 import com.damian.xBank.modules.user.account.account.enums.UserAccountStatus;
 import com.damian.xBank.modules.user.customer.enums.CustomerGender;
 import com.damian.xBank.shared.AbstractIntegrationTest;
@@ -56,12 +59,7 @@ public class SettingIntegrationTest extends AbstractIntegrationTest {
         // given
         login(customer);
 
-        UserSettings givenSettings = new UserSettings(
-                true,
-                false,
-                "",
-                "EN"
-        );
+        UserSettings givenSettings = UserSettings.defaults();
 
         Setting givenSetting = Setting.create(customer)
                                       .setSettings(givenSettings);
@@ -94,12 +92,7 @@ public class SettingIntegrationTest extends AbstractIntegrationTest {
         // given
         login(customer);
 
-        UserSettings givenSettings = new UserSettings(
-                true,
-                false,
-                "",
-                "EN"
-        );
+        UserSettings givenSettings = UserSettings.defaults();
 
         Setting givenSetting = Setting.create(customer)
                                       .setSettings(givenSettings);
@@ -109,9 +102,14 @@ public class SettingIntegrationTest extends AbstractIntegrationTest {
         SettingsUpdateRequest request = new SettingsUpdateRequest(
                 new UserSettings(
                         true,
+                        true,
+                        false,
                         false,
                         "",
-                        "ES"
+                        60,
+                        SettingMultifactor.EMAIL,
+                        SettingLanguage.ES,
+                        SettingTheme.LIGHT
                 )
         );
 
@@ -137,8 +135,8 @@ public class SettingIntegrationTest extends AbstractIntegrationTest {
         assertThat(settings)
                 .isNotNull()
                 .extracting(
-                        r -> r.settings().LANGUAGE()
+                        r -> r.settings().language()
                 )
-                .isEqualTo(request.settings().LANGUAGE());
+                .isEqualTo(request.settings().language());
     }
 }
