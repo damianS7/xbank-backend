@@ -73,7 +73,7 @@ CREATE TABLE public.customers (
 );
 
 CREATE TYPE public."notification_type" AS ENUM (
-	'MESSAGE'
+	'MESSAGE', 'INFO', 'TRANSACTION'
 );
 CREATE CAST (varchar as notification_type) WITH INOUT AS IMPLICIT;
 
@@ -172,6 +172,7 @@ CREATE TABLE public.banking_cards (
 	notes text NULL,
 	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
 	updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+	CONSTRAINT banking_cards_card_number_key UNIQUE (card_number),
 	CONSTRAINT fk_account_id_fkey FOREIGN KEY (account_id)
 	    REFERENCES public.banking_accounts(id)
 	    ON DELETE CASCADE
