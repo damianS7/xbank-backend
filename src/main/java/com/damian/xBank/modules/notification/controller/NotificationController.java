@@ -2,6 +2,7 @@ package com.damian.xBank.modules.notification.controller;
 
 import com.damian.xBank.modules.notification.dto.NotificationEvent;
 import com.damian.xBank.modules.notification.dto.mapper.NotificationDtoMapper;
+import com.damian.xBank.modules.notification.dto.request.NotificationDeleteRequest;
 import com.damian.xBank.modules.notification.dto.response.NotificationDto;
 import com.damian.xBank.modules.notification.service.NotificationService;
 import com.damian.xBank.shared.domain.Notification;
@@ -13,6 +14,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
@@ -28,7 +30,7 @@ public class NotificationController {
     // endpoint to fetch (paginated) notifications from current user
     @GetMapping("/notifications")
     public ResponseEntity<?> getNotifications(
-            @PageableDefault(size = 12, sort = "createdAt", direction = Sort.Direction.DESC)
+            @PageableDefault(size = 8, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
         Page<Notification> notifications = notificationService.getNotifications(pageable);
@@ -39,18 +41,22 @@ public class NotificationController {
                 .body(notificationsDto);
     }
 
-    // endpoint to delete a notifications
+    // endpoint to delete a batch of notifications by its id
     @DeleteMapping("/notifications")
     public ResponseEntity<?> deleteNotifications(
+            @Validated @RequestBody
+            NotificationDeleteRequest request
     ) {
-        notificationService.deleteNotifications();
+        notificationService.deleteNotifications(
+                request.notificationIds()
+        );
 
         return ResponseEntity
                 .noContent()
                 .build();
     }
 
-    // endpoint to delete a notifications
+    // endpoint to delete a notification by id
     @DeleteMapping("/notifications/{id}")
     public ResponseEntity<?> deleteNotification(
             @PathVariable @Positive
