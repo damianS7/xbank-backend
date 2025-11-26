@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -51,13 +52,20 @@ public class NotificationService {
 
     /**
      * Delete all notifications for the current user.
+     *
+     * @param notificationIds List of notification ids to delete
      */
     @Transactional
-    public void deleteNotifications() {
+    public void deleteNotifications(List<Long> notificationIds) {
         User currentUser = AuthHelper.getCurrentUser();
-        // delete all notifications
-        notificationRepository.deleteAllByUser_Id(currentUser.getId());
-        log.debug("Deleted all notifications from user: {}", currentUser.getId());
+
+        // delete selected notifications
+        notificationRepository.deleteAllByIdInAndUser_Id(
+                notificationIds,
+                currentUser.getAccount().getId()
+        );
+
+        log.debug("Deleted {} notifications from user: {}", notificationIds.size(), currentUser.getId());
     }
 
     /**
