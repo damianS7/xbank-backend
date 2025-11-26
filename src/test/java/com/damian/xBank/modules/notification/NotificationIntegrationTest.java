@@ -1,6 +1,7 @@
 package com.damian.xBank.modules.notification;
 
 import com.damian.xBank.modules.notification.dto.NotificationEvent;
+import com.damian.xBank.modules.notification.dto.request.NotificationDeleteRequest;
 import com.damian.xBank.modules.notification.dto.response.NotificationDto;
 import com.damian.xBank.modules.notification.enums.NotificationType;
 import com.damian.xBank.modules.notification.service.NotificationService;
@@ -30,6 +31,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import reactor.core.publisher.Flux;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -74,7 +76,7 @@ public class NotificationIntegrationTest extends AbstractIntegrationTest {
         Notification notification = Notification
                 .create(customer)
                 .setMessage("Alice has follow you.")
-                .setType(NotificationType.FOLLOW)
+                .setType(NotificationType.INFO)
                 .setMetadata(
                         Map.of(
                                 "userName", "alice"
@@ -112,7 +114,7 @@ public class NotificationIntegrationTest extends AbstractIntegrationTest {
         Notification notification = Notification
                 .create(customer)
                 .setMessage("Alice has follow you.")
-                .setType(NotificationType.FOLLOW)
+                .setType(NotificationType.INFO)
                 .setMetadata(
                         Map.of(
                                 "userName", "alice"
@@ -121,11 +123,16 @@ public class NotificationIntegrationTest extends AbstractIntegrationTest {
 
         notificationRepository.save(notification);
 
+        NotificationDeleteRequest notificationDeleteRequest = new NotificationDeleteRequest(
+                List.of(notification.getId())
+        );
+
         // when
         login(customer);
         mockMvc.perform(MockMvcRequestBuilders
                        .delete("/api/v1/notifications")
                        .contentType(MediaType.APPLICATION_JSON)
+                       .content(objectMapper.writeValueAsString(notificationDeleteRequest))
                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
                .andDo(print())
                .andExpect(status().is(HttpStatus.NO_CONTENT.value()));
@@ -139,7 +146,7 @@ public class NotificationIntegrationTest extends AbstractIntegrationTest {
 
         NotificationEvent notificationEvent = new NotificationEvent(
                 customer.getAccount().getId(),
-                NotificationType.LIKE,
+                NotificationType.INFO,
                 Map.of("postId", 123),
                 "Message",
                 "2025-09-10T00:00:00"

@@ -79,9 +79,12 @@ public class NotificationServiceTest extends AbstractServiceTest {
                                       .setEmail("publisher@demo.com")
                                       .setPassword(passwordEncoder.encode(RAW_PASSWORD));
 
+        Notification notification = Notification.create(user)
+                                                .setId(1L);
+
         setUpContext(user);
-        notificationService.deleteNotifications();
-        verify(notificationRepository).deleteAllByUser_Id(user.getId());
+        notificationService.deleteNotifications(List.of(notification.getId()));
+        verify(notificationRepository).deleteAllByIdInAndUser_Id(anyList(), anyLong());
     }
 
     @Test
@@ -132,7 +135,7 @@ public class NotificationServiceTest extends AbstractServiceTest {
 
         NotificationEvent event = new NotificationEvent(
                 recipient.getId(),
-                NotificationType.COMMENT,
+                NotificationType.INFO,
                 metadata,
                 "msg",
                 Instant.now().toString()
@@ -166,7 +169,7 @@ public class NotificationServiceTest extends AbstractServiceTest {
 
         NotificationEvent event = new NotificationEvent(
                 publisher.getId(), // same as publisher
-                NotificationType.COMMENT,
+                NotificationType.INFO,
                 metadata,
                 "msg",
                 Instant.now().toString()
@@ -195,7 +198,7 @@ public class NotificationServiceTest extends AbstractServiceTest {
 
         NotificationEvent event = new NotificationEvent(
                 2L, // same as publisher
-                NotificationType.COMMENT,
+                NotificationType.INFO,
                 metadata,
                 "msg",
                 Instant.now().toString()
