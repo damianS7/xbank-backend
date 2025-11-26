@@ -38,6 +38,21 @@ public class BankingTransactionController {
         this.bankingTransactionCardService = bankingTransactionCardService;
     }
 
+    // endpoint for logged customer to get a single BankingTransaction by id
+    @GetMapping("/banking/transactions/{id}")
+    public ResponseEntity<?> getBankingTransaction(
+            @PathVariable @NotNull @Positive
+            Long id
+    ) {
+        BankingTransaction transaction = bankingTransactionService.getBankingTransaction(id);
+        BankingTransactionDto transactionDto = BankingTransactionDtoMapper
+                .toBankingTransactionDto(transaction);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(transactionDto);
+    }
+
     // endpoint for logged customer to get all transactions of a BankingCard
     @GetMapping("/customers/me/banking/cards/{id}/transactions")
     public ResponseEntity<?> getBankingCardTransactions(

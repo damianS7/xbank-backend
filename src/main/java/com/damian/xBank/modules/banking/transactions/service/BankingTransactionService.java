@@ -29,6 +29,13 @@ public class BankingTransactionService {
         this.bankingTransactionRepository = bankingTransactionRepository;
     }
 
+    public BankingTransaction getBankingTransaction(Long transactionId) {
+        // TODO check that the customer logged is the owner of the transaction or is admin
+        return bankingTransactionRepository.findById(transactionId).orElseThrow(
+                () -> new BankingTransactionNotFoundException(transactionId)
+        );
+    }
+
     public Page<BankingTransaction> getBankingCardTransactions(Long bankingCardId, Pageable pageable) {
         return bankingTransactionRepository.findByBankingCardId(bankingCardId, pageable);
     }
