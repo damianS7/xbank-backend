@@ -18,6 +18,7 @@ public class BankingTransactionDtoMapper {
                 accountTransaction.getBankingCard() != null ? accountTransaction.getBankingCard().getId() : null,
                 accountTransaction.getAmount(),
                 //                accountTransaction.getAssociatedBankingAccount().getBalance(),
+                accountTransaction.getAssociatedBankingAccount().getAccountCurrency(),
                 accountTransaction.getLastBalance(),
                 accountTransaction.getTransactionType(),
                 accountTransaction.getStatus(),

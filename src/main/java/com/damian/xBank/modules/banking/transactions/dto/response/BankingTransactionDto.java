@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.banking.transactions.dto.response;
 
+import com.damian.xBank.modules.banking.account.enums.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.transactions.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transactions.enums.BankingTransactionType;
 
@@ -11,6 +12,7 @@ public record BankingTransactionDto(
         Long accountId,
         Long cardId,
         BigDecimal amount,
+        BankingAccountCurrency currency,
         BigDecimal lastBalance,
         BankingTransactionType transactionType,
         BankingTransactionStatus transactionStatus,
