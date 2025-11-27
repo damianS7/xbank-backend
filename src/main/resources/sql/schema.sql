@@ -81,7 +81,6 @@ CREATE TABLE public.user_notifications (
 	id int4 GENERATED ALWAYS AS IDENTITY NOT NULL,
 	user_id int4 NOT NULL,
 	type public."notification_type" NOT NULL,
-	message varchar(255) NOT NULL,
 	metadata jsonb NOT NULL,
     created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
 	CONSTRAINT user_notifications_pkey PRIMARY KEY (id),

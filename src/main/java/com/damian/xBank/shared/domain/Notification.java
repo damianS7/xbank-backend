@@ -23,9 +23,6 @@ public class Notification {
     @Enumerated(EnumType.STRING)
     private NotificationType type;
 
-    @Column
-    private String message;
-
     @Column(columnDefinition = "jsonb")
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, Object> metadata = new HashMap<>();
@@ -97,11 +94,11 @@ public class Notification {
     }
 
     public String getMessage() {
-        return message;
+        return metadata.get("message") != null ? metadata.get("message").toString() : null;
     }
 
     public Notification setMessage(String message) {
-        this.message = message;
+        metadata.put("message", message);
         return this;
     }
 
