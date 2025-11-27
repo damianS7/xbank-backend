@@ -2,7 +2,6 @@ package com.damian.xBank.modules.notification;
 
 import com.damian.xBank.modules.notification.dto.request.NotificationDeleteRequest;
 import com.damian.xBank.modules.notification.dto.response.NotificationDto;
-import com.damian.xBank.modules.notification.dto.response.NotificationEvent;
 import com.damian.xBank.modules.notification.enums.NotificationType;
 import com.damian.xBank.modules.notification.service.NotificationService;
 import com.damian.xBank.modules.user.account.account.enums.UserAccountStatus;
@@ -11,6 +10,7 @@ import com.damian.xBank.shared.AbstractIntegrationTest;
 import com.damian.xBank.shared.domain.Customer;
 import com.damian.xBank.shared.domain.Notification;
 import com.damian.xBank.shared.domain.User;
+import com.damian.xBank.shared.domain.notification.event.NotificationEvent;
 import com.damian.xBank.shared.utils.JwtUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.BeforeEach;

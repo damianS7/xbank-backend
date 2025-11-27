@@ -1,6 +1,5 @@
 package com.damian.xBank.modules.notification.service;
 
-import com.damian.xBank.modules.notification.dto.NotificationEvent;
 import com.damian.xBank.modules.notification.exception.NotificationNotFoundException;
 import com.damian.xBank.modules.notification.repository.NotificationRepository;
 import com.damian.xBank.modules.user.account.account.exception.UserAccountNotFoundException;
@@ -8,6 +7,7 @@ import com.damian.xBank.modules.user.account.account.repository.UserAccountRepos
 import com.damian.xBank.shared.domain.Notification;
 import com.damian.xBank.shared.domain.User;
 import com.damian.xBank.shared.domain.UserAccount;
+import com.damian.xBank.shared.domain.notification.event.NotificationEvent;
 import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.utils.AuthHelper;
 import org.slf4j.Logger;
@@ -121,21 +121,6 @@ public class NotificationService {
      * @param notificationEvent the notification event
      */
     public void publishNotification(NotificationEvent notificationEvent) {
-        User currentUser = AuthHelper.getCurrentUser();
-        log.debug(
-                "Publishing Notification ({}) to user: {}",
-                notificationEvent.type(),
-                notificationEvent.recipientId()
-        );
-
-        // if the receiverId is the same as senderId then do nothing
-        // this is to prevent sending notifications to oneself
-        // for example when a user likes or comment their own post
-        if (currentUser.getId().equals(notificationEvent.recipientId())) {
-            log.debug("Recipient is the same user. No need to notify.");
-            return;
-        }
-
         // find recipient user who will receive the notification
         UserAccount recipient = userAccountRepository
                 .findById(notificationEvent.recipientId())
@@ -153,22 +138,20 @@ public class NotificationService {
         // create and save notification to the database
         Notification notification = Notification
                 .create(recipient)
-                .setMessage(notificationEvent.message())
                 .setMetadata(notificationEvent.metadata())
                 .setType(notificationEvent.type());
         notificationRepository.save(notification);
-
-        log.debug(
-                "Notification ({}) to user: {} stored on db.",
-                notificationEvent.type(),
-                notificationEvent.recipientId()
-        );
 
         // emit event to the recipient if connected
         var sink = userSinks.get(notificationEvent.recipientId());
         if (sink != null) {
             sink.tryEmitNext(notificationEvent);
-            log.debug("Notification sent on real time to: {}", notificationEvent.recipientId());
         }
+
+        log.debug(
+                "Notification ({}) sent to user: {}",
+                notificationEvent.type(),
+                notificationEvent.recipientId()
+        );
     }
 }

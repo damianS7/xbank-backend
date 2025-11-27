@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.notification.dto;
+package com.damian.xBank.shared.domain.notification.event;
 
 import com.damian.xBank.modules.notification.enums.NotificationType;
 
@@ -8,7 +8,6 @@ public record NotificationEvent(
         Long recipientId,
         NotificationType type,
         Map<String, Object> metadata,
-        String message,
         String createdAt
 ) {
 }
