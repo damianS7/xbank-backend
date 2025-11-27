@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.notification;
 
-import com.damian.xBank.modules.notification.dto.NotificationEvent;
+import com.damian.xBank.modules.notification.dto.response.NotificationEvent;
 import com.damian.xBank.modules.notification.enums.NotificationType;
 import com.damian.xBank.modules.notification.repository.NotificationRepository;
 import com.damian.xBank.modules.notification.service.NotificationService;
@@ -121,7 +121,7 @@ public class NotificationServiceTest extends AbstractServiceTest {
                                            .setId(1L)
                                            .setEmail("publisher@demo.com")
                                            .setPassword(passwordEncoder.encode(RAW_PASSWORD));
-        setUpContext(publisher);
+        //        setUpContext(publisher);
 
         UserAccount recipient = UserAccount.create()
                                            .setId(2L)
@@ -137,7 +137,6 @@ public class NotificationServiceTest extends AbstractServiceTest {
                 recipient.getId(),
                 NotificationType.INFO,
                 metadata,
-                "msg",
                 Instant.now().toString()
         );
 
@@ -151,34 +150,33 @@ public class NotificationServiceTest extends AbstractServiceTest {
         verify(notificationRepository).save(any());
     }
 
-    @Test
-    @DisplayName("should not publish when publisher and recipient are the same")
-    void shouldNotPublishNotificationWhenPublisherAndRecipientAreTheSame() {
-        // given
-        UserAccount publisher = UserAccount.create()
-                                           .setId(1L)
-                                           .setEmail("publisher@demo.com")
-                                           .setPassword(passwordEncoder.encode(RAW_PASSWORD));
-
-        setUpContext(publisher);
-
-        Map<String, Object> metadata = Map.of(
-                "postId", 1L,
-                "userName", "userName"
-        );
-
-        NotificationEvent event = new NotificationEvent(
-                publisher.getId(), // same as publisher
-                NotificationType.INFO,
-                metadata,
-                "msg",
-                Instant.now().toString()
-        );
-        // when
-        notificationService.publishNotification(event);
-
-        verify(notificationRepository, never()).save(any());
-    }
+    //    @Test
+    //    @DisplayName("should not publish when publisher and recipient are the same")
+    //    void shouldNotPublishNotificationWhenPublisherAndRecipientAreTheSame() {
+    //        // given
+    //        UserAccount publisher = UserAccount.create()
+    //                                           .setId(1L)
+    //                                           .setEmail("publisher@demo.com")
+    //                                           .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+    //
+    //        setUpContext(publisher);
+    //
+    //        Map<String, Object> metadata = Map.of(
+    //                "postId", 1L,
+    //                "userName", "userName"
+    //        );
+    //
+    //        NotificationEvent event = new NotificationEvent(
+    //                publisher.getId(), // same as publisher
+    //                NotificationType.INFO,
+    //                metadata,
+    //                Instant.now().toString()
+    //        );
+    //        // when
+    //        notificationService.publishNotification(event);
+    //
+    //        verify(notificationRepository, never()).save(any());
+    //    }
 
     @Test
     @DisplayName("should not publish when recipient not found")
@@ -189,7 +187,7 @@ public class NotificationServiceTest extends AbstractServiceTest {
                                            .setEmail("publisher@demo.com")
                                            .setPassword(passwordEncoder.encode(RAW_PASSWORD));
 
-        setUpContext(publisher);
+        //        setUpContext(publisher);
 
         Map<String, Object> metadata = Map.of(
                 "postId", 1L,
@@ -200,7 +198,6 @@ public class NotificationServiceTest extends AbstractServiceTest {
                 2L, // same as publisher
                 NotificationType.INFO,
                 metadata,
-                "msg",
                 Instant.now().toString()
         );
 

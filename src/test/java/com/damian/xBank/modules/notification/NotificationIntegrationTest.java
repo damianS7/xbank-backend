@@ -1,8 +1,8 @@
 package com.damian.xBank.modules.notification;
 
-import com.damian.xBank.modules.notification.dto.NotificationEvent;
 import com.damian.xBank.modules.notification.dto.request.NotificationDeleteRequest;
 import com.damian.xBank.modules.notification.dto.response.NotificationDto;
+import com.damian.xBank.modules.notification.dto.response.NotificationEvent;
 import com.damian.xBank.modules.notification.enums.NotificationType;
 import com.damian.xBank.modules.notification.service.NotificationService;
 import com.damian.xBank.modules.user.account.account.enums.UserAccountStatus;
@@ -148,7 +148,6 @@ public class NotificationIntegrationTest extends AbstractIntegrationTest {
                 customer.getAccount().getId(),
                 NotificationType.INFO,
                 Map.of("postId", 123),
-                "Message",
                 "2025-09-10T00:00:00"
         );
 
@@ -183,12 +182,10 @@ public class NotificationIntegrationTest extends AbstractIntegrationTest {
                 .isNotNull()
                 .extracting(
                         NotificationDto::type,
-                        NotificationDto::message,
                         NotificationDto::metadata,
                         NotificationDto::createdAt
                 ).containsExactly(
                         notificationEvent.type(),
-                        notificationEvent.message(),
                         notificationEvent.metadata(),
                         notificationEvent.createdAt()
                 );

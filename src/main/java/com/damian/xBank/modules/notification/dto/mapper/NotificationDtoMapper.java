@@ -9,7 +9,6 @@ public class NotificationDtoMapper {
         return new NotificationDto(
                 notification.getId(),
                 notification.getType(),
-                notification.getMessage(),
                 notification.getMetadata(),
                 notification.getCreatedAt().toString()
         );
