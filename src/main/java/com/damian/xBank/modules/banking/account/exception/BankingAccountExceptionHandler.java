@@ -16,6 +16,24 @@ public class BankingAccountExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(BankingAccountExceptionHandler.class);
 
+    @ExceptionHandler(BankingAccountException.class)
+    public ResponseEntity<ApiResponse<String>> handleBankingAccountException(BankingAccountException ex) {
+        log.warn("Banking account: {} internal error.", ex.getBankingAccountId());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                             .body(ApiResponse.error(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR));
+    }
+
+    @ExceptionHandler(BankingAccountTransferException.class)
+    public ResponseEntity<ApiResponse<String>> handleInsufficientFunds(BankingAccountTransferException ex) {
+        log.warn(
+                "Banking transfer failed from account: {} to account: {}.",
+                ex.getBankingAccountId(),
+                ex.getToBankingAccountId()
+        );
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                             .body(ApiResponse.error(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR));
+    }
+
     @ExceptionHandler(BankingAccountNotFoundException.class)
     public ResponseEntity<ApiResponse<String>> handleNotFoundException(BankingAccountNotFoundException ex) {
         log.warn("Banking account: {} not found", ex.getBankingAccountId());
@@ -37,11 +55,15 @@ public class BankingAccountExceptionHandler {
                              .body(ApiResponse.error(ex.getMessage(), HttpStatus.CONFLICT));
     }
 
-    @ExceptionHandler(BankingAccountException.class)
-    public ResponseEntity<ApiResponse<String>> handleBankingAccountException(BankingAccountException ex) {
-        log.warn("Banking account: {} internal error.", ex.getBankingAccountId());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                             .body(ApiResponse.error(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR));
+    @ExceptionHandler(BankingAccountOwnershipException.class)
+    public ResponseEntity<ApiResponse<String>> handleOwnershipException(BankingAccountOwnershipException ex) {
+        log.warn(
+                "Unauthorized access from user {} on banking account: {}",
+                ex.getCustomerId(),
+                ex.getBankingAccountId()
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                             .body(ApiResponse.error(ex.getMessage(), HttpStatus.FORBIDDEN));
     }
 
     @ExceptionHandler(BankingAccountAuthorizationException.class)
