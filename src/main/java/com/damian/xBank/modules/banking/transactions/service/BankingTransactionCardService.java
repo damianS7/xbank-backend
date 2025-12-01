@@ -1,137 +1,63 @@
 package com.damian.xBank.modules.banking.transactions.service;
 
-import com.damian.xBank.modules.banking.card.BankingCardAuthorizationHelper;
-import com.damian.xBank.modules.banking.card.exception.BankingCardAuthorizationException;
-import com.damian.xBank.modules.banking.card.exception.BankingCardNotFoundException;
 import com.damian.xBank.modules.banking.card.repository.BankingCardRepository;
-import com.damian.xBank.modules.banking.transactions.dto.request.BankingCardTransactionRequest;
-import com.damian.xBank.modules.banking.transactions.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transactions.enums.BankingTransactionType;
-import com.damian.xBank.modules.banking.transactions.exception.BankingTransactionException;
+import com.damian.xBank.modules.banking.transactions.repository.BankingTransactionRepository;
 import com.damian.xBank.shared.domain.BankingCard;
 import com.damian.xBank.shared.domain.BankingTransaction;
-import com.damian.xBank.shared.domain.Customer;
-import com.damian.xBank.shared.exception.Exceptions;
-import com.damian.xBank.shared.utils.AuthHelper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
 @Service
 public class BankingTransactionCardService {
-
     private final BankingCardRepository bankingCardRepository;
-    private final BankingTransactionService bankingTransactionService;
+    private final BankingTransactionRepository bankingTransactionRepository;
+    private final BankingTransactionAccountService bankingTransactionAccountService;
 
     public BankingTransactionCardService(
             BankingCardRepository bankingCardRepository,
-            BankingTransactionService bankingTransactionService
+            BankingTransactionRepository bankingTransactionRepository,
+            BankingTransactionAccountService bankingTransactionAccountService
     ) {
         this.bankingCardRepository = bankingCardRepository;
-        this.bankingTransactionService = bankingTransactionService;
+        this.bankingTransactionRepository = bankingTransactionRepository;
+        this.bankingTransactionAccountService = bankingTransactionAccountService;
     }
 
-    // handle request BankingTransactionType and determine what to do.
-    public BankingTransaction processTransactionRequest(
-            Long cardId,
-            BankingCardTransactionRequest request
-    ) {
-        // BankingCard to operate
-        BankingCard bankingCard = bankingCardRepository.findById(cardId).orElseThrow(
-                () -> new BankingCardNotFoundException(
-                        Exceptions.BANKING.CARD.NOT_FOUND, cardId
-                )
-        );
-
-        return switch (request.transactionType()) {
-            case CARD_CHARGE -> this.spend(bankingCard, request.cardPin(), request.amount(), request.description());
-            case WITHDRAWAL -> this.withdrawal(bankingCard, request.cardPin(), request.amount());
-            default -> throw new BankingTransactionException(
-                    Exceptions.BANKING.TRANSACTION.INVALID_TYPE, -1L
-            );
-        };
+    public Page<BankingTransaction> getTransactions(Long bankingCardId, Pageable pageable) {
+        return bankingTransactionRepository.findByBankingCardId(bankingCardId, pageable);
     }
 
-    private void canCarryOperationOrElseThrow(
-            BankingCard card,
-            Customer customerLogged,
-            String cardPIN,
-            BigDecimal amount
-    ) {
-        BankingCardAuthorizationHelper
-                .authorize(customerLogged, card)
-                // check customer authorization
-                .checkOwner()
-                // check if card is not disabled or locked
-                .checkStatus()
-                .checkPIN(cardPIN);
-
-        // check balance
-        this.checkFunds(card, amount);
-    }
-
-    public void checkFunds(BankingCard card, BigDecimal amount) {
-        if (!card.hasEnoughFundsToSpend(amount)) {
-            throw new BankingCardAuthorizationException(
-                    Exceptions.BANKING.CARD.INSUFFICIENT_FUNDS, card.getId(), 0L // TODO
-            );
-        }
-    }
-
-    // validates card status and does the transaction
-    public BankingTransaction spend(
-            BankingCard card,
-            String cardPIN,
+    public BankingTransaction createTransaction(
+            BankingCard bankingCard,
+            BankingTransactionType transactionType,
             BigDecimal amount,
             String description
     ) {
-        BankingTransaction transaction = this.bankingTransactionService.createTransaction(
-                card,
-                BankingTransactionType.CARD_CHARGE,
+        return bankingTransactionAccountService.createTransaction(
+                bankingCard.getAssociatedBankingAccount(),
+                transactionType,
                 amount,
                 description
         );
-        final Customer customerLogged = AuthHelper.getCurrentCustomer();
-
-        // run validations and throw if any throw exception
-        this.canCarryOperationOrElseThrow(card, customerLogged, cardPIN, amount);
-
-        // if the transaction is created, deduce the amount from balance
-        card.chargeAmount(amount);
-
-        // transaction is completed
-        transaction.setStatus(BankingTransactionStatus.COMPLETED);
-
-        // save the transaction
-        return bankingTransactionService.persistTransaction(transaction);
     }
 
-    // withdraws money
-    public BankingTransaction withdrawal(
-            BankingCard card,
-            String cardPIN,
-            BigDecimal amount
+    public BankingTransaction generateTransaction(
+            BankingCard bankingCard,
+            BankingTransactionType transactionType,
+            BigDecimal amount,
+            String description
     ) {
-        BankingTransaction transaction = this.bankingTransactionService.createTransaction(
-                card,
-                BankingTransactionType.WITHDRAWAL,
+        BankingTransaction transaction = bankingTransactionAccountService.createTransaction(
+                bankingCard.getAssociatedBankingAccount(),
+                transactionType,
                 amount,
-                "ATM withdrawal."
+                description
         );
 
-        final Customer customerLogged = AuthHelper.getCurrentCustomer();
-        this.canCarryOperationOrElseThrow(card, customerLogged, cardPIN, amount);
-
-        // check balance
-        this.checkFunds(card, amount);
-
-        // if the transaction is created, deduce the amount from balance
-        card.chargeAmount(amount);
-
-        // transaction is completed
-        transaction.setStatus(BankingTransactionStatus.COMPLETED);
-
-        // save the transaction
-        return bankingTransactionService.persistTransaction(transaction);
+        return bankingTransactionAccountService.persistTransaction(transaction);
     }
 }
