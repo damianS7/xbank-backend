@@ -32,7 +32,11 @@ public class BankingAccountService {
         this.faker = faker;
     }
 
-    // return all the BankingAccounts that belongs to the logged customer.
+    /**
+     * Return all the BankingAccounts that belongs to the logged customer.
+     *
+     * @return Set of BankingAccounts
+     */
     public Set<BankingAccount> getLoggedCustomerBankingAccounts() {
         // we extract the customer logged from the SecurityContext
         final Customer currentCustomer = AuthHelper.getCurrentCustomer();
@@ -40,27 +44,38 @@ public class BankingAccountService {
         return this.getCustomerBankingAccounts(currentCustomer.getId());
     }
 
-    // return all the BankingAccounts that belongs to customerId.
+    /**
+     * Return all the BankingAccounts that belongs to a specific customer.
+     *
+     * @param customerId ID of the customer
+     * @return Set of BankingAccounts
+     */
     public Set<BankingAccount> getCustomerBankingAccounts(Long customerId) {
         return bankingAccountRepository.findByCustomer_Id(customerId);
     }
 
+    /**
+     * Create a BankingAccount for the logged customer.
+     *
+     * @param request BankingAccountCreateRequest the request containing the data needed
+     *                to create the BankingAccount
+     * @return a newly created BankingAccount
+     */
+    public BankingAccount createBankingAccount(BankingAccountCreateRequest request) {
+        // we extract the customer logged from the SecurityContext
+        final Customer currentCustomer = AuthHelper.getCurrentCustomer();
 
-    private BankingAccount createBankingAccount(
-            Customer customerOwner,
-            BankingAccountType accountType,
-            BankingAccountCurrency accountCurrency
-    ) {
-        BankingAccount bankingAccount = new BankingAccount();
-        bankingAccount.setAccountStatus(BankingAccountStatus.CLOSED);
-        bankingAccount.setOwner(customerOwner);
-        bankingAccount.setAccountType(accountType);
-        bankingAccount.setAccountCurrency(accountCurrency);
-        bankingAccount.setAccountNumber(this.generateAccountNumber());
-        return bankingAccountRepository.save(bankingAccount);
+        return this.createBankingAccount(currentCustomer.getId(), request);
     }
 
-    // (admin) create a BankingAccount for a specific customer
+    /**
+     * Create a BankingAccount for a specific customer.
+     *
+     * @param customerId ID of the customer
+     * @param request    BankingAccountCreateRequest the request containing the data needed
+     *                   to create the BankingAccount
+     * @return a newly created BankingAccount
+     */
     public BankingAccount createBankingAccount(Long customerId, BankingAccountCreateRequest request) {
         // we get the Customer entity so we can save at the end
         final Customer customer = customerRepository.findById(customerId).orElseThrow(
@@ -72,14 +87,35 @@ public class BankingAccountService {
         return this.createBankingAccount(customer, request.type(), request.currency());
     }
 
-    // create a BankingAccount for the logged customer
-    public BankingAccount createBankingAccount(BankingAccountCreateRequest request) {
-        // we extract the customer logged from the SecurityContext
-        final Customer currentCustomer = AuthHelper.getCurrentCustomer();
+    /**
+     * Create a BankingAccount for a specific customer.
+     *
+     * @param customer        Customer owner of the BankingAccount
+     * @param accountType     the type of BankingAccount
+     * @param accountCurrency the currency of the BankingAccount
+     * @return a newly created BankingAccount
+     */
+    private BankingAccount createBankingAccount(
+            Customer customer,
+            BankingAccountType accountType,
+            BankingAccountCurrency accountCurrency
+    ) {
+        BankingAccount bankingAccount = BankingAccount.create()
+                                                      .setAccountStatus(BankingAccountStatus.CLOSED)
+                                                      .setOwner(customer)
+                                                      .setAccountType(accountType)
+                                                      .setAccountCurrency(accountCurrency)
+                                                      .setAccountNumber(this.generateAccountNumber());
 
-        return this.createBankingAccount(currentCustomer.getId(), request);
+        return bankingAccountRepository.save(bankingAccount);
     }
 
+
+    /**
+     * Generate a random account number.
+     *
+     * @return String account number
+     */
     public String generateAccountNumber() {
         //ES00 0000 0000 0000 0000 0000
         String country = faker.country().countryCode2().toUpperCase();
