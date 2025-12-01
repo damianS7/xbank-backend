@@ -12,8 +12,25 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Order(1)
 @RestControllerAdvice
 public class BankingCardExceptionHandler {
-
     private static final Logger log = LoggerFactory.getLogger(BankingCardExceptionHandler.class);
+
+    @ExceptionHandler(BankingCardInsufficientFundsException.class)
+    public ResponseEntity<ApiResponse<String>> handleInsufficientFunds(BankingCardInsufficientFundsException ex) {
+        log.warn("Banking card: {} has insufficient funds.", ex.getBankingCardId());
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                             .body(ApiResponse.error(ex.getMessage(), HttpStatus.CONFLICT));
+    }
+
+    @ExceptionHandler(BankingCardOwnershipException.class)
+    public ResponseEntity<ApiResponse<String>> handleOwnershipException(BankingCardOwnershipException ex) {
+        log.warn(
+                "Unauthorized access from user {} on banking card: {}",
+                ex.getCustomerId(),
+                ex.getBankingCardId()
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                             .body(ApiResponse.error(ex.getMessage(), HttpStatus.FORBIDDEN));
+    }
 
     @ExceptionHandler(BankingCardNotFoundException.class)
     public ResponseEntity<ApiResponse<String>> handleNotFoundException(BankingCardNotFoundException ex) {
