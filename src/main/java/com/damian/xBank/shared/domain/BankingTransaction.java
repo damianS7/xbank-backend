@@ -63,36 +63,44 @@ public class BankingTransaction {
         this.transactionType = transactionType;
     }
 
+    public static BankingTransaction create() {
+        return new BankingTransaction();
+    }
+
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public BankingTransaction setId(Long id) {
         this.id = id;
+        return this;
     }
 
     public BankingAccount getAssociatedBankingAccount() {
         return bankingAccount;
     }
 
-    public void setAssociatedBankingAccount(BankingAccount account) {
+    public BankingTransaction setAssociatedBankingAccount(BankingAccount account) {
         this.bankingAccount = account;
+        return this;
     }
 
     public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(BigDecimal amount) {
+    public BankingTransaction setAmount(BigDecimal amount) {
         this.amount = amount;
+        return this;
     }
 
     public BankingTransactionType getTransactionType() {
         return transactionType;
     }
 
-    public void setTransactionType(BankingTransactionType transactionType) {
+    public BankingTransaction setTransactionType(BankingTransactionType transactionType) {
         this.transactionType = transactionType;
+        return this;
     }
 
 
@@ -100,47 +108,53 @@ public class BankingTransaction {
         return status;
     }
 
-    public void setStatus(BankingTransactionStatus status) {
+    public BankingTransaction setStatus(BankingTransactionStatus status) {
         this.status = status;
+        return this;
     }
 
     public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Instant createdAt) {
+    public BankingTransaction setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+        return this;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    public BankingTransaction setDescription(String description) {
         this.description = description;
+        return this;
     }
 
     public Instant getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Instant updatedAt) {
+    public BankingTransaction setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
+        return this;
     }
 
     public BankingCard getBankingCard() {
         return bankingCard;
     }
 
-    public void setBankingCard(BankingCard bankingCard) {
+    public BankingTransaction setBankingCard(BankingCard bankingCard) {
         this.bankingCard = bankingCard;
+        return this;
     }
 
     public BigDecimal getLastBalance() {
         return lastBalance;
     }
 
-    public void setLastBalance(BigDecimal lastBalance) {
+    public BankingTransaction setLastBalance(BigDecimal lastBalance) {
         this.lastBalance = lastBalance;
+        return this;
     }
 }
