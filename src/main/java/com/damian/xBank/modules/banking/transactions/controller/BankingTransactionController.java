@@ -1,12 +1,9 @@
 package com.damian.xBank.modules.banking.transactions.controller;
 
 import com.damian.xBank.modules.banking.transactions.dto.mapper.BankingTransactionDtoMapper;
-import com.damian.xBank.modules.banking.transactions.dto.request.BankingAccountTransactionRequest;
-import com.damian.xBank.modules.banking.transactions.dto.request.BankingCardTransactionRequest;
 import com.damian.xBank.modules.banking.transactions.dto.response.BankingTransactionDto;
 import com.damian.xBank.modules.banking.transactions.service.BankingTransactionAccountService;
 import com.damian.xBank.modules.banking.transactions.service.BankingTransactionCardService;
-import com.damian.xBank.modules.banking.transactions.service.BankingTransactionService;
 import com.damian.xBank.shared.domain.BankingTransaction;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -17,23 +14,22 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("/api/v1")
 @RestController
 public class BankingTransactionController {
-    private final BankingTransactionService bankingTransactionService;
     private final BankingTransactionAccountService bankingTransactionAccountService;
     private final BankingTransactionCardService bankingTransactionCardService;
 
     @Autowired
     public BankingTransactionController(
-            BankingTransactionService bankingTransactionService,
-            BankingTransactionAccountService bankingTransactionAccountService,
-            BankingTransactionCardService bankingTransactionCardService
+            BankingTransactionCardService bankingTransactionCardService,
+            BankingTransactionAccountService bankingTransactionAccountService
     ) {
-        this.bankingTransactionService = bankingTransactionService;
         this.bankingTransactionAccountService = bankingTransactionAccountService;
         this.bankingTransactionCardService = bankingTransactionCardService;
     }
@@ -44,7 +40,7 @@ public class BankingTransactionController {
             @PathVariable @NotNull @Positive
             Long id
     ) {
-        BankingTransaction transaction = bankingTransactionService.getBankingTransaction(id);
+        BankingTransaction transaction = bankingTransactionAccountService.getBankingTransaction(id);
         BankingTransactionDto transactionDto = BankingTransactionDtoMapper
                 .toBankingTransactionDto(transaction);
 
@@ -54,14 +50,15 @@ public class BankingTransactionController {
     }
 
     // endpoint for logged customer to get all transactions of a BankingCard
-    @GetMapping("/customers/me/banking/cards/{id}/transactions")
+    @GetMapping("/banking/cards/{id}/transactions")
     public ResponseEntity<?> getBankingCardTransactions(
             @PathVariable @NotNull @Positive
             Long id,
             @PageableDefault(size = 2, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
-        Page<BankingTransaction> transactions = bankingTransactionService.getBankingCardTransactions(id, pageable);
+        Page<BankingTransaction> transactions = bankingTransactionCardService
+                .getTransactions(id, pageable);
         Page<BankingTransactionDto> transactionDTOS = BankingTransactionDtoMapper
                 .toBankingTransactionPageDto(transactions);
 
@@ -71,14 +68,14 @@ public class BankingTransactionController {
     }
 
     // endpoint for logged customer to get all transactions of a BankingAccount
-    @GetMapping("/customers/me/banking/accounts/{id}/transactions")
+    @GetMapping("/banking/accounts/{id}/transactions")
     public ResponseEntity<?> getBankingAccountTransactions(
             @PathVariable @NotNull @Positive
             Long id,
             @PageableDefault(size = 2, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
-        Page<BankingTransaction> transactions = bankingTransactionService.getBankingAccountTransactions(id, pageable);
+        Page<BankingTransaction> transactions = bankingTransactionAccountService.getTransactions(id, pageable);
         Page<BankingTransactionDto> transactionDTOS = BankingTransactionDtoMapper
                 .toBankingTransactionPageDto(transactions);
 
@@ -86,38 +83,5 @@ public class BankingTransactionController {
                 .status(HttpStatus.OK)
                 .body(transactionDTOS);
     }
-
-    // endpoint for logged customer to do card transactions
-    @PostMapping("/customers/me/banking/cards/{id}/transactions")
-    public ResponseEntity<?> customerBankingCardTransaction(
-            @PathVariable @NotNull @Positive
-            Long id,
-            @Validated @RequestBody
-            BankingCardTransactionRequest request
-    ) {
-        BankingTransaction transaction = bankingTransactionCardService.processTransactionRequest(id, request);
-        BankingTransactionDto transactionDTO = BankingTransactionDtoMapper.toBankingTransactionDto(transaction);
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(transactionDTO);
-    }
-
-    // endpoint for logged customer to do card transactions
-    @PostMapping("/customers/me/banking/accounts/{id}/transactions")
-    public ResponseEntity<?> customerBankingAccountTransaction(
-            @PathVariable @NotNull @Positive
-            Long id,
-            @Validated @RequestBody
-            BankingAccountTransactionRequest request
-    ) {
-        BankingTransaction transaction = bankingTransactionAccountService.processTransactionRequest(id, request);
-        BankingTransactionDto transactionDTO = BankingTransactionDtoMapper.toBankingTransactionDto(transaction);
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(transactionDTO);
-    }
-
 }
 
