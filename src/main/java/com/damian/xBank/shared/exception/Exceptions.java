@@ -92,11 +92,13 @@ public class Exceptions {
             public static final String LOCKED = "Account is locked.";
             public static final String DISABLED = "Account is disabled.";
             public static final String ACCESS_FORBIDDEN = "You are not the owner of this account.";
+            public static final String OWNERSHIP = "You are not the owner of this account.";
             public static final String INSUFFICIENT_FUNDS = "Insufficient funds.";
 
         }
 
         public static class CARD {
+            public static final String OWNERSHIP = "You are not the owner of this card.";
             public static final String NOT_FOUND = "Card not found.";
             public static final String LOCKED = "Card is locked.";
             public static final String INVALID_PIN = "Incorrect card pin.";
