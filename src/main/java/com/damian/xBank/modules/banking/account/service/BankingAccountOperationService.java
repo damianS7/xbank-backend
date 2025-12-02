@@ -4,7 +4,7 @@ import com.damian.xBank.modules.banking.account.dto.request.BankingAccountDeposi
 import com.damian.xBank.modules.banking.account.dto.request.BankingAccountTransferRequest;
 import com.damian.xBank.modules.banking.account.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.repository.BankingAccountRepository;
-import com.damian.xBank.modules.banking.account.validator.BankingAccountValidator;
+import com.damian.xBank.modules.banking.account.validator.BankingAccountGuard;
 import com.damian.xBank.modules.banking.transactions.dto.mapper.BankingTransactionDtoMapper;
 import com.damian.xBank.modules.banking.transactions.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transactions.enums.BankingTransactionType;
@@ -68,8 +68,8 @@ public class BankingAccountOperationService {
                 );
 
         // Validate account
-        BankingAccountValidator.validate(bankingAccount)
-                               .active();
+        BankingAccountGuard.forAccount(bankingAccount)
+                           .active();
 
         BankingTransaction transaction = bankingTransactionAccountService.generateTransaction(
                 bankingAccount,
@@ -117,8 +117,8 @@ public class BankingAccountOperationService {
         AuthHelper.validatePassword(customer, password);
 
         // run validations and throw if any throw exception
-        BankingAccountValidator
-                .validate(fromBankingAccount)
+        BankingAccountGuard
+                .forAccount(fromBankingAccount)
                 .ownership(customer)
                 .transfer(toBankingAccount, amount);
 

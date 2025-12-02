@@ -1,25 +1,22 @@
 package com.damian.xBank.modules.banking.account.validator;
 
 import com.damian.xBank.modules.banking.account.enums.BankingAccountStatus;
-import com.damian.xBank.modules.banking.account.exception.BankingAccountException;
-import com.damian.xBank.modules.banking.account.exception.BankingAccountInsufficientFundsException;
-import com.damian.xBank.modules.banking.account.exception.BankingAccountOwnershipException;
-import com.damian.xBank.modules.banking.account.exception.BankingAccountTransferException;
+import com.damian.xBank.modules.banking.account.exception.*;
 import com.damian.xBank.shared.domain.BankingAccount;
 import com.damian.xBank.shared.domain.Customer;
 import com.damian.xBank.shared.exception.Exceptions;
 
 import java.math.BigDecimal;
 
-public class BankingAccountValidator {
+public class BankingAccountGuard {
     private final BankingAccount account;
 
-    public BankingAccountValidator(BankingAccount account) {
+    public BankingAccountGuard(BankingAccount account) {
         this.account = account;
     }
 
-    public static BankingAccountValidator validate(BankingAccount account) {
-        return new BankingAccountValidator(account);
+    public static BankingAccountGuard forAccount(BankingAccount account) {
+        return new BankingAccountGuard(account);
     }
 
     /**
@@ -29,7 +26,7 @@ public class BankingAccountValidator {
      * @return the current validator instance for chaining
      * @throws BankingAccountOwnershipException if the account does not belong to the customer
      */
-    public BankingAccountValidator ownership(Customer customer) {
+    public BankingAccountGuard ownership(Customer customer) {
 
         // compare account owner id with given customer id
         if (!account.getOwner().getId().equals(customer.getId())) {
@@ -46,9 +43,9 @@ public class BankingAccountValidator {
      *
      * @param amount the amount to check
      * @return the current validator instance for chaining
-     * @throws BankingAccountOwnershipException if the account does not belong to the customer
+     * @throws BankingAccountInsufficientFundsException if the account does not belong to the customer
      */
-    public BankingAccountValidator sufficientFunds(BigDecimal amount) {
+    public BankingAccountGuard sufficientFunds(BigDecimal amount) {
 
         // check if account has enough funds
         if (!account.hasEnoughFunds(amount)) {
@@ -68,7 +65,7 @@ public class BankingAccountValidator {
      * @return the current validator instance for chaining
      * @throws BankingAccountTransferException if the account does not belong to the customer
      */
-    private BankingAccountValidator differentDestination(BankingAccount toBankingAccount) {
+    private BankingAccountGuard differentDestination(BankingAccount toBankingAccount) {
 
         // check bankingAccount and toBankingAccount are not the same
         if (account.getId().equals(toBankingAccount.getId())) {
@@ -89,7 +86,7 @@ public class BankingAccountValidator {
      * @return the current validator instance for chaining
      * @throws BankingAccountTransferException if the account does not belong to the customer
      */
-    private BankingAccountValidator sameCurrency(BankingAccount toBankingAccount) {
+    private BankingAccountGuard sameCurrency(BankingAccount toBankingAccount) {
 
         // if currencies are different, throw exception
         if (!account.getAccountCurrency().equals(toBankingAccount.getAccountCurrency())) {
@@ -104,30 +101,51 @@ public class BankingAccountValidator {
     }
 
     /**
-     * Validate {@link #account} is not CLOSED or SUSPENDED.
+     * Validate {@link #account} is not SUSPENDED.
      *
      * @return the current validator instance for chaining
      * @throws BankingAccountException if the account does not belong to the customer
      */
-    public BankingAccountValidator active() {
-        final boolean isAccountClosed = account.getAccountStatus().equals(BankingAccountStatus.CLOSED);
-
-        // check if account is CLOSED
-        if (isAccountClosed) {
-            throw new BankingAccountException(
-                    Exceptions.BANKING.ACCOUNT.CLOSED, account.getId()
-            );
-        }
+    public BankingAccountGuard notSuspended() {
 
         final boolean isAccountSuspended = account.getAccountStatus().equals(BankingAccountStatus.SUSPENDED);
 
         // check if account is SUSPENDED
         if (isAccountSuspended) {
-            throw new BankingAccountException(
-                    Exceptions.BANKING.ACCOUNT.SUSPENDED, account.getId()
+            throw new BankingAccountSuspendedException(account.getId());
+        }
+
+        return this;
+    }
+
+    /**
+     * Validate {@link #account} is not CLOSED.
+     *
+     * @return the current validator instance for chaining
+     * @throws BankingAccountException if the account does not belong to the customer
+     */
+    public BankingAccountGuard notClosed() {
+        final boolean isAccountClosed = account.getAccountStatus().equals(BankingAccountStatus.CLOSED);
+
+        // check if account is CLOSED
+        if (isAccountClosed) {
+            throw new BankingAccountClosedException(
+                    account.getId()
             );
         }
 
+        return this;
+    }
+
+    /**
+     * Validate {@link #account} is not CLOSED or SUSPENDED.
+     *
+     * @return the current validator instance for chaining
+     * @throws BankingAccountException if the account does not belong to the customer
+     */
+    public BankingAccountGuard active() {
+        this.notSuspended();
+        this.notClosed();
         return this;
     }
 
@@ -139,7 +157,7 @@ public class BankingAccountValidator {
      * @return the current validator instance for chaining
      * @throws BankingAccountTransferException if the account does not belong to the customer
      */
-    public BankingAccountValidator transfer(
+    public BankingAccountGuard transfer(
             BankingAccount toBankingAccount,
             BigDecimal amount
     ) {
@@ -155,8 +173,8 @@ public class BankingAccountValidator {
         // check the account status and see if can be used to operate
         this.active();
 
-        BankingAccountValidator.validate(toBankingAccount)
-                               .active();
+        BankingAccountGuard.forAccount(toBankingAccount)
+                           .active();
 
         return this;
     }
