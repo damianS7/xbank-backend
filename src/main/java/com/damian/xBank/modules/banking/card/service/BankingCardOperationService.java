@@ -3,9 +3,9 @@ package com.damian.xBank.modules.banking.card.service;
 import com.damian.xBank.modules.banking.card.dto.request.BankingCardSpendRequest;
 import com.damian.xBank.modules.banking.card.dto.request.BankingCardWithdrawRequest;
 import com.damian.xBank.modules.banking.card.exception.BankingCardNotFoundException;
+import com.damian.xBank.modules.banking.card.guard.BankingCardGuard;
 import com.damian.xBank.modules.banking.card.model.BankingCard;
 import com.damian.xBank.modules.banking.card.repository.BankingCardRepository;
-import com.damian.xBank.modules.banking.card.validator.BankingCardValidator;
 import com.damian.xBank.modules.banking.transaction.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.enums.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.model.BankingTransaction;
@@ -61,11 +61,11 @@ public class BankingCardOperationService {
         final Customer customerLogged = AuthHelper.getCurrentCustomer();
 
         // run validations and throw if any throw exception
-        BankingCardValidator.validate(card)
-                            .ownership(customerLogged)
-                            .active()
-                            .PIN(cardPin)
-                            .sufficientFunds(amount);
+        BankingCardGuard.forCard(card)
+                        .ownership(customerLogged)
+                        .active()
+                        .PIN(cardPin)
+                        .sufficientFunds(amount);
 
         BankingTransaction transaction = bankingTransactionCardService.createTransaction(
                 card,
@@ -94,8 +94,8 @@ public class BankingCardOperationService {
         final Customer customerLogged = AuthHelper.getCurrentCustomer();
 
         // run validations and throw if any throw exception
-        BankingCardValidator
-                .validate(card)
+        BankingCardGuard
+                .forCard(card)
                 .canSpend(customerLogged, cardPIN, amount);
 
         // store here the transaction as PENDING

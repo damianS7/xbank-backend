@@ -9,9 +9,9 @@ import com.damian.xBank.modules.banking.card.enums.BankingCardLockStatus;
 import com.damian.xBank.modules.banking.card.enums.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.enums.BankingCardType;
 import com.damian.xBank.modules.banking.card.exception.BankingCardNotFoundException;
+import com.damian.xBank.modules.banking.card.guard.BankingCardGuard;
 import com.damian.xBank.modules.banking.card.model.BankingCard;
 import com.damian.xBank.modules.banking.card.repository.BankingCardRepository;
-import com.damian.xBank.modules.banking.card.validator.BankingCardValidator;
 import com.damian.xBank.modules.user.customer.model.Customer;
 import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.utils.AuthHelper;
@@ -116,8 +116,8 @@ public class BankingCardService {
         final Customer currentCustomer = AuthHelper.getCurrentCustomer();
 
         // check if customer is the owner
-        BankingCardValidator
-                .validate(bankingCard)
+        BankingCardGuard
+                .forCard(bankingCard)
                 .ownership(currentCustomer);
 
         AuthHelper.validatePassword(currentCustomer, request.password());
@@ -171,8 +171,8 @@ public class BankingCardService {
                 ));
 
         // check if customer is the owner
-        BankingCardValidator
-                .validate(bankingCard)
+        BankingCardGuard
+                .forCard(bankingCard)
                 .ownership(currentCustomer);
 
         AuthHelper.validatePassword(currentCustomer.getAccount(), request.password());
@@ -220,8 +220,8 @@ public class BankingCardService {
                 ));
 
         // check if customer is the owner
-        BankingCardValidator
-                .validate(bankingCard)
+        BankingCardGuard
+                .forCard(bankingCard)
                 .ownership(currentCustomer);
 
         AuthHelper.validatePassword(currentCustomer.getAccount(), request.password());
@@ -266,8 +266,8 @@ public class BankingCardService {
                 ));
 
         // check if customer is the owner
-        BankingCardValidator
-                .validate(bankingCard)
+        BankingCardGuard
+                .forCard(bankingCard)
                 .ownership(currentCustomer);
 
         AuthHelper.validatePassword(currentCustomer.getAccount(), request.password());

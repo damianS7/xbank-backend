@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.banking.card.validator;
+package com.damian.xBank.modules.banking.card.guard;
 
 import com.damian.xBank.modules.banking.card.enums.BankingCardLockStatus;
 import com.damian.xBank.modules.banking.card.enums.BankingCardStatus;
@@ -12,15 +12,15 @@ import com.damian.xBank.shared.exception.Exceptions;
 
 import java.math.BigDecimal;
 
-public class BankingCardValidator {
+public class BankingCardGuard {
     private final BankingCard card;
 
-    public BankingCardValidator(BankingCard card) {
+    public BankingCardGuard(BankingCard card) {
         this.card = card;
     }
 
-    public static BankingCardValidator validate(BankingCard card) {
-        return new BankingCardValidator(card);
+    public static BankingCardGuard forCard(BankingCard card) {
+        return new BankingCardGuard(card);
     }
 
     /**
@@ -30,7 +30,7 @@ public class BankingCardValidator {
      * @return the current validator instance for chaining
      * @throws BankingCardOwnershipException if the card does not belong to the customer
      */
-    public BankingCardValidator ownership(Customer customer) {
+    public BankingCardGuard ownership(Customer customer) {
 
         // compare card owner id with given customer id
         if (!card.getOwner().getId().equals(customer.getId())) {
@@ -48,7 +48,7 @@ public class BankingCardValidator {
      * @return the current validator instance for chaining
      * @throws BankingCardException if the card does not belong to the customer
      */
-    public BankingCardValidator active() {
+    public BankingCardGuard active() {
 
         // check card status
         final boolean isCardDisabled = card.getCardStatus().equals(BankingCardStatus.DISABLED);
@@ -76,7 +76,7 @@ public class BankingCardValidator {
      * @return the current validator instance for chaining
      * @throws BankingCardException if the card does not belong to the customer
      */
-    public BankingCardValidator PIN(String PIN) {
+    public BankingCardGuard PIN(String PIN) {
 
         // check card pin
         if (!card.getCardPin().equals(PIN)) {
@@ -95,7 +95,7 @@ public class BankingCardValidator {
      * @return the current validator instance for chaining
      * @throws BankingCardOwnershipException if the card does not belong to the customer
      */
-    public BankingCardValidator sufficientFunds(BigDecimal amount) {
+    public BankingCardGuard sufficientFunds(BigDecimal amount) {
 
         // check if card has enough funds
         if (!card.hasEnoughFundsToSpend(amount)) {
