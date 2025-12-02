@@ -1,19 +1,21 @@
 package com.damian.xBank.modules.banking.account.service;
 
 import com.damian.xBank.modules.banking.account.exception.BankingAccountNotFoundException;
+import com.damian.xBank.modules.banking.account.guard.BankingAccountGuard;
+import com.damian.xBank.modules.banking.account.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.repository.BankingAccountRepository;
-import com.damian.xBank.modules.banking.account.validator.BankingAccountGuard;
 import com.damian.xBank.modules.banking.card.dto.request.BankingCardRequest;
 import com.damian.xBank.modules.banking.card.enums.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.exception.BankingAccountCardsLimitException;
+import com.damian.xBank.modules.banking.card.model.BankingCard;
 import com.damian.xBank.modules.banking.card.service.BankingCardService;
-import com.damian.xBank.shared.domain.BankingAccount;
-import com.damian.xBank.shared.domain.BankingCard;
-import com.damian.xBank.shared.domain.Customer;
+import com.damian.xBank.modules.user.customer.model.Customer;
 import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.utils.AuthHelper;
 import org.springframework.stereotype.Service;
 
+// TODO move to BankingAccountManagementService? or keep separate?
+// rename to BankingAccountManagementCardService?
 @Service
 public class BankingAccountCardManagerService {
     private final int MAX_CARDS_PER_ACCOUNT = 5;

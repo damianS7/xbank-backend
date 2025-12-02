@@ -1,13 +1,13 @@
 package com.damian.xBank.modules.notification.service;
 
+import com.damian.xBank.modules.notification.event.NotificationEvent;
 import com.damian.xBank.modules.notification.exception.NotificationNotFoundException;
+import com.damian.xBank.modules.notification.model.Notification;
 import com.damian.xBank.modules.notification.repository.NotificationRepository;
 import com.damian.xBank.modules.user.account.account.exception.UserAccountNotFoundException;
+import com.damian.xBank.modules.user.account.account.model.UserAccount;
 import com.damian.xBank.modules.user.account.account.repository.UserAccountRepository;
-import com.damian.xBank.shared.domain.Notification;
 import com.damian.xBank.shared.domain.User;
-import com.damian.xBank.shared.domain.UserAccount;
-import com.damian.xBank.shared.domain.notification.event.NotificationEvent;
 import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.utils.AuthHelper;
 import org.slf4j.Logger;

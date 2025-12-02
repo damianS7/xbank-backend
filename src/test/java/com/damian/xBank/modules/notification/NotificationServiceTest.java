@@ -1,14 +1,14 @@
 package com.damian.xBank.modules.notification;
 
 import com.damian.xBank.modules.notification.enums.NotificationType;
+import com.damian.xBank.modules.notification.event.NotificationEvent;
+import com.damian.xBank.modules.notification.model.Notification;
 import com.damian.xBank.modules.notification.repository.NotificationRepository;
 import com.damian.xBank.modules.notification.service.NotificationService;
 import com.damian.xBank.modules.user.account.account.exception.UserAccountNotFoundException;
+import com.damian.xBank.modules.user.account.account.model.UserAccount;
 import com.damian.xBank.modules.user.account.account.repository.UserAccountRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.domain.Notification;
-import com.damian.xBank.shared.domain.UserAccount;
-import com.damian.xBank.shared.domain.notification.event.NotificationEvent;
 import com.damian.xBank.shared.exception.Exceptions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

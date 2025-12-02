@@ -10,14 +10,14 @@ import com.damian.xBank.modules.banking.account.exception.BankingAccountClosedEx
 import com.damian.xBank.modules.banking.account.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.exception.BankingAccountOwnershipException;
 import com.damian.xBank.modules.banking.account.exception.BankingAccountSuspendedException;
+import com.damian.xBank.modules.banking.account.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.account.service.BankingAccountManagementService;
 import com.damian.xBank.modules.user.account.account.enums.UserAccountRole;
+import com.damian.xBank.modules.user.account.account.model.UserAccount;
+import com.damian.xBank.modules.user.customer.model.Customer;
 import com.damian.xBank.modules.user.customer.repository.CustomerRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.domain.BankingAccount;
-import com.damian.xBank.shared.domain.Customer;
-import com.damian.xBank.shared.domain.UserAccount;
 import com.damian.xBank.shared.exception.Exceptions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -281,7 +281,7 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
                 Exceptions.BANKING.ACCOUNT.ACCESS_FORBIDDEN
         ));
     }
-    
+
     @Test
     @DisplayName("Should close an account even if its not yours when you are ADMIN")
     void shouldCloseBankingAccountWhenYouAreAdmin() {

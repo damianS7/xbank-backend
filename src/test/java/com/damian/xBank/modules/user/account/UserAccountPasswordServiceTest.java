@@ -4,15 +4,15 @@ import com.damian.xBank.modules.user.account.account.dto.request.UserAccountPass
 import com.damian.xBank.modules.user.account.account.dto.request.UserAccountPasswordUpdateRequest;
 import com.damian.xBank.modules.user.account.account.exception.UserAccountInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.account.account.exception.UserAccountNotFoundException;
+import com.damian.xBank.modules.user.account.account.model.UserAccount;
 import com.damian.xBank.modules.user.account.account.repository.UserAccountRepository;
 import com.damian.xBank.modules.user.account.account.service.UserAccountPasswordService;
 import com.damian.xBank.modules.user.account.account.service.UserAccountVerificationService;
 import com.damian.xBank.modules.user.account.token.enums.UserAccountTokenType;
+import com.damian.xBank.modules.user.account.token.model.UserAccountToken;
 import com.damian.xBank.modules.user.account.token.repository.UserAccountTokenRepository;
 import com.damian.xBank.modules.user.account.token.service.UserAccountTokenService;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.domain.UserAccount;
-import com.damian.xBank.shared.domain.UserAccountToken;
 import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.infrastructure.mail.EmailSenderService;
 import org.junit.jupiter.api.DisplayName;

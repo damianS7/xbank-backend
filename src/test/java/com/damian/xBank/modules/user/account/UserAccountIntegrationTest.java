@@ -4,8 +4,8 @@ import com.damian.xBank.modules.user.account.account.dto.request.UserAccountEmai
 import com.damian.xBank.modules.user.account.account.dto.response.UserAccountDto;
 import com.damian.xBank.modules.user.account.account.enums.UserAccountRole;
 import com.damian.xBank.modules.user.account.account.enums.UserAccountStatus;
+import com.damian.xBank.modules.user.account.account.model.UserAccount;
 import com.damian.xBank.shared.AbstractIntegrationTest;
-import com.damian.xBank.shared.domain.UserAccount;
 import com.damian.xBank.shared.utils.JsonHelper;
 import org.junit.jupiter.api.*;
 import org.springframework.http.HttpHeaders;

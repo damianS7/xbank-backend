@@ -2,9 +2,9 @@ package com.damian.xBank.shared.utils;
 
 import com.damian.xBank.modules.user.account.account.enums.UserAccountRole;
 import com.damian.xBank.modules.user.account.account.exception.UserAccountInvalidPasswordConfirmationException;
-import com.damian.xBank.shared.domain.Customer;
+import com.damian.xBank.modules.user.account.account.model.UserAccount;
+import com.damian.xBank.modules.user.customer.model.Customer;
 import com.damian.xBank.shared.domain.User;
-import com.damian.xBank.shared.domain.UserAccount;
 import com.damian.xBank.shared.exception.Exceptions;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -44,8 +44,20 @@ public class AuthHelper {
                 .getPrincipal();
     }
 
+    public static boolean isAdmin(Customer customer) {
+        return AuthHelper.isAdmin(customer.getAccount());
+    }
+
     public static boolean isAdmin(UserAccount user) {
         return user.getRole().equals(UserAccountRole.ADMIN);
+    }
+
+    public static boolean isCustomer(Customer customer) {
+        return AuthHelper.isCustomer(customer.getAccount());
+    }
+
+    public static boolean isCustomer(UserAccount user) {
+        return user.getRole().equals(UserAccountRole.CUSTOMER);
     }
 
 }

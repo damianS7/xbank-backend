@@ -4,14 +4,14 @@ import com.damian.xBank.modules.user.account.account.dto.request.UserAccountPass
 import com.damian.xBank.modules.user.account.account.enums.UserAccountStatus;
 import com.damian.xBank.modules.user.account.account.exception.UserAccountNotFoundException;
 import com.damian.xBank.modules.user.account.account.exception.UserAccountVerificationNotPendingException;
+import com.damian.xBank.modules.user.account.account.model.UserAccount;
 import com.damian.xBank.modules.user.account.account.repository.UserAccountRepository;
 import com.damian.xBank.modules.user.account.token.enums.UserAccountTokenType;
 import com.damian.xBank.modules.user.account.token.exception.UserAccountTokenExpiredException;
 import com.damian.xBank.modules.user.account.token.exception.UserAccountTokenNotFoundException;
 import com.damian.xBank.modules.user.account.token.exception.UserAccountTokenUsedException;
+import com.damian.xBank.modules.user.account.token.model.UserAccountToken;
 import com.damian.xBank.modules.user.account.token.repository.UserAccountTokenRepository;
-import com.damian.xBank.shared.domain.UserAccount;
-import com.damian.xBank.shared.domain.UserAccountToken;
 import com.damian.xBank.shared.exception.Exceptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,10 +1,10 @@
 package com.damian.xBank.modules.user.account.account.controller;
 
 import com.damian.xBank.modules.user.account.account.dto.request.UserAccountVerificationResendRequest;
+import com.damian.xBank.modules.user.account.account.model.UserAccount;
 import com.damian.xBank.modules.user.account.account.service.UserAccountVerificationService;
+import com.damian.xBank.modules.user.account.token.model.UserAccountToken;
 import com.damian.xBank.modules.user.account.token.service.UserAccountTokenService;
-import com.damian.xBank.shared.domain.UserAccount;
-import com.damian.xBank.shared.domain.UserAccountToken;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

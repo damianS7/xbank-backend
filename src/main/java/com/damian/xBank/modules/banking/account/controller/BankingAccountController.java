@@ -4,10 +4,10 @@ import com.damian.xBank.modules.banking.account.dto.mapper.BankingAccountDtoMapp
 import com.damian.xBank.modules.banking.account.dto.request.BankingAccountCreateRequest;
 import com.damian.xBank.modules.banking.account.dto.response.BankingAccountDto;
 import com.damian.xBank.modules.banking.account.dto.response.BankingAccountSummaryDto;
+import com.damian.xBank.modules.banking.account.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.service.BankingAccountCardManagerService;
 import com.damian.xBank.modules.banking.account.service.BankingAccountManagementService;
 import com.damian.xBank.modules.banking.account.service.BankingAccountService;
-import com.damian.xBank.shared.domain.BankingAccount;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;

@@ -2,14 +2,15 @@ package com.damian.xBank.modules.banking.account.controller;
 
 import com.damian.xBank.modules.banking.account.dto.mapper.BankingAccountDtoMapper;
 import com.damian.xBank.modules.banking.account.dto.request.BankingAccountAliasUpdateRequest;
+import com.damian.xBank.modules.banking.account.dto.request.BankingAccountCloseRequest;
 import com.damian.xBank.modules.banking.account.dto.response.BankingAccountDto;
+import com.damian.xBank.modules.banking.account.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.service.BankingAccountCardManagerService;
 import com.damian.xBank.modules.banking.account.service.BankingAccountManagementService;
 import com.damian.xBank.modules.banking.card.dto.mapper.BankingCardDtoMapper;
 import com.damian.xBank.modules.banking.card.dto.request.BankingCardRequest;
 import com.damian.xBank.modules.banking.card.dto.response.BankingCardDto;
-import com.damian.xBank.shared.domain.BankingAccount;
-import com.damian.xBank.shared.domain.BankingCard;
+import com.damian.xBank.modules.banking.card.model.BankingCard;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;
@@ -31,15 +32,31 @@ public class BankingAccountManagementController {
         this.bankingAccountCardManagerService = bankingAccountCardManagerService;
     }
 
+    // endpoint for logged customer to close his BankingAccount
+    @PostMapping("/banking/accounts/{id}/close")
+    public ResponseEntity<?> closeAccount(
+            @PathVariable @NotNull @Positive
+            Long id,
+            @Validated @RequestBody
+            BankingAccountCloseRequest request
+    ) {
+        BankingAccount bankingAccount = bankingAccountManagementService.closeAccount(id, request);
+        BankingAccountDto bankingAccountDto = BankingAccountDtoMapper.toBankingAccountDto(bankingAccount);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(bankingAccountDto);
+    }
+
     // endpoint to set an alias for an account
     @PatchMapping("/banking/accounts/{id}/alias")
-    public ResponseEntity<?> setBankingAccountAlias(
+    public ResponseEntity<?> setAccountAlias(
             @PathVariable @Positive
             Long id,
             @Validated @RequestBody
             BankingAccountAliasUpdateRequest request
     ) {
-        BankingAccount bankingAccount = bankingAccountManagementService.setBankingAccountAlias(id, request);
+        BankingAccount bankingAccount = bankingAccountManagementService.setAccountAlias(id, request);
         BankingAccountDto bankingAccountDTO = BankingAccountDtoMapper.toBankingAccountDto(bankingAccount);
 
         return ResponseEntity
@@ -47,15 +64,16 @@ public class BankingAccountManagementController {
                 .body(bankingAccountDTO);
     }
 
+    // TODO create BankingAccountCardManagerController??
     // endpoint for logged customer to request for a new BankingCard
     @PostMapping("/banking/accounts/{id}/cards/request")
-    public ResponseEntity<?> customerRequestBankingCard(
+    public ResponseEntity<?> requestCard(
             @PathVariable @NotNull @Positive
             Long id,
             @Validated @RequestBody
             BankingCardRequest request
     ) {
-        BankingCard bankingCard = bankingAccountCardManagerService.requestBankingCard(id, request);
+        BankingCard bankingCard = bankingAccountCardManagerService.requestCard(id, request);
         BankingCardDto bankingCardDTO = BankingCardDtoMapper.toBankingCardDto(bankingCard);
 
         return ResponseEntity

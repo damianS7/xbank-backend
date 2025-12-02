@@ -5,7 +5,7 @@ import com.damian.xBank.modules.user.account.account.dto.response.UserAccountDto
 import com.damian.xBank.modules.user.account.account.exception.UserAccountNotFoundException;
 import com.damian.xBank.modules.user.customer.dto.response.CustomerDetailDto;
 import com.damian.xBank.modules.user.customer.dto.response.CustomerDto;
-import com.damian.xBank.shared.domain.Customer;
+import com.damian.xBank.modules.user.customer.model.Customer;
 import com.damian.xBank.shared.exception.Exceptions;
 import org.springframework.data.domain.Page;
 

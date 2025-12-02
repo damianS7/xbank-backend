@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.banking.card.repository;
 
-import com.damian.xBank.shared.domain.BankingCard;
+import com.damian.xBank.modules.banking.card.model.BankingCard;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

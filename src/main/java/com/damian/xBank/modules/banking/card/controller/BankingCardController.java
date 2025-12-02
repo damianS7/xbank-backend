@@ -1,19 +1,14 @@
 package com.damian.xBank.modules.banking.card.controller;
 
-import com.damian.xBank.modules.auth.dto.PasswordConfirmationRequest;
-import com.damian.xBank.shared.domain.BankingCard;
-import com.damian.xBank.modules.banking.card.service.BankingCardService;
-import com.damian.xBank.modules.banking.card.dto.request.BankingCardSetDailyLimitRequest;
-import com.damian.xBank.modules.banking.card.dto.request.BankingCardSetLockStatusRequest;
-import com.damian.xBank.modules.banking.card.dto.request.BankingCardSetPinRequest;
 import com.damian.xBank.modules.banking.card.dto.mapper.BankingCardDtoMapper;
 import com.damian.xBank.modules.banking.card.dto.response.BankingCardDto;
-import jakarta.validation.constraints.Positive;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.damian.xBank.modules.banking.card.model.BankingCard;
+import com.damian.xBank.modules.banking.card.service.BankingCardService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Set;
 
@@ -22,7 +17,6 @@ import java.util.Set;
 public class BankingCardController {
     private final BankingCardService bankingCardService;
 
-    @Autowired
     public BankingCardController(
             BankingCardService bankingCardService
     ) {
@@ -30,81 +24,13 @@ public class BankingCardController {
     }
 
     // endpoint to fetch all cards of logged customer
-    @GetMapping("/customers/me/banking/cards")
+    @GetMapping("/banking/cards")
     public ResponseEntity<?> getCustomerBankingCards() {
         Set<BankingCard> bankingCards = bankingCardService.getCustomerBankingCards();
-        Set<BankingCardDto> bankingCardsDTO = BankingCardDtoMapper.toBankingCardSetDTO(bankingCards);
+        Set<BankingCardDto> bankingCardsDto = BankingCardDtoMapper.toBankingCardSetDTO(bankingCards);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(bankingCardsDTO);
+                .body(bankingCardsDto);
     }
-
-    // endpoint for logged customer to cancel a BankingCard
-    @PatchMapping("/customers/me/banking/cards/{id}/cancel")
-    public ResponseEntity<?> customerCancelBankingCard(
-            @PathVariable @Positive
-            Long id,
-            @Validated @RequestBody
-            PasswordConfirmationRequest request
-    ) {
-        BankingCard bankingCard = bankingCardService.cancelCard(id, request);
-        BankingCardDto bankingCardDTO = BankingCardDtoMapper.toBankingCardDto(bankingCard);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(bankingCardDTO);
-    }
-
-    // endpoint for logged customer to set PIN on a BankingCard
-    @PatchMapping("/customers/me/banking/cards/{id}/pin")
-    public ResponseEntity<?> customerSetPinBankingCard(
-            @PathVariable @Positive
-            Long id,
-            @Validated @RequestBody
-            BankingCardSetPinRequest request
-    ) {
-        BankingCard bankingCard = bankingCardService.setBankingCardPin(id, request);
-        BankingCardDto bankingCardDTO = BankingCardDtoMapper.toBankingCardDto(bankingCard);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(bankingCardDTO);
-    }
-
-    // endpoint for logged customer to set a daily limit
-    @PatchMapping("/customers/me/banking/cards/{id}/daily-limit")
-    public ResponseEntity<?> customerSetDailyLimitBankingCard(
-            @PathVariable @Positive
-            Long id,
-            @Validated @RequestBody
-            BankingCardSetDailyLimitRequest request
-    ) {
-        BankingCard bankingCard = bankingCardService.setDailyLimit(id, request);
-        BankingCardDto bankingCardDTO = BankingCardDtoMapper.toBankingCardDto(bankingCard);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(bankingCardDTO);
-    }
-
-    // endpoint for logged customer to lock or unlock a BankingCard
-    @PatchMapping("/customers/me/banking/cards/{id}/lock-status")
-    public ResponseEntity<?> customerLockBankingCard(
-            @PathVariable @Positive
-            Long id,
-            @Validated @RequestBody
-            BankingCardSetLockStatusRequest request
-    ) {
-        BankingCard bankingCard = bankingCardService.setCardLockStatus(
-                id,
-                request
-        );
-        BankingCardDto bankingCardDTO = BankingCardDtoMapper.toBankingCardDto(bankingCard);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(bankingCardDTO);
-    }
-
 }

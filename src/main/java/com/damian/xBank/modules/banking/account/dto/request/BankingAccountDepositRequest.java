@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.banking.account.dto.request;
 
-import com.damian.xBank.modules.banking.transactions.enums.BankingTransactionType;
+import com.damian.xBank.modules.banking.transaction.enums.BankingTransactionType;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 

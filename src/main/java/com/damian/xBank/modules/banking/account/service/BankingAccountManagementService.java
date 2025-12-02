@@ -5,11 +5,11 @@ import com.damian.xBank.modules.banking.account.dto.request.BankingAccountCloseR
 import com.damian.xBank.modules.banking.account.dto.request.BankingAccountOpenRequest;
 import com.damian.xBank.modules.banking.account.enums.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.exception.BankingAccountNotFoundException;
+import com.damian.xBank.modules.banking.account.guard.BankingAccountGuard;
+import com.damian.xBank.modules.banking.account.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.repository.BankingAccountRepository;
-import com.damian.xBank.modules.banking.account.validator.BankingAccountGuard;
 import com.damian.xBank.modules.user.account.account.enums.UserAccountRole;
-import com.damian.xBank.shared.domain.BankingAccount;
-import com.damian.xBank.shared.domain.Customer;
+import com.damian.xBank.modules.user.customer.model.Customer;
 import com.damian.xBank.shared.utils.AuthHelper;
 import org.springframework.stereotype.Service;
 

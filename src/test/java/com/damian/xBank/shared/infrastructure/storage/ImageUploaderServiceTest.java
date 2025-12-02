@@ -1,7 +1,7 @@
 package com.damian.xBank.shared.infrastructure.storage;
 
+import com.damian.xBank.modules.user.account.account.model.UserAccount;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.domain.UserAccount;
 import com.damian.xBank.shared.utils.ImageTestHelper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

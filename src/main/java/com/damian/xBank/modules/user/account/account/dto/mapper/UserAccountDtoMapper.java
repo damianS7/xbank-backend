@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.user.account.account.dto.mapper;
 
 import com.damian.xBank.modules.user.account.account.dto.response.UserAccountDto;
-import com.damian.xBank.shared.domain.UserAccount;
+import com.damian.xBank.modules.user.account.account.model.UserAccount;
 import org.springframework.data.domain.Page;
 
 import java.util.List;

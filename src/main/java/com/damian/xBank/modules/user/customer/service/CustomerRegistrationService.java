@@ -2,12 +2,12 @@ package com.damian.xBank.modules.user.customer.service;
 
 import com.damian.xBank.modules.setting.service.SettingService;
 import com.damian.xBank.modules.user.account.account.enums.UserAccountRole;
+import com.damian.xBank.modules.user.account.account.model.UserAccount;
 import com.damian.xBank.modules.user.account.account.service.UserAccountService;
 import com.damian.xBank.modules.user.customer.dto.request.CustomerRegistrationRequest;
 import com.damian.xBank.modules.user.customer.exception.CustomerException;
+import com.damian.xBank.modules.user.customer.model.Customer;
 import com.damian.xBank.modules.user.customer.repository.CustomerRepository;
-import com.damian.xBank.shared.domain.Customer;
-import com.damian.xBank.shared.domain.UserAccount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

@@ -4,7 +4,7 @@ import com.damian.xBank.modules.banking.account.enums.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.enums.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.enums.BankingAccountType;
 import com.damian.xBank.modules.banking.card.dto.response.BankingCardDto;
-import com.damian.xBank.modules.banking.transactions.dto.response.BankingTransactionDto;
+import com.damian.xBank.modules.banking.transaction.dto.response.BankingTransactionDto;
 
 import java.math.BigDecimal;
 import java.time.Instant;
