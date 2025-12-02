@@ -120,7 +120,7 @@ public class BankingAccountManagementService {
             String alias
     ) {
         // business rules only for customers
-        if (customer.getAccount().getRole() == UserAccountRole.CUSTOMER) {
+        if (AuthHelper.isCustomer(customer)) {
 
             BankingAccountGuard.forAccount(bankingAccount)
                                .ownership(customer)
