@@ -1,8 +1,8 @@
 package com.damian.xBank.modules.banking.account.service;
 
-import com.damian.xBank.modules.banking.account.BankingAccountAuthorizationHelper;
 import com.damian.xBank.modules.banking.account.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.repository.BankingAccountRepository;
+import com.damian.xBank.modules.banking.account.validator.BankingAccountGuard;
 import com.damian.xBank.modules.banking.card.dto.request.BankingCardRequest;
 import com.damian.xBank.modules.banking.card.enums.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.exception.BankingAccountCardsLimitException;
@@ -28,7 +28,14 @@ public class BankingAccountCardManagerService {
         this.bankingCardService = bankingCardService;
     }
 
-    public BankingCard requestBankingCard(Long bankingAccountId, BankingCardRequest request) {
+    /**
+     * Request a new banking card for the given banking account.
+     *
+     * @param bankingAccountId
+     * @param request
+     * @return the created BankingCard
+     */
+    public BankingCard requestCard(Long bankingAccountId, BankingCardRequest request) {
         // Customer logged
         final Customer currentCustomer = AuthHelper.getCurrentCustomer();
 
@@ -42,11 +49,10 @@ public class BankingAccountCardManagerService {
                 );
 
         // if the logged customer is not admin
-        if (!AuthHelper.isAdmin(currentCustomer.getAccount())) {
+        if (!AuthHelper.isAdmin(currentCustomer)) {
             // check if the account belongs to this customer.
-            BankingAccountAuthorizationHelper
-                    .authorize(currentCustomer, bankingAccount)
-                    .checkOwner();
+            BankingAccountGuard.forAccount(bankingAccount)
+                               .ownership(currentCustomer);
         }
 
         // if customer has reached the maximum amount of cards per account.
@@ -60,7 +66,12 @@ public class BankingAccountCardManagerService {
         return bankingCardService.createBankingCard(bankingAccount, request.type());
     }
 
-    // It counts how many active (ENABLED) cards has this account
+    /**
+     * Counts how many active (ENABLED) cards are associated with the given banking account.
+     *
+     * @param bankingAccount
+     * @return the number of active cards
+     */
     private int countActiveCards(BankingAccount bankingAccount) {
         return (int) bankingAccount
                 .getBankingCards()
