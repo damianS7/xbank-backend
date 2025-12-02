@@ -6,7 +6,8 @@ import com.damian.xBank.modules.banking.account.dto.request.BankingAccountOpenRe
 import com.damian.xBank.modules.banking.account.enums.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.repository.BankingAccountRepository;
-import com.damian.xBank.modules.banking.account.validator.BankingAccountValidator;
+import com.damian.xBank.modules.banking.account.validator.BankingAccountGuard;
+import com.damian.xBank.modules.user.account.account.enums.UserAccountRole;
 import com.damian.xBank.shared.domain.BankingAccount;
 import com.damian.xBank.shared.domain.Customer;
 import com.damian.xBank.shared.utils.AuthHelper;
@@ -24,36 +25,45 @@ public class BankingAccountManagementService {
         this.bankingAccountRepository = bankingAccountRepository;
     }
 
-
-    private BankingAccount updateBankingAccountStatus(
+    /**
+     * Update the status of a banking account
+     *
+     * @param customer       the customer who changes the status
+     * @param bankingAccount the banking account to update
+     * @param accountStatus  the new status
+     * @return the updated banking account
+     */
+    private BankingAccount updateStatus(
+            Customer customer,
             BankingAccount bankingAccount,
             BankingAccountStatus accountStatus
     ) {
+        // business rules only for customers
+        if (customer.getAccount().getRole() == UserAccountRole.CUSTOMER) {
+
+            BankingAccountGuard.forAccount(bankingAccount)
+                               .ownership(customer)
+                               .notSuspended()
+                               .notClosed();
+        }
+
         // we mark the account as closed
         bankingAccount.setAccountStatus(accountStatus);
 
         // we change the updateAt timestamp field
         bankingAccount.setUpdatedAt(Instant.now());
 
-        // save the data and return BankingAccount
+        // save the status and return BankingAccount
         return bankingAccountRepository.save(bankingAccount);
     }
 
-    // (admin) open a BankingAccount
-    public BankingAccount openBankingAccount(Long bankingAccountId) {
-        // Banking account to to open
-        final BankingAccount bankingAccount = bankingAccountRepository.findById(bankingAccountId).orElseThrow(
-                () -> new BankingAccountNotFoundException(
-                        bankingAccountId
-                ) // Banking account not found
-        );
-
-        return this.updateBankingAccountStatus(bankingAccount, BankingAccountStatus.ACTIVE);
-    }
-
-    // Logged customer open a BankingAccount
-    // TODO rename request to BankingAccountStatusRequest???
-    public BankingAccount openBankingAccount(
+    /**
+     * Change the status of a banking account to ACTIVE
+     *
+     * @param bankingAccountId the id of the banking account to be opened
+     * @return the updated banking account
+     */
+    public BankingAccount openAccount(
             Long bankingAccountId,
             BankingAccountOpenRequest request
     ) {
@@ -61,39 +71,23 @@ public class BankingAccountManagementService {
         final Customer currentCustomer = AuthHelper.getCurrentCustomer();
 
         // Banking account to be open
-        final BankingAccount bankingAccount = bankingAccountRepository.findById(bankingAccountId).orElseThrow(
-                () -> new BankingAccountNotFoundException(
-                        bankingAccountId
-                ) // Banking account not found
-        );
+        final BankingAccount bankingAccount = bankingAccountRepository
+                .findById(bankingAccountId).orElseThrow(
+                        () -> new BankingAccountNotFoundException(
+                                bankingAccountId
+                        ) // Banking account not found
+                );
 
-        // TODO maybe this should be removed?
-        // check if the account belongs to this customer.
-        BankingAccountValidator
-                .validate(bankingAccount)
-                .ownership(currentCustomer)
-                .active();
-
-        // validate password
-        AuthHelper.validatePassword(currentCustomer.getAccount(), request.password());
-
-        return this.updateBankingAccountStatus(bankingAccount, BankingAccountStatus.ACTIVE);
+        return this.updateStatus(currentCustomer, bankingAccount, BankingAccountStatus.ACTIVE);
     }
 
-    // (admin) close a BankingAccount
-    public BankingAccount closeBankingAccount(Long bankingAccountId) {
-        // Banking account to to close
-        final BankingAccount bankingAccount = bankingAccountRepository.findById(bankingAccountId).orElseThrow(
-                () -> new BankingAccountNotFoundException(
-                        bankingAccountId
-                ) // Banking account not found
-        );
-
-        return this.updateBankingAccountStatus(bankingAccount, BankingAccountStatus.CLOSED);
-    }
-
-    // Logged customer close a BankingAccount
-    public BankingAccount closeBankingAccount(
+    /**
+     * Change the status of a banking account to CLOSED
+     *
+     * @param bankingAccountId the id of the banking account to be closed
+     * @return the updated banking account
+     */
+    public BankingAccount closeAccount(
             Long bankingAccountId,
             BankingAccountCloseRequest request
     ) {
@@ -107,20 +101,33 @@ public class BankingAccountManagementService {
                 ) // Banking account not found
         );
 
-        // TODO maybe this should be removed?
-        // check if the account belongs to this customer.
-        BankingAccountValidator
-                .validate(bankingAccount)
-                .ownership(currentCustomer)
-                .active();
-
         AuthHelper.validatePassword(currentCustomer.getAccount(), request.password());
 
-        return this.updateBankingAccountStatus(bankingAccount, BankingAccountStatus.CLOSED);
+        return this.updateStatus(currentCustomer, bankingAccount, BankingAccountStatus.CLOSED);
     }
 
-    // set an alias for an account
-    private BankingAccount setBankingAccountAlias(BankingAccount bankingAccount, String alias) {
+    /**
+     * Set alias for a banking account
+     *
+     * @param customer       the customer who changes the alias
+     * @param bankingAccount the banking account to update
+     * @param alias          the new alias
+     * @return the updated banking account
+     */
+    private BankingAccount setAccountAlias(
+            Customer customer,
+            BankingAccount bankingAccount,
+            String alias
+    ) {
+        // business rules only for customers
+        if (customer.getAccount().getRole() == UserAccountRole.CUSTOMER) {
+
+            BankingAccountGuard.forAccount(bankingAccount)
+                               .ownership(customer)
+                               .notSuspended()
+                               .notClosed();
+        }
+
         // we mark the account as closed
         bankingAccount.setAlias(alias);
 
@@ -131,24 +138,14 @@ public class BankingAccountManagementService {
         return bankingAccountRepository.save(bankingAccount);
     }
 
-    // (admin) set an alias for an account
-    public BankingAccount setBankingAccountAlias(
-            Long bankingAccountId,
-            String alias
-    ) {
-
-        // Banking account to set an alias
-        final BankingAccount bankingAccount = bankingAccountRepository.findById(bankingAccountId).orElseThrow(
-                () -> new BankingAccountNotFoundException(
-                        bankingAccountId
-                ) // Banking account not found
-        );
-
-        return this.setBankingAccountAlias(bankingAccount, alias);
-    }
-
-    // Logged customer set an alias for an account
-    public BankingAccount setBankingAccountAlias(
+    /**
+     * Set alias for a banking account
+     *
+     * @param bankingAccountId the id of the banking account to set alias
+     * @param request          the request with the new alias
+     * @return the updated banking account
+     */
+    public BankingAccount setAccountAlias(
             Long bankingAccountId,
             BankingAccountAliasUpdateRequest request
     ) {
@@ -162,12 +159,7 @@ public class BankingAccountManagementService {
                 ) // Banking account not found
         );
 
-        // check if the account belongs to this customer.
-        BankingAccountValidator
-                .validate(bankingAccount)
-                .ownership(currentCustomer);
-
         //        AuthHelper.validatePassword(currentCustomer.getAccount(), request.password());
-        return this.setBankingAccountAlias(bankingAccount, request.alias());
+        return this.setAccountAlias(currentCustomer, bankingAccount, request.alias());
     }
 }
