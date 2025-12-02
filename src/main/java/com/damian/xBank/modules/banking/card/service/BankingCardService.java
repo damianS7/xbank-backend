@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.banking.card.service;
 
 import com.damian.xBank.modules.auth.dto.PasswordConfirmationRequest;
-import com.damian.xBank.modules.banking.account.model.BankingAccount;
+import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.card.dto.request.BankingCardSetDailyLimitRequest;
 import com.damian.xBank.modules.banking.card.dto.request.BankingCardSetLockStatusRequest;
 import com.damian.xBank.modules.banking.card.dto.request.BankingCardSetPinRequest;

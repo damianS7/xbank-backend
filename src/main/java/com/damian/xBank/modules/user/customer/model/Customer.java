@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.user.customer.model;
 
-import com.damian.xBank.modules.banking.account.model.BankingAccount;
+import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.user.account.account.enums.UserAccountRole;
 import com.damian.xBank.modules.user.account.account.model.UserAccount;
 import com.damian.xBank.modules.user.customer.enums.CustomerGender;

@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.banking.transaction.model;
 
-import com.damian.xBank.modules.banking.account.model.BankingAccount;
+import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.card.model.BankingCard;
 import com.damian.xBank.modules.banking.transaction.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.enums.BankingTransactionType;

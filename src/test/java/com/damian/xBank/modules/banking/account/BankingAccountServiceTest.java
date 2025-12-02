@@ -1,11 +1,11 @@
 package com.damian.xBank.modules.banking.account;
 
-import com.damian.xBank.modules.banking.account.dto.request.BankingAccountCreateRequest;
-import com.damian.xBank.modules.banking.account.enums.BankingAccountCurrency;
-import com.damian.xBank.modules.banking.account.enums.BankingAccountType;
-import com.damian.xBank.modules.banking.account.model.BankingAccount;
-import com.damian.xBank.modules.banking.account.repository.BankingAccountRepository;
-import com.damian.xBank.modules.banking.account.service.BankingAccountService;
+import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCreateRequest;
+import com.damian.xBank.modules.banking.account.application.service.BankingAccountService;
+import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
+import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurrency;
+import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountType;
+import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
 import com.damian.xBank.modules.user.account.account.model.UserAccount;
 import com.damian.xBank.modules.user.customer.exception.CustomerNotFoundException;
 import com.damian.xBank.modules.user.customer.model.Customer;

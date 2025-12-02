@@ -1,9 +1,9 @@
 package com.damian.xBank.modules.banking.account;
 
-import com.damian.xBank.modules.banking.account.dto.request.BankingAccountDepositRequest;
-import com.damian.xBank.modules.banking.account.model.BankingAccount;
-import com.damian.xBank.modules.banking.account.repository.BankingAccountRepository;
-import com.damian.xBank.modules.banking.account.service.BankingAccountOperationService;
+import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountDepositRequest;
+import com.damian.xBank.modules.banking.account.application.service.BankingAccountOperationService;
+import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
+import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.transaction.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.enums.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.model.BankingTransaction;
