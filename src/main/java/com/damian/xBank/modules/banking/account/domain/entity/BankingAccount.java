@@ -217,14 +217,14 @@ public class BankingAccount {
         return this.getBalance().compareTo(amount) >= 0;
     }
 
-    public BigDecimal subtractAmount(BigDecimal amount) {
+    public BigDecimal subtractBalance(BigDecimal amount) {
         if (this.hasEnoughFunds(amount)) {
             this.setBalance(this.getBalance().subtract(amount));
         }
         return this.getBalance();
     }
 
-    public BigDecimal deposit(BigDecimal amount) {
+    public BigDecimal addBalance(BigDecimal amount) {
         this.setBalance(this.getBalance().add(amount));
         return this.getBalance();
     }

@@ -183,7 +183,7 @@ public class BankingCard {
     }
 
     public BigDecimal chargeAmount(BigDecimal amount) {
-        return this.getAssociatedBankingAccount().subtractAmount(amount);
+        return this.getAssociatedBankingAccount().subtractBalance(amount);
     }
 
     public String getHolderName() {
