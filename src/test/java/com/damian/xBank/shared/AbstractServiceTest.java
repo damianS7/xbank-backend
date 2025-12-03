@@ -1,7 +1,7 @@
 package com.damian.xBank.shared;
 
-import com.damian.xBank.modules.user.account.account.model.UserAccount;
-import com.damian.xBank.modules.user.customer.model.Customer;
+import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
+import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.domain.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

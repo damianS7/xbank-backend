@@ -1,9 +1,9 @@
 package com.damian.xBank.modules.auth;
 
-import com.damian.xBank.modules.user.account.account.dto.request.UserAccountUpdateRequest;
-import com.damian.xBank.modules.user.account.account.enums.UserAccountStatus;
-import com.damian.xBank.modules.user.customer.enums.CustomerGender;
-import com.damian.xBank.modules.user.customer.model.Customer;
+import com.damian.xBank.modules.user.account.account.application.dto.request.UserAccountUpdateRequest;
+import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
+import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
+import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.AbstractIntegrationTest;
 import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.utils.JwtUtil;

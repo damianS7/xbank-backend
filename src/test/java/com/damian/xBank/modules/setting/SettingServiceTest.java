@@ -1,12 +1,12 @@
 package com.damian.xBank.modules.setting;
 
-import com.damian.xBank.modules.setting.dto.request.SettingsUpdateRequest;
-import com.damian.xBank.modules.setting.enums.SettingLanguage;
-import com.damian.xBank.modules.setting.enums.SettingMultifactor;
-import com.damian.xBank.modules.setting.enums.SettingTheme;
-import com.damian.xBank.modules.setting.model.Setting;
-import com.damian.xBank.modules.setting.repository.SettingRepository;
-import com.damian.xBank.modules.setting.service.SettingService;
+import com.damian.xBank.modules.setting.application.dto.request.SettingsUpdateRequest;
+import com.damian.xBank.modules.setting.application.service.SettingService;
+import com.damian.xBank.modules.setting.domain.entity.Setting;
+import com.damian.xBank.modules.setting.domain.enums.SettingLanguage;
+import com.damian.xBank.modules.setting.domain.enums.SettingMultifactor;
+import com.damian.xBank.modules.setting.domain.enums.SettingTheme;
+import com.damian.xBank.modules.setting.infra.repository.SettingRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.domain.User;
 import org.junit.jupiter.api.DisplayName;

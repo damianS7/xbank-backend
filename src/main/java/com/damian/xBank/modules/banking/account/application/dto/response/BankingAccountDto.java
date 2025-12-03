@@ -3,8 +3,8 @@ package com.damian.xBank.modules.banking.account.application.dto.response;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountType;
-import com.damian.xBank.modules.banking.card.dto.response.BankingCardDto;
-import com.damian.xBank.modules.banking.transaction.dto.response.BankingTransactionDto;
+import com.damian.xBank.modules.banking.card.application.dto.response.BankingCardDto;
+import com.damian.xBank.modules.banking.transaction.application.dto.response.BankingTransactionDto;
 
 import java.math.BigDecimal;
 import java.time.Instant;

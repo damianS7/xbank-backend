@@ -1,7 +1,7 @@
 package com.damian.xBank.config.security;
 
-import com.damian.xBank.modules.auth.exception.EmailNotFoundException;
-import com.damian.xBank.modules.auth.service.CustomUserDetailsService;
+import com.damian.xBank.modules.auth.domain.exception.EmailNotFoundException;
+import com.damian.xBank.modules.auth.application.service.CustomUserDetailsService;
 import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.exception.JwtTokenExpiredException;
 import com.damian.xBank.shared.exception.JwtTokenInvalidException;

@@ -1,9 +1,9 @@
 package com.damian.xBank.shared.domain;
 
-import com.damian.xBank.modules.user.account.account.enums.UserAccountRole;
-import com.damian.xBank.modules.user.account.account.enums.UserAccountStatus;
-import com.damian.xBank.modules.user.account.account.model.UserAccount;
-import com.damian.xBank.modules.user.customer.model.Customer;
+import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
+import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
+import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
+import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

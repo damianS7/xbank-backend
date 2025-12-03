@@ -1,10 +1,10 @@
 package com.damian.xBank.modules.auth;
 
-import com.damian.xBank.modules.auth.dto.AuthenticationRequest;
-import com.damian.xBank.modules.auth.dto.AuthenticationResponse;
-import com.damian.xBank.modules.user.account.account.enums.UserAccountRole;
-import com.damian.xBank.modules.user.account.account.enums.UserAccountStatus;
-import com.damian.xBank.modules.user.account.account.model.UserAccount;
+import com.damian.xBank.modules.auth.application.dto.AuthenticationRequest;
+import com.damian.xBank.modules.auth.application.dto.AuthenticationResponse;
+import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
+import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
+import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.shared.AbstractIntegrationTest;
 import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.utils.ApiResponse;

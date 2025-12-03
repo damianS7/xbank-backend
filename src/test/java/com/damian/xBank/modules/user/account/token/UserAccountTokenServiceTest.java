@@ -1,16 +1,16 @@
 package com.damian.xBank.modules.user.account.token;
 
-import com.damian.xBank.modules.user.account.account.dto.request.UserAccountPasswordResetRequest;
-import com.damian.xBank.modules.user.account.account.exception.UserAccountNotFoundException;
-import com.damian.xBank.modules.user.account.account.model.UserAccount;
-import com.damian.xBank.modules.user.account.account.repository.UserAccountRepository;
-import com.damian.xBank.modules.user.account.token.enums.UserAccountTokenType;
-import com.damian.xBank.modules.user.account.token.exception.UserAccountTokenExpiredException;
-import com.damian.xBank.modules.user.account.token.exception.UserAccountTokenNotFoundException;
-import com.damian.xBank.modules.user.account.token.exception.UserAccountTokenUsedException;
-import com.damian.xBank.modules.user.account.token.model.UserAccountToken;
-import com.damian.xBank.modules.user.account.token.repository.UserAccountTokenRepository;
-import com.damian.xBank.modules.user.account.token.service.UserAccountTokenService;
+import com.damian.xBank.modules.user.account.account.application.dto.request.UserAccountPasswordResetRequest;
+import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountNotFoundException;
+import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
+import com.damian.xBank.modules.user.account.account.infra.repository.UserAccountRepository;
+import com.damian.xBank.modules.user.account.token.domain.enums.UserAccountTokenType;
+import com.damian.xBank.modules.user.account.token.domain.exception.UserAccountTokenExpiredException;
+import com.damian.xBank.modules.user.account.token.domain.exception.UserAccountTokenNotFoundException;
+import com.damian.xBank.modules.user.account.token.domain.exception.UserAccountTokenUsedException;
+import com.damian.xBank.modules.user.account.token.domain.entity.UserAccountToken;
+import com.damian.xBank.modules.user.account.token.infra.repository.UserAccountTokenRepository;
+import com.damian.xBank.modules.user.account.token.application.service.UserAccountTokenService;
 import com.damian.xBank.shared.AbstractServiceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

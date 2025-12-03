@@ -1,6 +1,6 @@
 package com.damian.xBank.config;
 
-import com.damian.xBank.modules.auth.service.CustomUserDetailsService;
+import com.damian.xBank.modules.auth.application.service.CustomUserDetailsService;
 import net.datafaker.Faker;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

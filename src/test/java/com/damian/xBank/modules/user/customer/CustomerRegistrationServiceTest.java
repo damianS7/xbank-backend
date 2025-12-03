@@ -1,14 +1,14 @@
 package com.damian.xBank.modules.user.customer;
 
-import com.damian.xBank.modules.setting.service.SettingService;
-import com.damian.xBank.modules.user.account.account.enums.UserAccountRole;
-import com.damian.xBank.modules.user.account.account.model.UserAccount;
-import com.damian.xBank.modules.user.account.account.service.UserAccountService;
-import com.damian.xBank.modules.user.customer.dto.request.CustomerRegistrationRequest;
-import com.damian.xBank.modules.user.customer.enums.CustomerGender;
-import com.damian.xBank.modules.user.customer.model.Customer;
-import com.damian.xBank.modules.user.customer.repository.CustomerRepository;
-import com.damian.xBank.modules.user.customer.service.CustomerRegistrationService;
+import com.damian.xBank.modules.setting.application.service.SettingService;
+import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
+import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
+import com.damian.xBank.modules.user.account.account.application.service.UserAccountService;
+import com.damian.xBank.modules.user.customer.application.dto.request.CustomerRegistrationRequest;
+import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
+import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.customer.infra.repository.CustomerRepository;
+import com.damian.xBank.modules.user.customer.application.service.CustomerRegistrationService;
 import com.damian.xBank.shared.AbstractServiceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

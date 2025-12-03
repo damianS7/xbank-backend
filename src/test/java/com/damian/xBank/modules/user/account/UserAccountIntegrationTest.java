@@ -1,10 +1,10 @@
 package com.damian.xBank.modules.user.account;
 
-import com.damian.xBank.modules.user.account.account.dto.request.UserAccountEmailUpdateRequest;
-import com.damian.xBank.modules.user.account.account.dto.response.UserAccountDto;
-import com.damian.xBank.modules.user.account.account.enums.UserAccountRole;
-import com.damian.xBank.modules.user.account.account.enums.UserAccountStatus;
-import com.damian.xBank.modules.user.account.account.model.UserAccount;
+import com.damian.xBank.modules.user.account.account.application.dto.request.UserAccountEmailUpdateRequest;
+import com.damian.xBank.modules.user.account.account.application.dto.response.UserAccountDto;
+import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
+import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
+import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.shared.AbstractIntegrationTest;
 import com.damian.xBank.shared.utils.JsonHelper;
 import org.junit.jupiter.api.*;

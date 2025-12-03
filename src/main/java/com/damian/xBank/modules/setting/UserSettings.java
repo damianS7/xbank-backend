@@ -1,8 +1,8 @@
 package com.damian.xBank.modules.setting;
 
-import com.damian.xBank.modules.setting.enums.SettingLanguage;
-import com.damian.xBank.modules.setting.enums.SettingMultifactor;
-import com.damian.xBank.modules.setting.enums.SettingTheme;
+import com.damian.xBank.modules.setting.domain.enums.SettingLanguage;
+import com.damian.xBank.modules.setting.domain.enums.SettingMultifactor;
+import com.damian.xBank.modules.setting.domain.enums.SettingTheme;
 
 public record UserSettings(
         boolean appNotifications,

@@ -1,16 +1,16 @@
 package com.damian.xBank.shared;
 
 
-import com.damian.xBank.modules.auth.dto.AuthenticationRequest;
-import com.damian.xBank.modules.auth.dto.AuthenticationResponse;
-import com.damian.xBank.modules.notification.repository.NotificationRepository;
-import com.damian.xBank.modules.setting.repository.SettingRepository;
-import com.damian.xBank.modules.user.account.account.enums.UserAccountRole;
-import com.damian.xBank.modules.user.account.account.model.UserAccount;
-import com.damian.xBank.modules.user.account.account.repository.UserAccountRepository;
-import com.damian.xBank.modules.user.account.token.repository.UserAccountTokenRepository;
-import com.damian.xBank.modules.user.customer.model.Customer;
-import com.damian.xBank.modules.user.customer.repository.CustomerRepository;
+import com.damian.xBank.modules.auth.application.dto.AuthenticationRequest;
+import com.damian.xBank.modules.auth.application.dto.AuthenticationResponse;
+import com.damian.xBank.modules.notification.infra.repository.NotificationRepository;
+import com.damian.xBank.modules.setting.infra.repository.SettingRepository;
+import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
+import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
+import com.damian.xBank.modules.user.account.account.infra.repository.UserAccountRepository;
+import com.damian.xBank.modules.user.account.token.infra.repository.UserAccountTokenRepository;
+import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.customer.infra.repository.CustomerRepository;
 import com.damian.xBank.shared.domain.User;
 import com.damian.xBank.shared.utils.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;

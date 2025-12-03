@@ -3,7 +3,7 @@ package com.damian.xBank.modules.banking.account.application.guard;
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.exception.*;
-import com.damian.xBank.modules.user.customer.model.Customer;
+import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.exception.Exceptions;
 
 import java.math.BigDecimal;

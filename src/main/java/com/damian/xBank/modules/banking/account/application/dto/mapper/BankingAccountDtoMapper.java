@@ -4,10 +4,10 @@ import com.damian.xBank.modules.banking.account.application.dto.response.Banking
 import com.damian.xBank.modules.banking.account.application.dto.response.BankingAccountDto;
 import com.damian.xBank.modules.banking.account.application.dto.response.BankingAccountSummaryDto;
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
-import com.damian.xBank.modules.banking.card.dto.mapper.BankingCardDtoMapper;
-import com.damian.xBank.modules.banking.card.dto.response.BankingCardDto;
-import com.damian.xBank.modules.banking.transaction.dto.mapper.BankingTransactionDtoMapper;
-import com.damian.xBank.modules.banking.transaction.dto.response.BankingTransactionDto;
+import com.damian.xBank.modules.banking.card.application.dto.mapper.BankingCardDtoMapper;
+import com.damian.xBank.modules.banking.card.application.dto.response.BankingCardDto;
+import com.damian.xBank.modules.banking.transaction.application.dto.mapper.BankingTransactionDtoMapper;
+import com.damian.xBank.modules.banking.transaction.application.dto.response.BankingTransactionDto;
 import org.springframework.data.domain.Page;
 
 import java.util.Collections;

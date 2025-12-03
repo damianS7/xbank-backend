@@ -1,10 +1,10 @@
 package com.damian.xBank.modules.user.customer;
 
-import com.damian.xBank.modules.setting.dto.response.SettingDto;
-import com.damian.xBank.modules.user.account.account.model.UserAccount;
-import com.damian.xBank.modules.user.customer.dto.request.CustomerRegistrationRequest;
-import com.damian.xBank.modules.user.customer.dto.response.CustomerDetailDto;
-import com.damian.xBank.modules.user.customer.enums.CustomerGender;
+import com.damian.xBank.modules.setting.application.dto.response.SettingDto;
+import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
+import com.damian.xBank.modules.user.customer.application.dto.request.CustomerRegistrationRequest;
+import com.damian.xBank.modules.user.customer.application.dto.response.CustomerDetailDto;
+import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
 import com.damian.xBank.shared.AbstractIntegrationTest;
 import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.utils.ApiResponse;

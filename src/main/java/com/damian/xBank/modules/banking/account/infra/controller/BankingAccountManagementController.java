@@ -7,10 +7,10 @@ import com.damian.xBank.modules.banking.account.application.dto.response.Banking
 import com.damian.xBank.modules.banking.account.application.service.BankingAccountCardManagerService;
 import com.damian.xBank.modules.banking.account.application.service.BankingAccountManagementService;
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
-import com.damian.xBank.modules.banking.card.dto.mapper.BankingCardDtoMapper;
-import com.damian.xBank.modules.banking.card.dto.request.BankingCardRequest;
-import com.damian.xBank.modules.banking.card.dto.response.BankingCardDto;
-import com.damian.xBank.modules.banking.card.model.BankingCard;
+import com.damian.xBank.modules.banking.card.application.dto.mapper.BankingCardDtoMapper;
+import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardRequest;
+import com.damian.xBank.modules.banking.card.application.dto.response.BankingCardDto;
+import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;
