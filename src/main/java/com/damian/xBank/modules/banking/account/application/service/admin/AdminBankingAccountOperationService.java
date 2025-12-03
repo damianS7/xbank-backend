@@ -1,5 +1,6 @@
-package com.damian.xBank.modules.banking.account.application.service;
+package com.damian.xBank.modules.banking.account.application.service.admin;
 
+import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountDepositRequest;
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountTransferRequest;
 import com.damian.xBank.modules.banking.account.application.guard.BankingAccountGuard;
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
@@ -23,12 +24,12 @@ import java.time.Instant;
 import java.util.Map;
 
 @Service
-public class BankingAccountOperationService {
+public class AdminBankingAccountOperationService {
     private final BankingTransactionAccountService bankingTransactionAccountService;
     private final BankingAccountRepository bankingAccountRepository;
     private final NotificationService notificationService;
 
-    public BankingAccountOperationService(
+    public AdminBankingAccountOperationService(
             BankingTransactionAccountService bankingTransactionAccountService,
             BankingAccountRepository bankingAccountRepository,
             NotificationService notificationService
@@ -39,12 +40,50 @@ public class BankingAccountOperationService {
     }
 
     /**
-     * Transfer funds from one banking account to another.
+     * Deposit into banking account
      *
-     * @param fromBankingAccountId ID of the banking account to transfer funds from
-     * @param request              Transfer request containing the details
-     * @return the created BankingTransaction
+     * @param bankingAccountId
+     * @param request
+     * @return BankingTransaction
      */
+    public BankingTransaction deposit(
+            Long bankingAccountId,
+            BankingAccountDepositRequest request
+    ) {
+        // Customer logged
+        final Customer currentCustomer = AuthHelper.getCurrentCustomer();
+
+        // TODO check currentCustomer is an employee or admin
+
+        // The account to deposit into
+        final BankingAccount bankingAccount = bankingAccountRepository
+                .findById(bankingAccountId).orElseThrow(
+                        () -> new BankingAccountNotFoundException(
+                                bankingAccountId
+                        ) // Banking account not found
+                );
+
+        // Validate account
+        BankingAccountGuard.forAccount(bankingAccount)
+                           .active();
+
+        BankingTransaction transaction = bankingTransactionAccountService.generateTransaction(
+                bankingAccount,
+                BankingTransactionType.DEPOSIT,
+                request.amount(),
+                "DEPOSIT by " + request.depositorName()
+        );
+
+        // if the transaction is created, add the amount to balance
+        bankingAccount.addBalance(request.amount());
+
+        // transaction is completed
+        transaction.setStatus(BankingTransactionStatus.COMPLETED);
+
+        // save the transaction
+        return bankingTransactionAccountService.persistTransaction(transaction);
+    }
+
     public BankingTransaction transfer(
             Long fromBankingAccountId,
             BankingAccountTransferRequest request
