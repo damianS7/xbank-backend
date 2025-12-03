@@ -84,13 +84,13 @@ public class BankingAccountGuard {
      *
      * @param toBankingAccount the destination account to check
      * @return the current validator instance for chaining
-     * @throws BankingAccountTransferException if the account does not belong to the customer
+     * @throws BankingAccountTransferCurrencyMismatchException if the account does not belong to the customer
      */
     private BankingAccountGuard sameCurrency(BankingAccount toBankingAccount) {
 
         // if currencies are different, throw exception
         if (!account.getAccountCurrency().equals(toBankingAccount.getAccountCurrency())) {
-            throw new BankingAccountTransferException(
+            throw new BankingAccountTransferCurrencyMismatchException(
                     Exceptions.BANKING.TRANSACTION.DIFFERENT_CURRENCY,
                     account.getId(),
                     toBankingAccount.getId()
