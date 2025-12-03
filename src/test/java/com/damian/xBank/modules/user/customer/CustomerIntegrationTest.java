@@ -1,10 +1,10 @@
 package com.damian.xBank.modules.user.customer;
 
-import com.damian.xBank.modules.user.customer.dto.request.CustomerUpdateRequest;
-import com.damian.xBank.modules.user.customer.dto.response.CustomerDetailDto;
-import com.damian.xBank.modules.user.customer.enums.CustomerGender;
+import com.damian.xBank.modules.user.customer.application.dto.request.CustomerUpdateRequest;
+import com.damian.xBank.modules.user.customer.application.dto.response.CustomerDetailDto;
+import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
+import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.AbstractIntegrationTest;
-import com.damian.xBank.shared.domain.Customer;
 import com.damian.xBank.shared.infrastructure.storage.FileStorageService;
 import com.damian.xBank.shared.infrastructure.storage.ImageUploaderService;
 import com.damian.xBank.shared.infrastructure.storage.exception.FileStorageNotFoundException;

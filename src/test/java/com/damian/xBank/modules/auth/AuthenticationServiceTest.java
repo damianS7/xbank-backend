@@ -1,14 +1,14 @@
 package com.damian.xBank.modules.auth;
 
-import com.damian.xBank.modules.auth.dto.AuthenticationRequest;
-import com.damian.xBank.modules.auth.dto.AuthenticationResponse;
-import com.damian.xBank.modules.auth.exception.AccountNotVerifiedException;
-import com.damian.xBank.modules.auth.exception.AccountSuspendedException;
-import com.damian.xBank.modules.auth.service.AuthenticationService;
-import com.damian.xBank.modules.user.account.account.enums.UserAccountStatus;
+import com.damian.xBank.modules.auth.application.dto.AuthenticationRequest;
+import com.damian.xBank.modules.auth.application.dto.AuthenticationResponse;
+import com.damian.xBank.modules.auth.domain.exception.AccountNotVerifiedException;
+import com.damian.xBank.modules.auth.domain.exception.AccountSuspendedException;
+import com.damian.xBank.modules.auth.application.service.AuthenticationService;
+import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
+import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.domain.User;
-import com.damian.xBank.shared.domain.UserAccount;
 import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.utils.JwtUtil;
 import org.junit.jupiter.api.DisplayName;

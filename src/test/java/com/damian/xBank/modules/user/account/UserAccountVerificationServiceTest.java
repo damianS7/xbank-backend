@@ -1,15 +1,15 @@
 package com.damian.xBank.modules.user.account;
 
-import com.damian.xBank.modules.user.account.account.enums.UserAccountStatus;
-import com.damian.xBank.modules.user.account.account.exception.UserAccountVerificationNotPendingException;
-import com.damian.xBank.modules.user.account.account.repository.UserAccountRepository;
-import com.damian.xBank.modules.user.account.account.service.UserAccountVerificationService;
-import com.damian.xBank.modules.user.account.token.enums.UserAccountTokenType;
-import com.damian.xBank.modules.user.account.token.repository.UserAccountTokenRepository;
-import com.damian.xBank.modules.user.account.token.service.UserAccountTokenService;
+import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
+import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountVerificationNotPendingException;
+import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
+import com.damian.xBank.modules.user.account.account.infra.repository.UserAccountRepository;
+import com.damian.xBank.modules.user.account.account.application.service.UserAccountVerificationService;
+import com.damian.xBank.modules.user.account.token.domain.enums.UserAccountTokenType;
+import com.damian.xBank.modules.user.account.token.domain.entity.UserAccountToken;
+import com.damian.xBank.modules.user.account.token.infra.repository.UserAccountTokenRepository;
+import com.damian.xBank.modules.user.account.token.application.service.UserAccountTokenService;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.domain.UserAccount;
-import com.damian.xBank.shared.domain.UserAccountToken;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

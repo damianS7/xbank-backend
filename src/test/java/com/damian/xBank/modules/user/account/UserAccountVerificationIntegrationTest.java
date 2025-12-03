@@ -1,12 +1,12 @@
 package com.damian.xBank.modules.user.account;
 
-import com.damian.xBank.modules.user.account.account.dto.request.UserAccountPasswordResetSetRequest;
-import com.damian.xBank.modules.user.account.account.enums.UserAccountRole;
-import com.damian.xBank.modules.user.account.account.enums.UserAccountStatus;
-import com.damian.xBank.modules.user.account.token.enums.UserAccountTokenType;
+import com.damian.xBank.modules.user.account.account.application.dto.request.UserAccountPasswordResetSetRequest;
+import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
+import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
+import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
+import com.damian.xBank.modules.user.account.token.domain.enums.UserAccountTokenType;
+import com.damian.xBank.modules.user.account.token.domain.entity.UserAccountToken;
 import com.damian.xBank.shared.AbstractIntegrationTest;
-import com.damian.xBank.shared.domain.UserAccount;
-import com.damian.xBank.shared.domain.UserAccountToken;
 import com.damian.xBank.shared.utils.JsonHelper;
 import org.junit.jupiter.api.*;
 import org.springframework.http.HttpStatus;

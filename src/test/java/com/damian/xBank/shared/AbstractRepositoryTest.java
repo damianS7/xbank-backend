@@ -1,9 +1,9 @@
 package com.damian.xBank.shared;
 
 
-import com.damian.xBank.modules.notification.repository.NotificationRepository;
-import com.damian.xBank.modules.setting.repository.SettingRepository;
-import com.damian.xBank.modules.user.account.account.repository.UserAccountRepository;
+import com.damian.xBank.modules.notification.infra.repository.NotificationRepository;
+import com.damian.xBank.modules.setting.infra.repository.SettingRepository;
+import com.damian.xBank.modules.user.account.account.infra.repository.UserAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;

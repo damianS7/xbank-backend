@@ -1,204 +1,262 @@
 package com.damian.xBank.modules.banking.account;
 
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
+import com.damian.xBank.modules.banking.account.application.service.BankingAccountCardManagerService;
+import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountOwnershipException;
+import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
+import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardRequest;
+import com.damian.xBank.modules.banking.card.domain.enums.BankingCardType;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingAccountCardsLimitException;
+import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
+import com.damian.xBank.modules.banking.card.infra.repository.BankingCardRepository;
+import com.damian.xBank.modules.banking.card.application.service.BankingCardService;
+import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
+import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
+import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.shared.AbstractServiceTest;
+import com.damian.xBank.shared.exception.Exceptions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 
-@ExtendWith(MockitoExtension.class)
-public class BankingAccountCardManagerServiceTest {
+import java.util.Optional;
 
-    //    @Mock
-    //    private BankingAccountRepository bankingAccountRepository;
-    //
-    //    @Mock
-    //    private BankingCardRepository bankingCardRepository;
-    //
-    //    @Mock
-    //    private CustomerRepository customerRepository;
-    //
-    //    @Mock
-    //    private BCryptPasswordEncoder bCryptPasswordEncoder;
-    //
-    //    @InjectMocks
-    //    private BankingAccountCardManagerService bankingAccountCardManagerService;
-    //
-    //    @Mock
-    //    private BankingCardService bankingCardService;
-    //
-    //    private Customer customerA;
-    //    private Customer customerB;
-    //    private Customer customerAdmin;
-    //
-    //    private final String rawPassword = "123456";
-    //
-    //    @BeforeEach
-    //    void setUp() {
-    //        customerRepository.deleteAll();
-    //        customerA = new Customer(99L, "customerA@test.com", bCryptPasswordEncoder.encode(rawPassword));
-    //        customerB = new Customer(92L, "customerB@test.com", bCryptPasswordEncoder.encode(rawPassword));
-    //        customerAdmin = new Customer(95L, "admin@test.com", bCryptPasswordEncoder.encode(rawPassword));
-    //        customerAdmin.setRole(CustomerRole.ADMIN);
-    //    }
-    //
-    //    @AfterEach
-    //    public void tearDown() {
-    //        SecurityContextHolder.clearContext();
-    //    }
-    //
-    //    void setUpContext(Customer customer) {
-    //        Authentication authentication = Mockito.mock(Authentication.class);
-    //        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
-    //        SecurityContextHolder.setContext(securityContext);
-    //        when(securityContext.getAuthentication()).thenReturn(authentication);
-    //        when(SecurityContextHolder.getContext().getAuthentication().getPrincipal()).thenReturn(customer);
-    //    }
-    //
-    //    @Test
-    //    @DisplayName("Should request a BankingCard")
-    //    void shouldRequestBankingCard() {
-    //        // given
-    //        setUpContext(customerA);
-    //
-    //        BankingAccount givenBankAccount = new BankingAccount(customerA);
-    //        givenBankAccount.setId(1L);
-    //        givenBankAccount.setAccountNumber("US9900001111112233334444");
-    //
-    //        BankingCard givenBankingCard = new BankingCard(givenBankAccount);
-    //        givenBankingCard.setId(11L);
-    //        givenBankingCard.setCardNumber("1234567890123456");
-    //
-    //        BankingCardRequest request = new BankingCardRequest(BankingCardType.CREDIT);
-    //
-    //        // when
-    //        when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.of(givenBankAccount));
-    //        when(bankingCardService.createBankingCard(any(BankingAccount.class), any(BankingCardType.class)))
-    //                .thenReturn(givenBankingCard);
-    //
-    //        BankingCard requestedBankingCard = bankingAccountCardManagerService.requestBankingCard(
-    //                givenBankAccount.getId(),
-    //                request
-    //        );
-    //
-    //        // then
-    //        assertThat(requestedBankingCard).isNotNull();
-    //        assertThat(requestedBankingCard.getCardNumber()).isEqualTo(givenBankingCard.getCardNumber());
-    //        assertThat(requestedBankingCard.getCardType()).isEqualTo(givenBankingCard.getCardType());
-    //    }
-    //
-    //    @Test
-    //    @DisplayName("Should fail to request a BankingCard when account not found")
-    //    void shouldFailToRequestBankingCardWhenAccountNotFound() {
-    //        // given
-    //        setUpContext(customerA);
-    //
-    //        BankingAccount givenBankAccount = new BankingAccount(customerA);
-    //        givenBankAccount.setId(1L);
-    //        givenBankAccount.setAccountNumber("US9900001111112233334444");
-    //
-    //        BankingCardRequest request = new BankingCardRequest(BankingCardType.CREDIT);
-    //
-    //        // when
-    //        when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.empty());
-    //
-    //        BankingAccountNotFoundException exception = assertThrows(
-    //                BankingAccountNotFoundException.class,
-    //                () -> bankingAccountCardManagerService.requestBankingCard(
-    //                        givenBankAccount.getId(),
-    //                        request
-    //                )
-    //        );
-    //
-    //        // then
-    //        assertEquals(Exceptions.USER_ACCOUNT.NOT_FOUND, exception.getMessage());
-    //    }
-    //
-    //    @Test
-    //    @DisplayName("Should fail to generate a BankingCard when BankingAccount is not yours")
-    //    void shouldFailToGenerateBankingCardWhenBankingAccountIsNotYours() {
-    //        // given
-    //        setUpContext(customerA);
-    //
-    //        BankingAccount givenBankAccount = new BankingAccount(customerB);
-    //        givenBankAccount.setId(1L);
-    //        givenBankAccount.setAccountNumber("US9900001111112233334444");
-    //
-    //        BankingCardRequest request = new BankingCardRequest(BankingCardType.CREDIT);
-    //
-    //        // when
-    //        when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.of(givenBankAccount));
-    //
-    //        BankingAccountAuthorizationException exception = assertThrows(
-    //                BankingAccountAuthorizationException.class,
-    //                () -> bankingAccountCardManagerService.requestBankingCard(
-    //                        givenBankAccount.getId(),
-    //                        request
-    //                )
-    //        );
-    //
-    //        // then
-    //        assertEquals(Exceptions.USER_ACCOUNT.ACCESS_FORBIDDEN, exception.getMessage());
-    //    }
-    //
-    //    @Test
-    //    @DisplayName("Should request a BankingCard when account is not yours but you are admin")
-    //    void shouldRequestBankingCardWhenAccountIsNotYoursButYouAreAdmin() {
-    //        // given
-    //        setUpContext(customerAdmin);
-    //
-    //        BankingAccount givenBankAccount = new BankingAccount(customerB);
-    //        givenBankAccount.setId(1L);
-    //        givenBankAccount.setAccountNumber("US9900001111112233334444");
-    //
-    //        BankingCard givenBankingCard = new BankingCard(givenBankAccount);
-    //        givenBankingCard.setId(11L);
-    //        givenBankingCard.setCardNumber("1234567890123456");
-    //
-    //        BankingCardRequest request = new BankingCardRequest(BankingCardType.CREDIT);
-    //
-    //        // when
-    //        when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.of(givenBankAccount));
-    //        when(bankingCardService.createBankingCard(any(BankingAccount.class), any(BankingCardType.class)))
-    //                .thenReturn(givenBankingCard);
-    //
-    //        BankingCard requestedBankingCard = bankingAccountCardManagerService.requestBankingCard(
-    //                givenBankAccount.getId(),
-    //                request
-    //        );
-    //
-    //        // then
-    //        assertThat(requestedBankingCard).isNotNull();
-    //        assertThat(requestedBankingCard.getCardNumber()).isEqualTo(givenBankingCard.getCardNumber());
-    //        assertThat(requestedBankingCard.getCardType()).isEqualTo(givenBankingCard.getCardType());
-    //    }
-    //
-    //    @Test
-    //    @DisplayName("Should fail to request a BankingCard when reached limit")
-    //    void shouldFailToRequestBankingCardWhenLimitReached() {
-    //        // given
-    //        setUpContext(customerA);
-    //
-    //        BankingAccount givenBankAccount = new BankingAccount(customerA);
-    //        givenBankAccount.setId(1L);
-    //        givenBankAccount.setAccountNumber("US9900001111112233334444");
-    //        givenBankAccount.addBankingCard(new BankingCard());
-    //        givenBankAccount.addBankingCard(new BankingCard());
-    //        givenBankAccount.addBankingCard(new BankingCard());
-    //        givenBankAccount.addBankingCard(new BankingCard());
-    //        givenBankAccount.addBankingCard(new BankingCard());
-    //
-    //        BankingCardRequest request = new BankingCardRequest(BankingCardType.CREDIT);
-    //
-    //        // when
-    //        when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.of(givenBankAccount));
-    //
-    //        BankingCardMaximumCardsPerAccountLimitReached exception = assertThrows(
-    //                BankingCardMaximumCardsPerAccountLimitReached.class,
-    //                () -> bankingAccountCardManagerService.requestBankingCard(
-    //                        givenBankAccount.getId(),
-    //                        request
-    //                )
-    //        );
-    //
-    //        // then
-    //        assertTrue(exception.getMessage().contains("The account has reached the maximum number of cards allowed"));
-    //    }
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
+
+public class BankingAccountCardManagerServiceTest extends AbstractServiceTest {
+
+    @Mock
+    private BankingAccountRepository bankingAccountRepository;
+
+    @Mock
+    private BankingCardRepository bankingCardRepository;
+
+    @InjectMocks
+    private BankingAccountCardManagerService bankingAccountCardManagerService;
+
+    @Mock
+    private BankingCardService bankingCardService;
+
+    @Test
+    @DisplayName("Should request a BankingCard")
+    void shouldRequestCard() {
+        // given
+        UserAccount userAccount = UserAccount.create()
+                                             .setId(1L)
+                                             .setEmail("customer@demo.com")
+                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+
+        Customer customer = Customer.create()
+                                    .setId(1L)
+                                    .setAccount(userAccount);
+
+        setUpContext(customer);
+
+        BankingAccount givenBankAccount = new BankingAccount(customer);
+        givenBankAccount.setId(1L);
+        givenBankAccount.setAccountNumber("US9900001111112233334444");
+
+        BankingCard givenBankingCard = new BankingCard(givenBankAccount);
+        givenBankingCard.setId(11L);
+        givenBankingCard.setCardNumber("1234567890123456");
+
+        BankingCardRequest request = new BankingCardRequest(BankingCardType.CREDIT);
+
+        // when
+        when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.of(givenBankAccount));
+        when(bankingCardService.createBankingCard(any(BankingAccount.class), any(BankingCardType.class)))
+                .thenReturn(givenBankingCard);
+
+        BankingCard requestedBankingCard = bankingAccountCardManagerService.requestCard(
+                givenBankAccount.getId(),
+                request
+        );
+
+        // then
+        assertThat(requestedBankingCard).isNotNull();
+        assertThat(requestedBankingCard.getCardNumber()).isEqualTo(givenBankingCard.getCardNumber());
+        assertThat(requestedBankingCard.getCardType()).isEqualTo(givenBankingCard.getCardType());
+    }
+
+
+    @Test
+    @DisplayName("Should fail to request a BankingCard when account not found")
+    void shouldFailToRequestCardWhenAccountNotFound() {
+        // given
+        UserAccount userAccount = UserAccount.create()
+                                             .setId(1L)
+                                             .setEmail("customer@demo.com")
+                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+
+        Customer customer = Customer.create()
+                                    .setId(1L)
+                                    .setAccount(userAccount);
+
+        setUpContext(customer);
+
+        BankingAccount givenBankAccount = new BankingAccount(customer);
+        givenBankAccount.setId(1L);
+        givenBankAccount.setAccountNumber("US9900001111112233334444");
+
+        BankingCardRequest request = new BankingCardRequest(BankingCardType.CREDIT);
+
+        // when
+        when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        BankingAccountNotFoundException exception = assertThrows(
+                BankingAccountNotFoundException.class,
+                () -> bankingAccountCardManagerService.requestCard(
+                        givenBankAccount.getId(),
+                        request
+                )
+        );
+
+        // then
+        assertEquals(Exceptions.BANKING.ACCOUNT.NOT_FOUND, exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should fail to generate a BankingCard when BankingAccount is not yours")
+    void shouldFailToGenerateBankingCardWhenBankingAccountIsNotYours() {
+        // given
+        UserAccount userAccount = UserAccount.create()
+                                             .setId(1L)
+                                             .setEmail("customer@demo.com")
+                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+
+        Customer customer = Customer.create()
+                                    .setId(1L)
+                                    .setAccount(userAccount);
+
+        UserAccount userAccountB = UserAccount.create()
+                                              .setId(2L)
+                                              .setEmail("customer@demo.com")
+                                              .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+
+        Customer customerB = Customer.create()
+                                     .setId(2L)
+                                     .setAccount(userAccountB);
+
+        setUpContext(customer);
+
+        BankingAccount givenBankAccount = new BankingAccount(customerB);
+        givenBankAccount.setId(1L);
+        givenBankAccount.setAccountNumber("US9900001111112233334444");
+
+        BankingCardRequest request = new BankingCardRequest(BankingCardType.CREDIT);
+
+        // when
+        when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.of(givenBankAccount));
+
+        BankingAccountOwnershipException exception = assertThrows(
+                BankingAccountOwnershipException.class,
+                () -> bankingAccountCardManagerService.requestCard(
+                        givenBankAccount.getId(),
+                        request
+                )
+        );
+
+        // then
+        assertEquals(Exceptions.BANKING.ACCOUNT.ACCESS_FORBIDDEN, exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should request a BankingCard when account is not yours but you are admin")
+    void shouldRequestCardWhenAccountIsNotYoursButYouAreAdmin() {
+        // given
+        UserAccount adminAccount = UserAccount.create()
+                                              .setId(1L)
+                                              .setRole(UserAccountRole.ADMIN)
+                                              .setEmail("customer@demo.com")
+                                              .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+
+        Customer admin = Customer.create()
+                                 .setId(1L)
+                                 .setAccount(adminAccount);
+
+        UserAccount userAccount = UserAccount.create()
+                                             .setId(2L)
+                                             .setEmail("customer@demo.com")
+                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+
+        Customer customer = Customer.create()
+                                    .setId(2L)
+                                    .setAccount(userAccount);
+
+
+        setUpContext(admin);
+
+        BankingAccount givenBankAccount = new BankingAccount(customer);
+        givenBankAccount.setId(1L);
+        givenBankAccount.setAccountNumber("US9900001111112233334444");
+
+        BankingCard givenBankingCard = new BankingCard(givenBankAccount);
+        givenBankingCard.setId(11L);
+        givenBankingCard.setCardNumber("1234567890123456");
+
+        BankingCardRequest request = new BankingCardRequest(BankingCardType.CREDIT);
+
+        // when
+        when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.of(givenBankAccount));
+        when(bankingCardService.createBankingCard(any(BankingAccount.class), any(BankingCardType.class)))
+                .thenReturn(givenBankingCard);
+
+        BankingCard requestedBankingCard = bankingAccountCardManagerService.requestCard(
+                givenBankAccount.getId(),
+                request
+        );
+
+        // then
+        assertThat(requestedBankingCard).isNotNull();
+        assertThat(requestedBankingCard.getCardNumber()).isEqualTo(givenBankingCard.getCardNumber());
+        assertThat(requestedBankingCard.getCardType()).isEqualTo(givenBankingCard.getCardType());
+    }
+
+    @Test
+    @DisplayName("Should fail to request a BankingCard when reached limit")
+    void shouldFailToRequestCardWhenLimitReached() {
+        // given
+        UserAccount userAccount = UserAccount.create()
+                                             .setId(1L)
+                                             .setEmail("customer@demo.com")
+                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+
+        Customer customer = Customer.create()
+                                    .setId(1L)
+                                    .setAccount(userAccount);
+
+        setUpContext(customer);
+
+        BankingAccount givenBankAccount = new BankingAccount(customer);
+        givenBankAccount.setId(1L);
+        givenBankAccount.setAccountNumber("US9900001111112233334444");
+        givenBankAccount.addBankingCard(new BankingCard());
+        givenBankAccount.addBankingCard(new BankingCard());
+        givenBankAccount.addBankingCard(new BankingCard());
+        givenBankAccount.addBankingCard(new BankingCard());
+        givenBankAccount.addBankingCard(new BankingCard());
+
+        BankingCardRequest request = new BankingCardRequest(BankingCardType.CREDIT);
+
+        // when
+        when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.of(givenBankAccount));
+
+        BankingAccountCardsLimitException exception = assertThrows(
+                BankingAccountCardsLimitException.class,
+                () -> bankingAccountCardManagerService.requestCard(
+                        givenBankAccount.getId(),
+                        request
+                )
+        );
+
+        // then
+        assertEquals(Exceptions.BANKING.ACCOUNT.CARD_LIMIT, exception.getMessage());
+    }
 }
