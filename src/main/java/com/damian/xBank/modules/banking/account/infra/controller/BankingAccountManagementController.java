@@ -2,13 +2,13 @@ package com.damian.xBank.modules.banking.account.infra.controller;
 
 import com.damian.xBank.modules.banking.account.application.dto.mapper.BankingAccountDtoMapper;
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountAliasUpdateRequest;
+import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCardRequest;
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCloseRequest;
 import com.damian.xBank.modules.banking.account.application.dto.response.BankingAccountDto;
-import com.damian.xBank.modules.banking.account.application.service.BankingAccountCardManagerService;
+import com.damian.xBank.modules.banking.account.application.service.BankingAccountCardManagementService;
 import com.damian.xBank.modules.banking.account.application.service.BankingAccountManagementService;
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.card.application.dto.mapper.BankingCardDtoMapper;
-import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardRequest;
 import com.damian.xBank.modules.banking.card.application.dto.response.BankingCardDto;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import jakarta.validation.constraints.NotNull;
@@ -22,18 +22,18 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class BankingAccountManagementController {
     private final BankingAccountManagementService bankingAccountManagementService;
-    private final BankingAccountCardManagerService bankingAccountCardManagerService;
+    private final BankingAccountCardManagementService bankingAccountCardManagementService;
 
     public BankingAccountManagementController(
             BankingAccountManagementService bankingAccountManagementService,
-            BankingAccountCardManagerService bankingAccountCardManagerService
+            BankingAccountCardManagementService bankingAccountCardManagementService
     ) {
         this.bankingAccountManagementService = bankingAccountManagementService;
-        this.bankingAccountCardManagerService = bankingAccountCardManagerService;
+        this.bankingAccountCardManagementService = bankingAccountCardManagementService;
     }
 
     // endpoint for logged customer to close his BankingAccount
-    @PostMapping("/banking/accounts/{id}/close")
+    @PatchMapping("/banking/accounts/{id}/close")
     public ResponseEntity<?> closeAccount(
             @PathVariable @NotNull @Positive
             Long id,
@@ -64,16 +64,15 @@ public class BankingAccountManagementController {
                 .body(bankingAccountDTO);
     }
 
-    // TODO create BankingAccountCardManagerController??
     // endpoint for logged customer to request for a new BankingCard
-    @PostMapping("/banking/accounts/{id}/cards/request")
+    @PostMapping("/banking/accounts/{id}/cards")
     public ResponseEntity<?> requestCard(
             @PathVariable @NotNull @Positive
             Long id,
             @Validated @RequestBody
-            BankingCardRequest request
+            BankingAccountCardRequest request
     ) {
-        BankingCard bankingCard = bankingAccountCardManagerService.requestCard(id, request);
+        BankingCard bankingCard = bankingAccountCardManagementService.requestCard(id, request);
         BankingCardDto bankingCardDTO = BankingCardDtoMapper.toBankingCardDto(bankingCard);
 
         return ResponseEntity
