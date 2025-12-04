@@ -1,28 +1,26 @@
 package com.damian.xBank.modules.banking.account.application.service;
 
+import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCardRequest;
 import com.damian.xBank.modules.banking.account.application.guard.BankingAccountGuard;
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
-import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardRequest;
+import com.damian.xBank.modules.banking.card.application.service.BankingCardService;
+import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingAccountCardsLimitException;
-import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
-import com.damian.xBank.modules.banking.card.application.service.BankingCardService;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.utils.AuthHelper;
 import org.springframework.stereotype.Service;
 
-// TODO move to BankingAccountManagementService? or keep separate?
-// rename to BankingAccountManagementCardService?
 @Service
-public class BankingAccountCardManagerService {
+public class BankingAccountCardManagementService {
     private final int MAX_CARDS_PER_ACCOUNT = 5;
     private final BankingCardService bankingCardService;
     private final BankingAccountRepository bankingAccountRepository;
 
-    public BankingAccountCardManagerService(
+    public BankingAccountCardManagementService(
             BankingAccountRepository bankingAccountRepository,
             BankingCardService bankingCardService
     ) {
@@ -37,7 +35,7 @@ public class BankingAccountCardManagerService {
      * @param request
      * @return the created BankingCard
      */
-    public BankingCard requestCard(Long bankingAccountId, BankingCardRequest request) {
+    public BankingCard requestCard(Long bankingAccountId, BankingAccountCardRequest request) {
         // Customer logged
         final Customer currentCustomer = AuthHelper.getCurrentCustomer();
 
