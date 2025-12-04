@@ -64,13 +64,13 @@ public class BankingAccountOperationGuard {
      *
      * @param toBankingAccount the destination account to check
      * @return the current validator instance for chaining
-     * @throws BankingAccountTransferException if the account does not belong to the customer
+     * @throws BankingAccountTransferSameAccountException if the account does not belong to the customer
      */
     private BankingAccountOperationGuard differentDestination(BankingAccount toBankingAccount) {
 
         // check bankingAccount and toBankingAccount are not the same
         if (account.getId().equals(toBankingAccount.getId())) {
-            throw new BankingAccountTransferException(
+            throw new BankingAccountTransferSameAccountException(
                     Exceptions.BANKING.ACCOUNT.SAME_DESTINATION,
                     account.getId(),
                     toBankingAccount.getId()
@@ -85,13 +85,13 @@ public class BankingAccountOperationGuard {
      *
      * @param toBankingAccount the destination account to check
      * @return the current validator instance for chaining
-     * @throws BankingAccountTransferException if the account does not belong to the customer
+     * @throws BankingAccountTransferCurrencyMismatchException if the account does not belong to the customer
      */
     private BankingAccountOperationGuard sameCurrency(BankingAccount toBankingAccount) {
 
         // if currencies are different, throw exception
         if (!account.getAccountCurrency().equals(toBankingAccount.getAccountCurrency())) {
-            throw new BankingAccountTransferException(
+            throw new BankingAccountTransferCurrencyMismatchException(
                     Exceptions.BANKING.TRANSACTION.DIFFERENT_CURRENCY,
                     account.getId(),
                     toBankingAccount.getId()

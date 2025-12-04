@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Order(1)
 @RestControllerAdvice
 public class BankingAccountExceptionHandler {
-
     private static final Logger log = LoggerFactory.getLogger(BankingAccountExceptionHandler.class);
 
     @ExceptionHandler(BankingAccountException.class)
@@ -24,15 +23,22 @@ public class BankingAccountExceptionHandler {
                              .body(ApiResponse.error(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR));
     }
 
-    @ExceptionHandler(BankingAccountTransferException.class)
-    public ResponseEntity<ApiResponse<String>> handleInsufficientFunds(BankingAccountTransferException ex) {
+    @ExceptionHandler(BankingAccountTransferSameAccountException.class)
+    public ResponseEntity<ApiResponse<String>> handleTransferSameAccount(BankingAccountTransferSameAccountException ex) {
+        log.warn("Banking transfer failed because both accounts are the same.");
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                             .body(ApiResponse.error(ex.getMessage(), HttpStatus.CONFLICT));
+    }
+
+    @ExceptionHandler(BankingAccountTransferCurrencyMismatchException.class)
+    public ResponseEntity<ApiResponse<String>> handleCurrencyMismatch(BankingAccountTransferCurrencyMismatchException ex) {
         log.warn(
-                "Banking transfer failed from account: {} to account: {}.",
+                "Banking transfer failed due account: {} and account: {} has different currencies.",
                 ex.getBankingAccountId(),
                 ex.getToBankingAccountId()
         );
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                             .body(ApiResponse.error(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR));
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                             .body(ApiResponse.error(ex.getMessage(), HttpStatus.CONFLICT));
     }
 
     @ExceptionHandler(BankingAccountNotFoundException.class)

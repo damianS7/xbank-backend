@@ -63,13 +63,13 @@ public class BankingAccountGuard {
      *
      * @param toBankingAccount the destination account to check
      * @return the current validator instance for chaining
-     * @throws BankingAccountTransferException if the account does not belong to the customer
+     * @throws BankingAccountTransferSameAccountException if the account does not belong to the customer
      */
     private BankingAccountGuard differentDestination(BankingAccount toBankingAccount) {
 
         // check bankingAccount and toBankingAccount are not the same
         if (account.getId().equals(toBankingAccount.getId())) {
-            throw new BankingAccountTransferException(
+            throw new BankingAccountTransferSameAccountException(
                     Exceptions.BANKING.ACCOUNT.SAME_DESTINATION,
                     account.getId(),
                     toBankingAccount.getId()
