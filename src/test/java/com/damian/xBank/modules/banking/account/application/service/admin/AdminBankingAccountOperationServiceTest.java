@@ -1,7 +1,6 @@
-package com.damian.xBank.modules.banking.account.admin;
+package com.damian.xBank.modules.banking.account.application.service.admin;
 
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountDepositRequest;
-import com.damian.xBank.modules.banking.account.application.service.admin.AdminBankingAccountOperationService;
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionAccountService;

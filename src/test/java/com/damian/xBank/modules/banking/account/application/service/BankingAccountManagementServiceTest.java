@@ -1,9 +1,8 @@
-package com.damian.xBank.modules.banking.account;
+package com.damian.xBank.modules.banking.account.application.service;
 
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountAliasUpdateRequest;
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCloseRequest;
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountOpenRequest;
-import com.damian.xBank.modules.banking.account.application.service.BankingAccountManagementService;
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountStatus;
@@ -13,8 +12,8 @@ import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountN
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountOwnershipException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountSuspendedException;
 import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
-import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
+import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.modules.user.customer.infra.repository.CustomerRepository;
 import com.damian.xBank.shared.AbstractServiceTest;

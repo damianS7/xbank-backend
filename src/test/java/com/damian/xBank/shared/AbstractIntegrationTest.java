@@ -3,10 +3,11 @@ package com.damian.xBank.shared;
 
 import com.damian.xBank.modules.auth.application.dto.AuthenticationRequest;
 import com.damian.xBank.modules.auth.application.dto.AuthenticationResponse;
+import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
 import com.damian.xBank.modules.notification.infra.repository.NotificationRepository;
 import com.damian.xBank.modules.setting.infra.repository.SettingRepository;
-import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
+import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.account.account.infra.repository.UserAccountRepository;
 import com.damian.xBank.modules.user.account.token.infra.repository.UserAccountTokenRepository;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
@@ -53,6 +54,9 @@ public abstract class AbstractIntegrationTest {
 
     @Autowired
     protected CustomerRepository customerRepository;
+
+    @Autowired
+    protected BankingAccountRepository bankingAccountRepository;
 
     @Autowired
     protected UserAccountTokenRepository userAccountTokenRepository;

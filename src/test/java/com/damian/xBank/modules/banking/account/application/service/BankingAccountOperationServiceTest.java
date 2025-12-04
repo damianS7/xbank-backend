@@ -1,7 +1,6 @@
-package com.damian.xBank.modules.banking.account;
+package com.damian.xBank.modules.banking.account.application.service;
 
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountTransferRequest;
-import com.damian.xBank.modules.banking.account.application.service.BankingAccountOperationService;
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountStatus;

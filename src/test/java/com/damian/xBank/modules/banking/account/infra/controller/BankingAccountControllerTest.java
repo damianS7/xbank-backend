@@ -1,5 +1,6 @@
-package com.damian.xBank.modules.banking.account;
+package com.damian.xBank.modules.banking.account.infra.controller;
 
+import com.damian.xBank.shared.AbstractIntegrationTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -7,7 +8,7 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 @SpringBootTest
 @AutoConfigureMockMvc
-public class BankingAccountIntegrationTest {
+public class BankingAccountControllerTest extends AbstractIntegrationTest {
     //    private final String rawPassword = "123456";
     //
     //    @Autowired
@@ -195,4 +196,6 @@ public class BankingAccountIntegrationTest {
     //        assertThat(bankingAccount).isNotNull();
     //        assertThat(bankingAccount.alias()).isEqualTo(request.alias());
     //    }
+
+
 }
