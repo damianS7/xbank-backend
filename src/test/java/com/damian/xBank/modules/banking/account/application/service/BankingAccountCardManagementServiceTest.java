@@ -1,10 +1,10 @@
 package com.damian.xBank.modules.banking.account.application.service;
 
+import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCardRequest;
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountOwnershipException;
 import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
-import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardRequest;
 import com.damian.xBank.modules.banking.card.application.service.BankingCardService;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.enums.BankingCardType;
@@ -29,7 +29,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
-public class BankingAccountCardManagerServiceTest extends AbstractServiceTest {
+public class BankingAccountCardManagementServiceTest extends AbstractServiceTest {
 
     @Mock
     private BankingAccountRepository bankingAccountRepository;
@@ -38,7 +38,7 @@ public class BankingAccountCardManagerServiceTest extends AbstractServiceTest {
     private BankingCardRepository bankingCardRepository;
 
     @InjectMocks
-    private BankingAccountCardManagerService bankingAccountCardManagerService;
+    private BankingAccountCardManagementService bankingAccountCardManagementService;
 
     @Mock
     private BankingCardService bankingCardService;
@@ -66,14 +66,14 @@ public class BankingAccountCardManagerServiceTest extends AbstractServiceTest {
         givenBankingCard.setId(11L);
         givenBankingCard.setCardNumber("1234567890123456");
 
-        BankingCardRequest request = new BankingCardRequest(BankingCardType.CREDIT);
+        BankingAccountCardRequest request = new BankingAccountCardRequest(BankingCardType.CREDIT);
 
         // when
         when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.of(givenBankAccount));
         when(bankingCardService.createBankingCard(any(BankingAccount.class), any(BankingCardType.class)))
                 .thenReturn(givenBankingCard);
 
-        BankingCard requestedBankingCard = bankingAccountCardManagerService.requestCard(
+        BankingCard requestedBankingCard = bankingAccountCardManagementService.requestCard(
                 givenBankAccount.getId(),
                 request
         );
@@ -104,14 +104,14 @@ public class BankingAccountCardManagerServiceTest extends AbstractServiceTest {
         givenBankAccount.setId(1L);
         givenBankAccount.setAccountNumber("US9900001111112233334444");
 
-        BankingCardRequest request = new BankingCardRequest(BankingCardType.CREDIT);
+        BankingAccountCardRequest request = new BankingAccountCardRequest(BankingCardType.CREDIT);
 
         // when
         when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         BankingAccountNotFoundException exception = assertThrows(
                 BankingAccountNotFoundException.class,
-                () -> bankingAccountCardManagerService.requestCard(
+                () -> bankingAccountCardManagementService.requestCard(
                         givenBankAccount.getId(),
                         request
                 )
@@ -149,14 +149,14 @@ public class BankingAccountCardManagerServiceTest extends AbstractServiceTest {
         givenBankAccount.setId(1L);
         givenBankAccount.setAccountNumber("US9900001111112233334444");
 
-        BankingCardRequest request = new BankingCardRequest(BankingCardType.CREDIT);
+        BankingAccountCardRequest request = new BankingAccountCardRequest(BankingCardType.CREDIT);
 
         // when
         when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.of(givenBankAccount));
 
         BankingAccountOwnershipException exception = assertThrows(
                 BankingAccountOwnershipException.class,
-                () -> bankingAccountCardManagerService.requestCard(
+                () -> bankingAccountCardManagementService.requestCard(
                         givenBankAccount.getId(),
                         request
                 )
@@ -200,14 +200,14 @@ public class BankingAccountCardManagerServiceTest extends AbstractServiceTest {
         givenBankingCard.setId(11L);
         givenBankingCard.setCardNumber("1234567890123456");
 
-        BankingCardRequest request = new BankingCardRequest(BankingCardType.CREDIT);
+        BankingAccountCardRequest request = new BankingAccountCardRequest(BankingCardType.CREDIT);
 
         // when
         when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.of(givenBankAccount));
         when(bankingCardService.createBankingCard(any(BankingAccount.class), any(BankingCardType.class)))
                 .thenReturn(givenBankingCard);
 
-        BankingCard requestedBankingCard = bankingAccountCardManagerService.requestCard(
+        BankingCard requestedBankingCard = bankingAccountCardManagementService.requestCard(
                 givenBankAccount.getId(),
                 request
         );
@@ -242,14 +242,14 @@ public class BankingAccountCardManagerServiceTest extends AbstractServiceTest {
         givenBankAccount.addBankingCard(new BankingCard());
         givenBankAccount.addBankingCard(new BankingCard());
 
-        BankingCardRequest request = new BankingCardRequest(BankingCardType.CREDIT);
+        BankingAccountCardRequest request = new BankingAccountCardRequest(BankingCardType.CREDIT);
 
         // when
         when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.of(givenBankAccount));
 
         BankingAccountCardsLimitException exception = assertThrows(
                 BankingAccountCardsLimitException.class,
-                () -> bankingAccountCardManagerService.requestCard(
+                () -> bankingAccountCardManagementService.requestCard(
                         givenBankAccount.getId(),
                         request
                 )

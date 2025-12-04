@@ -1,201 +1,102 @@
 package com.damian.xBank.modules.banking.account.infra.controller;
 
+import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCreateRequest;
+import com.damian.xBank.modules.banking.account.application.dto.response.BankingAccountDto;
+import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurrency;
+import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountType;
+import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
+import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
 import com.damian.xBank.shared.AbstractIntegrationTest;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MvcResult;
 
-@ActiveProfiles("test")
-@SpringBootTest
-@AutoConfigureMockMvc
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+
 public class BankingAccountControllerTest extends AbstractIntegrationTest {
-    //    private final String rawPassword = "123456";
-    //
-    //    @Autowired
-    //    private MockMvc mockMvc;
-    //
-    //    @Autowired
-    //    private ObjectMapper objectMapper;
-    //
-    //    @Autowired
-    //    private CustomerRepository customerRepository;
-    //
-    //    @Autowired
-    //    private BankingAccountRepository bankingAccountRepository;
-    //
-    //    @Autowired
-    //    private BCryptPasswordEncoder bCryptPasswordEncoder;
-    //
-    //    @Autowired
-    //    private BankingAccountService bankingAccountService;
-    //
-    //    private Customer customerA;
-    //    private Customer customerB;
-    //    private Customer customerAdmin;
-    //    private String token;
-    //
-    //    @BeforeEach
-    //    void setUp() throws Exception {
-    //        customerRepository.deleteAll();
-    //
-    //        customerA = new Customer();
-    //        customerA.setEmail("customerA@test.com");
-    //        customerA.setPassword(bCryptPasswordEncoder.encode(this.rawPassword));
-    //        customerA.getProfile().setFirstName("alice");
-    //        customerA.getProfile().setLastName("wonderland");
-    //        customerA.getProfile().setBirthdate(LocalDate.of(1989, 1, 1));
-    //
-    //        customerRepository.save(customerA);
-    //
-    //        customerB = new Customer();
-    //        customerB.setEmail("customerB@test.com");
-    //        customerB.setPassword(bCryptPasswordEncoder.encode(this.rawPassword));
-    //        customerB.getProfile().setFirstName("alice");
-    //        customerB.getProfile().setLastName("wonderland");
-    //        customerB.getProfile().setBirthdate(LocalDate.of(1995, 11, 11));
-    //
-    //        customerRepository.save(customerB);
-    //
-    //        customerAdmin = new Customer();
-    //        customerAdmin.setEmail("customerC@test.com");
-    //        customerAdmin.setRole(CustomerRole.ADMIN);
-    //        customerAdmin.setPassword(bCryptPasswordEncoder.encode(this.rawPassword));
-    //        customerAdmin.getProfile().setFirstName("alice");
-    //        customerAdmin.getProfile().setLastName("wonderland");
-    //        customerAdmin.getProfile().setBirthdate(LocalDate.of(1995, 11, 11));
-    //
-    //        customerRepository.save(customerAdmin);
-    //    }
-    //
-    //    void loginWithCustomer(Customer customer) throws Exception {
-    //        // given
-    //        AuthenticationRequest authenticationRequest = new AuthenticationRequest(
-    //                customer.getEmail(), this.rawPassword
-    //        );
-    //
-    //        String jsonRequest = objectMapper.writeValueAsString(authenticationRequest);
-    //
-    //        // when
-    //        MvcResult result = mockMvc.perform(post("/api/v1/auth/login")
-    //                                          .contentType(MediaType.APPLICATION_JSON)
-    //                                          .content(jsonRequest))
-    //                                  .andReturn();
-    //
-    //        AuthenticationResponse response = objectMapper.readValue(
-    //                result.getResponse().getContentAsString(),
-    //                AuthenticationResponse.class
-    //        );
-    //
-    //        token = response.token();
-    //    }
-    //
-    //    @Test
-    //    @DisplayName("Should request a BankingCard")
-    //    void shouldRequestBankingCard() throws Exception {
-    //        // given
-    //        loginWithCustomer(customerA);
-    //
-    //        BankingAccount bankingAccount = new BankingAccount(customerA);
-    //        bankingAccount.setAccountNumber("ES1234567890123456789012");
-    //        bankingAccount.setAccountType(BankingAccountType.SAVINGS);
-    //        bankingAccount.setAccountCurrency(BankingAccountCurrency.EUR);
-    //        bankingAccount.setAccountStatus(BankingAccountStatus.ACTIVE);
-    //        bankingAccount.setBalance(BigDecimal.valueOf(1000));
-    //        bankingAccountRepository.save(bankingAccount);
-    //
-    //        BankingCardRequest request = new BankingCardRequest(
-    //                BankingCardType.DEBIT
-    //        );
-    //
-    //        // when
-    //        MvcResult result = mockMvc
-    //                .perform(
-    //                        post("/api/v1/customers/me/banking/accounts/{id}/cards/request", bankingAccount.getId())
-    //                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-    //                                .contentType(MediaType.APPLICATION_JSON)
-    //                                .content(objectMapper.writeValueAsString(request)))
-    //                .andDo(print())
-    //                .andExpect(status().is(201))
-    //                .andReturn();
-    //
-    //        BankingCardDTO card = objectMapper.readValue(
-    //                result.getResponse().getContentAsString(),
-    //                BankingCardDTO.class
-    //        );
-    //
-    //        // then
-    //        assertThat(card).isNotNull();
-    //        assertThat(card.type()).isEqualTo(request.type());
-    //    }
-    //
-    //    @Test
-    //    @DisplayName("Should request banking account")
-    //    void shouldRequestBankingAccount() throws Exception {
-    //        // given
-    //        loginWithCustomer(customerA);
-    //        BankingAccountCreateRequest request = new BankingAccountCreateRequest(
-    //                BankingAccountType.SAVINGS,
-    //                BankingAccountCurrency.EUR
-    //        );
-    //
-    //        // when
-    //        MvcResult result = mockMvc
-    //                .perform(post("/api/v1/customers/me/banking/accounts/request")
-    //                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-    //                        .contentType(MediaType.APPLICATION_JSON)
-    //                        .content(objectMapper.writeValueAsString(request)))
-    //                .andDo(print())
-    //                .andExpect(status().is(201))
-    //                .andReturn();
-    //
-    //        BankingAccountDTO bankingAccount = objectMapper.readValue(
-    //                result.getResponse().getContentAsString(),
-    //                BankingAccountDTO.class
-    //        );
-    //
-    //        // then
-    //        assertThat(bankingAccount).isNotNull();
-    //        assertThat(bankingAccount.accountNumber()).isNotEmpty();
-    //        assertThat(bankingAccount.currency()).isEqualTo(request.currency());
-    //        assertThat(bankingAccount.balance()).isEqualTo(BigDecimal.ZERO);
-    //        assertThat(bankingAccount.type()).isEqualTo(request.type());
-    //    }
-    //
-    //    @Test
-    //    @DisplayName("Should set an alias to your own banking account")
-    //    void shouldSetAliasToBankingAccount() throws Exception {
-    //        // given
-    //        loginWithCustomer(customerA);
-    //        BankingAccountAliasUpdateRequest request = new BankingAccountAliasUpdateRequest(
-    //                "account for savings",
-    //                rawPassword
-    //        );
-    //
-    //        BankingAccount givenBankingAccount = new BankingAccount(customerA);
-    //        givenBankingAccount.setAccountNumber("US0011111111222222223333");
-    //        givenBankingAccount.setAccountType(BankingAccountType.SAVINGS);
-    //        givenBankingAccount.setAccountCurrency(BankingAccountCurrency.EUR);
-    //        bankingAccountRepository.save(givenBankingAccount);
-    //
-    //        // when
-    //        MvcResult result = mockMvc
-    //                .perform(patch("/api/v1/customers/me/banking/accounts/{id}/alias", givenBankingAccount.getId())
-    //                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-    //                        .contentType(MediaType.APPLICATION_JSON)
-    //                        .content(objectMapper.writeValueAsString(request)))
-    //                .andDo(print())
-    //                .andExpect(status().is(200))
-    //                .andReturn();
-    //
-    //        BankingAccountDTO bankingAccount = objectMapper.readValue(
-    //                result.getResponse().getContentAsString(),
-    //                BankingAccountDTO.class
-    //        );
-    //
-    //        // then
-    //        assertThat(bankingAccount).isNotNull();
-    //        assertThat(bankingAccount.alias()).isEqualTo(request.alias());
-    //    }
+    private Customer customer;
 
+    @BeforeEach
+    void setUp() {
+        customer = Customer.create()
+                           .setEmail("customer@demo.com")
+                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setFirstName("David")
+                           .setLastName("Brow")
+                           .setBirthdate(LocalDate.now())
+                           .setPhotoPath("avatar.jpg")
+                           .setPhone("123 123 123")
+                           .setPostalCode("01003")
+                           .setAddress("Fake ave")
+                           .setCountry("US")
+                           .setGender(CustomerGender.MALE);
+        customer.getAccount().setAccountStatus(UserAccountStatus.VERIFIED);
+        customerRepository.save(customer);
 
+    }
+
+    @Test
+    @DisplayName("Should create a banking account")
+    void shouldCreateBankingAccount() throws Exception {
+        // given
+        login(customer);
+        BankingAccountCreateRequest request = new BankingAccountCreateRequest(
+                BankingAccountType.SAVINGS,
+                BankingAccountCurrency.EUR
+        );
+
+        // when
+        MvcResult result = mockMvc
+                .perform(post("/api/v1/banking/accounts")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().is(201))
+                .andReturn();
+
+        BankingAccountDto bankingAccount = objectMapper.readValue(
+                result.getResponse().getContentAsString(),
+                BankingAccountDto.class
+        );
+
+        // then
+        assertThat(bankingAccount).isNotNull();
+        assertThat(bankingAccount.accountNumber()).isNotEmpty();
+        assertThat(bankingAccount.accountCurrency()).isEqualTo(request.currency());
+        assertThat(bankingAccount.balance()).isEqualTo(BigDecimal.ZERO);
+        assertThat(bankingAccount.accountType()).isEqualTo(request.type());
+    }
+
+    @Test
+    @DisplayName("Should not create banking account when request is invalid")
+    void shouldNotCreateBankingAccountWhenInvalidRequest() throws Exception {
+        // given
+        login(customer);
+        BankingAccountCreateRequest request = new BankingAccountCreateRequest(
+                null,
+                null
+        );
+
+        // when
+        mockMvc
+                .perform(post("/api/v1/banking/accounts")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().is(400))
+                .andReturn();
+    }
 }
