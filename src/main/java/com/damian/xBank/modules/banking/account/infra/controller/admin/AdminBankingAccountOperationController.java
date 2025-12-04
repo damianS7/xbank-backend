@@ -24,7 +24,7 @@ public class AdminBankingAccountOperationController {
     }
 
     // endpoint for logged customer to deposit into given account
-    @PostMapping("/banking/accounts/{id}/deposit")
+    @PostMapping("/admin/banking/accounts/{id}/deposit")
     public ResponseEntity<?> deposit(
             @PathVariable @NotNull @Positive
             Long id,
