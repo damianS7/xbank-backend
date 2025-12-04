@@ -127,7 +127,7 @@ public class BankingAccountOperationService {
         toTransaction.setStatus(BankingTransactionStatus.COMPLETED);
         this.bankingTransactionAccountService.persistTransaction(toTransaction);
 
-        // TODO: Notify both parties about the transaction
+        // Notify receiver
         notificationService.publishNotification(
                 new NotificationEvent(
                         toBankingAccount.getOwner().getId(),
