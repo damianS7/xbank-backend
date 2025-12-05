@@ -23,6 +23,20 @@ public class BankingAccountExceptionHandler {
                              .body(ApiResponse.error(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR));
     }
 
+    @ExceptionHandler(BankingAccountSuspendedException.class)
+    public ResponseEntity<ApiResponse<String>> handleBankingAccountSuspended(BankingAccountSuspendedException ex) {
+        log.warn("Banking account: {} is suspended.", ex.getBankingAccountId());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                             .body(ApiResponse.error(ex.getMessage(), HttpStatus.FORBIDDEN));
+    }
+
+    @ExceptionHandler(BankingAccountClosedException.class)
+    public ResponseEntity<ApiResponse<String>> handleBankingAccountClosed(BankingAccountClosedException ex) {
+        log.warn("Banking account: {} is closed.", ex.getBankingAccountId());
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                             .body(ApiResponse.error(ex.getMessage(), HttpStatus.CONFLICT));
+    }
+
     @ExceptionHandler(BankingAccountTransferSameAccountException.class)
     public ResponseEntity<ApiResponse<String>> handleTransferSameAccount(BankingAccountTransferSameAccountException ex) {
         log.warn("Banking transfer failed because both accounts are the same.");
