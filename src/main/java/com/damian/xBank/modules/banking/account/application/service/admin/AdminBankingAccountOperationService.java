@@ -49,7 +49,7 @@ public class AdminBankingAccountOperationService {
 
         // Validate account
         BankingAccountGuard.forAccount(bankingAccount)
-                           .active();
+                           .ensureActive();
 
         BankingTransaction transaction = bankingTransactionAccountService.generateTransaction(
                 bankingAccount,

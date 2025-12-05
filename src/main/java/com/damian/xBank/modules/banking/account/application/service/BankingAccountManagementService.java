@@ -43,8 +43,8 @@ public class BankingAccountManagementService {
 
             BankingAccountGuard.forAccount(bankingAccount)
                                .ownership(customer)
-                               .notSuspended()
-                               .notClosed();
+                               .validateNotSuspended()
+                               .validateNotClosed();
         }
 
         // we mark the account as closed
@@ -124,8 +124,8 @@ public class BankingAccountManagementService {
 
             BankingAccountGuard.forAccount(bankingAccount)
                                .ownership(customer)
-                               .notSuspended()
-                               .notClosed();
+                               .validateNotSuspended()
+                               .validateNotClosed();
         }
 
         // we mark the account as closed

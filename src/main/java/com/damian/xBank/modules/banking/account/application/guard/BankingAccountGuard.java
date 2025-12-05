@@ -59,54 +59,12 @@ public class BankingAccountGuard {
     }
 
     /**
-     * Validate that {@link #account} and {@code toBankingAccount} are not the same
-     *
-     * @param toBankingAccount the destination account to check
-     * @return the current validator instance for chaining
-     * @throws BankingAccountTransferSameAccountException if the account does not belong to the customer
-     */
-    private BankingAccountGuard differentDestination(BankingAccount toBankingAccount) {
-
-        // check bankingAccount and toBankingAccount are not the same
-        if (account.getId().equals(toBankingAccount.getId())) {
-            throw new BankingAccountTransferSameAccountException(
-                    Exceptions.BANKING.ACCOUNT.SAME_DESTINATION,
-                    account.getId(),
-                    toBankingAccount.getId()
-            );
-        }
-
-        return this;
-    }
-
-    /**
-     * Validate that both {@link #account} and {@code toBankingAccount} have the same currency
-     *
-     * @param toBankingAccount the destination account to check
-     * @return the current validator instance for chaining
-     * @throws BankingAccountTransferCurrencyMismatchException if the account does not belong to the customer
-     */
-    private BankingAccountGuard sameCurrency(BankingAccount toBankingAccount) {
-
-        // if currencies are different, throw exception
-        if (!account.getAccountCurrency().equals(toBankingAccount.getAccountCurrency())) {
-            throw new BankingAccountTransferCurrencyMismatchException(
-                    Exceptions.BANKING.TRANSACTION.DIFFERENT_CURRENCY,
-                    account.getId(),
-                    toBankingAccount.getId()
-            );
-        }
-
-        return this;
-    }
-
-    /**
      * Validate {@link #account} is not SUSPENDED.
      *
      * @return the current validator instance for chaining
      * @throws BankingAccountException if the account does not belong to the customer
      */
-    public BankingAccountGuard notSuspended() {
+    public BankingAccountGuard validateNotSuspended() {
 
         final boolean isAccountSuspended = account.getAccountStatus().equals(BankingAccountStatus.SUSPENDED);
 
@@ -124,7 +82,7 @@ public class BankingAccountGuard {
      * @return the current validator instance for chaining
      * @throws BankingAccountException if the account does not belong to the customer
      */
-    public BankingAccountGuard notClosed() {
+    public BankingAccountGuard validateNotClosed() {
         final boolean isAccountClosed = account.getAccountStatus().equals(BankingAccountStatus.CLOSED);
 
         // check if account is CLOSED
@@ -143,43 +101,10 @@ public class BankingAccountGuard {
      * @return the current validator instance for chaining
      * @throws BankingAccountException if the account does not belong to the customer
      */
-    public BankingAccountGuard active() {
-        this.notSuspended();
-        this.notClosed();
+    public BankingAccountGuard ensureActive() {
+        this.validateNotSuspended();
+        this.validateNotClosed();
         return this;
     }
-
-    // TODO review this
-
-    /**
-     * Validate a transfer between {@link #account} and {@code toBankingAccount}.
-     *
-     * @return the current validator instance for chaining
-     * @throws BankingAccountTransferException if the account does not belong to the customer
-     */
-    public BankingAccountGuard transfer(
-            BankingAccount toBankingAccount,
-            BigDecimal amount
-    ) {
-        // check "account' and toBankingAccount are not the same
-        this.differentDestination(toBankingAccount);
-
-        // check currency are the same
-        this.sameCurrency(toBankingAccount);
-
-        // check the funds from the sender account
-        this.sufficientFunds(amount);
-
-        // check the account status and see if can be used to operate
-        this.active();
-
-        BankingAccountGuard.forAccount(toBankingAccount)
-                           .active();
-
-        return this;
-    }
-
-    // TODO: add withdrawal validation method
-    // TODO: add deposit validation method
 
 }
