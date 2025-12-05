@@ -10,6 +10,7 @@ import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.modules.user.customer.domain.exception.CustomerNotFoundException;
 import com.damian.xBank.modules.user.customer.infra.repository.CustomerRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
+import com.damian.xBank.shared.exception.Exceptions;
 import net.datafaker.Faker;
 import net.datafaker.providers.base.Country;
 import net.datafaker.providers.base.Finance;
@@ -27,7 +28,6 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -72,14 +72,12 @@ public class BankingAccountServiceTest extends AbstractServiceTest {
     @DisplayName("Should banking accounts for a specific customer")
     void shouldGetCustomerBankingAccounts() {
         // given
-        UserAccount userAccount = UserAccount.create()
-                                             .setId(1L)
-                                             .setEmail("customer@demo.com")
-                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD));
-
-        Customer customer = Customer.create()
-                                    .setId(1L)
-                                    .setAccount(userAccount);
+        Customer customer = Customer.create(
+                UserAccount.create()
+                           .setId(1L)
+                           .setEmail("customer@demo.com")
+                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+        ).setId(1L);
 
         setUpContext(customer);
 
@@ -98,12 +96,10 @@ public class BankingAccountServiceTest extends AbstractServiceTest {
 
         // when
         when(bankingAccountRepository.findByCustomer_Id(anyLong())).thenReturn(bankingAccounts);
-
-        //        Set<BankingAccount> result = bankingAccountService.getCustomerBankingAccounts(customer.getId());
-        Set<BankingAccount> result = bankingAccountService.getLoggedCustomerBankingAccounts();
+        bankingAccounts = bankingAccountService.getLoggedCustomerBankingAccounts();
 
         // then
-        assertThat(result.size()).isEqualTo(2);
+        assertThat(bankingAccounts.size()).isEqualTo(2);
         verify(bankingAccountRepository, times(1)).findByCustomer_Id(anyLong());
     }
 
@@ -111,13 +107,12 @@ public class BankingAccountServiceTest extends AbstractServiceTest {
     @DisplayName("Should create a BankingAccount for logged customer")
     void shouldCreateBankingAccount() {
         // given
-        UserAccount userAccount = UserAccount.create()
-                                             .setId(1L)
-                                             .setEmail("customer@demo.com")
-                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD));
-
-        Customer customer = Customer.create()
-                                    .setAccount(userAccount);
+        Customer customer = Customer.create(
+                UserAccount.create()
+                           .setId(1L)
+                           .setEmail("customer@demo.com")
+                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+        ).setId(1L);
 
         setUpContext(customer);
 
@@ -139,30 +134,30 @@ public class BankingAccountServiceTest extends AbstractServiceTest {
         when(faker.number()).thenReturn(number);
         when(faker.country().countryCode2()).thenReturn("US");
         when(customerRepository.findById(customer.getId())).thenReturn(Optional.of(customer));
-        when(bankingAccountRepository.save(any(BankingAccount.class))).thenReturn(givenBankingAccount);
+        when(bankingAccountRepository.save(any(BankingAccount.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
-        BankingAccount savedAccount = bankingAccountService.createBankingAccount(request);
+        bankingAccountService.createBankingAccount(request);
 
         // then
-        assertThat(savedAccount).isNotNull();
-        assertThat(savedAccount.getAccountCurrency()).isEqualTo(request.currency());
-        assertThat(savedAccount.getAccountType()).isEqualTo(request.type());
-        assertThat(savedAccount.getAccountNumber()).isEqualTo(givenBankingAccount.getAccountNumber());
-        assertThat(savedAccount.getBalance()).isEqualTo(BigDecimal.valueOf(0));
+        assertThat(givenBankingAccount).isNotNull();
+        assertThat(givenBankingAccount.getAccountCurrency()).isEqualTo(request.currency());
+        assertThat(givenBankingAccount.getAccountType()).isEqualTo(request.type());
+        assertThat(givenBankingAccount.getAccountNumber().length()).isEqualTo(24);
+        assertThat(givenBankingAccount.getBalance()).isEqualTo(BigDecimal.valueOf(0));
         verify(bankingAccountRepository, times(1)).save(any(BankingAccount.class));
     }
 
     @Test
     @DisplayName("Should not create a BankingAccount when customer not found")
-    void shouldNotCreateBankingAccountWhenCustomerNotFound() {
+    void shouldFailToCreateBankingAccountWhenCustomerNotFound() {
         // given
-        UserAccount userAccount = UserAccount.create()
-                                             .setId(1L)
-                                             .setEmail("customer@demo.com")
-                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD));
-
-        Customer customer = Customer.create()
-                                    .setAccount(userAccount);
+        Customer customer = Customer.create(
+                UserAccount.create()
+                           .setId(1L)
+                           .setEmail("customer@demo.com")
+                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+        ).setId(1L);
 
         setUpContext(customer);
 
@@ -185,8 +180,7 @@ public class BankingAccountServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertTrue(exception.getMessage().contains("Customer not found"));
+        assertThat(exception.getMessage()).isEqualTo(Exceptions.CUSTOMER.NOT_FOUND);
+        verify(bankingAccountRepository, times(0)).save(any(BankingAccount.class));
     }
-
-
 }

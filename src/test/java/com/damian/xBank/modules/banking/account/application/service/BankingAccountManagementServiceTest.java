@@ -45,14 +45,12 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
     @DisplayName("Should close a customer BankingAccount")
     void shouldCloseAccount() {
         // given
-        UserAccount userAccount = UserAccount.create()
-                                             .setId(1L)
-                                             .setEmail("customer@demo.com")
-                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD));
-
-        Customer customer = Customer.create()
-                                    .setId(1L)
-                                    .setAccount(userAccount);
+        Customer customer = Customer.create(
+                UserAccount.create()
+                           .setId(1L)
+                           .setEmail("customer@demo.com")
+                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+        ).setId(1L);
 
         setUpContext(customer);
 
@@ -68,30 +66,31 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
 
         // when
         when(bankingAccountRepository.findById(givenBankingAccount.getId())).thenReturn(Optional.of(givenBankingAccount));
-        when(bankingAccountRepository.save(any(BankingAccount.class))).thenReturn(givenBankingAccount);
 
-        BankingAccount savedAccount = bankingAccountManagementService.closeAccount(
+        when(bankingAccountRepository.save(any(BankingAccount.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        bankingAccountManagementService.closeAccount(
                 givenBankingAccount.getId(),
                 request
         );
 
         // then
-        assertThat(savedAccount.getAccountStatus()).isEqualTo(BankingAccountStatus.CLOSED);
+        assertThat(givenBankingAccount.getAccountStatus()).isEqualTo(BankingAccountStatus.CLOSED);
+        verify(bankingAccountRepository).findById(givenBankingAccount.getId());
         verify(bankingAccountRepository, times(1)).save(any(BankingAccount.class));
     }
 
     @Test
     @DisplayName("Should not open BankingAccount When its closed")
-    void shouldNotOpenAccountWhenClosed() {
+    void shouldFailToOpenAccountWhenClosed() {
         // given
-        UserAccount userAccount = UserAccount.create()
-                                             .setId(1L)
-                                             .setEmail("customer@demo.com")
-                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD));
-
-        Customer customer = Customer.create()
-                                    .setId(1L)
-                                    .setAccount(userAccount);
+        Customer customer = Customer.create(
+                UserAccount.create()
+                           .setId(1L)
+                           .setEmail("customer@demo.com")
+                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+        ).setId(1L);
 
         setUpContext(customer);
 
@@ -118,16 +117,14 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
 
     @Test
     @DisplayName("Should not open BankingAccount When its suspended")
-    void shouldNotOpenAccountWhenSuspended() {
+    void shouldFailToOpenAccountWhenSuspended() {
         // given
-        UserAccount userAccount = UserAccount.create()
-                                             .setId(1L)
-                                             .setEmail("customer@demo.com")
-                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD));
-
-        Customer customer = Customer.create()
-                                    .setId(1L)
-                                    .setAccount(userAccount);
+        Customer customer = Customer.create(
+                UserAccount.create()
+                           .setId(1L)
+                           .setEmail("customer@demo.com")
+                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+        ).setId(1L);
 
         setUpContext(customer);
 
@@ -153,17 +150,15 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should not close BankingAccount When is suspended")
-    void shouldNotCloseAccountWhenSuspended() {
+    @DisplayName("Should not close BankingAccount when is suspended")
+    void shouldFailToCloseAccountWhenSuspended() {
         // given
-        UserAccount userAccount = UserAccount.create()
-                                             .setId(1L)
-                                             .setEmail("customer@demo.com")
-                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD));
-
-        Customer customer = Customer.create()
-                                    .setId(1L)
-                                    .setAccount(userAccount);
+        Customer customer = Customer.create(
+                UserAccount.create()
+                           .setId(1L)
+                           .setEmail("customer@demo.com")
+                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+        ).setId(1L);
 
         setUpContext(customer);
 
@@ -191,17 +186,15 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should not close BankingAccount When none is found")
-    void shouldNotCloseAccountWhenNotFound() {
+    @DisplayName("Should not close BankingAccount when none is found")
+    void shouldFailToCloseAccountWhenNotFound() {
         // given
-        UserAccount userAccount = UserAccount.create()
-                                             .setId(1L)
-                                             .setEmail("customer@demo.com")
-                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD));
-
-        Customer customer = Customer.create()
-                                    .setId(1L)
-                                    .setAccount(userAccount);
+        Customer customer = Customer.create(
+                UserAccount.create()
+                           .setId(1L)
+                           .setEmail("customer@demo.com")
+                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+        ).setId(1L);
 
         setUpContext(customer);
 
@@ -229,29 +222,24 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
         ));
     }
 
-    //
     @Test
     @DisplayName("Should not close account if you are not the owner and you are not admin either")
-    void shouldNotCloseAccountWhenItsNotYoursAndYouAreNotAdmin() {
+    void shouldFailToCloseAccountWhenItsNotYoursAndYouAreNotAdmin() {
         // given
-        UserAccount userAccount2 = UserAccount.create()
-                                              .setId(2L)
-                                              .setEmail("customer2@demo.com")
-                                              .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+        Customer customer = Customer.create(
+                UserAccount.create()
+                           .setId(1L)
+                           .setEmail("customer@demo.com")
+                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+        ).setId(1L);
 
-        Customer customer2 = Customer.create()
-                                     .setId(2L)
-                                     .setAccount(userAccount2);
-
-        UserAccount userAccount = UserAccount.create()
-                                             .setId(1L)
-                                             .setEmail("customer@demo.com")
-                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD));
-
-        Customer customer = Customer.create()
-                                    .setId(1L)
-                                    .setAccount(userAccount);
-
+        // given
+        Customer customer2 = Customer.create(
+                UserAccount.create()
+                           .setId(2L)
+                           .setEmail("customer2@demo.com")
+                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+        ).setId(2L);
 
         setUpContext(customer);
 
@@ -285,25 +273,21 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
     @DisplayName("Should close an account even if its not yours when you are ADMIN")
     void shouldCloseBankingAccountWhenYouAreAdmin() {
         // given
-        UserAccount userAdminAccount = UserAccount.create()
-                                                  .setId(2L)
-                                                  .setRole(UserAccountRole.ADMIN)
-                                                  .setEmail("customer2@demo.com")
-                                                  .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+        Customer customerAdmin = Customer.create(
+                UserAccount.create()
+                           .setId(1L)
+                           .setRole(UserAccountRole.ADMIN)
+                           .setEmail("customerAdmin@demo.com")
+                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+        ).setId(1L);
 
-        Customer customerAdmin = Customer.create()
-                                         .setId(2L)
-                                         .setAccount(userAdminAccount);
-
-        UserAccount userAccount = UserAccount.create()
-                                             .setId(1L)
-                                             .setEmail("customer@demo.com")
-                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD));
-
-        Customer customer = Customer.create()
-                                    .setId(1L)
-                                    .setAccount(userAccount);
-
+        // given
+        Customer customer = Customer.create(
+                UserAccount.create()
+                           .setId(2L)
+                           .setEmail("customer@demo.com")
+                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+        ).setId(2L);
 
         setUpContext(customerAdmin);
 
@@ -336,14 +320,12 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
     @DisplayName("Should set alias to a logged customer BankingAccount")
     void shouldSetAliasToAccount() {
         // given
-        UserAccount userAccount = UserAccount.create()
-                                             .setId(1L)
-                                             .setEmail("customer@demo.com")
-                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD));
-
-        Customer customer = Customer.create()
-                                    .setId(1L)
-                                    .setAccount(userAccount);
+        Customer customer = Customer.create(
+                UserAccount.create()
+                           .setId(1L)
+                           .setEmail("customer@demo.com")
+                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+        ).setId(1L);
 
         setUpContext(customer);
 
@@ -359,15 +341,17 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
 
         // when
         when(bankingAccountRepository.findById(givenBankingAccount.getId())).thenReturn(Optional.of(givenBankingAccount));
-        when(bankingAccountRepository.save(any(BankingAccount.class))).thenReturn(givenBankingAccount);
+        when(bankingAccountRepository.save(any(BankingAccount.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
-        BankingAccount savedAccount = bankingAccountManagementService.setAccountAlias(
+        bankingAccountManagementService.setAccountAlias(
                 givenBankingAccount.getId(),
                 request
         );
 
+
         // then
-        assertThat(savedAccount.getAlias()).isEqualTo(request.alias());
+        assertThat(givenBankingAccount.getAlias()).isEqualTo(request.alias());
         verify(bankingAccountRepository, times(1)).save(any(BankingAccount.class));
     }
 }
