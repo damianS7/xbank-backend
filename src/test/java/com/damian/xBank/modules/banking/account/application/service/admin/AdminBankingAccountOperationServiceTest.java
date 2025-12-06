@@ -7,6 +7,8 @@ import com.damian.xBank.modules.banking.transaction.application.service.BankingT
 import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
+import com.damian.xBank.modules.notification.application.service.NotificationService;
+import com.damian.xBank.modules.notification.domain.event.NotificationEvent;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.AbstractServiceTest;
@@ -20,6 +22,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 public class AdminBankingAccountOperationServiceTest extends AbstractServiceTest {
@@ -33,62 +36,64 @@ public class AdminBankingAccountOperationServiceTest extends AbstractServiceTest
     @Mock
     private BankingTransactionAccountService bankingTransactionAccountService;
 
+    @Mock
+    private NotificationService notificationService;
+
     @Test
     @DisplayName("Should deposit")
     void shouldDeposit() {
         // given
-        UserAccount userAccount = UserAccount.create()
-                                             .setId(1L)
-                                             .setEmail("customer@demo.com")
-                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+        Customer customer = Customer.create(
+                UserAccount.create()
+                           .setId(1L)
+                           .setEmail("customer@demo.com")
+                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+        ).setId(1L);
 
-        Customer customer = Customer.create()
-                                    .setId(1L)
-                                    .setAccount(userAccount);
+        setUpContext(customer);
 
-        //        setUpContext(customer);
+        BigDecimal depositAmount = BigDecimal.valueOf(3000);
 
-        BigDecimal givenDepositAmount = BigDecimal.valueOf(3000);
+        BankingAccount customerBankingAccount = new BankingAccount(customer);
+        customerBankingAccount.setId(2L);
+        customerBankingAccount.setBalance(BigDecimal.ZERO);
+        customerBankingAccount.setAccountNumber("US9900001111112233334444");
 
-        BankingAccount givenBankingAccount = new BankingAccount(customer);
-        givenBankingAccount.setId(2L);
-        givenBankingAccount.setBalance(BigDecimal.ZERO);
-        givenBankingAccount.setAccountNumber("US9900001111112233334444");
-
-        BankingTransaction givenBankingTransaction = new BankingTransaction(givenBankingAccount);
-        givenBankingTransaction.setTransactionType(BankingTransactionType.DEPOSIT);
-        givenBankingTransaction.setAmount(givenDepositAmount);
+        BankingTransaction transaction = new BankingTransaction(customerBankingAccount);
+        transaction.setTransactionType(BankingTransactionType.DEPOSIT);
+        transaction.setAmount(depositAmount);
 
         BankingAccountDepositRequest depositRequest = new BankingAccountDepositRequest(
-                givenBankingAccount.getAccountNumber(),
-                givenDepositAmount
+                customerBankingAccount.getAccountNumber(),
+                depositAmount
         );
 
-        when(bankingAccountRepository.findById(givenBankingAccount.getId())).thenReturn(Optional.of(
-                givenBankingAccount));
+        when(bankingAccountRepository.findById(customerBankingAccount.getId())).thenReturn(Optional.of(
+                customerBankingAccount));
 
         when(bankingTransactionAccountService.generateTransaction(
                 any(BankingAccount.class),
                 any(BankingTransactionType.class),
                 any(BigDecimal.class),
                 any(String.class)
-        )).thenReturn(givenBankingTransaction);
+        )).thenReturn(transaction);
 
         when(bankingTransactionAccountService.persistTransaction(
                 any(BankingTransaction.class)
-        )).thenReturn(givenBankingTransaction);
+        )).thenReturn(transaction);
+
+        doNothing().when(notificationService).publishNotification(any(NotificationEvent.class));
 
         // then
-        BankingTransaction transaction = adminBankingAccountOperationService.deposit(
-                givenBankingAccount.getId(),
+        transaction = adminBankingAccountOperationService.deposit(
+                customerBankingAccount.getId(),
                 depositRequest
         );
 
         // then
         assertThat(transaction).isNotNull();
-        assertThat(transaction.getTransactionType()).isEqualTo(givenBankingTransaction.getTransactionType());
+        assertThat(transaction.getTransactionType()).isEqualTo(BankingTransactionType.DEPOSIT);
         assertThat(transaction.getStatus()).isEqualTo(BankingTransactionStatus.COMPLETED);
-        assertThat(givenBankingAccount.getBalance()).isEqualTo(givenDepositAmount);
+        assertThat(customerBankingAccount.getBalance()).isEqualTo(depositAmount);
     }
-
 }
