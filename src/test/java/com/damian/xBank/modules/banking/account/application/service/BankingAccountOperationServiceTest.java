@@ -9,6 +9,7 @@ import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountR
 import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionAccountService;
 import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
+import com.damian.xBank.modules.banking.transaction.infra.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.notification.application.service.NotificationService;
 import com.damian.xBank.modules.notification.domain.event.NotificationEvent;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
@@ -43,149 +44,152 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
     private BankingAccountRepository bankingAccountRepository;
 
     @Mock
+    private BankingTransactionRepository bankingTransactionRepository;
+
+    @Mock
     private BankingTransactionAccountService bankingTransactionAccountService;
 
     @Test
     @DisplayName("Should transfer to")
     void shouldTransferTo() {
         // given
-        UserAccount userAccount = UserAccount.create()
-                                             .setId(1L)
-                                             .setEmail("customer@demo.com")
-                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+        Customer fromCustomer = Customer.create(
+                UserAccount.create()
+                           .setId(1L)
+                           .setEmail("fromCustomer@demo.com")
+                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+        ).setId(1L);
 
-        Customer customer = Customer.create()
-                                    .setId(1L)
-                                    .setAccount(userAccount);
+        setUpContext(fromCustomer);
 
-        setUpContext(customer);
+        BigDecimal fromCustomerAccountInitialBalance = BigDecimal.valueOf(1000);
 
-        BigDecimal givenBalanceAccountA = BigDecimal.valueOf(1000);
-        BankingAccount givenBankingAccountA = new BankingAccount(customer);
-        givenBankingAccountA.setId(2L);
-        givenBankingAccountA.setBalance(givenBalanceAccountA);
-        givenBankingAccountA.setAccountNumber("US9900001111112233334444");
+        BankingAccount fromCustomerAccount = new BankingAccount(fromCustomer);
+        fromCustomerAccount.setId(2L);
+        fromCustomerAccount.setBalance(fromCustomerAccountInitialBalance);
+        fromCustomerAccount.setAccountNumber("US9900001111112233334444");
 
-        UserAccount userAccountB = UserAccount.create()
-                                              .setId(1L)
-                                              .setEmail("customerB@demo.com")
-                                              .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+        Customer toCustomer = Customer.create(
+                UserAccount.create()
+                           .setId(2L)
+                           .setEmail("toCustomer@demo.com")
+                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+        ).setId(2L);
 
-        Customer customerB = Customer.create()
-                                     .setId(1L)
-                                     .setAccount(userAccountB);
+        BankingAccount toCustomerAccount = new BankingAccount(toCustomer);
+        toCustomerAccount.setId(5L);
+        toCustomerAccount.setBalance(BigDecimal.valueOf(0));
+        toCustomerAccount.setAccountNumber("ES0400003110112293532124");
 
-        BigDecimal givenBalanceAccountB = BigDecimal.valueOf(0);
-        BankingAccount givenBankingAccountB = new BankingAccount(customerB);
-        givenBankingAccountB.setId(5L);
-        givenBankingAccountB.setBalance(givenBalanceAccountB);
-        givenBankingAccountB.setAccountNumber("ES0400003110112293532124");
-
-        BigDecimal givenTransferAmount = BigDecimal.valueOf(500);
-
-        BankingTransaction givenBankingTransactionA = new BankingTransaction(givenBankingAccountA);
-        givenBankingTransactionA.setAmount(givenTransferAmount);
-
-        BankingAccountTransferRequest givenRequest = new BankingAccountTransferRequest(
-                givenBankingAccountB.getAccountNumber(),
+        BankingAccountTransferRequest transferRequest = new BankingAccountTransferRequest(
+                toCustomerAccount.getAccountNumber(),
                 "a gift!",
-                BigDecimal.valueOf(500),
+                fromCustomerAccount.getBalance(),
                 RAW_PASSWORD
         );
 
-        when(bankingAccountRepository.findById(givenBankingAccountA.getId())).thenReturn(Optional.of(
-                givenBankingAccountA));
-        when(bankingAccountRepository.findByAccountNumber(givenBankingAccountB.getAccountNumber()))
-                .thenReturn(Optional.of(givenBankingAccountB));
+        BankingTransaction transaction = BankingTransaction
+                .create()
+                .setAssociatedBankingAccount(fromCustomerAccount)
+                .setTransactionType(BankingTransactionType.TRANSFER_TO)
+                .setLastBalance(BigDecimal.ZERO)
+                .setAmount(transferRequest.amount())
+                .setDescription(transferRequest.description());
+
+        // when
+        when(bankingAccountRepository.findById(fromCustomerAccount.getId())).thenReturn(Optional.of(
+                fromCustomerAccount));
+
+        when(bankingAccountRepository.findByAccountNumber(toCustomerAccount.getAccountNumber()))
+                .thenReturn(Optional.of(toCustomerAccount));
 
         when(bankingTransactionAccountService.createTransaction(
                 any(BankingAccount.class),
                 any(BankingTransactionType.class),
                 any(BigDecimal.class),
                 any(String.class)
-        )).thenReturn(givenBankingTransactionA);
+        )).thenReturn(transaction);
 
         when(bankingTransactionAccountService.persistTransaction(
                 any(BankingTransaction.class)
-        )).thenReturn(givenBankingTransactionA);
+        )).thenReturn(transaction);
 
         doNothing().when(notificationService).publishNotification(any(NotificationEvent.class));
 
         // then
-        BankingTransaction transaction = bankingAccountOperationService.transfer(
-                givenBankingAccountA.getId(),
-                givenRequest
+        transaction = bankingAccountOperationService.transfer(
+                fromCustomerAccount.getId(),
+                transferRequest
         );
 
         // then
-        assertThat(transaction).isNotNull();
-        assertThat(givenBankingAccountA.getBalance()).isEqualTo(
-                givenBalanceAccountA.subtract(givenTransferAmount)
-        );
-        assertThat(givenBankingAccountB.getBalance()).isEqualTo(
-                givenBalanceAccountB.add(givenTransferAmount)
-        );
+        assertThat(transaction)
+                .isNotNull()
+                .extracting(
+                        BankingTransaction::getId,
+                        BankingTransaction::getLastBalance,
+                        BankingTransaction::getAmount,
+                        BankingTransaction::getStatus
+                )
+                .containsExactly(
+                        transaction.getId(),
+                        transaction.getLastBalance(),
+                        transaction.getAmount(),
+                        transaction.getStatus()
+                );
+
+        assertThat(fromCustomerAccount.getBalance()).isEqualTo(BigDecimal.valueOf(0));
+        assertThat(toCustomerAccount.getBalance()).isEqualTo(fromCustomerAccountInitialBalance);
     }
 
     @Test
-    @DisplayName("Should not transfer when insufficient funds")
-    void shouldNotTransferWhenInsufficientFunds() {
+    @DisplayName("Should fail to transfer when insufficient funds")
+    void shouldFailToTransferWhenInsufficientFunds() {
         // given
-        UserAccount userAccount = UserAccount.create()
-                                             .setId(1L)
-                                             .setEmail("customer@demo.com")
-                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+        Customer fromCustomer = Customer.create(
+                UserAccount.create()
+                           .setId(1L)
+                           .setEmail("fromCustomer@demo.com")
+                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+        ).setId(1L);
 
-        Customer customer = Customer.create()
-                                    .setId(1L)
-                                    .setAccount(userAccount);
+        setUpContext(fromCustomer);
 
-        setUpContext(customer);
+        BankingAccount fromCustomerBankingAccount = new BankingAccount(fromCustomer);
+        fromCustomerBankingAccount.setId(2L);
+        fromCustomerBankingAccount.setBalance(BigDecimal.valueOf(0));
+        fromCustomerBankingAccount.setAccountNumber("US9900001111112233334444");
 
-        BigDecimal givenBalanceAccountA = BigDecimal.valueOf(0);
-        BankingAccount givenBankingAccountA = new BankingAccount(customer);
-        givenBankingAccountA.setId(2L);
-        givenBankingAccountA.setBalance(givenBalanceAccountA);
-        givenBankingAccountA.setAccountNumber("US9900001111112233334444");
+        Customer toCustomer = Customer.create(
+                UserAccount.create()
+                           .setId(2L)
+                           .setEmail("toCustomer@demo.com")
+                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+        ).setId(2L);
 
-        UserAccount userAccountB = UserAccount.create()
-                                              .setId(1L)
-                                              .setEmail("customerB@demo.com")
-                                              .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+        BankingAccount toCustomerBankingAccount = new BankingAccount(toCustomer);
+        toCustomerBankingAccount.setId(5L);
+        toCustomerBankingAccount.setBalance(BigDecimal.valueOf(0));
+        toCustomerBankingAccount.setAccountNumber("ES0400003110112293532124");
 
-        Customer customerB = Customer.create()
-                                     .setId(1L)
-                                     .setAccount(userAccountB);
-
-        BigDecimal givenBalanceAccountB = BigDecimal.valueOf(0);
-        BankingAccount givenBankingAccountB = new BankingAccount(customerB);
-        givenBankingAccountB.setId(5L);
-        givenBankingAccountB.setBalance(givenBalanceAccountB);
-        givenBankingAccountB.setAccountNumber("ES0400003110112293532124");
-
-        BigDecimal givenTransferAmount = BigDecimal.valueOf(500);
-
-        BankingTransaction givenBankingTransactionA = new BankingTransaction(givenBankingAccountA);
-        givenBankingTransactionA.setAmount(givenTransferAmount);
-
-        BankingAccountTransferRequest givenRequest = new BankingAccountTransferRequest(
-                givenBankingAccountB.getAccountNumber(),
+        BankingAccountTransferRequest transferRequest = new BankingAccountTransferRequest(
+                toCustomerBankingAccount.getAccountNumber(),
                 "a gift!",
-                givenTransferAmount,
+                BigDecimal.valueOf(100),
                 RAW_PASSWORD
         );
 
-        when(bankingAccountRepository.findById(givenBankingAccountA.getId())).thenReturn(Optional.of(
-                givenBankingAccountA));
-        when(bankingAccountRepository.findByAccountNumber(givenBankingAccountB.getAccountNumber()))
-                .thenReturn(Optional.of(givenBankingAccountB));
+        when(bankingAccountRepository.findById(fromCustomerBankingAccount.getId())).thenReturn(Optional.of(
+                fromCustomerBankingAccount));
+        when(bankingAccountRepository.findByAccountNumber(toCustomerBankingAccount.getAccountNumber()))
+                .thenReturn(Optional.of(toCustomerBankingAccount));
 
         // then
         BankingAccountInsufficientFundsException exception = assertThrows(
                 BankingAccountInsufficientFundsException.class,
                 () -> bankingAccountOperationService.transfer(
-                        givenBankingAccountA.getId(),
-                        givenRequest
+                        fromCustomerBankingAccount.getId(),
+                        transferRequest
                 )
         );
 
@@ -194,66 +198,56 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should not transfer when one account has different currency")
-    void shouldNotTransferWhenAccountHasDifferentCurrency() {
+    @DisplayName("Should fail to transfer when destination account has different currency")
+    void shouldFailToTransferWhenDestinationAccountHasDifferentCurrency() {
         // given
-        UserAccount userAccount = UserAccount.create()
-                                             .setId(1L)
-                                             .setEmail("customer@demo.com")
-                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+        Customer fromCustomer = Customer.create(
+                UserAccount.create()
+                           .setId(1L)
+                           .setEmail("fromCustomer@demo.com")
+                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+        ).setId(1L);
 
-        Customer customer = Customer.create()
-                                    .setId(1L)
-                                    .setAccount(userAccount);
+        setUpContext(fromCustomer);
 
-        setUpContext(customer);
+        BankingAccount fromCustomerBankingAccount = new BankingAccount(fromCustomer);
+        fromCustomerBankingAccount.setId(2L);
+        fromCustomerBankingAccount.setAccountCurrency(BankingAccountCurrency.USD);
+        fromCustomerBankingAccount.setBalance(BigDecimal.valueOf(1000));
+        fromCustomerBankingAccount.setAccountNumber("US9900001111112233334444");
 
-        BigDecimal givenBalanceAccountA = BigDecimal.valueOf(0);
-        BankingAccount givenBankingAccountA = new BankingAccount(customer);
-        givenBankingAccountA.setId(2L);
-        givenBankingAccountA.setAccountCurrency(BankingAccountCurrency.USD);
-        givenBankingAccountA.setBalance(givenBalanceAccountA);
-        givenBankingAccountA.setAccountNumber("US9900001111112233334444");
+        Customer toCustomer = Customer.create(
+                UserAccount.create()
+                           .setId(2L)
+                           .setEmail("toCustomer@demo.com")
+                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+        ).setId(2L);
 
-        UserAccount userAccountB = UserAccount.create()
-                                              .setId(1L)
-                                              .setEmail("customerB@demo.com")
-                                              .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+        BankingAccount toCustomerBankingAccount = new BankingAccount(toCustomer);
+        toCustomerBankingAccount.setId(5L);
+        toCustomerBankingAccount.setAccountCurrency(BankingAccountCurrency.EUR);
+        toCustomerBankingAccount.setBalance(BigDecimal.valueOf(0));
+        toCustomerBankingAccount.setAccountNumber("ES0400003110112293532124");
 
-        Customer customerB = Customer.create()
-                                     .setId(1L)
-                                     .setAccount(userAccountB);
-
-        BigDecimal givenBalanceAccountB = BigDecimal.valueOf(0);
-        BankingAccount givenBankingAccountB = new BankingAccount(customerB);
-        givenBankingAccountB.setId(5L);
-        givenBankingAccountB.setAccountCurrency(BankingAccountCurrency.EUR);
-        givenBankingAccountB.setBalance(givenBalanceAccountB);
-        givenBankingAccountB.setAccountNumber("ES0400003110112293532124");
-
-        BigDecimal givenTransferAmount = BigDecimal.valueOf(500);
-
-        BankingTransaction givenBankingTransactionA = new BankingTransaction(givenBankingAccountA);
-        givenBankingTransactionA.setAmount(givenTransferAmount);
-
-        BankingAccountTransferRequest givenRequest = new BankingAccountTransferRequest(
-                givenBankingAccountB.getAccountNumber(),
+        BankingAccountTransferRequest transferRequest = new BankingAccountTransferRequest(
+                toCustomerBankingAccount.getAccountNumber(),
                 "a gift!",
-                givenTransferAmount,
+                BigDecimal.valueOf(100),
                 RAW_PASSWORD
         );
 
-        when(bankingAccountRepository.findById(givenBankingAccountA.getId())).thenReturn(Optional.of(
-                givenBankingAccountA));
-        when(bankingAccountRepository.findByAccountNumber(givenBankingAccountB.getAccountNumber()))
-                .thenReturn(Optional.of(givenBankingAccountB));
+        when(bankingAccountRepository.findById(fromCustomerBankingAccount.getId())).thenReturn(Optional.of(
+                fromCustomerBankingAccount));
+
+        when(bankingAccountRepository.findByAccountNumber(toCustomerBankingAccount.getAccountNumber()))
+                .thenReturn(Optional.of(toCustomerBankingAccount));
 
         // then
         BankingAccountTransferCurrencyMismatchException exception = assertThrows(
                 BankingAccountTransferCurrencyMismatchException.class,
                 () -> bankingAccountOperationService.transfer(
-                        givenBankingAccountA.getId(),
-                        givenRequest
+                        fromCustomerBankingAccount.getId(),
+                        transferRequest
                 )
         );
 
@@ -262,66 +256,56 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should not transfer when account is not found")
-    void shouldNotTransferWhenAccountIsNotFound() {
+    @DisplayName("Should fail to transfer when account is not found")
+    void shouldFailToTransferWhenAccountIsNotFound() {
         // given
-        UserAccount userAccount = UserAccount.create()
-                                             .setId(1L)
-                                             .setEmail("customer@demo.com")
-                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD));
-
-        Customer customer = Customer.create()
-                                    .setId(1L)
-                                    .setAccount(userAccount);
+        Customer fromCustomer = Customer.create(
+                UserAccount.create()
+                           .setId(1L)
+                           .setEmail("fromCustomer@demo.com")
+                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+        ).setId(1L);
 
         //        setUpContext(customer);
 
-        BigDecimal givenBalanceAccountA = BigDecimal.valueOf(0);
-        BankingAccount givenBankingAccountA = new BankingAccount(customer);
-        givenBankingAccountA.setId(2L);
-        givenBankingAccountA.setAccountCurrency(BankingAccountCurrency.USD);
-        givenBankingAccountA.setBalance(givenBalanceAccountA);
-        givenBankingAccountA.setAccountNumber("US9900001111112233334444");
+        BankingAccount fromCustomerBankingAccount = new BankingAccount(fromCustomer);
+        fromCustomerBankingAccount.setId(2L);
+        fromCustomerBankingAccount.setAccountCurrency(BankingAccountCurrency.USD);
+        fromCustomerBankingAccount.setBalance(BigDecimal.valueOf(0));
+        fromCustomerBankingAccount.setAccountNumber("US9900001111112233334444");
 
-        UserAccount userAccountB = UserAccount.create()
-                                              .setId(1L)
-                                              .setEmail("customerB@demo.com")
-                                              .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+        Customer toCustomer = Customer.create(
+                UserAccount.create()
+                           .setId(2L)
+                           .setEmail("toCustomer@demo.com")
+                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+        ).setId(2L);
 
-        Customer customerB = Customer.create()
-                                     .setId(1L)
-                                     .setAccount(userAccountB);
+        BankingAccount toCustomerBankingAccount = new BankingAccount(toCustomer);
+        toCustomerBankingAccount.setId(5L);
+        toCustomerBankingAccount.setAccountCurrency(BankingAccountCurrency.EUR);
+        toCustomerBankingAccount.setBalance(BigDecimal.valueOf(0));
+        toCustomerBankingAccount.setAccountNumber("ES0400003110112293532124");
 
-        BigDecimal givenBalanceAccountB = BigDecimal.valueOf(0);
-        BankingAccount givenBankingAccountB = new BankingAccount(customerB);
-        givenBankingAccountB.setId(5L);
-        givenBankingAccountB.setAccountCurrency(BankingAccountCurrency.EUR);
-        givenBankingAccountB.setBalance(givenBalanceAccountB);
-        givenBankingAccountB.setAccountNumber("ES0400003110112293532124");
-
-        BigDecimal givenTransferAmount = BigDecimal.valueOf(500);
-
-        BankingTransaction givenBankingTransactionA = new BankingTransaction(givenBankingAccountA);
-        givenBankingTransactionA.setAmount(givenTransferAmount);
-
-        BankingAccountTransferRequest givenRequest = new BankingAccountTransferRequest(
-                givenBankingAccountB.getAccountNumber(),
+        BankingAccountTransferRequest transferRequest = new BankingAccountTransferRequest(
+                toCustomerBankingAccount.getAccountNumber(),
                 "a gift!",
-                givenTransferAmount,
+                BigDecimal.valueOf(500),
                 RAW_PASSWORD
         );
 
-        when(bankingAccountRepository.findById(givenBankingAccountA.getId())).thenReturn(Optional.of(
-                givenBankingAccountA));
-        when(bankingAccountRepository.findByAccountNumber(givenBankingAccountB.getAccountNumber()))
+        when(bankingAccountRepository.findById(fromCustomerBankingAccount.getId())).thenReturn(Optional.of(
+                fromCustomerBankingAccount));
+
+        when(bankingAccountRepository.findByAccountNumber(toCustomerBankingAccount.getAccountNumber()))
                 .thenReturn(Optional.empty());
 
         // then
         BankingAccountNotFoundException exception = assertThrows(
                 BankingAccountNotFoundException.class,
                 () -> bankingAccountOperationService.transfer(
-                        givenBankingAccountA.getId(),
-                        givenRequest
+                        fromCustomerBankingAccount.getId(),
+                        transferRequest
                 )
         );
 
@@ -330,64 +314,54 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should not transfer when account is closed")
-    void shouldNotTransferWhenAccountIsClosed() {
+    @DisplayName("Should fail to transfer when account is closed")
+    void shouldFailToTransferWhenAccountIsClosed() {
         // given
-        UserAccount userAccount = UserAccount.create()
-                                             .setId(1L)
-                                             .setEmail("customer@demo.com")
-                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+        Customer fromCustomer = Customer.create(
+                UserAccount.create()
+                           .setId(1L)
+                           .setEmail("fromCustomer@demo.com")
+                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+        ).setId(1L);
 
-        Customer customer = Customer.create()
-                                    .setId(1L)
-                                    .setAccount(userAccount);
+        setUpContext(fromCustomer);
 
-        setUpContext(customer);
+        BankingAccount fromCustomerBankingAccount = new BankingAccount(fromCustomer);
+        fromCustomerBankingAccount.setId(2L);
+        fromCustomerBankingAccount.setAccountStatus(BankingAccountStatus.CLOSED);
+        fromCustomerBankingAccount.setBalance(BigDecimal.valueOf(1000));
+        fromCustomerBankingAccount.setAccountNumber("US9900001111112233334444");
 
-        BigDecimal givenBalanceAccountA = BigDecimal.valueOf(1000);
-        BankingAccount givenBankingAccountA = new BankingAccount(customer);
-        givenBankingAccountA.setId(2L);
-        givenBankingAccountA.setAccountStatus(BankingAccountStatus.CLOSED);
-        givenBankingAccountA.setBalance(givenBalanceAccountA);
-        givenBankingAccountA.setAccountNumber("US9900001111112233334444");
+        Customer toCustomer = Customer.create(
+                UserAccount.create()
+                           .setId(2L)
+                           .setEmail("toCustomer@demo.com")
+                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+        ).setId(2L);
 
-        UserAccount userAccountB = UserAccount.create()
-                                              .setId(1L)
-                                              .setEmail("customerB@demo.com")
-                                              .setPassword(passwordEncoder.encode(RAW_PASSWORD));
-
-        Customer customerB = Customer.create()
-                                     .setId(1L)
-                                     .setAccount(userAccountB);
-
-        BigDecimal givenBalanceAccountB = BigDecimal.valueOf(0);
-        BankingAccount givenBankingAccountB = new BankingAccount(customerB);
-        givenBankingAccountB.setId(5L);
-        givenBankingAccountB.setBalance(givenBalanceAccountB);
-        givenBankingAccountB.setAccountNumber("ES0400003110112293532124");
-
-        BigDecimal givenTransferAmount = BigDecimal.valueOf(500);
-
-        BankingTransaction givenBankingTransactionA = new BankingTransaction(givenBankingAccountA);
-        givenBankingTransactionA.setAmount(givenTransferAmount);
+        BankingAccount toCustomerBankingAccount = new BankingAccount(toCustomer);
+        toCustomerBankingAccount.setId(5L);
+        toCustomerBankingAccount.setBalance(BigDecimal.valueOf(0));
+        toCustomerBankingAccount.setAccountNumber("ES0400003110112293532124");
 
         BankingAccountTransferRequest givenRequest = new BankingAccountTransferRequest(
-                givenBankingAccountB.getAccountNumber(),
+                toCustomerBankingAccount.getAccountNumber(),
                 "a gift!",
-                givenTransferAmount,
+                BigDecimal.valueOf(50),
                 RAW_PASSWORD
         );
 
-        when(bankingAccountRepository.findById(givenBankingAccountA.getId())).thenReturn(Optional.of(
-                givenBankingAccountA));
-        when(bankingAccountRepository.findByAccountNumber(givenBankingAccountB.getAccountNumber()))
-                .thenReturn(Optional.of(givenBankingAccountB));
+        when(bankingAccountRepository.findById(fromCustomerBankingAccount.getId())).thenReturn(Optional.of(
+                fromCustomerBankingAccount));
+
+        when(bankingAccountRepository.findByAccountNumber(toCustomerBankingAccount.getAccountNumber()))
+                .thenReturn(Optional.of(toCustomerBankingAccount));
 
         // then
         BankingAccountClosedException exception = assertThrows(
                 BankingAccountClosedException.class,
                 () -> bankingAccountOperationService.transfer(
-                        givenBankingAccountA.getId(),
+                        fromCustomerBankingAccount.getId(),
                         givenRequest
                 )
         );
@@ -397,65 +371,55 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should not transfer when account is suspended")
-    void shouldNotTransferWhenAccountIsSuspended() {
+    @DisplayName("Should fail to transfer when account is suspended")
+    void shouldFailToTransferWhenAccountIsSuspended() {
         // given
-        UserAccount userAccount = UserAccount.create()
-                                             .setId(1L)
-                                             .setEmail("customer@demo.com")
-                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD));
-
-        Customer customer = Customer.create()
-                                    .setId(1L)
-                                    .setAccount(userAccount);
+        Customer customer = Customer.create(
+                UserAccount.create()
+                           .setId(1L)
+                           .setEmail("customer@demo.com")
+                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+        ).setId(1L);
 
         setUpContext(customer);
 
-        BigDecimal givenBalanceAccountA = BigDecimal.valueOf(1000);
         BankingAccount givenBankingAccountA = new BankingAccount(customer);
         givenBankingAccountA.setId(2L);
         givenBankingAccountA.setAccountStatus(BankingAccountStatus.SUSPENDED);
-        givenBankingAccountA.setBalance(givenBalanceAccountA);
+        givenBankingAccountA.setBalance(BigDecimal.valueOf(1000));
         givenBankingAccountA.setAccountNumber("US9900001111112233334444");
 
-        UserAccount userAccountB = UserAccount.create()
-                                              .setId(1L)
-                                              .setEmail("customerB@demo.com")
-                                              .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+        Customer toCustomer = Customer.create(
+                UserAccount.create()
+                           .setId(2L)
+                           .setEmail("toCustomer@demo.com")
+                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+        ).setId(2L);
 
-        Customer customerB = Customer.create()
-                                     .setId(1L)
-                                     .setAccount(userAccountB);
+        BankingAccount toCustomerBankingAccount = new BankingAccount(toCustomer);
+        toCustomerBankingAccount.setId(5L);
+        toCustomerBankingAccount.setBalance(BigDecimal.valueOf(1000));
+        toCustomerBankingAccount.setAccountNumber("ES0400003110112293532124");
 
-        BigDecimal givenBalanceAccountB = BigDecimal.valueOf(0);
-        BankingAccount givenBankingAccountB = new BankingAccount(customerB);
-        givenBankingAccountB.setId(5L);
-        givenBankingAccountB.setBalance(givenBalanceAccountB);
-        givenBankingAccountB.setAccountNumber("ES0400003110112293532124");
-
-        BigDecimal givenTransferAmount = BigDecimal.valueOf(500);
-
-        BankingTransaction givenBankingTransactionA = new BankingTransaction(givenBankingAccountA);
-        givenBankingTransactionA.setAmount(givenTransferAmount);
-
-        BankingAccountTransferRequest givenRequest = new BankingAccountTransferRequest(
-                givenBankingAccountB.getAccountNumber(),
+        BankingAccountTransferRequest transferRequest = new BankingAccountTransferRequest(
+                toCustomerBankingAccount.getAccountNumber(),
                 "a gift!",
-                givenTransferAmount,
+                BigDecimal.valueOf(1000),
                 RAW_PASSWORD
         );
 
         when(bankingAccountRepository.findById(givenBankingAccountA.getId())).thenReturn(Optional.of(
                 givenBankingAccountA));
-        when(bankingAccountRepository.findByAccountNumber(givenBankingAccountB.getAccountNumber()))
-                .thenReturn(Optional.of(givenBankingAccountB));
+
+        when(bankingAccountRepository.findByAccountNumber(toCustomerBankingAccount.getAccountNumber()))
+                .thenReturn(Optional.of(toCustomerBankingAccount));
 
         // then
         BankingAccountSuspendedException exception = assertThrows(
                 BankingAccountSuspendedException.class,
                 () -> bankingAccountOperationService.transfer(
                         givenBankingAccountA.getId(),
-                        givenRequest
+                        transferRequest
                 )
         );
 
@@ -464,37 +428,33 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should not transfer to itself")
-    void shouldNotTransferToItself() {
+    @DisplayName("Should fail to transfer into same account")
+    void shouldFailToTransferIntoSameAccount() {
         // given
-        UserAccount userAccount = UserAccount.create()
-                                             .setId(1L)
-                                             .setEmail("customer@demo.com")
-                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+        Customer fromCustomer = Customer.create(
+                UserAccount.create()
+                           .setId(1L)
+                           .setEmail("fromCustomer@demo.com")
+                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+        ).setId(1L);
 
-        Customer customer = Customer.create()
-                                    .setId(1L)
-                                    .setAccount(userAccount);
+        setUpContext(fromCustomer);
 
-        setUpContext(customer);
-
-        BigDecimal givenBalanceAccountA = BigDecimal.valueOf(1000);
-        BankingAccount givenBankingAccountA = new BankingAccount(customer);
+        BankingAccount givenBankingAccountA = new BankingAccount(fromCustomer);
         givenBankingAccountA.setId(2L);
-        givenBankingAccountA.setBalance(givenBalanceAccountA);
+        givenBankingAccountA.setBalance(BigDecimal.valueOf(1000));
         givenBankingAccountA.setAccountNumber("US9900001111112233334444");
 
-        BigDecimal givenTransferAmount = BigDecimal.valueOf(500);
-
-        BankingAccountTransferRequest givenRequest = new BankingAccountTransferRequest(
+        BankingAccountTransferRequest transferRequest = new BankingAccountTransferRequest(
                 givenBankingAccountA.getAccountNumber(),
                 "a gift!",
-                givenTransferAmount,
+                BigDecimal.valueOf(1000),
                 RAW_PASSWORD
         );
 
         when(bankingAccountRepository.findById(givenBankingAccountA.getId())).thenReturn(Optional.of(
                 givenBankingAccountA));
+
         when(bankingAccountRepository.findByAccountNumber(givenBankingAccountA.getAccountNumber()))
                 .thenReturn(Optional.of(givenBankingAccountA));
 
@@ -503,7 +463,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
                 BankingAccountTransferSameAccountException.class,
                 () -> bankingAccountOperationService.transfer(
                         givenBankingAccountA.getId(),
-                        givenRequest
+                        transferRequest
                 )
         );
 
@@ -512,65 +472,50 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should no transfer when account its not yours")
-    void shouldNotTransferWhenAccountItsNotYours() {
+    @DisplayName("Should fail to transfer when account its not yours")
+    void shouldFailToTransferWhenAccountItsNotYours() {
         // given
-        UserAccount userAccountA = UserAccount.create()
-                                              .setId(1L)
-                                              .setEmail("customer@demo.com")
-                                              .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+        Customer loggedCustomer = Customer.create(
+                UserAccount.create()
+                           .setId(1L)
+                           .setEmail("fromCustomer@demo.com")
+                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+        ).setId(1L);
 
-        Customer customerA = Customer.create()
-                                     .setId(1L)
-                                     .setAccount(userAccountA);
+        setUpContext(loggedCustomer);
 
-        setUpContext(customerA);
+        Customer randomCustomer = Customer.create(
+                UserAccount.create()
+                           .setId(2L)
+                           .setEmail("toCustomer@demo.com")
+                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+        ).setId(2L);
 
-        UserAccount userAccountB = UserAccount.create()
-                                              .setId(2L)
-                                              .setEmail("customerB@demo.com")
-                                              .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+        BankingAccount randomCustomerBankingAccount = new BankingAccount(randomCustomer);
+        randomCustomerBankingAccount.setId(2L);
+        randomCustomerBankingAccount.setBalance(BigDecimal.valueOf(1000));
+        randomCustomerBankingAccount.setAccountNumber("US9900001111112233334444");
 
-        Customer customerB = Customer.create()
-                                     .setId(2L)
-                                     .setAccount(userAccountB);
-
-
-        BigDecimal givenBalanceAccountA = BigDecimal.valueOf(10000);
-        BigDecimal givenBalanceAccountB = BigDecimal.valueOf(0);
-        BigDecimal givenTransferAmount = BigDecimal.valueOf(500);
-
-        BankingAccount givenBankingAccountA = new BankingAccount(customerB);
-        givenBankingAccountA.setId(2L);
-        givenBankingAccountA.setBalance(givenBalanceAccountA);
-        givenBankingAccountA.setAccountNumber("US9900001111112233334444");
-
-        BankingAccount givenBankingAccountB = new BankingAccount(customerB);
-        givenBankingAccountB.setId(5L);
-        givenBankingAccountB.setBalance(givenBalanceAccountB);
-        givenBankingAccountB.setAccountNumber("ES0400003110112293532124");
-
-        BankingTransaction givenBankingTransactionA = new BankingTransaction(givenBankingAccountA);
-        givenBankingTransactionA.setAmount(givenTransferAmount);
-
-        BankingAccountTransferRequest givenRequest = new BankingAccountTransferRequest(
-                givenBankingAccountB.getAccountNumber(),
+        // Here we try to transfer from an account that does not belong to the logged customer
+        BankingAccountTransferRequest transferRequest = new BankingAccountTransferRequest(
+                randomCustomerBankingAccount.getAccountNumber(),
                 "a gift!",
                 BigDecimal.valueOf(500),
                 RAW_PASSWORD
         );
 
-        when(bankingAccountRepository.findById(givenBankingAccountA.getId())).thenReturn(Optional.of(
-                givenBankingAccountA));
-        when(bankingAccountRepository.findByAccountNumber(givenBankingAccountB.getAccountNumber()))
-                .thenReturn(Optional.of(givenBankingAccountB));
+        when(bankingAccountRepository.findById(randomCustomerBankingAccount.getId())).thenReturn(Optional.of(
+                randomCustomerBankingAccount));
+
+        when(bankingAccountRepository.findByAccountNumber(randomCustomerBankingAccount.getAccountNumber()))
+                .thenReturn(Optional.of(randomCustomerBankingAccount));
 
         // then
         BankingAccountOwnershipException exception = assertThrows(
                 BankingAccountOwnershipException.class,
                 () -> bankingAccountOperationService.transfer(
-                        givenBankingAccountA.getId(),
-                        givenRequest
+                        randomCustomerBankingAccount.getId(),
+                        transferRequest
                 )
         );
 
@@ -579,62 +524,53 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should process transaction and fail to transfer when password is wrong")
-    void shouldProcessTransactionRequestAndFailToTransferWhenPasswordIsWrong() {
+    @DisplayName("Should fail to transfer when password is wrong")
+    void shouldFailToTransferWhenPasswordIsWrong() {
         // given
-        UserAccount userAccountA = UserAccount.create()
-                                              .setId(1L)
-                                              .setEmail("customer@demo.com")
-                                              .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+        Customer fromCustomer = Customer.create(
+                UserAccount.create()
+                           .setId(1L)
+                           .setEmail("fromCustomer@demo.com")
+                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+        ).setId(1L);
 
-        Customer customerA = Customer.create()
-                                     .setId(1L)
-                                     .setAccount(userAccountA);
+        setUpContext(fromCustomer);
 
-        setUpContext(customerA);
+        BankingAccount fromCustomerBankingAccount = new BankingAccount(fromCustomer);
+        fromCustomerBankingAccount.setId(2L);
+        fromCustomerBankingAccount.setBalance(BigDecimal.valueOf(1000));
+        fromCustomerBankingAccount.setAccountNumber("US9900001111112233334444");
 
-        BigDecimal givenBalanceAccountA = BigDecimal.valueOf(0);
-        BankingAccount givenBankingAccountA = new BankingAccount(customerA);
-        givenBankingAccountA.setId(2L);
-        givenBankingAccountA.setBalance(givenBalanceAccountA);
-        givenBankingAccountA.setAccountNumber("US9900001111112233334444");
+        Customer toCustomer = Customer.create(
+                UserAccount.create()
+                           .setId(2L)
+                           .setEmail("customerB@demo.com")
+                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+        ).setId(2L);
 
-        UserAccount userAccountB = UserAccount.create()
-                                              .setId(1L)
-                                              .setEmail("customerB@demo.com")
-                                              .setPassword(passwordEncoder.encode(RAW_PASSWORD));
-
-        Customer customerB = Customer.create()
-                                     .setId(1L)
-                                     .setAccount(userAccountB);
-
-        BigDecimal givenBalanceAccountB = BigDecimal.valueOf(0);
-        BankingAccount givenBankingAccountB = new BankingAccount(customerB);
-        givenBankingAccountB.setId(5L);
-        givenBankingAccountB.setBalance(givenBalanceAccountB);
-        givenBankingAccountB.setAccountNumber("ES0400003110112293532124");
-
-        BigDecimal givenTransferAmount = BigDecimal.valueOf(500);
-        BankingTransaction givenBankingTransactionA = new BankingTransaction(givenBankingAccountA);
-        givenBankingTransactionA.setAmount(givenTransferAmount);
+        BankingAccount toCustomerBankingAccount = new BankingAccount(toCustomer);
+        toCustomerBankingAccount.setId(5L);
+        toCustomerBankingAccount.setBalance(BigDecimal.valueOf(100));
+        toCustomerBankingAccount.setAccountNumber("ES0400003110112293532124");
 
         BankingAccountTransferRequest givenRequest = new BankingAccountTransferRequest(
-                givenBankingAccountB.getAccountNumber(),
+                toCustomerBankingAccount.getAccountNumber(),
                 "a gift!",
                 BigDecimal.valueOf(500),
                 "WRONG_PASSWORD"
         );
 
-        when(bankingAccountRepository.findById(givenBankingAccountA.getId())).thenReturn(Optional.of(
-                givenBankingAccountA));
-        when(bankingAccountRepository.findByAccountNumber(givenBankingAccountB.getAccountNumber()))
-                .thenReturn(Optional.of(givenBankingAccountB));
+        when(bankingAccountRepository.findById(fromCustomerBankingAccount.getId())).thenReturn(Optional.of(
+                fromCustomerBankingAccount));
+        
+        when(bankingAccountRepository.findByAccountNumber(toCustomerBankingAccount.getAccountNumber()))
+                .thenReturn(Optional.of(toCustomerBankingAccount));
 
         // then
         UserAccountInvalidPasswordConfirmationException exception = assertThrows(
                 UserAccountInvalidPasswordConfirmationException.class,
                 () -> bankingAccountOperationService.transfer(
-                        givenBankingAccountA.getId(),
+                        fromCustomerBankingAccount.getId(),
                         givenRequest
                 )
         );
