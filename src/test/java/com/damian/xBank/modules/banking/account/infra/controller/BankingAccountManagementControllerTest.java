@@ -180,6 +180,4 @@ public class BankingAccountManagementControllerTest extends AbstractIntegrationT
         assertThat(card).isNotNull();
         assertThat(card.cardType()).isEqualTo(request.type());
     }
-
-    
 }

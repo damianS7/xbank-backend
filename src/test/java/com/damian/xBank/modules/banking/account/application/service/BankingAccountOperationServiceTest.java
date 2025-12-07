@@ -562,7 +562,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
 
         when(bankingAccountRepository.findById(fromCustomerBankingAccount.getId())).thenReturn(Optional.of(
                 fromCustomerBankingAccount));
-        
+
         when(bankingAccountRepository.findByAccountNumber(toCustomerBankingAccount.getAccountNumber()))
                 .thenReturn(Optional.of(toCustomerBankingAccount));
 
