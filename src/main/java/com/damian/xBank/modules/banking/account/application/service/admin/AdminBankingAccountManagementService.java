@@ -42,9 +42,9 @@ public class AdminBankingAccountManagementService {
         if (customer.getAccount().getRole() == UserAccountRole.CUSTOMER) {
 
             BankingAccountGuard.forAccount(bankingAccount)
-                               .ownership(customer)
-                               .validateNotSuspended()
-                               .validateNotClosed();
+                               .assertOwnership(customer)
+                               .assertNotSuspended()
+                               .assertNotClosed();
         }
 
         // we mark the account as closed
@@ -123,9 +123,9 @@ public class AdminBankingAccountManagementService {
         if (AuthHelper.isCustomer(customer)) {
 
             BankingAccountGuard.forAccount(bankingAccount)
-                               .ownership(customer)
-                               .validateNotSuspended()
-                               .validateNotClosed();
+                               .assertOwnership(customer)
+                               .assertNotSuspended()
+                               .assertNotClosed();
         }
 
         // we mark the account as closed

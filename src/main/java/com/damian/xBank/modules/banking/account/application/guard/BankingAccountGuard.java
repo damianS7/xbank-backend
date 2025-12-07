@@ -2,11 +2,14 @@ package com.damian.xBank.modules.banking.account.application.guard;
 
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountStatus;
-import com.damian.xBank.modules.banking.account.domain.exception.*;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountClosedException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountOwnershipException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountSuspendedException;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.exception.Exceptions;
 
-import java.math.BigDecimal;
+import java.util.Objects;
 
 public class BankingAccountGuard {
     private final BankingAccount account;
@@ -26,32 +29,12 @@ public class BankingAccountGuard {
      * @return the current validator instance for chaining
      * @throws BankingAccountOwnershipException if the account does not belong to the customer
      */
-    public BankingAccountGuard ownership(Customer customer) {
+    public BankingAccountGuard assertOwnership(Customer customer) {
 
         // compare account owner id with given customer id
-        if (!account.getOwner().getId().equals(customer.getId())) {
+        if (!Objects.equals(account.getOwner().getId(), customer.getId())) {
             throw new BankingAccountOwnershipException(
                     Exceptions.BANKING.ACCOUNT.OWNERSHIP, account.getId(), customer.getId()
-            );
-        }
-
-        return this;
-    }
-
-    /**
-     * Validate if the {@link #account} has sufficient funds.
-     *
-     * @param amount the amount to check
-     * @return the current validator instance for chaining
-     * @throws BankingAccountInsufficientFundsException if the account does not belong to the customer
-     */
-    public BankingAccountGuard sufficientFunds(BigDecimal amount) {
-
-        // check if account has enough funds
-        if (!account.hasEnoughFunds(amount)) {
-            throw new BankingAccountInsufficientFundsException(
-                    Exceptions.BANKING.ACCOUNT.INSUFFICIENT_FUNDS,
-                    account.getId()
             );
         }
 
@@ -64,7 +47,7 @@ public class BankingAccountGuard {
      * @return the current validator instance for chaining
      * @throws BankingAccountException if the account does not belong to the customer
      */
-    public BankingAccountGuard validateNotSuspended() {
+    public BankingAccountGuard assertNotSuspended() {
 
         final boolean isAccountSuspended = account.getAccountStatus().equals(BankingAccountStatus.SUSPENDED);
 
@@ -82,7 +65,7 @@ public class BankingAccountGuard {
      * @return the current validator instance for chaining
      * @throws BankingAccountException if the account does not belong to the customer
      */
-    public BankingAccountGuard validateNotClosed() {
+    public BankingAccountGuard assertNotClosed() {
         final boolean isAccountClosed = account.getAccountStatus().equals(BankingAccountStatus.CLOSED);
 
         // check if account is CLOSED
@@ -101,9 +84,9 @@ public class BankingAccountGuard {
      * @return the current validator instance for chaining
      * @throws BankingAccountException if the account does not belong to the customer
      */
-    public BankingAccountGuard ensureActive() {
-        this.validateNotSuspended();
-        this.validateNotClosed();
+    public BankingAccountGuard assertActive() {
+        this.assertNotSuspended();
+        this.assertNotClosed();
         return this;
     }
 

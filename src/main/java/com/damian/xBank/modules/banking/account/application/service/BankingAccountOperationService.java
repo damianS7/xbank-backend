@@ -18,6 +18,7 @@ import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.utils.AuthHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -69,7 +70,15 @@ public class BankingAccountOperationService {
         );
     }
 
-    // validates account status and does the transaction
+    /**
+     *
+     * @param fromBankingAccount
+     * @param toBankingAccountNumber
+     * @param password
+     * @param amount
+     * @param description
+     * @return
+     */
     public BankingTransaction transferTo(
             BankingAccount fromBankingAccount,
             String toBankingAccountNumber,
@@ -93,15 +102,24 @@ public class BankingAccountOperationService {
         // run validations and throw if any throw exception
         BankingAccountGuard
                 .forAccount(fromBankingAccount)
-                .ownership(customer);
+                .assertOwnership(customer);
 
         BankingAccountOperationGuard
                 .forAccount(fromBankingAccount)
-                .validateTransfer(toBankingAccount, amount);
+                .assertCanTransfer(toBankingAccount, amount);
 
         return this.transferTo(fromBankingAccount, toBankingAccount, amount, description);
     }
 
+    /**
+     *
+     * @param fromBankingAccount
+     * @param toBankingAccount
+     * @param amount
+     * @param description
+     * @return
+     */
+    @Transactional
     public BankingTransaction transferTo(
             BankingAccount fromBankingAccount,
             BankingAccount toBankingAccount,
