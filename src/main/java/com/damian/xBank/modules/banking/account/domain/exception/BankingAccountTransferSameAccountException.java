@@ -1,22 +1,13 @@
 package com.damian.xBank.modules.banking.account.domain.exception;
 
-public class BankingAccountTransferSameAccountException extends BankingAccountException {
-    private Long toBankingAccountId;
+import com.damian.xBank.shared.exception.Exceptions;
 
-    public BankingAccountTransferSameAccountException(
-            String message,
-            Long fromBankingAccountId,
-            Long toBankingAccountId
-    ) {
-        this(message, fromBankingAccountId);
-        this.toBankingAccountId = toBankingAccountId;
-    }
-
+public class BankingAccountTransferSameAccountException extends BankingAccountTransferException {
     public BankingAccountTransferSameAccountException(String message, Long bankingAccountId) {
         super(message, bankingAccountId);
     }
 
-    public Long getToBankingAccountId() {
-        return toBankingAccountId;
+    public BankingAccountTransferSameAccountException(Long bankingAccountId) {
+        this(Exceptions.BANKING.ACCOUNT.SAME_DESTINATION, bankingAccountId);
     }
 }

@@ -1,22 +1,13 @@
 package com.damian.xBank.modules.banking.account.domain.exception;
 
-public class BankingAccountTransferCurrencyMismatchException extends BankingAccountException {
-    private Long toBankingAccountId;
+import com.damian.xBank.shared.exception.Exceptions;
 
-    public BankingAccountTransferCurrencyMismatchException(
-            String message,
-            Long fromBankingAccountId,
-            Long toBankingAccountId
-    ) {
-        this(message, fromBankingAccountId);
-        this.toBankingAccountId = toBankingAccountId;
-    }
-
+public class BankingAccountTransferCurrencyMismatchException extends BankingAccountTransferException {
     public BankingAccountTransferCurrencyMismatchException(String message, Long bankingAccountId) {
         super(message, bankingAccountId);
     }
 
-    public Long getToBankingAccountId() {
-        return toBankingAccountId;
+    public BankingAccountTransferCurrencyMismatchException(Long bankingAccountId) {
+        this(Exceptions.BANKING.TRANSACTION.DIFFERENT_CURRENCY, bankingAccountId);
     }
 }
