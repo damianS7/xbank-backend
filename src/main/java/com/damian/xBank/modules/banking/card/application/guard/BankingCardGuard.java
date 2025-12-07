@@ -1,8 +1,6 @@
 package com.damian.xBank.modules.banking.card.application.guard;
 
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
-import com.damian.xBank.modules.banking.card.domain.enums.BankingCardLockStatus;
-import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.domain.exception.*;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.exception.Exceptions;
@@ -63,7 +61,7 @@ public class BankingCardGuard {
     public BankingCardGuard assertEnabled() {
 
         // check card status
-        if (Objects.equals(card.getCardStatus(), BankingCardStatus.DISABLED)) {
+        if (card.isDisabled()) {
             throw new BankingCardDisabledException(
                     Exceptions.BANKING.CARD.DISABLED, card.getId()
             );
@@ -81,7 +79,7 @@ public class BankingCardGuard {
     public BankingCardGuard assertUnlocked() {
 
         // check lock status
-        if (Objects.equals(card.getLockStatus(), BankingCardLockStatus.LOCKED)) {
+        if (card.isLocked()) {
             throw new BankingCardLockedException(
                     Exceptions.BANKING.CARD.LOCKED, card.getId()
             );
@@ -118,7 +116,7 @@ public class BankingCardGuard {
     public BankingCardGuard assertSufficientFunds(BigDecimal amount) {
 
         // check if card has enough funds
-        if (!card.hasEnoughFundsToSpend(amount)) {
+        if (!card.hasSufficientFunds(amount)) {
             throw new BankingCardInsufficientFundsException(
                     Exceptions.BANKING.CARD.INSUFFICIENT_FUNDS,
                     card.getId()

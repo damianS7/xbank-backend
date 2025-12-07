@@ -176,17 +176,29 @@ public class BankingCard {
     }
 
     // returns true if the operation can be carried
-    public boolean hasEnoughFundsToSpend(BigDecimal amount) {
+    public boolean hasSufficientFunds(BigDecimal amount) {
         // if its 0 then balance is equal to the amount willing to spend
         // if its 1 then balance is greater than the amount willing to spend
-        return this.getAssociatedBankingAccount().hasEnoughFunds(amount);
+        return this.getAssociatedBankingAccount().hasSufficientFunds(amount);
     }
 
-    public BigDecimal chargeAmount(BigDecimal amount) {
-        return this.getAssociatedBankingAccount().subtractBalance(amount);
+    public void chargeAmount(BigDecimal amount) {
+        this.getAssociatedBankingAccount().subtractBalance(amount);
     }
 
     public String getHolderName() {
         return this.getAssociatedBankingAccount().getOwner().getFullName();
+    }
+
+    public boolean isLocked() {
+        return this.lockStatus == BankingCardLockStatus.LOCKED;
+    }
+
+    public boolean isDisabled() {
+        return this.cardStatus == BankingCardStatus.DISABLED;
+    }
+
+    public boolean isUsable() {
+        return !isDisabled() && !isLocked();
     }
 }
