@@ -37,6 +37,13 @@ public class BankingAccountExceptionHandler {
                              .body(ApiResponse.error(ex.getMessage(), HttpStatus.CONFLICT));
     }
 
+    @ExceptionHandler(BankingAccountDepositException.class)
+    public ResponseEntity<ApiResponse<String>> handleDepositException(BankingAccountDepositException ex) {
+        log.warn("Banking deposit failed: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                             .body(ApiResponse.error(ex.getMessage(), HttpStatus.CONFLICT));
+    }
+
     @ExceptionHandler(BankingAccountTransferSameAccountException.class)
     public ResponseEntity<ApiResponse<String>> handleTransferSameAccount(BankingAccountTransferSameAccountException ex) {
         log.warn("Banking transfer failed because both accounts are the same.");
