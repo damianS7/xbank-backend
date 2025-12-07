@@ -52,7 +52,7 @@ public class BankingAccountCardManagementService {
         if (!AuthHelper.isAdmin(currentCustomer)) {
             // check if the account belongs to this customer.
             BankingAccountGuard.forAccount(bankingAccount)
-                               .ownership(currentCustomer);
+                               .assertOwnership(currentCustomer);
         }
 
         // if customer has reached the maximum amount of cards per account.
