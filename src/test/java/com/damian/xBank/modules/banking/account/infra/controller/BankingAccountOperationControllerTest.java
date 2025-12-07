@@ -244,7 +244,7 @@ public class BankingAccountOperationControllerTest extends AbstractIntegrationTe
                        .contentType(MediaType.APPLICATION_JSON)
                        .content(objectMapper.writeValueAsString(request)))
                .andDo(print())
-               .andExpect(status().is(403));
+               .andExpect(status().is(409));
     }
 
 
