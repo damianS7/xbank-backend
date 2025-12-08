@@ -11,6 +11,7 @@ import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.AbstractServiceTest;
 import net.datafaker.Faker;
 import net.datafaker.providers.base.Number;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -31,18 +32,20 @@ public class BankingCardServiceTest extends AbstractServiceTest {
     @InjectMocks
     private BankingCardService bankingCardService;
 
-    @Test
-    @DisplayName("Should get customer cards")
-    void shouldGetCustomerCards() {
-        // given
-        Customer customer = Customer.create(
+    private Customer customer;
+    private BankingAccount customerBankingAccount;
+    private BankingCard customerBankingCard;
+
+    @BeforeEach
+    void setUp() {
+        customer = Customer.create(
                 UserAccount.create()
                            .setId(1L)
                            .setEmail("customer@demo.com")
                            .setPassword(passwordEncoder.encode(RAW_PASSWORD))
         ).setId(1L);
 
-        BankingAccount customerBankingAccount = BankingAccount
+        customerBankingAccount = BankingAccount
                 .create()
                 .setOwner(customer)
                 .setId(5L)
@@ -51,12 +54,19 @@ public class BankingCardServiceTest extends AbstractServiceTest {
                 .setAccountNumber("US9900001111112233334444");
 
 
-        BankingCard customerBankingCard = BankingCard
+        customerBankingCard = BankingCard
                 .create()
+                .setId(11L)
                 .setAssociatedBankingAccount(customerBankingAccount)
                 .setCardNumber("1234123412341234")
                 .setCardCvv("123")
                 .setCardPin("1234");
+    }
+
+    @Test
+    @DisplayName("Should get customer cards")
+    void shouldGetCustomerCards() {
+        // given
 
         // when
         when(bankingCardRepository.findCardsByCustomerId(anyLong())).thenReturn(
@@ -80,26 +90,11 @@ public class BankingCardServiceTest extends AbstractServiceTest {
     @DisplayName("Should create a BankingCard with generated data and persist it")
     void shouldCreateBankingCard() {
         // given
-        Customer customer = Customer.create(
-                UserAccount.create()
-                           .setId(1L)
-                           .setEmail("customer@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
-        ).setId(1L);
-
         final Number numberMock = mock(Number.class);
 
         final String cardNumber = "1234123412341234";
         final String cardPIN = "1234";
         final String cardCVV = "000";
-
-        BankingAccount customerBankingAccount = BankingAccount
-                .create()
-                .setOwner(customer)
-                .setId(5L)
-                .setAccountCurrency(BankingAccountCurrency.EUR)
-                .setAccountType(BankingAccountType.SAVINGS)
-                .setAccountNumber("US9900001111112233334444");
 
         // when
         when(faker.number()).thenReturn(numberMock);
