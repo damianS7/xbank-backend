@@ -3,6 +3,7 @@ package com.damian.xBank.modules.banking.card.application.service.admin;
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountType;
+import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdateStatusRequest;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoundException;
@@ -64,15 +65,19 @@ public class AdminBankingCardManagementServiceTest extends AbstractServiceTest {
 
     @Test
     @DisplayName("Should disable a card")
-    void shouldDisableCard() {
+    void shouldUpdateStatus() {
         // given
+        BankingCardUpdateStatusRequest request = new BankingCardUpdateStatusRequest(
+                BankingCardStatus.DISABLED
+        );
+
         // when
         when(bankingCardRepository.findById(anyLong())).thenReturn(Optional.of(customerBankingCard));
         when(bankingCardRepository.save(any(BankingCard.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        BankingCard cancelledCard = adminBankingCardManagementService.disableCard(
-                customerBankingCard.getId()
+        BankingCard cancelledCard = adminBankingCardManagementService.updateStatus(
+                customerBankingCard.getId(), request
         );
 
         // then
@@ -85,14 +90,19 @@ public class AdminBankingCardManagementServiceTest extends AbstractServiceTest {
 
     @Test
     @DisplayName("Should fail to disable card when not exists")
-    void shouldFailToDisableCardWhenNotExists() {
+    void shouldFailToUpdateStatusWhenNotExists() {
         // given
+        BankingCardUpdateStatusRequest request = new BankingCardUpdateStatusRequest(
+                BankingCardStatus.DISABLED
+        );
+
         // when
         when(bankingCardRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(
                 BankingCardNotFoundException.class,
-                () -> adminBankingCardManagementService.disableCard(customerBankingCard.getId())
+                () -> adminBankingCardManagementService.updateStatus(
+                        customerBankingCard.getId(), request)
         );
 
         // then

@@ -4,6 +4,7 @@ import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountType;
+import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdateStatusRequest;
 import com.damian.xBank.modules.banking.card.application.dto.response.BankingCardDto;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.math.BigDecimal;
@@ -79,10 +81,16 @@ public class AdminBankingCardManagementControllerTest extends AbstractIntegratio
 
         login(customer);
 
+        BankingCardUpdateStatusRequest request = new BankingCardUpdateStatusRequest(
+                BankingCardStatus.DISABLED
+        );
+
         // when
         MvcResult result = mockMvc
-                .perform(patch("/api/v1/admin/banking/cards/{id}/disable", customerBankingCard.getId())
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+                .perform(patch("/api/v1/admin/banking/cards/{id}/status", customerBankingCard.getId())
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
                 .andExpect(status().is(200))
                 .andReturn();
@@ -106,10 +114,16 @@ public class AdminBankingCardManagementControllerTest extends AbstractIntegratio
 
         login(customer);
 
+        BankingCardUpdateStatusRequest request = new BankingCardUpdateStatusRequest(
+                BankingCardStatus.DISABLED
+        );
+
         // when
         mockMvc
-                .perform(patch("/api/v1/admin/banking/cards/{id}/disable", customerBankingCard.getId())
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+                .perform(patch("/api/v1/admin/banking/cards/{id}/status", customerBankingCard.getId())
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
                 .andExpect(status().is(403));
     }
