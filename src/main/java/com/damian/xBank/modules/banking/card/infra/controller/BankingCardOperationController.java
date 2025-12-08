@@ -26,7 +26,7 @@ public class BankingCardOperationController {
 
     // endpoint for logged customer to withdraw from card
     @PostMapping("/banking/cards/{id}/withdraw")
-    public ResponseEntity<?> deposit(
+    public ResponseEntity<?> withdraw(
             @PathVariable @NotNull @Positive
             Long id,
             @Validated @RequestBody
