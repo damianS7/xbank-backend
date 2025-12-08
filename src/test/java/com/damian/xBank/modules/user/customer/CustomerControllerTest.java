@@ -2,9 +2,9 @@ package com.damian.xBank.modules.user.customer;
 
 import com.damian.xBank.modules.user.customer.application.dto.request.CustomerUpdateRequest;
 import com.damian.xBank.modules.user.customer.application.dto.response.CustomerDetailDto;
-import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
-import com.damian.xBank.shared.AbstractIntegrationTest;
+import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
+import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.infrastructure.storage.FileStorageService;
 import com.damian.xBank.shared.infrastructure.storage.ImageUploaderService;
 import com.damian.xBank.shared.infrastructure.storage.exception.FileStorageNotFoundException;
@@ -45,7 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class CustomerIntegrationTest extends AbstractIntegrationTest {
+public class CustomerControllerTest extends AbstractControllerTest {
     private Customer customer;
 
     @MockitoBean

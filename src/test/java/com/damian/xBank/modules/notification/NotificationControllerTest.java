@@ -2,14 +2,14 @@ package com.damian.xBank.modules.notification;
 
 import com.damian.xBank.modules.notification.application.dto.request.NotificationDeleteRequest;
 import com.damian.xBank.modules.notification.application.dto.response.NotificationDto;
+import com.damian.xBank.modules.notification.application.service.NotificationService;
+import com.damian.xBank.modules.notification.domain.entity.Notification;
 import com.damian.xBank.modules.notification.domain.enums.NotificationType;
 import com.damian.xBank.modules.notification.domain.event.NotificationEvent;
-import com.damian.xBank.modules.notification.domain.entity.Notification;
-import com.damian.xBank.modules.notification.application.service.NotificationService;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
-import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
-import com.damian.xBank.shared.AbstractIntegrationTest;
+import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
+import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.domain.User;
 import com.damian.xBank.shared.utils.JwtUtil;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -42,7 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class NotificationIntegrationTest extends AbstractIntegrationTest {
+public class NotificationControllerTest extends AbstractControllerTest {
     private Customer customer;
 
     @Autowired

@@ -7,9 +7,9 @@ import com.damian.xBank.modules.setting.domain.enums.SettingLanguage;
 import com.damian.xBank.modules.setting.domain.enums.SettingMultifactor;
 import com.damian.xBank.modules.setting.domain.enums.SettingTheme;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
-import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
-import com.damian.xBank.shared.AbstractIntegrationTest;
+import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
+import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.utils.JsonHelper;
 import org.junit.jupiter.api.*;
 import org.springframework.http.HttpHeaders;
@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class SettingIntegrationTest extends AbstractIntegrationTest {
+public class SettingControllerTest extends AbstractControllerTest {
 
     private Customer customer;
 

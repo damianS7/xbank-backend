@@ -5,7 +5,7 @@ import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.customer.application.dto.request.CustomerRegistrationRequest;
 import com.damian.xBank.modules.user.customer.application.dto.response.CustomerDetailDto;
 import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
-import com.damian.xBank.shared.AbstractIntegrationTest;
+import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.utils.ApiResponse;
 import com.damian.xBank.shared.utils.JsonHelper;
@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class CustomerRegistrationIntegrationTest extends AbstractIntegrationTest {
+public class CustomerRegistrationControllerTest extends AbstractControllerTest {
 
     @Test
     @DisplayName("Should register a customer")

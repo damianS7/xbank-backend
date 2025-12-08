@@ -7,7 +7,7 @@ import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountType;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
-import com.damian.xBank.shared.AbstractIntegrationTest;
+import com.damian.xBank.shared.AbstractControllerTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-public class BankingAccountControllerTest extends AbstractIntegrationTest {
+public class BankingAccountControllerTest extends AbstractControllerTest {
     private Customer customer;
 
     @BeforeEach

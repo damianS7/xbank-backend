@@ -11,7 +11,7 @@ import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRol
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
-import com.damian.xBank.shared.AbstractIntegrationTest;
+import com.damian.xBank.shared.AbstractControllerTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class BankingAccountOperationControllerTest extends AbstractIntegrationTest {
+public class BankingAccountOperationControllerTest extends AbstractControllerTest {
 
     private Customer customerA;
     private Customer customerB;
@@ -244,7 +244,7 @@ public class BankingAccountOperationControllerTest extends AbstractIntegrationTe
                        .contentType(MediaType.APPLICATION_JSON)
                        .content(objectMapper.writeValueAsString(request)))
                .andDo(print())
-               .andExpect(status().is(409));
+               .andExpect(status().is(403));
     }
 
 
