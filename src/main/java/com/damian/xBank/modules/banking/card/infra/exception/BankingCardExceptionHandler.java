@@ -15,6 +15,27 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class BankingCardExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(BankingCardExceptionHandler.class);
 
+    @ExceptionHandler(BankingCardLockedException.class)
+    public ResponseEntity<ApiResponse<String>> handleLocked(BankingCardLockedException ex) {
+        log.warn("Banking card: {} is locked.", ex.getBankingCardId());
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                             .body(ApiResponse.error(ex.getMessage(), HttpStatus.CONFLICT));
+    }
+
+    @ExceptionHandler(BankingCardDisabledException.class)
+    public ResponseEntity<ApiResponse<String>> handleDisabled(BankingCardDisabledException ex) {
+        log.warn("Banking card: {} is disabled.", ex.getBankingCardId());
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                             .body(ApiResponse.error(ex.getMessage(), HttpStatus.CONFLICT));
+    }
+
+    @ExceptionHandler(BankingCardInvalidPinException.class)
+    public ResponseEntity<ApiResponse<String>> handleInvalidPin(BankingCardInvalidPinException ex) {
+        log.warn("Banking card: {} pin is invalid.", ex.getBankingCardId());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                             .body(ApiResponse.error(ex.getMessage(), HttpStatus.FORBIDDEN));
+    }
+
     @ExceptionHandler(BankingCardInsufficientFundsException.class)
     public ResponseEntity<ApiResponse<String>> handleInsufficientFunds(BankingCardInsufficientFundsException ex) {
         log.warn("Banking card: {} has insufficient funds.", ex.getBankingCardId());
