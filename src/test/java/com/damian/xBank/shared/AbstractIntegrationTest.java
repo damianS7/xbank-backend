@@ -86,9 +86,14 @@ public abstract class AbstractIntegrationTest {
 
     protected void login(String email) throws Exception {
         // given
+        this.login(email, UserAccountRole.CUSTOMER);
+    }
+
+    protected void login(String email, UserAccountRole role) throws Exception {
+        // given
         final HashMap<String, Object> claims = new HashMap<>();
         claims.put("email", email);
-        claims.put("role", UserAccountRole.CUSTOMER);
+        claims.put("role", role);
 
         token = jwtUtil.generateToken(claims, email);
     }
@@ -98,7 +103,6 @@ public abstract class AbstractIntegrationTest {
         final HashMap<String, Object> claims = new HashMap<>();
         claims.put("email", userAccount.getEmail());
         claims.put("role", userAccount.getRole());
-
         token = jwtUtil.generateToken(claims, userAccount.getEmail());
     }
 
