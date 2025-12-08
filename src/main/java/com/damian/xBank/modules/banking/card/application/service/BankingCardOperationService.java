@@ -9,7 +9,6 @@ import com.damian.xBank.modules.banking.card.infra.repository.BankingCardReposit
 import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionAccountService;
 import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionCardService;
 import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
-import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.utils.AuthHelper;
@@ -34,64 +33,68 @@ public class BankingCardOperationService {
         this.bankingCardRepository = bankingCardRepository;
     }
 
+    /**
+     * Spend money from a card
+     *
+     * @param bankingCardId the id of the card to spend from
+     * @param request       the request with the data needed to perfom the operation
+     * @return the created transaction
+     */
     public BankingTransaction spend(Long bankingCardId, BankingCardSpendRequest request) {
         BankingCard bankingCard = bankingCardRepository.findById(bankingCardId).orElseThrow(
                 () -> new BankingCardNotFoundException(bankingCardId)
         );
 
-        return this.spend(bankingCard, request.cardPIN(), request.amount(), request.description());
-    }
-
-    // validates card status and does the transaction
-    public BankingTransaction spend(
-            BankingCard card,
-            String cardPIN,
-            BigDecimal amount,
-            String description
-    ) {
-        final Customer customerLogged = AuthHelper.getCurrentCustomer();
-
-        // run validations and throw if any throw exception
-        BankingCardGuard
-                .forCard(card)
-                .assertCanSpend(customerLogged, cardPIN, amount);
-
-        // if the transaction is created, deduce the amount from balance
-        // amount is deducted only after transaction is stored on db
-        card.chargeAmount(amount);
-
-        // store here the transaction as PENDING
-        BankingTransaction transaction = bankingTransactionCardService.generateTransaction(
-                card,
-                BankingTransactionType.CARD_CHARGE,
-                amount,
-                description
+        return this.executeOperation(
+                bankingCard,
+                request.cardPIN(),
+                request.amount(),
+                request.description(),
+                BankingTransactionType.CARD_CHARGE
         );
-
-
-        // After amount is deducted, mark the transaction as completed
-        transaction.setStatus(BankingTransactionStatus.COMPLETED);
-
-        // save the transaction
-        return bankingTransactionAccountService.persistTransaction(transaction);
     }
 
+    /**
+     * Withdraw money from ATM machine
+     *
+     * @param bankingCardId the id of the card to withdraw from
+     * @param request       the request with the data needed to perfom the operation
+     * @return the created transaction
+     */
     public BankingTransaction withdraw(Long bankingCardId, BankingCardWithdrawRequest request) {
         BankingCard bankingCard = bankingCardRepository.findById(bankingCardId).orElseThrow(
                 () -> new BankingCardNotFoundException(bankingCardId)
         );
 
-        return this.withdrawal(bankingCard, request.cardPIN(), request.amount());
+        return this.executeOperation(
+                bankingCard,
+                request.cardPIN(),
+                request.amount(),
+                "ATM Withdrawal.",
+                BankingTransactionType.WITHDRAWAL
+        );
     }
 
-    // withdraws money
-    public BankingTransaction withdrawal(
+    /**
+     * Handle the core logic of charging an amount to a card.
+     * It performs all necessary validations and creates the transaction.
+     * <p>
+     * It's private to ensure that all card operations go through the public methods.
+     *
+     * @param card
+     * @param cardPin
+     * @param amount
+     * @param description
+     * @param transactionType
+     * @return the created transaction
+     */
+    private BankingTransaction executeOperation(
             BankingCard card,
             String cardPin,
-            BigDecimal amount
+            BigDecimal amount,
+            String description,
+            BankingTransactionType transactionType
     ) {
-        // TODO refactor to use spend method. passing transaction type
-        //        return this.spend(card, cardPin, amount, "ATM Withdrawal.");
         final Customer customerLogged = AuthHelper.getCurrentCustomer();
 
         // run validations and throw if any throw exception
@@ -101,20 +104,14 @@ public class BankingCardOperationService {
                         .assertCorrectPin(cardPin)
                         .assertSufficientFunds(amount);
 
-        // if the transaction is created, deduce the amount from balance
-        card.chargeAmount(amount);
-
-        BankingTransaction transaction = bankingTransactionCardService.createTransaction(
+        // store here the transaction as PENDING
+        return bankingTransactionCardService.generateTransaction(
                 card,
-                BankingTransactionType.WITHDRAWAL,
+                transactionType,
                 amount,
-                "ATM withdrawal."
+                description
         );
 
-        // transaction is completed
-        transaction.setStatus(BankingTransactionStatus.COMPLETED);
-
-        // save the transaction
-        return bankingTransactionAccountService.persistTransaction(transaction);
+        // TODO notify pending operation to frontend
     }
 }
