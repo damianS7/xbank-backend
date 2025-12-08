@@ -2,15 +2,15 @@ package com.damian.xBank.modules.banking.card.application.service;
 
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardSpendRequest;
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardWithdrawRequest;
-import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoundException;
 import com.damian.xBank.modules.banking.card.application.guard.BankingCardGuard;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoundException;
 import com.damian.xBank.modules.banking.card.infra.repository.BankingCardRepository;
-import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
-import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
-import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionAccountService;
 import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionCardService;
+import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
+import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
+import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.utils.AuthHelper;
 import org.springframework.stereotype.Service;
@@ -42,6 +42,40 @@ public class BankingCardOperationService {
         return this.spend(bankingCard, request.cardPIN(), request.amount(), request.description());
     }
 
+    // validates card status and does the transaction
+    public BankingTransaction spend(
+            BankingCard card,
+            String cardPIN,
+            BigDecimal amount,
+            String description
+    ) {
+        final Customer customerLogged = AuthHelper.getCurrentCustomer();
+
+        // run validations and throw if any throw exception
+        BankingCardGuard
+                .forCard(card)
+                .assertCanSpend(customerLogged, cardPIN, amount);
+
+        // if the transaction is created, deduce the amount from balance
+        // amount is deducted only after transaction is stored on db
+        card.chargeAmount(amount);
+
+        // store here the transaction as PENDING
+        BankingTransaction transaction = bankingTransactionCardService.generateTransaction(
+                card,
+                BankingTransactionType.CARD_CHARGE,
+                amount,
+                description
+        );
+
+
+        // After amount is deducted, mark the transaction as completed
+        transaction.setStatus(BankingTransactionStatus.COMPLETED);
+
+        // save the transaction
+        return bankingTransactionAccountService.persistTransaction(transaction);
+    }
+
     public BankingTransaction withdraw(Long bankingCardId, BankingCardWithdrawRequest request) {
         BankingCard bankingCard = bankingCardRepository.findById(bankingCardId).orElseThrow(
                 () -> new BankingCardNotFoundException(bankingCardId)
@@ -62,10 +96,13 @@ public class BankingCardOperationService {
 
         // run validations and throw if any throw exception
         BankingCardGuard.forCard(card)
-                        .ownership(customerLogged)
-                        .active()
-                        .PIN(cardPin)
-                        .sufficientFunds(amount);
+                        .assertOwnership(customerLogged)
+                        .assertUsable()
+                        .assertCorrectPin(cardPin)
+                        .assertSufficientFunds(amount);
+
+        // if the transaction is created, deduce the amount from balance
+        card.chargeAmount(amount);
 
         BankingTransaction transaction = bankingTransactionCardService.createTransaction(
                 card,
@@ -74,43 +111,7 @@ public class BankingCardOperationService {
                 "ATM withdrawal."
         );
 
-        // if the transaction is created, deduce the amount from balance
-        card.chargeAmount(amount);
-
         // transaction is completed
-        transaction.setStatus(BankingTransactionStatus.COMPLETED);
-
-        // save the transaction
-        return bankingTransactionAccountService.persistTransaction(transaction);
-    }
-
-    // validates card status and does the transaction
-    public BankingTransaction spend(
-            BankingCard card,
-            String cardPIN,
-            BigDecimal amount,
-            String description
-    ) {
-        final Customer customerLogged = AuthHelper.getCurrentCustomer();
-
-        // run validations and throw if any throw exception
-        BankingCardGuard
-                .forCard(card)
-                .canSpend(customerLogged, cardPIN, amount);
-
-        // store here the transaction as PENDING
-        BankingTransaction transaction = bankingTransactionCardService.generateTransaction(
-                card,
-                BankingTransactionType.CARD_CHARGE,
-                amount,
-                description
-        );
-
-        // if the transaction is created, deduce the amount from balance
-        // amount is deducted only after transaction is stored on db
-        card.chargeAmount(amount);
-
-        // After amount is deducted, mark the transaction as completed
         transaction.setStatus(BankingTransactionStatus.COMPLETED);
 
         // save the transaction
