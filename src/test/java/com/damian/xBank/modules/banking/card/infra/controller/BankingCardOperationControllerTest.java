@@ -8,6 +8,7 @@ import com.damian.xBank.modules.banking.card.application.dto.request.BankingCard
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardWithdrawRequest;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.transaction.application.dto.response.BankingTransactionDto;
+import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
@@ -102,7 +103,10 @@ public class BankingCardOperationControllerTest extends AbstractIntegrationTest 
         // then
         assertThat(transactionResponseDto).isNotNull();
         assertThat(transactionResponseDto.amount()).isEqualTo(request.amount());
-        assertThat(transactionResponseDto.lastBalance())
+        assertThat(transactionResponseDto.transactionStatus()).isEqualTo(BankingTransactionStatus.PENDING);
+        assertThat(transactionResponseDto.balance_before())
+                .isEqualByComparingTo(customerBankingAccount.getBalance());
+        assertThat(transactionResponseDto.balance_after())
                 .isEqualByComparingTo(customerBankingAccount.getBalance().subtract(request.amount()));
     }
 
@@ -135,7 +139,10 @@ public class BankingCardOperationControllerTest extends AbstractIntegrationTest 
         // then
         assertThat(transactionResponseDto).isNotNull();
         assertThat(transactionResponseDto.amount()).isEqualTo(request.amount());
-        assertThat(transactionResponseDto.lastBalance())
+        assertThat(transactionResponseDto.transactionStatus()).isEqualTo(BankingTransactionStatus.PENDING);
+        assertThat(transactionResponseDto.balance_before())
+                .isEqualByComparingTo(customerBankingAccount.getBalance());
+        assertThat(transactionResponseDto.balance_after())
                 .isEqualByComparingTo(customerBankingAccount.getBalance().subtract(request.amount()));
     }
 }

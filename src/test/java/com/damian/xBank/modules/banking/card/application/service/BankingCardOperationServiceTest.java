@@ -104,10 +104,6 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
                 any(String.class)
         )).thenReturn(givenBankingTransaction);
 
-        when(bankingTransactionAccountService.persistTransaction(
-                any(BankingTransaction.class)
-        )).thenReturn(givenBankingTransaction);
-
         // then
         BankingTransaction transaction = bankingCardOperationService.spend(
                 customerBankingCard.getId(),
@@ -118,7 +114,7 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
         assertThat(transaction).isNotNull();
         assertThat(transaction.getType()).isEqualTo(givenBankingTransaction.getType());
         assertThat(transaction.getDescription()).isEqualTo(givenBankingTransaction.getDescription());
-        assertThat(transaction.getStatus()).isEqualTo(BankingTransactionStatus.COMPLETED);
+        assertThat(transaction.getStatus()).isEqualTo(BankingTransactionStatus.PENDING);
         assertThat(customerBankingAccount.getBalance()).isEqualTo(BigDecimal.ZERO);
     }
 
@@ -309,15 +305,11 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
         givenBankingTransaction.setDescription("WITHDRAWAL");
 
         when(bankingCardRepository.findById(anyLong())).thenReturn(Optional.of(customerBankingCard));
-        when(bankingTransactionCardService.createTransaction(
+        when(bankingTransactionCardService.generateTransaction(
                 any(BankingCard.class),
                 any(BankingTransactionType.class),
                 any(BigDecimal.class),
                 any(String.class)
-        )).thenReturn(givenBankingTransaction);
-
-        when(bankingTransactionAccountService.persistTransaction(
-                any(BankingTransaction.class)
         )).thenReturn(givenBankingTransaction);
 
         // then
@@ -330,7 +322,7 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
         assertThat(transaction).isNotNull();
         assertThat(transaction.getType()).isEqualTo(givenBankingTransaction.getType());
         assertThat(transaction.getDescription()).isEqualTo(givenBankingTransaction.getDescription());
-        assertThat(transaction.getStatus()).isEqualTo(BankingTransactionStatus.COMPLETED);
+        assertThat(transaction.getStatus()).isEqualTo(BankingTransactionStatus.PENDING);
         assertThat(customerBankingAccount.getBalance()).isEqualTo(BigDecimal.ZERO);
     }
 
