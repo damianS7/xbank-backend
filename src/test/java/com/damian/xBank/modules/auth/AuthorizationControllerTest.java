@@ -2,9 +2,9 @@ package com.damian.xBank.modules.auth;
 
 import com.damian.xBank.modules.user.account.account.application.dto.request.UserAccountUpdateRequest;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
-import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
-import com.damian.xBank.shared.AbstractIntegrationTest;
+import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
+import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.utils.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class AuthorizationIntegrationTest extends AbstractIntegrationTest {
+public class AuthorizationControllerTest extends AbstractControllerTest {
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -159,4 +159,6 @@ public class AuthorizationIntegrationTest extends AbstractIntegrationTest {
                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.UNAUTHORIZED.value()))
                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
     }
+
+    // TODO shouldNotHaveAccessToAdminEndpint
 }

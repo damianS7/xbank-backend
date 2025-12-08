@@ -2,10 +2,10 @@ package com.damian.xBank.modules.auth;
 
 import com.damian.xBank.modules.auth.application.dto.AuthenticationRequest;
 import com.damian.xBank.modules.auth.application.dto.AuthenticationResponse;
+import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
-import com.damian.xBank.shared.AbstractIntegrationTest;
+import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.utils.ApiResponse;
 import com.damian.xBank.shared.utils.JsonHelper;
@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class AuthenticationIntegrationTest extends AbstractIntegrationTest {
+public class AuthenticationControllerTest extends AbstractControllerTest {
     private UserAccount userAccount;
 
     @BeforeEach

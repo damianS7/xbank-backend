@@ -1,10 +1,10 @@
 package com.damian.xBank.shared.infrastructure.mail;
 
-import com.damian.xBank.shared.AbstractIntegrationTest;
+import com.damian.xBank.shared.AbstractControllerTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class EmailSenderIntegrationTest extends AbstractIntegrationTest {
+class EmailSenderControllerTest extends AbstractControllerTest {
 
     @Autowired
     private EmailSenderService emailSenderService;
