@@ -92,7 +92,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
                 .create()
                 .setAssociatedBankingAccount(fromCustomerAccount)
                 .setTransactionType(BankingTransactionType.TRANSFER_TO)
-                .setLastBalance(BigDecimal.ZERO)
+                .setBalanceBefore(BigDecimal.ZERO)
                 .setAmount(transferRequest.amount())
                 .setDescription(transferRequest.description());
 
@@ -127,13 +127,13 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
                 .isNotNull()
                 .extracting(
                         BankingTransaction::getId,
-                        BankingTransaction::getLastBalance,
+                        BankingTransaction::getBalanceBefore,
                         BankingTransaction::getAmount,
                         BankingTransaction::getStatus
                 )
                 .containsExactly(
                         transaction.getId(),
-                        transaction.getLastBalance(),
+                        transaction.getBalanceBefore(),
                         transaction.getAmount(),
                         transaction.getStatus()
                 );
