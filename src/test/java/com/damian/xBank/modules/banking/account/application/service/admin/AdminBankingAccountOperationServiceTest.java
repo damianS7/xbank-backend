@@ -92,7 +92,7 @@ public class AdminBankingAccountOperationServiceTest extends AbstractServiceTest
 
         // then
         assertThat(transaction).isNotNull();
-        assertThat(transaction.getTransactionType()).isEqualTo(BankingTransactionType.DEPOSIT);
+        assertThat(transaction.getType()).isEqualTo(BankingTransactionType.DEPOSIT);
         assertThat(transaction.getStatus()).isEqualTo(BankingTransactionStatus.COMPLETED);
         assertThat(customerBankingAccount.getBalance()).isEqualTo(depositAmount);
     }

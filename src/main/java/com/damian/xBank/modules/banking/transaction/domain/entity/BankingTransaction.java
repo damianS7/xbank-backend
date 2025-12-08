@@ -96,7 +96,7 @@ public class BankingTransaction {
         return this;
     }
 
-    public BankingTransactionType getTransactionType() {
+    public BankingTransactionType getType() {
         return transactionType;
     }
 

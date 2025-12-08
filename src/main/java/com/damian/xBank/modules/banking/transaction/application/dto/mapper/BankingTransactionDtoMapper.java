@@ -20,7 +20,7 @@ public class BankingTransactionDtoMapper {
                 //                accountTransaction.getAssociatedBankingAccount().getBalance(),
                 accountTransaction.getAssociatedBankingAccount().getAccountCurrency(),
                 accountTransaction.getLastBalance(),
-                accountTransaction.getTransactionType(),
+                accountTransaction.getType(),
                 accountTransaction.getStatus(),
                 accountTransaction.getDescription(),
                 accountTransaction.getCreatedAt(),
