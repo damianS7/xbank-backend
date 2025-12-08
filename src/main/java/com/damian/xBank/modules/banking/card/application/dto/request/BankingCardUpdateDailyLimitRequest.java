@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Positive;
 
 import java.math.BigDecimal;
 
-public record BankingCardSetDailyLimitRequest(
+public record BankingCardUpdateDailyLimitRequest(
         @NotNull(
                 message = "Daily limit must not be null"
         )

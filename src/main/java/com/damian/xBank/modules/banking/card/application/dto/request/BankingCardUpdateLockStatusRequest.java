@@ -1,15 +1,14 @@
 package com.damian.xBank.modules.banking.card.application.dto.request;
 
+import com.damian.xBank.modules.banking.card.domain.enums.BankingCardLockStatus;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 
-public record BankingCardSetPinRequest(
+public record BankingCardUpdateLockStatusRequest(
+
         @NotNull(
-                message = "PIN must not be null"
+                message = "Lock status must not be null"
         )
-        @Pattern(regexp = "\\d{4}", message = "PIN must be exactly 4 digits")
-        String pin,
-
+        BankingCardLockStatus lockStatus,
         @NotNull(
                 message = "Password must not be null"
         )
