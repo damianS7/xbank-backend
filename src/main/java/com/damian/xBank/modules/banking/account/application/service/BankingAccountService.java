@@ -6,8 +6,8 @@ import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurre
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
-import com.damian.xBank.modules.user.customer.domain.exception.CustomerNotFoundException;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.customer.domain.exception.CustomerNotFoundException;
 import com.damian.xBank.modules.user.customer.infra.repository.CustomerRepository;
 import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.utils.AuthHelper;
