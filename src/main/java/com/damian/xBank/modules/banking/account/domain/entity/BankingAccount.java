@@ -3,6 +3,7 @@ package com.damian.xBank.modules.banking.account.domain.entity;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountType;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountInsufficientFundsException;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
@@ -24,11 +25,9 @@ public class BankingAccount {
     @JoinColumn(name = "customer_id", referencedColumnName = "id", nullable = false)
     private Customer customer;
 
-    // FIXME switch to LAZY?
     @OneToMany(mappedBy = "bankingAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<BankingTransaction> accountTransactions;
 
-    // FIXME switch to LAZY?
     @OneToMany(mappedBy = "bankingAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<BankingCard> bankingCards;
 
@@ -211,17 +210,18 @@ public class BankingAccount {
     }
 
     // returns true if the operation can be carried
-    public boolean hasEnoughFunds(BigDecimal amount) {
+    public boolean hasSufficientFunds(BigDecimal amount) {
         // if its 0 then balance is equal to the amount willing to spend
         // if its 1 then balance is greater than the amount willing to spend
         return this.getBalance().compareTo(amount) >= 0;
     }
 
-    public BigDecimal subtractBalance(BigDecimal amount) {
-        if (this.hasEnoughFunds(amount)) {
-            this.setBalance(this.getBalance().subtract(amount));
+    public void subtractBalance(BigDecimal amount) {
+        if (!this.hasSufficientFunds(amount)) {
+            throw new BankingAccountInsufficientFundsException(this.getId());
         }
-        return this.getBalance();
+
+        this.setBalance(this.getBalance().subtract(amount));
     }
 
     public BigDecimal addBalance(BigDecimal amount) {
