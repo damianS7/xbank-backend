@@ -28,7 +28,10 @@ public class BankingTransaction {
     private BigDecimal amount;
 
     @Column(precision = 15, scale = 2)
-    private BigDecimal lastBalance;
+    private BigDecimal balanceBefore;
+
+    @Column(precision = 15, scale = 2)
+    private BigDecimal balanceAfter;
 
     @Column
     private String description;
@@ -151,12 +154,21 @@ public class BankingTransaction {
         return this;
     }
 
-    public BigDecimal getLastBalance() {
-        return lastBalance;
+    public BigDecimal getBalanceBefore() {
+        return balanceBefore;
     }
 
-    public BankingTransaction setLastBalance(BigDecimal lastBalance) {
-        this.lastBalance = lastBalance;
+    public BankingTransaction setBalanceBefore(BigDecimal balanceBefore) {
+        this.balanceBefore = balanceBefore;
+        return this;
+    }
+
+    public BigDecimal getBalanceAfter() {
+        return balanceAfter;
+    }
+
+    public BankingTransaction setBalanceAfter(BigDecimal balanceAfter) {
+        this.balanceAfter = balanceAfter;
         return this;
     }
 }
