@@ -106,7 +106,7 @@ public class BankingAccountOperationService {
 
         BankingAccountOperationGuard
                 .forAccount(fromBankingAccount)
-                .assertCanTransfer(toBankingAccount, amount);
+                .assertCanTransfer(toBankingAccount);
 
         return this.transferTo(fromBankingAccount, toBankingAccount, amount, description);
     }

@@ -1,10 +1,12 @@
 package com.damian.xBank.modules.banking.account.application.guard;
 
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
-import com.damian.xBank.modules.banking.account.domain.exception.*;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountDepositException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountTransferCurrencyMismatchException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountTransferException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountTransferSameAccountException;
 import com.damian.xBank.shared.exception.Exceptions;
 
-import java.math.BigDecimal;
 import java.util.Objects;
 
 public class BankingAccountOperationGuard {
@@ -39,26 +41,6 @@ public class BankingAccountOperationGuard {
     }
 
     /**
-     * Validate if the {@link #account} has sufficient funds.
-     *
-     * @param amount the amount to check
-     * @return the current validator instance for chaining
-     * @throws BankingAccountInsufficientFundsException if the account does not belong to the customer
-     */
-    public BankingAccountOperationGuard assertSufficientFunds(BigDecimal amount) {
-
-        // check if account has enough funds
-        if (!account.hasEnoughFunds(amount)) {
-            throw new BankingAccountInsufficientFundsException(
-                    Exceptions.BANKING.ACCOUNT.INSUFFICIENT_FUNDS,
-                    account.getId()
-            );
-        }
-
-        return this;
-    }
-
-    /**
      * Validate that {@link #account} and {@code toBankingAccount} are not the same
      *
      * @param toBankingAccount the destination account to check
@@ -85,17 +67,13 @@ public class BankingAccountOperationGuard {
      * @throws BankingAccountTransferException if the account does not belong to the customer
      */
     public BankingAccountOperationGuard assertCanTransfer(
-            BankingAccount toBankingAccount,
-            BigDecimal amount
+            BankingAccount toBankingAccount
     ) {
         // check "account' and toBankingAccount are not the same
         this.assertDifferentAccounts(toBankingAccount);
 
         // check currency are the same on both accounts
         this.assertCurrenciesMatch(toBankingAccount);
-
-        // check the funds from the sender account
-        this.assertSufficientFunds(amount);
 
         // check the account status and see if can be used to operate
         BankingAccountGuard.forAccount(account)
@@ -116,21 +94,8 @@ public class BankingAccountOperationGuard {
     public BankingAccountOperationGuard assertCanDeposit() {
 
         // check the account status and see if can be used to operate
-        try {
-            BankingAccountGuard.forAccount(account)
-                               .assertActive();
-
-        } catch (BankingAccountSuspendedException e) {
-            throw new BankingAccountDepositException(
-                    Exceptions.BANKING.ACCOUNT.SUSPENDED,
-                    account.getId()
-            );
-        } catch (BankingAccountClosedException e) {
-            throw new BankingAccountDepositException(
-                    Exceptions.BANKING.ACCOUNT.CLOSED,
-                    account.getId()
-            );
-        }
+        BankingAccountGuard.forAccount(account)
+                           .assertActive();
 
         return this;
     }
