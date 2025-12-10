@@ -28,12 +28,13 @@ public class SettingService {
     // get all the settings for the current user
     public Setting getSettings() {
         User currentUser = AuthHelper.getCurrentUser();
-        return settingRepository.findByUser_Id(currentUser.getId())
-                                .orElseThrow(
-                                        () -> new SettingNotFoundException(
-                                                Exceptions.CUSTOMER.SETTINGS.NOT_FOUND
-                                        )
-                                );
+        return settingRepository
+                .findByUser_Id(currentUser.getId())
+                .orElseThrow(
+                        () -> new SettingNotFoundException(
+                                Exceptions.CUSTOMER.SETTINGS.NOT_FOUND
+                        )
+                );
     }
 
     // Update settings for the current user
