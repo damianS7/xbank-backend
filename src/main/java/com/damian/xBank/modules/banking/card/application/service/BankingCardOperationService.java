@@ -6,15 +6,21 @@ import com.damian.xBank.modules.banking.card.application.guard.BankingCardGuard;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoundException;
 import com.damian.xBank.modules.banking.card.infra.repository.BankingCardRepository;
+import com.damian.xBank.modules.banking.transaction.application.dto.mapper.BankingTransactionDtoMapper;
 import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionAccountService;
 import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionCardService;
 import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
+import com.damian.xBank.modules.notification.application.service.NotificationService;
+import com.damian.xBank.modules.notification.domain.enums.NotificationType;
+import com.damian.xBank.modules.notification.domain.event.NotificationEvent;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.utils.AuthHelper;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.Map;
 
 @Service
 public class BankingCardOperationService {
@@ -22,15 +28,18 @@ public class BankingCardOperationService {
     private final BankingTransactionAccountService bankingTransactionAccountService;
     private final BankingTransactionCardService bankingTransactionCardService;
     private final BankingCardRepository bankingCardRepository;
+    private final NotificationService notificationService;
 
     public BankingCardOperationService(
             BankingTransactionAccountService bankingTransactionAccountService,
             BankingTransactionCardService bankingTransactionCardService,
-            BankingCardRepository bankingCardRepository
+            BankingCardRepository bankingCardRepository,
+            NotificationService notificationService
     ) {
         this.bankingTransactionAccountService = bankingTransactionAccountService;
         this.bankingTransactionCardService = bankingTransactionCardService;
         this.bankingCardRepository = bankingCardRepository;
+        this.notificationService = notificationService;
     }
 
     /**
@@ -105,13 +114,25 @@ public class BankingCardOperationService {
                         .assertSufficientFunds(amount);
 
         // store here the transaction as PENDING
-        return bankingTransactionCardService.generateTransaction(
+        BankingTransaction transaction = bankingTransactionCardService.generateTransaction(
                 card,
                 transactionType,
                 amount,
                 description
         );
 
-        // TODO notify pending operation to frontend
+        // Notify the user
+        notificationService.publish(
+                new NotificationEvent(
+                        customerLogged.getId(),
+                        NotificationType.TRANSACTION,
+                        Map.of(
+                                "transaction", BankingTransactionDtoMapper.toBankingTransactionDto(transaction)
+                        ),
+                        Instant.now().toString()
+                )
+        );
+
+        return transaction;
     }
 }
