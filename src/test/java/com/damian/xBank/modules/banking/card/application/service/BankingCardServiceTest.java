@@ -113,7 +113,7 @@ public class BankingCardServiceTest extends AbstractServiceTest {
         assertThat(createdCard)
                 .isNotNull()
                 .extracting(
-                        BankingCard::getAssociatedBankingAccount,
+                        BankingCard::getBankingAccount,
                         BankingCard::getCardType
                 )
                 .containsExactly(
