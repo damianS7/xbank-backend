@@ -3,6 +3,7 @@ package com.damian.xBank.modules.banking.transaction.infra.exception;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionAuthorizationException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotFoundException;
+import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionOwnershipException;
 import com.damian.xBank.shared.utils.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,17 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class BankingTransactionExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(BankingTransactionExceptionHandler.class);
+
+    @ExceptionHandler(BankingTransactionOwnershipException.class)
+    public ResponseEntity<ApiResponse<String>> handleOwnershipException(BankingTransactionOwnershipException ex) {
+        log.warn(
+                "Unauthorized access to Transaction {} from customer: {}",
+                ex.getId(),
+                ex.getCustomerId()
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                             .body(ApiResponse.error(ex.getMessage(), HttpStatus.FORBIDDEN));
+    }
 
     @ExceptionHandler(BankingTransactionNotFoundException.class)
     public ResponseEntity<?> handleNotFound(BankingTransactionNotFoundException e) {
