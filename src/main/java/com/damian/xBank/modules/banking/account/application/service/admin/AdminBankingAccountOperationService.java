@@ -78,10 +78,10 @@ public class AdminBankingAccountOperationService {
         transaction.setStatus(BankingTransactionStatus.COMPLETED);
 
         // save the transaction
-        bankingTransactionAccountService.persistTransaction(transaction);
+        bankingTransactionAccountService.recordTransaction(transaction);
 
         // Notify receiver
-        notificationService.publishNotification(
+        notificationService.publish(
                 new NotificationEvent(
                         bankingAccount.getOwner().getId(),
                         NotificationType.TRANSACTION,

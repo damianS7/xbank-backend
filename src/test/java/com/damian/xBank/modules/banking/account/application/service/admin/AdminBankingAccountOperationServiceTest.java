@@ -78,11 +78,11 @@ public class AdminBankingAccountOperationServiceTest extends AbstractServiceTest
                 any(String.class)
         )).thenReturn(transaction);
 
-        when(bankingTransactionAccountService.persistTransaction(
+        when(bankingTransactionAccountService.recordTransaction(
                 any(BankingTransaction.class)
         )).thenReturn(transaction);
 
-        doNothing().when(notificationService).publishNotification(any(NotificationEvent.class));
+        doNothing().when(notificationService).publish(any(NotificationEvent.class));
 
         // then
         transaction = adminBankingAccountOperationService.deposit(
