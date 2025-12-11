@@ -90,7 +90,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
 
         BankingTransaction transaction = BankingTransaction
                 .create()
-                .setAssociatedBankingAccount(fromCustomerAccount)
+                .setBankingAccount(fromCustomerAccount)
                 .setTransactionType(BankingTransactionType.TRANSFER_TO)
                 .setBalanceBefore(BigDecimal.ZERO)
                 .setAmount(transferRequest.amount())
@@ -103,18 +103,18 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
         when(bankingAccountRepository.findByAccountNumber(toCustomerAccount.getAccountNumber()))
                 .thenReturn(Optional.of(toCustomerAccount));
 
-        when(bankingTransactionAccountService.createTransaction(
+        when(bankingTransactionAccountService.buildTransaction(
                 any(BankingAccount.class),
                 any(BankingTransactionType.class),
                 any(BigDecimal.class),
                 any(String.class)
         )).thenReturn(transaction);
 
-        when(bankingTransactionAccountService.persistTransaction(
+        when(bankingTransactionAccountService.recordTransaction(
                 any(BankingTransaction.class)
         )).thenReturn(transaction);
 
-        doNothing().when(notificationService).publishNotification(any(NotificationEvent.class));
+        doNothing().when(notificationService).publish(any(NotificationEvent.class));
 
         // then
         transaction = bankingAccountOperationService.transfer(
