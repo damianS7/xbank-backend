@@ -97,6 +97,10 @@ public class Customer {
         return this.account.getRole();
     }
 
+    public boolean hasRole(UserAccountRole role) {
+        return this.account.getRole() == role;
+    }
+
     public Long getId() {
         return id;
     }
