@@ -2,9 +2,9 @@ package com.damian.xBank.modules.banking.transaction.infra.controller;
 
 import com.damian.xBank.modules.banking.transaction.application.dto.mapper.BankingTransactionDtoMapper;
 import com.damian.xBank.modules.banking.transaction.application.dto.response.BankingTransactionDto;
-import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionAccountService;
 import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionCardService;
+import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,11 +36,11 @@ public class BankingTransactionController {
 
     // endpoint for logged customer to get a single BankingTransaction by id
     @GetMapping("/banking/transactions/{id}")
-    public ResponseEntity<?> getBankingTransaction(
+    public ResponseEntity<?> getTransaction(
             @PathVariable @NotNull @Positive
             Long id
     ) {
-        BankingTransaction transaction = bankingTransactionAccountService.getBankingTransaction(id);
+        BankingTransaction transaction = bankingTransactionAccountService.getTransaction(id);
         BankingTransactionDto transactionDto = BankingTransactionDtoMapper
                 .toBankingTransactionDto(transaction);
 
@@ -51,7 +51,7 @@ public class BankingTransactionController {
 
     // endpoint for logged customer to get all transactions of a BankingCard
     @GetMapping("/banking/cards/{id}/transactions")
-    public ResponseEntity<?> getBankingCardTransactions(
+    public ResponseEntity<?> getCardTransactions(
             @PathVariable @NotNull @Positive
             Long id,
             @PageableDefault(size = 2, sort = "createdAt", direction = Sort.Direction.DESC)
@@ -69,7 +69,7 @@ public class BankingTransactionController {
 
     // endpoint for logged customer to get all transactions of a BankingAccount
     @GetMapping("/banking/accounts/{id}/transactions")
-    public ResponseEntity<?> getBankingAccountTransactions(
+    public ResponseEntity<?> getAccountTransactions(
             @PathVariable @NotNull @Positive
             Long id,
             @PageableDefault(size = 2, sort = "createdAt", direction = Sort.Direction.DESC)
