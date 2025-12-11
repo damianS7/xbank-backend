@@ -1,11 +1,11 @@
 package com.damian.xBank.modules.notification.application.service;
 
+import com.damian.xBank.modules.notification.domain.entity.Notification;
 import com.damian.xBank.modules.notification.domain.event.NotificationEvent;
 import com.damian.xBank.modules.notification.domain.exception.NotificationNotFoundException;
-import com.damian.xBank.modules.notification.domain.entity.Notification;
 import com.damian.xBank.modules.notification.infra.repository.NotificationRepository;
-import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountNotFoundException;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
+import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountNotFoundException;
 import com.damian.xBank.modules.user.account.account.infra.repository.UserAccountRepository;
 import com.damian.xBank.shared.domain.User;
 import com.damian.xBank.shared.exception.Exceptions;
@@ -120,7 +120,7 @@ public class NotificationService {
      *
      * @param notificationEvent the notification event
      */
-    public void publishNotification(NotificationEvent notificationEvent) {
+    public void publish(NotificationEvent notificationEvent) {
         // find recipient user who will receive the notification
         UserAccount recipient = userAccountRepository
                 .findById(notificationEvent.recipientId())

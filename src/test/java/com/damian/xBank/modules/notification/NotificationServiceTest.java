@@ -1,12 +1,12 @@
 package com.damian.xBank.modules.notification;
 
+import com.damian.xBank.modules.notification.application.service.NotificationService;
+import com.damian.xBank.modules.notification.domain.entity.Notification;
 import com.damian.xBank.modules.notification.domain.enums.NotificationType;
 import com.damian.xBank.modules.notification.domain.event.NotificationEvent;
-import com.damian.xBank.modules.notification.domain.entity.Notification;
 import com.damian.xBank.modules.notification.infra.repository.NotificationRepository;
-import com.damian.xBank.modules.notification.application.service.NotificationService;
-import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountNotFoundException;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
+import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountNotFoundException;
 import com.damian.xBank.modules.user.account.account.infra.repository.UserAccountRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.Exceptions;
@@ -144,7 +144,7 @@ public class NotificationServiceTest extends AbstractServiceTest {
         when(userAccountRepository.findById(recipient.getId())).thenReturn(Optional.of(recipient));
         when(notificationRepository.save(any()))
                 .thenAnswer(i -> i.getArguments()[0]);
-        notificationService.publishNotification(event);
+        notificationService.publish(event);
 
         // then
         verify(notificationRepository).save(any());
@@ -205,7 +205,7 @@ public class NotificationServiceTest extends AbstractServiceTest {
         when(userAccountRepository.findById(anyLong())).thenReturn(Optional.empty());
         UserAccountNotFoundException exception = assertThrows(
                 UserAccountNotFoundException.class,
-                () -> notificationService.publishNotification(event)
+                () -> notificationService.publish(event)
         );
 
         assertEquals(Exceptions.USER.ACCOUNT.NOT_FOUND, exception.getMessage());
