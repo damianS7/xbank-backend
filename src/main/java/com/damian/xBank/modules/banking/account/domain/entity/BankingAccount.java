@@ -167,9 +167,9 @@ public class BankingAccount {
         return this;
     }
 
-    public BankingAccount addAccountTransaction(BankingTransaction transaction) {
-        if (transaction.getAssociatedBankingAccount() != this) {
-            transaction.setAssociatedBankingAccount(this);
+    public BankingAccount addTransaction(BankingTransaction transaction) {
+        if (transaction.getBankingAccount() != this) {
+            transaction.setBankingAccount(this);
         }
 
         this.accountTransactions.add(transaction);
