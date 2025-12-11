@@ -1,11 +1,12 @@
-package com.damian.xBank.modules.banking.transaction;
+package com.damian.xBank.modules.banking.transaction.infra.controller;
 
 //import com.damian.xBank.modules.auth.http.AuthenticationRequest;
 //import com.damian.xBank.modules.auth.http.AuthenticationResponse;
 //import com.damian.xBank.modules.banking.account.*;
-//import com.damian.xBank.modules.banking.card.BankingCard;
-//import com.damian.xBank.modules.banking.card.BankingCardStatus;
-//import com.damian.xBank.modules.banking.card.BankingCardType;
+//import com.damian.xBank.modules.banking.transactions.BankingTransaction;
+//import com.damian.xBank.modules.banking.transactions.BankingTransactionDTO;
+//import com.damian.xBank.modules.banking.transactions.BankingTransactionType;
+//import com.damian.xBank.modules.banking.transactions.http.BankingAccountTransactionRequest;
 //import com.damian.xBank.modules.customer.CustomerRole;
 //import com.damian.xBank.modules.user.customer.repository.CustomerRepository;
 //import com.damian.xBank.shared.domain.Customer;
@@ -26,50 +27,17 @@ package com.damian.xBank.modules.banking.transaction;
 //import java.math.BigDecimal;
 //import java.time.LocalDate;
 //
-//import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+//import static org.assertj.core.api.Assertions.assertThat;
+//import static org.junit.jupiter.api.Assertions.assertEquals;
 //import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 //import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-//import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 //import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 //@ActiveProfiles("test")
 //@SpringBootTest
 //@AutoConfigureMockMvc
-public class BankingTransactionIntegrationTest {
-    //    @Test
-    //    @DisplayName("Should fetch transactions (pageable) for banking card")
-    //    void shouldFetchBankingCardTransactions() throws Exception {
-    //        // given
-    //        loginWithCustomer(customerA);
-    //
-    //        BankingAccount bankingAccount = new BankingAccount(customerA);
-    //        bankingAccount.setAccountNumber("ES1234567890123456789012");
-    //        bankingAccount.setAccountType(BankingAccountType.SAVINGS);
-    //        bankingAccount.setAccountCurrency(BankingAccountCurrency.EUR);
-    //        bankingAccount.setAccountStatus(BankingAccountStatus.ACTIVE);
-    //        bankingAccount.setBalance(BigDecimal.valueOf(1000));
-    //
-    //        BankingCard bankingCard = new BankingCard();
-    //        bankingCard.setCardType(BankingCardType.CREDIT);
-    //        bankingCard.setCardNumber("1234567890123456");
-    //        bankingCard.setCardStatus(BankingCardStatus.ENABLED);
-    //        bankingCard.setAssociatedBankingAccount(bankingAccount);
-    //
-    //        bankingAccount.addBankingCard(bankingCard);
-    //        bankingAccountRepository.save(bankingAccount);
-    //
-    //        // when
-    //        // then
-    //        mockMvc
-    //                .perform(
-    //                        get("/api/v1/customers/me/banking/cards/{id}/transactions", bankingCard.getId())
-    //                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
-    //                .andDo(print())
-    //                .andExpect(status().is(200))
-    //                .andExpect(jsonPath("$.content").isArray())
-    //                .andExpect(jsonPath("$.content.length()").value(0)) // o el número que esperás
-    //                .andExpect(jsonPath("$.totalPages").value(0));
-    //    }
+public class BankingTransactionAccountControllerTest {
+
     //
     //    @Test
     //    @DisplayName("Should fetch transactions (pageable) for banking account")
