@@ -149,9 +149,7 @@ public class BankingTransactionCardServiceTest extends AbstractServiceTest {
         // then
         BankingTransactionOwnershipException exception = assertThrows(
                 BankingTransactionOwnershipException.class,
-                () -> bankingTransactionCardService.confirmTransaction(
-                        givenTransaction.getId()
-                )
+                () -> bankingTransactionCardService.confirmTransaction(givenTransaction.getId())
         );
 
         // then
