@@ -4,6 +4,7 @@ import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
+import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -72,6 +73,13 @@ public class BankingTransaction {
         return new BankingTransaction();
     }
 
+    public boolean belongsTo(Customer customer) {
+        return getBankingAccount()
+                .getOwner()
+                .getId()
+                .equals(customer.getId());
+    }
+
     public Long getId() {
         return id;
     }
@@ -81,11 +89,11 @@ public class BankingTransaction {
         return this;
     }
 
-    public BankingAccount getAssociatedBankingAccount() {
+    public BankingAccount getBankingAccount() {
         return bankingAccount;
     }
 
-    public BankingTransaction setAssociatedBankingAccount(BankingAccount account) {
+    public BankingTransaction setBankingAccount(BankingAccount account) {
         this.bankingAccount = account;
         return this;
     }
