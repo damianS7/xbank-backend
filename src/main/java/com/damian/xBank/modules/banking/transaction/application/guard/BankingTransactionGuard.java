@@ -1,0 +1,39 @@
+package com.damian.xBank.modules.banking.transaction.application.guard;
+
+import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
+import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionOwnershipException;
+import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.shared.exception.Exceptions;
+
+import java.util.Objects;
+
+public class BankingTransactionGuard {
+    private final BankingTransaction transaction;
+
+    public BankingTransactionGuard(BankingTransaction transaction) {
+        this.transaction = transaction;
+    }
+
+    public static BankingTransactionGuard forTransaction(BankingTransaction transaction) {
+        return new BankingTransactionGuard(transaction);
+    }
+
+    /**
+     * Validate the ownership of the {@link #transaction}.
+     *
+     * @param customer the customer to check ownership against
+     * @return the current validator instance for chaining
+     * @throws BankingTransactionOwnershipException if the account does not belong to the customer
+     */
+    public BankingTransactionGuard assertOwnership(Customer customer) {
+
+        // compare account owner id with given customer id
+        if (!Objects.equals(transaction.getBankingAccount().getOwner().getId(), customer.getId())) {
+            throw new BankingTransactionOwnershipException(
+                    Exceptions.BANKING.TRANSACTION.OWNERSHIP, transaction.getId()
+            );
+        }
+
+        return this;
+    }
+}
