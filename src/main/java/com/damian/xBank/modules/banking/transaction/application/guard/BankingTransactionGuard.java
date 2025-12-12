@@ -5,8 +5,6 @@ import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTran
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.exception.Exceptions;
 
-import java.util.Objects;
-
 public class BankingTransactionGuard {
     private final BankingTransaction transaction;
 
@@ -28,7 +26,7 @@ public class BankingTransactionGuard {
     public BankingTransactionGuard assertOwnership(Customer customer) {
 
         // compare account owner id with given customer id
-        if (!Objects.equals(transaction.getBankingAccount().getOwner().getId(), customer.getId())) {
+        if (!transaction.belongsTo(customer)) {
             throw new BankingTransactionOwnershipException(
                     Exceptions.BANKING.TRANSACTION.OWNERSHIP, transaction.getId(), customer.getId()
             );

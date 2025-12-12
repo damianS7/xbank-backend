@@ -9,6 +9,7 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Objects;
 
 @Entity
 @Table(name = "banking_transactions")
@@ -74,10 +75,7 @@ public class BankingTransaction {
     }
 
     public boolean belongsTo(Customer customer) {
-        return getBankingAccount()
-                .getOwner()
-                .getId()
-                .equals(customer.getId());
+        return Objects.equals(getBankingAccount().getOwner().getId(), customer.getId());
     }
 
     public Long getId() {
