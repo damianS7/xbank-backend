@@ -4,6 +4,7 @@ import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.card.domain.enums.BankingCardLockStatus;
 import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.domain.enums.BankingCardType;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardInsufficientFundsException;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import jakarta.persistence.*;
 
@@ -115,7 +116,7 @@ public class BankingCard {
         return this;
     }
 
-    public BankingAccount getAssociatedBankingAccount() {
+    public BankingAccount getBankingAccount() {
         return bankingAccount;
     }
 
@@ -188,23 +189,27 @@ public class BankingCard {
     }
 
     public BigDecimal getBalance() {
-        return this.getAssociatedBankingAccount().getBalance();
+        return this.getBankingAccount().getBalance();
     }
 
     // returns true if the operation can be carried
     public boolean hasSufficientFunds(BigDecimal amount) {
         // if its 0 then balance is equal to the amount willing to spend
         // if its 1 then balance is greater than the amount willing to spend
-        return this.getAssociatedBankingAccount().hasSufficientFunds(amount);
+        return this.getBankingAccount().hasSufficientFunds(amount);
     }
 
     public BankingCard chargeAmount(BigDecimal amount) {
-        this.getAssociatedBankingAccount().subtractBalance(amount);
+        if (!this.hasSufficientFunds(amount)) {
+            throw new BankingCardInsufficientFundsException(this.getId());
+        }
+
+        this.getBankingAccount().subtractBalance(amount);
         return this;
     }
 
     public String getHolderName() {
-        return this.getAssociatedBankingAccount().getOwner().getFullName();
+        return this.getBankingAccount().getOwner().getFullName();
     }
 
     public boolean isLocked() {
