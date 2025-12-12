@@ -1,7 +1,7 @@
-package com.damian.xBank.modules.setting;
+package com.damian.xBank.modules.setting.application.service;
 
+import com.damian.xBank.modules.setting.UserSettings;
 import com.damian.xBank.modules.setting.application.dto.request.SettingsUpdateRequest;
-import com.damian.xBank.modules.setting.application.service.SettingService;
 import com.damian.xBank.modules.setting.domain.entity.Setting;
 import com.damian.xBank.modules.setting.domain.enums.SettingLanguage;
 import com.damian.xBank.modules.setting.domain.enums.SettingMultifactor;
