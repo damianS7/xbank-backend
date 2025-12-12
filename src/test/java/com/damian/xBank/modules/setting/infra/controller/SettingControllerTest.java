@@ -1,5 +1,6 @@
-package com.damian.xBank.modules.setting;
+package com.damian.xBank.modules.setting.infra.controller;
 
+import com.damian.xBank.modules.setting.UserSettings;
 import com.damian.xBank.modules.setting.application.dto.request.SettingsUpdateRequest;
 import com.damian.xBank.modules.setting.application.dto.response.SettingDto;
 import com.damian.xBank.modules.setting.domain.entity.Setting;

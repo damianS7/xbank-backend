@@ -1,6 +1,5 @@
-package com.damian.xBank.modules.notification;
+package com.damian.xBank.modules.notification.application.service;
 
-import com.damian.xBank.modules.notification.application.service.NotificationService;
 import com.damian.xBank.modules.notification.domain.entity.Notification;
 import com.damian.xBank.modules.notification.domain.enums.NotificationType;
 import com.damian.xBank.modules.notification.domain.event.NotificationEvent;
