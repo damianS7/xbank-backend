@@ -14,12 +14,12 @@ public class BankingTransactionDtoMapper {
     public static BankingTransactionDto toBankingTransactionDto(BankingTransaction accountTransaction) {
         return new BankingTransactionDto(
                 accountTransaction.getId(),
-                accountTransaction.getAssociatedBankingAccount().getId(),
+                accountTransaction.getBankingAccount().getId(),
                 accountTransaction.getBankingCard() != null ? accountTransaction.getBankingCard().getId() : null,
                 accountTransaction.getAmount(),
-                //                accountTransaction.getAssociatedBankingAccount().getBalance(),
-                accountTransaction.getAssociatedBankingAccount().getAccountCurrency(),
-                accountTransaction.getLastBalance(),
+                accountTransaction.getBankingAccount().getAccountCurrency(),
+                accountTransaction.getBalanceBefore(),
+                accountTransaction.getBalanceAfter(),
                 accountTransaction.getType(),
                 accountTransaction.getStatus(),
                 accountTransaction.getDescription(),
