@@ -103,10 +103,10 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
         // then
         assertThat(transactionResponseDto).isNotNull();
         assertThat(transactionResponseDto.amount()).isEqualTo(request.amount());
-        assertThat(transactionResponseDto.transactionStatus()).isEqualTo(BankingTransactionStatus.PENDING);
-        assertThat(transactionResponseDto.balance_before())
+        assertThat(transactionResponseDto.status()).isEqualTo(BankingTransactionStatus.PENDING);
+        assertThat(transactionResponseDto.balanceBefore())
                 .isEqualByComparingTo(customerBankingAccount.getBalance());
-        assertThat(transactionResponseDto.balance_after())
+        assertThat(transactionResponseDto.balanceAfter())
                 .isEqualByComparingTo(customerBankingAccount.getBalance().subtract(request.amount()));
     }
 
@@ -139,10 +139,10 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
         // then
         assertThat(transactionResponseDto).isNotNull();
         assertThat(transactionResponseDto.amount()).isEqualTo(request.amount());
-        assertThat(transactionResponseDto.transactionStatus()).isEqualTo(BankingTransactionStatus.PENDING);
-        assertThat(transactionResponseDto.balance_before())
+        assertThat(transactionResponseDto.status()).isEqualTo(BankingTransactionStatus.PENDING);
+        assertThat(transactionResponseDto.balanceBefore())
                 .isEqualByComparingTo(customerBankingAccount.getBalance());
-        assertThat(transactionResponseDto.balance_after())
+        assertThat(transactionResponseDto.balanceAfter())
                 .isEqualByComparingTo(customerBankingAccount.getBalance().subtract(request.amount()));
     }
 }

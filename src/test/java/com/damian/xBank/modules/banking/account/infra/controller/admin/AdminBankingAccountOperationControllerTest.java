@@ -111,7 +111,7 @@ public class AdminBankingAccountOperationControllerTest extends AbstractControll
                 updatedBankingAccount.getBalance(),
                 bankingAccount.getBalance().add(givenDepositAmount).setScale(2)
         );
-        assertEquals(BankingTransactionType.DEPOSIT, transaction.transactionType());
+        assertEquals(BankingTransactionType.DEPOSIT, transaction.type());
         assertEquals(transaction.amount(), givenDepositAmount);
     }
 }

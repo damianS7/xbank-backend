@@ -138,7 +138,7 @@ public class BankingAccountOperationControllerTest extends AbstractControllerTes
                 updatedBankingAccountA.getBalance(),
                 bankingAccountA.getBalance().subtract(givenTransferAmount).setScale(2)
         );
-        assertEquals(BankingTransactionType.TRANSFER_TO, transaction.transactionType());
+        assertEquals(BankingTransactionType.TRANSFER_TO, transaction.type());
         assertEquals(transaction.amount(), givenTransferAmount);
         assertEquals("Enjoy!", transaction.description());
         assertEquals(transaction.accountId(), bankingAccountA.getId());
