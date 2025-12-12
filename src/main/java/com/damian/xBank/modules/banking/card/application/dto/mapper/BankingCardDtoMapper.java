@@ -10,7 +10,7 @@ public class BankingCardDtoMapper {
     public static BankingCardDto toBankingCardDto(BankingCard bankingCard) {
         return new BankingCardDto(
                 bankingCard.getId(),
-                bankingCard.getAssociatedBankingAccount().getId(),
+                bankingCard.getBankingAccount().getId(),
                 bankingCard.getHolderName(),
                 bankingCard.getCardNumber(),
                 bankingCard.getCardCvv(),
