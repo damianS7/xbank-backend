@@ -4,6 +4,7 @@ package com.damian.xBank.shared;
 import com.damian.xBank.modules.auth.application.dto.AuthenticationRequest;
 import com.damian.xBank.modules.auth.application.dto.AuthenticationResponse;
 import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
+import com.damian.xBank.modules.banking.transaction.infra.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.notification.infra.repository.NotificationRepository;
 import com.damian.xBank.modules.setting.infra.repository.SettingRepository;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
@@ -54,6 +55,9 @@ public abstract class AbstractControllerTest {
 
     @Autowired
     protected CustomerRepository customerRepository;
+
+    @Autowired
+    protected BankingTransactionRepository transactionRepository;
 
     @Autowired
     protected BankingAccountRepository bankingAccountRepository;
