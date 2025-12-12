@@ -1,6 +1,7 @@
 package com.damian.xBank.modules.banking.transaction.infra.controller;
 
 import com.damian.xBank.modules.banking.transaction.application.dto.mapper.BankingTransactionDtoMapper;
+import com.damian.xBank.modules.banking.transaction.application.dto.request.BankingTransactionConfirmRequest;
 import com.damian.xBank.modules.banking.transaction.application.dto.response.BankingTransactionDto;
 import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionAccountService;
 import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionCardService;
@@ -14,10 +15,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/api/v1")
 @RestController
@@ -49,39 +48,36 @@ public class BankingTransactionController {
                 .body(transactionDto);
     }
 
-    // endpoint for logged customer to get all transactions of a BankingCard
-    @GetMapping("/banking/cards/{id}/transactions")
-    public ResponseEntity<?> getCardTransactions(
-            @PathVariable @NotNull @Positive
-            Long id,
+    // endpoint for logged customer to get all pending transactions of a BankingAccount
+    @GetMapping("/banking/transactions/pending")
+    public ResponseEntity<?> getPendingTransactions(
             @PageableDefault(size = 2, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
-        Page<BankingTransaction> transactions = bankingTransactionCardService
-                .getTransactions(id, pageable);
-        Page<BankingTransactionDto> transactionDTOS = BankingTransactionDtoMapper
+        Page<BankingTransaction> transactions = bankingTransactionAccountService.getPendingTransactions(pageable);
+        Page<BankingTransactionDto> transactionDtoList = BankingTransactionDtoMapper
                 .toBankingTransactionPageDto(transactions);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(transactionDTOS);
+                .body(transactionDtoList);
     }
 
-    // endpoint for logged customer to get all transactions of a BankingAccount
-    @GetMapping("/banking/accounts/{id}/transactions")
-    public ResponseEntity<?> getAccountTransactions(
+    // endpoint for logged customer to confirm a transaction
+    @PostMapping("/banking/transactions/{id}/confirm")
+    public ResponseEntity<?> confirmTransaction(
             @PathVariable @NotNull @Positive
             Long id,
-            @PageableDefault(size = 2, sort = "createdAt", direction = Sort.Direction.DESC)
-            Pageable pageable
+            @Validated @RequestBody
+            BankingTransactionConfirmRequest request
     ) {
-        Page<BankingTransaction> transactions = bankingTransactionAccountService.getTransactions(id, pageable);
-        Page<BankingTransactionDto> transactionDTOS = BankingTransactionDtoMapper
-                .toBankingTransactionPageDto(transactions);
+        BankingTransaction transaction = bankingTransactionAccountService.confirmTransaction(id, request);
+        BankingTransactionDto transactionDto = BankingTransactionDtoMapper
+                .toBankingTransactionDto(transaction);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(transactionDTOS);
+                .body(transactionDto);
     }
 }
 
