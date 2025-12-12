@@ -55,7 +55,7 @@ public class BankingTransaction {
     }
 
     public BankingTransaction(BankingCard bankingCard) {
-        this(bankingCard.getAssociatedBankingAccount());
+        this(bankingCard.getBankingAccount());
     }
 
     public BankingTransaction() {
@@ -111,7 +111,7 @@ public class BankingTransaction {
         return transactionType;
     }
 
-    public BankingTransaction setTransactionType(BankingTransactionType transactionType) {
+    public BankingTransaction setType(BankingTransactionType transactionType) {
         this.transactionType = transactionType;
         return this;
     }

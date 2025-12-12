@@ -92,7 +92,7 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
         );
 
         BankingTransaction givenBankingTransaction = new BankingTransaction(customerBankingAccount);
-        givenBankingTransaction.setTransactionType(BankingTransactionType.CARD_CHARGE);
+        givenBankingTransaction.setType(BankingTransactionType.CARD_CHARGE);
         givenBankingTransaction.setAmount(spendRequest.amount());
         givenBankingTransaction.setDescription(spendRequest.description());
 
@@ -163,7 +163,7 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
         );
 
         BankingTransaction givenBankingTransaction = new BankingTransaction(customerBankingAccount);
-        givenBankingTransaction.setTransactionType(BankingTransactionType.CARD_CHARGE);
+        givenBankingTransaction.setType(BankingTransactionType.CARD_CHARGE);
         givenBankingTransaction.setAmount(spendRequest.amount());
         givenBankingTransaction.setDescription(spendRequest.description());
 
@@ -198,7 +198,7 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
         );
 
         BankingTransaction givenBankingTransaction = new BankingTransaction(customerBankingAccount);
-        givenBankingTransaction.setTransactionType(BankingTransactionType.CARD_CHARGE);
+        givenBankingTransaction.setType(BankingTransactionType.CARD_CHARGE);
         givenBankingTransaction.setAmount(BigDecimal.valueOf(100));
         givenBankingTransaction.setDescription("Amazon.com");
 
@@ -233,7 +233,7 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
         );
 
         BankingTransaction givenBankingTransaction = new BankingTransaction(customerBankingAccount);
-        givenBankingTransaction.setTransactionType(BankingTransactionType.CARD_CHARGE);
+        givenBankingTransaction.setType(BankingTransactionType.CARD_CHARGE);
         givenBankingTransaction.setAmount(BigDecimal.valueOf(100));
         givenBankingTransaction.setDescription("Amazon.com");
 
@@ -268,7 +268,7 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
         );
 
         BankingTransaction givenBankingTransaction = new BankingTransaction(customerBankingAccount);
-        givenBankingTransaction.setTransactionType(BankingTransactionType.CARD_CHARGE);
+        givenBankingTransaction.setType(BankingTransactionType.CARD_CHARGE);
         givenBankingTransaction.setAmount(BigDecimal.valueOf(100));
         givenBankingTransaction.setDescription("Amazon.com");
 
@@ -300,7 +300,7 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
         );
 
         BankingTransaction givenBankingTransaction = new BankingTransaction(customerBankingAccount);
-        givenBankingTransaction.setTransactionType(BankingTransactionType.WITHDRAWAL);
+        givenBankingTransaction.setType(BankingTransactionType.WITHDRAWAL);
         givenBankingTransaction.setAmount(spendRequest.amount());
         givenBankingTransaction.setDescription("WITHDRAWAL");
 

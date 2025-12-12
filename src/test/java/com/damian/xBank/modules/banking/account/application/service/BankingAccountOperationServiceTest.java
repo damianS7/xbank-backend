@@ -91,7 +91,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
         BankingTransaction transaction = BankingTransaction
                 .create()
                 .setBankingAccount(fromCustomerAccount)
-                .setTransactionType(BankingTransactionType.TRANSFER_TO)
+                .setType(BankingTransactionType.TRANSFER_TO)
                 .setBalanceBefore(BigDecimal.ZERO)
                 .setAmount(transferRequest.amount())
                 .setDescription(transferRequest.description());

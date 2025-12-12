@@ -85,7 +85,7 @@ public class BankingTransactionCardServiceTest extends AbstractServiceTest {
         BankingTransaction givenTransaction = new BankingTransaction(customerBankingAccount);
         givenTransaction.setBankingCard(customerBankingCard);
         givenTransaction.setStatus(BankingTransactionStatus.PENDING);
-        givenTransaction.setTransactionType(BankingTransactionType.CARD_CHARGE);
+        givenTransaction.setType(BankingTransactionType.CARD_CHARGE);
         givenTransaction.setAmount(BigDecimal.valueOf(1000));
         givenTransaction.setDescription("Amazon.com");
 
@@ -140,7 +140,7 @@ public class BankingTransactionCardServiceTest extends AbstractServiceTest {
         givenTransaction.setId(1L);
         givenTransaction.setBankingCard(customerOwnerBankingCard);
         givenTransaction.setStatus(BankingTransactionStatus.PENDING);
-        givenTransaction.setTransactionType(BankingTransactionType.CARD_CHARGE);
+        givenTransaction.setType(BankingTransactionType.CARD_CHARGE);
         givenTransaction.setAmount(BigDecimal.valueOf(3000));
         givenTransaction.setDescription("Amazon.com");
 
@@ -166,7 +166,7 @@ public class BankingTransactionCardServiceTest extends AbstractServiceTest {
         BankingTransaction givenTransaction = new BankingTransaction(customerBankingAccount);
         givenTransaction.setBankingCard(customerBankingCard);
         givenTransaction.setStatus(BankingTransactionStatus.PENDING);
-        givenTransaction.setTransactionType(BankingTransactionType.CARD_CHARGE);
+        givenTransaction.setType(BankingTransactionType.CARD_CHARGE);
         givenTransaction.setAmount(BigDecimal.valueOf(3000));
         givenTransaction.setDescription("Amazon.com");
 

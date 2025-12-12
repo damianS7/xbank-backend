@@ -60,7 +60,7 @@ public class AdminBankingAccountOperationServiceTest extends AbstractServiceTest
         customerBankingAccount.setAccountNumber("US9900001111112233334444");
 
         BankingTransaction transaction = new BankingTransaction(customerBankingAccount);
-        transaction.setTransactionType(BankingTransactionType.DEPOSIT);
+        transaction.setType(BankingTransactionType.DEPOSIT);
         transaction.setAmount(depositAmount);
 
         BankingAccountDepositRequest depositRequest = new BankingAccountDepositRequest(
