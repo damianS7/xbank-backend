@@ -144,7 +144,7 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("Should get transactions")
+    @DisplayName("Should get pending transactions")
     void shouldGetPendingTransactions() throws Exception {
         // given
         login(customer);
@@ -225,7 +225,7 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("Should get transaction")
+    @DisplayName("Should confirm transaction")
     void shouldConfirmTransaction() throws Exception {
         // given
         login(customer);
@@ -244,7 +244,9 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
         customerBankingAccount.addTransaction(transaction);
         transactionRepository.save(transaction);
 
-        BankingTransactionConfirmRequest request = new BankingTransactionConfirmRequest();
+        BankingTransactionConfirmRequest request = new BankingTransactionConfirmRequest(
+                RAW_PASSWORD
+        );
 
         // when
         // then
