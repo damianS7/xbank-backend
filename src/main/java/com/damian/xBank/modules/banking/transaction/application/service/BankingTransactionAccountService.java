@@ -1,12 +1,17 @@
 package com.damian.xBank.modules.banking.transaction.application.service;
 
+import com.damian.xBank.modules.banking.account.application.guard.BankingAccountGuard;
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
+import com.damian.xBank.modules.banking.transaction.application.dto.request.BankingTransactionConfirmRequest;
 import com.damian.xBank.modules.banking.transaction.application.dto.request.BankingTransactionUpdateStatusRequest;
+import com.damian.xBank.modules.banking.transaction.application.guard.BankingTransactionGuard;
+import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
+import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionAuthorizationException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotFoundException;
-import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.infra.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
@@ -32,26 +37,108 @@ public class BankingTransactionAccountService {
         this.bankingTransactionRepository = bankingTransactionRepository;
     }
 
-    public BankingTransaction createTransaction(
+    // TODO
+    public BankingTransaction confirmTransaction(
+            Long transactionId,
+            BankingTransactionConfirmRequest request
+    ) {
+        // Customer logged
+        final Customer currentCustomer = AuthHelper.getCurrentCustomer();
+
+        BankingTransaction transaction = bankingTransactionRepository
+                .findById(transactionId)
+                .orElseThrow(
+                        () -> new BankingTransactionNotFoundException(transactionId)
+                );
+
+        // validate transaction belongs to user
+        BankingTransactionGuard.forTransaction(transaction)
+                               .assertOwnership(currentCustomer);
+
+        //        bankingAccountOperationService.executeOperation()
+        transaction.setStatus(BankingTransactionStatus.COMPLETED);
+        bankingTransactionRepository.save(transaction);
+        return transaction;
+
+    }
+
+    /**
+     * Builds a transaction
+     *
+     * @param bankingAccount
+     * @param transactionType
+     * @param amount
+     * @param description
+     * @return
+     */
+    public BankingTransaction buildTransaction(
             BankingAccount bankingAccount,
             BankingTransactionType transactionType,
             BigDecimal amount,
             String description
     ) {
+        // TODO: fix balance after. deposits and transfers_from should add not subtract
         return BankingTransaction.create()
-                                 .setAssociatedBankingAccount(bankingAccount)
-                                 .setTransactionType(transactionType)
-                                 .setLastBalance(bankingAccount.getBalance())
+                                 .setBankingAccount(bankingAccount)
+                                 .setType(transactionType)
+                                 .setBalanceBefore(bankingAccount.getBalance())
+                                 .setBalanceAfter(
+                                         bankingAccount.getBalance().subtract(amount)
+                                 )
                                  .setAmount(amount)
                                  .setDescription(description);
     }
 
+    /**
+     * Returns a paginated result containing the transactions from a banking account.
+     *
+     * @param bankingAccountId
+     * @param pageable
+     * @return
+     */
     public Page<BankingTransaction> getTransactions(Long bankingAccountId, Pageable pageable) {
+        // Customer logged
+        final Customer currentCustomer = AuthHelper.getCurrentCustomer();
+
+        BankingAccount account = bankingAccountRepository
+                .findById(bankingAccountId)
+                .orElseThrow(
+                        () -> new BankingAccountNotFoundException(bankingAccountId)
+                );
+
+        // validate account belongs to
+        BankingAccountGuard.forAccount(account)
+                           .assertOwnership(currentCustomer);
+
         return bankingTransactionRepository.findByBankingAccountId(bankingAccountId, pageable);
     }
 
-    // ...
+    /**
+     * Returns a paginated result containing the pending transactions from a banking account.
+     *
+     * @param pageable
+     * @return
+     */
+    public Page<BankingTransaction> getPendingTransactions(Pageable pageable) {
+        // Customer logged
+        final Customer currentCustomer = AuthHelper.getCurrentCustomer();
 
+        return bankingTransactionRepository.findByStatusAndBankingAccount_Customer_Id(
+                BankingTransactionStatus.PENDING,
+                currentCustomer.getId(),
+                pageable
+        );
+    }
+
+    /**
+     * Builds and record a transaction
+     *
+     * @param bankingAccount
+     * @param transactionType
+     * @param amount
+     * @param description
+     * @return
+     */
     public BankingTransaction generateTransaction(
             BankingAccount bankingAccount,
             BankingTransactionType transactionType,
@@ -59,10 +146,11 @@ public class BankingTransactionAccountService {
             String description
     ) {
         // createTransaction
-        BankingTransaction transaction = this.createTransaction(bankingAccount, transactionType, amount, description);
+        BankingTransaction transaction = this
+                .buildTransaction(bankingAccount, transactionType, amount, description);
 
-        // persistTransaction
-        this.persistTransaction(transaction);
+        // records the transaction into db
+        this.recordTransaction(transaction);
 
         return transaction;
     }
@@ -73,40 +161,54 @@ public class BankingTransactionAccountService {
      * @param transaction the banking account transaction to store
      * @return the stored banking account transaction
      */
-    // TODO rename method to commitTransaction?
-    public BankingTransaction persistTransaction(BankingTransaction transaction) {
-        final BankingAccount bankingAccount = transaction.getAssociatedBankingAccount();
+    public BankingTransaction recordTransaction(BankingTransaction transaction) {
+        final BankingAccount bankingAccount = transaction.getBankingAccount();
         transaction.setCreatedAt(Instant.now());
         transaction.setUpdatedAt(Instant.now());
 
         // Add the transaction to the owners account
-        bankingAccount.addAccountTransaction(transaction);
+        bankingAccount.addTransaction(transaction);
 
-        // Persist the owner's account with the new transaction
+        // Records the owner's account with the new transaction
         // Return the stored transaction
         return bankingTransactionRepository.save(transaction);
     }
 
-    public BankingTransaction getBankingTransaction(Long transactionId) {
+    /**
+     * Returns a transaction
+     *
+     * @param transactionId
+     * @return requested transaction
+     */
+    public BankingTransaction getTransaction(Long transactionId) {
         // Customer logged
         final Customer currentCustomer = AuthHelper.getCurrentCustomer();
 
-        BankingTransaction transaction = bankingTransactionRepository.findById(transactionId).orElseThrow(
-                () -> new BankingTransactionNotFoundException(transactionId)
-        );
+        BankingTransaction transaction = bankingTransactionRepository
+                .findById(transactionId)
+                .orElseThrow(
+                        () -> new BankingTransactionNotFoundException(transactionId)
+                );
 
-        if (!transaction.getAssociatedBankingAccount().getOwner().getId().equals(currentCustomer.getId())
-            && !currentCustomer.getAccount().getRole().equals(UserAccountRole.ADMIN)) {
-            throw new BankingTransactionAuthorizationException(
-                    Exceptions.BANKING.TRANSACTION.ACCESS_FORBIDDEN, transactionId
-            );
+        // if the current user is a customer ...
+        if (currentCustomer.hasRole(UserAccountRole.CUSTOMER)) {
+
+            // check transactions belongs to user
+            BankingTransactionGuard.forTransaction(transaction)
+                                   .assertOwnership(currentCustomer);
+
         }
 
         return transaction;
     }
 
-
-    // it changes the status of the transaction
+    /**
+     * It changes the status of the transaction
+     *
+     * @param bankingTransactionId
+     * @param request
+     * @return the updated transaction
+     */
     public BankingTransaction updateTransactionStatus(
             Long bankingTransactionId,
             BankingTransactionUpdateStatusRequest request
@@ -115,8 +217,8 @@ public class BankingTransactionAccountService {
         final Customer currentCustomer = AuthHelper.getCurrentCustomer();
 
         // if the logged customer is not admin
-        if (!currentCustomer.getAccount().getRole().equals(UserAccountRole.ADMIN)) {
-            // banking transaction does not belong to this customer
+        if (!currentCustomer.hasRole(UserAccountRole.ADMIN)) {
+            // Only admin can update status
             throw new BankingTransactionAuthorizationException(
                     Exceptions.BANKING.TRANSACTION.ACCESS_FORBIDDEN, bankingTransactionId
             );
