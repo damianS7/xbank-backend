@@ -266,4 +266,39 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
         assertThat(transactionResponseDto).isNotNull();
         assertThat(transactionResponseDto.status()).isEqualTo(BankingTransactionStatus.COMPLETED);
     }
+
+    @Test
+    @DisplayName("Should fail to confirm transaction when password is wrong")
+    void shouldFailToConfirmTransactionWhenPasswordIsWrong() throws Exception {
+        // given
+        login(customer);
+
+        BankingTransaction transaction = BankingTransaction
+                .create()
+                .setBankingAccount(customerBankingAccount)
+                .setBankingCard(customerBankingCard)
+                .setDescription("Amazon.com")
+                .setBalanceBefore(BigDecimal.valueOf(100))
+                .setBalanceAfter(BigDecimal.valueOf(0))
+                .setStatus(BankingTransactionStatus.PENDING)
+                .setAmount(BigDecimal.valueOf(100))
+                .setType(BankingTransactionType.CARD_CHARGE);
+
+        customerBankingAccount.addTransaction(transaction);
+        transactionRepository.save(transaction);
+
+        BankingTransactionConfirmRequest request = new BankingTransactionConfirmRequest(
+                "BAD_PASSWORD"
+        );
+
+        // when
+        // then
+        mockMvc.perform(post("/api/v1/banking/transactions/{id}/confirm", transaction.getId())
+                       .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                       .contentType(MediaType.APPLICATION_JSON)
+                       .content(objectMapper.writeValueAsString(request)))
+               .andDo(print())
+               .andExpect(status().is(403))
+               .andReturn();
+    }
 }

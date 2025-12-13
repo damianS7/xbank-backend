@@ -37,7 +37,13 @@ public class BankingTransactionAccountService {
         this.bankingTransactionRepository = bankingTransactionRepository;
     }
 
-    // TODO
+    /**
+     * Confirms a transaction and update the balances
+     *
+     * @param transactionId
+     * @param request
+     * @return
+     */
     public BankingTransaction confirmTransaction(
             Long transactionId,
             BankingTransactionConfirmRequest request
@@ -54,6 +60,9 @@ public class BankingTransactionAccountService {
         // validate transaction belongs to user
         BankingTransactionGuard.forTransaction(transaction)
                                .assertOwnership(currentCustomer);
+
+        // check the password
+        AuthHelper.validatePassword(currentCustomer, request.password());
 
         //        bankingAccountOperationService.executeOperation()
         transaction.setStatus(BankingTransactionStatus.COMPLETED);
