@@ -15,6 +15,8 @@ import com.damian.xBank.modules.banking.transaction.application.service.BankingT
 import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
+import com.damian.xBank.modules.notification.application.service.NotificationService;
+import com.damian.xBank.modules.notification.domain.event.NotificationEvent;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.AbstractServiceTest;
@@ -31,11 +33,13 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class BankingCardOperationServiceTest extends AbstractServiceTest {
 
+    @Mock
+    private NotificationService notificationService;
+    
     @Mock
     private BankingTransactionAccountService bankingTransactionAccountService;
 
@@ -103,6 +107,8 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
                 any(BigDecimal.class),
                 any(String.class)
         )).thenReturn(givenBankingTransaction);
+
+        doNothing().when(notificationService).publish(any(NotificationEvent.class));
 
         // then
         BankingTransaction transaction = bankingCardOperationService.spend(
