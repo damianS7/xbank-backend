@@ -94,11 +94,12 @@ public class Exceptions {
             public static final String ACCESS_FORBIDDEN = "You are not the owner of this account.";
             public static final String OWNERSHIP = "You are not the owner of this account.";
             public static final String INSUFFICIENT_FUNDS = "Insufficient funds.";
-
+            public static final String INVALID_TRANSITION_STATUS = "Account cannot transition from %s to %s";
         }
 
         public static class CARD {
             public static final String OWNERSHIP = "You are not the owner of this card.";
+            public static final String INVALID_TRANSITION_STATUS = "Card cannot transition from %s to %s";
             public static final String NOT_FOUND = "Card not found.";
             public static final String LOCKED = "Card is locked.";
             public static final String INVALID_PIN = "Incorrect card pin.";
@@ -112,6 +113,15 @@ public class Exceptions {
             public static final String ACCESS_FORBIDDEN = "You are not the owner of this transaction.";
             public static final String INVALID_TYPE = "Invalid transaction type";
             public static final String DIFFERENT_CURRENCY = "Transactions must be in the same currency.";
+            public static final String FAILED_DEPOSIT = "Failed to deposit.";
+            public static final String OWNERSHIP = "You are not the owner of this transaction.";
+            public static final String
+                    INVALID_STATUS_CHANGE
+                    = "BankingTransactionStatus cannot transition from %s to %s";
+        }
+
+        public static class OPERATION {
+            public static final String FAILED_DEPOSIT = "Transaction not found.";
         }
     }
 }
