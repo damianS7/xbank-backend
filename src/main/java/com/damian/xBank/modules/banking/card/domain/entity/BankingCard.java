@@ -54,7 +54,7 @@ public class BankingCard {
     private Instant updatedAt;
 
     public BankingCard() {
-        this.cardStatus = BankingCardStatus.ENABLED;
+        this.cardStatus = BankingCardStatus.ACTIVE;
         this.cardType = BankingCardType.DEBIT;
         this.lockStatus = BankingCardLockStatus.UNLOCKED;
         this.dailyLimit = BigDecimal.valueOf(3000);

@@ -76,7 +76,7 @@ public class BankingAccountCardManagementService {
         return (int) bankingAccount
                 .getBankingCards()
                 .stream()
-                .filter(bankingCard -> bankingCard.getCardStatus().equals(BankingCardStatus.ENABLED))
+                .filter(bankingCard -> bankingCard.getCardStatus().equals(BankingCardStatus.ACTIVE))
                 .count();
     }
 }
