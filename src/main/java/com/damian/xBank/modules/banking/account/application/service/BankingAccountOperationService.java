@@ -9,6 +9,7 @@ import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountR
 import com.damian.xBank.modules.banking.transaction.application.dto.mapper.BankingTransactionDtoMapper;
 import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionAccountService;
 import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
+import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
 import com.damian.xBank.modules.notification.application.service.NotificationService;
 import com.damian.xBank.modules.notification.domain.enums.NotificationType;
@@ -50,10 +51,6 @@ public class BankingAccountOperationService {
             Long fromBankingAccountId,
             BankingAccountTransferRequest request
     ) {
-        final Customer customer = AuthHelper.getCurrentCustomer();
-
-        AuthHelper.validatePassword(customer, request.password());
-
         // Banking account to receive funds
         final BankingAccount fromBankingAccount = bankingAccountRepository
                 .findById(fromBankingAccountId)
@@ -63,11 +60,18 @@ public class BankingAccountOperationService {
                         )
                 );
 
+        final Customer customer = AuthHelper.getCurrentCustomer();
+
         // run validations and throw if any throw exception
         BankingAccountGuard
                 .forAccount(fromBankingAccount)
-                .assertOwnership(customer);
+                .assertOwnership(customer)
+                .assertSufficientFunds(request.amount());
 
+        // validate customer password
+        AuthHelper.validatePassword(customer, request.password());
+
+        // TODO move this block to the other method?
         // Banking account to receive funds
         final BankingAccount toBankingAccount = bankingAccountRepository
                 .findByAccountNumber(request.toBankingAccountNumber())
@@ -94,7 +98,7 @@ public class BankingAccountOperationService {
      * @param amount
      * @param description
      * @return
-     */
+     */ // TODO
     @Transactional
     public BankingTransaction executeTransfer(
             BankingAccount fromBankingAccount,
@@ -115,8 +119,12 @@ public class BankingAccountOperationService {
                 description
         );
 
-        //        fromBankingAccount.subtractBalance(amount);
-        //        fromTransaction.setStatus(BankingTransactionStatus.COMPLETED);
+        // balance after the transfer
+        fromTransaction.setBalanceAfter(
+                fromBankingAccount.getBalance().subtract(amount)
+        );
+
+        fromTransaction.setStatus(BankingTransactionStatus.PENDING);
         this.bankingTransactionAccountService.recordTransaction(fromTransaction);
 
         // create transfer transaction for the receiver of the funds
@@ -127,8 +135,12 @@ public class BankingAccountOperationService {
                 "Transfer from " + fromBankingAccount.getOwner().getFullName()
         );
 
-        //        toBankingAccount.addBalance(amount);
-        //        toTransaction.setStatus(BankingTransactionStatus.COMPLETED);
+        // balance after receiving the transfer
+        toTransaction.setBalanceAfter(
+                toBankingAccount.getBalance().add(amount)
+        );
+
+        toTransaction.setStatus(BankingTransactionStatus.PENDING);
         this.bankingTransactionAccountService.recordTransaction(toTransaction);
 
         // Notify receiver
@@ -144,5 +156,9 @@ public class BankingAccountOperationService {
         );
 
         return fromTransaction;
+    }
+
+    public BankingTransaction confirmTransfer(BankingTransaction transaction) {
+        return null;
     }
 }

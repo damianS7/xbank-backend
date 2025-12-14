@@ -74,6 +74,11 @@ public class AdminBankingAccountOperationService {
         // if the transaction is created, add the amount to balance
         bankingAccount.addBalance(request.amount());
 
+        // Set balance after with the new balance
+        transaction.setBalanceAfter(
+                bankingAccount.getBalance()
+        );
+
         // transaction is completed
         transaction.setStatus(BankingTransactionStatus.COMPLETED);
 
