@@ -121,6 +121,11 @@ public class BankingCardOperationService {
                 description
         );
 
+        // set balance after the operation
+        transaction.setBalanceAfter(
+                card.getBankingAccount().getBalance().subtract(amount)
+        );
+
         // Notify the user
         notificationService.publish(
                 new NotificationEvent(
