@@ -1,8 +1,36 @@
 package com.damian.xBank.modules.banking.transaction.domain.enums;
 
+import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionStatusNotAllowedException;
+import com.damian.xBank.shared.exception.Exceptions;
+
+import java.util.Set;
+
 public enum BankingTransactionStatus {
-    PENDING,
-    FAILED,
-    REJECTED,
-    COMPLETED
+    FAILED(Set.of()), // From FAILED no transitions are allowed
+    REJECTED(Set.of()), // From REJECTED no transitions are allowed
+    COMPLETED(Set.of()), // From COMPLETED no transitions are allowed
+    PENDING(Set.of(
+            FAILED,
+            REJECTED,
+            COMPLETED
+    )); // From PENDING transitions to FAILED, REJECTED and COMPLETED are allowed
+
+    private final Set<BankingTransactionStatus> allowedTransitions;
+
+    BankingTransactionStatus(Set<BankingTransactionStatus> allowedTransitions) {
+        this.allowedTransitions = allowedTransitions;
+    }
+
+    public boolean canTransitionTo(BankingTransactionStatus newStatus) {
+        return allowedTransitions.contains(newStatus);
+    }
+
+    public void validateTransition(BankingTransactionStatus newStatus) {
+        if (!canTransitionTo(newStatus)) {
+            throw new BankingTransactionStatusNotAllowedException(
+                    // TODO review this
+                    String.format(Exceptions.BANKING.TRANSACTION.INVALID_STATUS_CHANGE, this, newStatus), 0L
+            );
+        }
+    }
 }
