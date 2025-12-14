@@ -38,6 +38,7 @@ public class BankingTransaction {
     @Column
     private String description;
 
+    @Column(name = "transaction_type")
     @Enumerated(EnumType.STRING)
     private BankingTransactionType type;
 
