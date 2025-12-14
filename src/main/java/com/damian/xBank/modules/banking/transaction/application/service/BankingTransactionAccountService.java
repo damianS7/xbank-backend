@@ -10,12 +10,10 @@ import com.damian.xBank.modules.banking.transaction.application.guard.BankingTra
 import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
-import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionAuthorizationException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotFoundException;
 import com.damian.xBank.modules.banking.transaction.infra.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
-import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.utils.AuthHelper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,13 +24,16 @@ import java.time.Instant;
 
 @Service
 public class BankingTransactionAccountService {
+    //    private final BankingAccountOperationService bankingAccountOperationService;
     private final BankingAccountRepository bankingAccountRepository;
     private final BankingTransactionRepository bankingTransactionRepository;
 
     public BankingTransactionAccountService(
+            //            BankingAccountOperationService bankingAccountOperationService,
             BankingAccountRepository bankingAccountRepository,
             BankingTransactionRepository bankingTransactionRepository
     ) {
+        //        this.bankingAccountOperationService = bankingAccountOperationService;
         this.bankingAccountRepository = bankingAccountRepository;
         this.bankingTransactionRepository = bankingTransactionRepository;
     }
@@ -64,7 +65,12 @@ public class BankingTransactionAccountService {
         // check the password
         AuthHelper.validatePassword(currentCustomer, request.password());
 
-        //        bankingAccountOperationService.executeOperation()
+        // TODO
+        //        switch (transaction.getType()) {
+        //            case TRANSFER_TO -> bankingAccountOperationService.confirmTransfer(transaction);
+        //            default -> throw new IllegalStateException("Unexpected value: " + transaction.getType());
+        //        }
+
         transaction.setStatus(BankingTransactionStatus.COMPLETED);
         bankingTransactionRepository.save(transaction);
         return transaction;
@@ -86,14 +92,10 @@ public class BankingTransactionAccountService {
             BigDecimal amount,
             String description
     ) {
-        // TODO: fix balance after. deposits and transfers_from should add not subtract
         return BankingTransaction.create()
                                  .setBankingAccount(bankingAccount)
                                  .setType(transactionType)
                                  .setBalanceBefore(bankingAccount.getBalance())
-                                 .setBalanceAfter(
-                                         bankingAccount.getBalance().subtract(amount)
-                                 )
                                  .setAmount(amount)
                                  .setDescription(description);
     }
@@ -123,7 +125,7 @@ public class BankingTransactionAccountService {
     }
 
     /**
-     * Returns a paginated result containing the pending transactions from a banking account.
+     * Returns a paginated result containing the pending transactions from current customer.
      *
      * @param pageable
      * @return
@@ -225,14 +227,6 @@ public class BankingTransactionAccountService {
         // Customer logged
         final Customer currentCustomer = AuthHelper.getCurrentCustomer();
 
-        // if the logged customer is not admin
-        if (!currentCustomer.hasRole(UserAccountRole.ADMIN)) {
-            // Only admin can update status
-            throw new BankingTransactionAuthorizationException(
-                    Exceptions.BANKING.TRANSACTION.ACCESS_FORBIDDEN, bankingTransactionId
-            );
-        }
-
         // transaction to update
         final BankingTransaction bankingTransaction = bankingTransactionRepository
                 .findById(bankingTransactionId)
@@ -242,8 +236,15 @@ public class BankingTransactionAccountService {
                         )
                 );
 
+        // if the logged customer is not admin
+        if (currentCustomer.hasRole(UserAccountRole.CUSTOMER)) {
+            // Only admin can update status
+            BankingTransactionGuard.forTransaction(bankingTransaction)
+                                   .assertOwnership(currentCustomer);
+        }
+
         // we mark the account as closed
-        bankingTransaction.setStatus(request.transactionStatus());
+        bankingTransaction.updateStatus(request.transactionStatus());
 
         // we change the updateAt timestamp field
         bankingTransaction.setUpdatedAt(Instant.now());
