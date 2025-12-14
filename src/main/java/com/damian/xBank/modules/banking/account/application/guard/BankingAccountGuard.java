@@ -2,13 +2,11 @@ package com.damian.xBank.modules.banking.account.application.guard;
 
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountStatus;
-import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountClosedException;
-import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountException;
-import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountOwnershipException;
-import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountSuspendedException;
+import com.damian.xBank.modules.banking.account.domain.exception.*;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.exception.Exceptions;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 public class BankingAccountGuard {
@@ -35,6 +33,24 @@ public class BankingAccountGuard {
         if (!Objects.equals(account.getOwner().getId(), customer.getId())) {
             throw new BankingAccountOwnershipException(
                     Exceptions.BANKING.ACCOUNT.OWNERSHIP, account.getId(), customer.getId()
+            );
+        }
+
+        return this;
+    }
+
+    /**
+     * Validate if the account has funds {@link #account}.
+     *
+     * @param amount the amount to check against
+     * @return the current validator instance for chaining
+     * @throws BankingAccountInsufficientFundsException if the account does not have funds
+     */
+    public BankingAccountGuard assertSufficientFunds(BigDecimal amount) {
+
+        if (!account.hasSufficientFunds(amount)) {
+            throw new BankingAccountInsufficientFundsException(
+                    Exceptions.BANKING.ACCOUNT.INSUFFICIENT_FUNDS, account.getId()
             );
         }
 
