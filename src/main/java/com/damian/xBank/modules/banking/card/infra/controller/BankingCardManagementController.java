@@ -2,11 +2,10 @@ package com.damian.xBank.modules.banking.card.infra.controller;
 
 import com.damian.xBank.modules.banking.card.application.dto.mapper.BankingCardDtoMapper;
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdateDailyLimitRequest;
-import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdateLockStatusRequest;
+import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdateLockRequest;
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdatePinRequest;
 import com.damian.xBank.modules.banking.card.application.dto.response.BankingCardDto;
 import com.damian.xBank.modules.banking.card.application.service.BankingCardManagementService;
-import com.damian.xBank.modules.banking.card.application.service.BankingCardService;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import jakarta.validation.constraints.Positive;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,15 +17,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1")
 @RestController
 public class BankingCardManagementController {
-    private final BankingCardService bankingCardService;
     private final BankingCardManagementService bankingCardManagementService;
 
     @Autowired
     public BankingCardManagementController(
-            BankingCardService bankingCardService,
             BankingCardManagementService bankingCardManagementService
     ) {
-        this.bankingCardService = bankingCardService;
         this.bankingCardManagementService = bankingCardManagementService;
     }
 
@@ -68,7 +64,7 @@ public class BankingCardManagementController {
             @PathVariable @Positive
             Long id,
             @Validated @RequestBody
-            BankingCardUpdateLockStatusRequest request
+            BankingCardUpdateLockRequest request
     ) {
         BankingCard bankingCard = bankingCardManagementService.updateLockStatus(
                 id,
