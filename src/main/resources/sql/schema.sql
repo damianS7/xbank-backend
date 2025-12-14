@@ -138,18 +138,12 @@ CREATE TABLE public.banking_accounts (
 
 CREATE TYPE public."banking_card_status_type" AS ENUM (
   'ACTIVE',      -- Actiaved and working
-  'INACTIVE',    -- Deactivated by user or bank (can be activated again)
-  'CANCELLED',   -- Cancelled (lost, account closed, robbed)
+  'LOCKED',    -- Deactivated by user or bank (can be activated again)
+  'DISABLED',   -- Disabled by admin (lost, account closed, robbed)
   'EXPIRED',     -- Card expired.
   'PENDING_ACTIVATION' -- Emitted but not activated by user
 );
 CREATE CAST (varchar as banking_card_status_type) WITH INOUT AS IMPLICIT;
-
-CREATE TYPE public."banking_card_lock_status_type" AS ENUM (
-	'LOCKED',
-	'UNLOCKED'
-);
-CREATE CAST (varchar as banking_card_lock_status_type) WITH INOUT AS IMPLICIT;
 
 CREATE TYPE public."banking_card_type" AS ENUM (
 	'CREDIT',
@@ -162,7 +156,6 @@ CREATE TABLE public.banking_cards (
 	account_id int4 NOT NULL,
 	card_type public."banking_card_type" NOT NULL,
 	card_status public."banking_card_status_type" DEFAULT 'PENDING_ACTIVATION'::banking_card_status_type NOT NULL,
-	lock_status public."banking_card_lock_status_type" DEFAULT 'UNLOCKED'::banking_card_lock_status_type NOT NULL,
 	card_number varchar(32) NOT NULL,
 	card_pin varchar(4) NOT NULL,
 	card_cvv varchar(3) NOT NULL,
@@ -200,7 +193,8 @@ CREATE TABLE public.banking_transactions (
 	id int4 GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	account_id int4 NOT NULL,
 	card_id int4 NULL,
-	last_balance numeric(15, 2) NOT NULL,
+	balance_before numeric(15, 2) NOT NULL,
+	balance_after numeric(15, 2) NOT NULL,
 	transaction_type public."banking_transaction_type" NOT NULL,
 	amount numeric(15, 2) NOT NULL,
 	description text NULL,
