@@ -7,6 +7,7 @@ import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountO
 import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.card.application.service.BankingCardService;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
+import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.domain.enums.BankingCardType;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingAccountCardsLimitException;
 import com.damian.xBank.modules.banking.card.infra.repository.BankingCardRepository;
@@ -235,11 +236,11 @@ public class BankingAccountCardManagementServiceTest extends AbstractServiceTest
         BankingAccount givenBankAccount = new BankingAccount(customer);
         givenBankAccount.setId(1L);
         givenBankAccount.setAccountNumber("US9900001111112233334444");
-        givenBankAccount.addBankingCard(new BankingCard());
-        givenBankAccount.addBankingCard(new BankingCard());
-        givenBankAccount.addBankingCard(new BankingCard());
-        givenBankAccount.addBankingCard(new BankingCard());
-        givenBankAccount.addBankingCard(new BankingCard());
+        givenBankAccount.addBankingCard(BankingCard.create().setCardStatus(BankingCardStatus.ACTIVE));
+        givenBankAccount.addBankingCard(BankingCard.create().setCardStatus(BankingCardStatus.ACTIVE));
+        givenBankAccount.addBankingCard(BankingCard.create().setCardStatus(BankingCardStatus.ACTIVE));
+        givenBankAccount.addBankingCard(BankingCard.create().setCardStatus(BankingCardStatus.ACTIVE));
+        givenBankAccount.addBankingCard(BankingCard.create().setCardStatus(BankingCardStatus.ACTIVE));
 
         BankingAccountCardRequest request = new BankingAccountCardRequest(BankingCardType.CREDIT);
 

@@ -270,7 +270,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
         BankingAccount fromCustomerBankingAccount = new BankingAccount(fromCustomer);
         fromCustomerBankingAccount.setId(2L);
         fromCustomerBankingAccount.setAccountCurrency(BankingAccountCurrency.USD);
-        fromCustomerBankingAccount.setBalance(BigDecimal.valueOf(0));
+        fromCustomerBankingAccount.setBalance(BigDecimal.valueOf(1000));
         fromCustomerBankingAccount.setAccountNumber("US9900001111112233334444");
 
         Customer toCustomer = Customer.create(
@@ -289,7 +289,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
         BankingAccountTransferRequest transferRequest = new BankingAccountTransferRequest(
                 toCustomerBankingAccount.getAccountNumber(),
                 "a gift!",
-                BigDecimal.valueOf(500),
+                BigDecimal.valueOf(1),
                 RAW_PASSWORD
         );
 
