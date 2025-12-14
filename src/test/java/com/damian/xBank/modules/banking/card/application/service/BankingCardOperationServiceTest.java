@@ -6,7 +6,6 @@ import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountType;
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardSpendRequest;
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardWithdrawRequest;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
-import com.damian.xBank.modules.banking.card.domain.enums.BankingCardLockStatus;
 import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.domain.exception.*;
 import com.damian.xBank.modules.banking.card.infra.repository.BankingCardRepository;
@@ -39,7 +38,7 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
 
     @Mock
     private NotificationService notificationService;
-    
+
     @Mock
     private BankingTransactionAccountService bankingTransactionAccountService;
 
@@ -189,8 +188,8 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should fail to spend when card is disabled")
-    void shouldFailToSpendWhenCardIsDisabled() {
+    @DisplayName("Should fail to spend when card is not active")
+    void shouldFailToSpendWhenCardIsNotActive() {
         // given
 
         setUpContext(customer);
@@ -230,7 +229,7 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
         // given
 
         setUpContext(customer);
-        customerBankingCard.setLockStatus(BankingCardLockStatus.LOCKED);
+        customerBankingCard.setCardStatus(BankingCardStatus.LOCKED);
 
         BankingCardSpendRequest spendRequest = new BankingCardSpendRequest(
                 customerBankingAccount.getBalance(),

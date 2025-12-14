@@ -1,10 +1,11 @@
 package com.damian.xBank.modules.banking.card.application.service;
 
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdateDailyLimitRequest;
-import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdateLockStatusRequest;
+import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdateLockRequest;
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdatePinRequest;
 import com.damian.xBank.modules.banking.card.application.guard.BankingCardGuard;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
+import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoundException;
 import com.damian.xBank.modules.banking.card.infra.repository.BankingCardRepository;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
@@ -34,7 +35,7 @@ public class BankingCardManagementService {
      */
     public BankingCard updateLockStatus(
             Long bankingCardId,
-            BankingCardUpdateLockStatusRequest request
+            BankingCardUpdateLockRequest request
     ) {
         // Banking card to be updated
         final BankingCard bankingCard = bankingCardRepository.findById(bankingCardId).orElseThrow(
@@ -56,8 +57,17 @@ public class BankingCardManagementService {
             AuthHelper.validatePassword(currentCustomer.getAccount(), request.password());
         }
 
+        BankingCardStatus nextStatus = BankingCardStatus.ACTIVE;
+
+        if (bankingCard.getStatus() == BankingCardStatus.ACTIVE) {
+            nextStatus = BankingCardStatus.LOCKED;
+        }
+
+        // validate card status transition
+        bankingCard.getStatus().validateTransition(nextStatus);
+
         // we mark the card as locked
-        bankingCard.setLockStatus(request.lockStatus());
+        bankingCard.setCardStatus(nextStatus);
 
         // we change the updateAt timestamp field
         bankingCard.setUpdatedAt(Instant.now());

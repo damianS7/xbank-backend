@@ -5,11 +5,11 @@ import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurre
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountType;
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdateDailyLimitRequest;
-import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdateLockStatusRequest;
+import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdateLockRequest;
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdatePinRequest;
 import com.damian.xBank.modules.banking.card.application.dto.response.BankingCardDto;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
-import com.damian.xBank.modules.banking.card.domain.enums.BankingCardLockStatus;
+import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
@@ -66,6 +66,7 @@ public class BankingCardManagementControllerTest extends AbstractControllerTest 
 
         customerBankingCard = BankingCard
                 .create()
+                .setCardStatus(BankingCardStatus.ACTIVE)
                 .setAssociatedBankingAccount(customerBankingAccount)
                 .setCardNumber("1234123412341234")
                 .setCardCvv("123")
@@ -136,13 +137,12 @@ public class BankingCardManagementControllerTest extends AbstractControllerTest 
     }
 
     @Test
-    @DisplayName("Should update card lock status to locked")
-    void shouldUpdateCardLockStatusToLocked() throws Exception {
+    @DisplayName("Should update card status to locked")
+    void shouldLockCard() throws Exception {
         // given
         login(customer);
 
-        BankingCardUpdateLockStatusRequest request = new BankingCardUpdateLockStatusRequest(
-                BankingCardLockStatus.LOCKED,
+        BankingCardUpdateLockRequest request = new BankingCardUpdateLockRequest(
                 RAW_PASSWORD
         );
 
@@ -164,17 +164,19 @@ public class BankingCardManagementControllerTest extends AbstractControllerTest 
 
         // then
         assertThat(cardResponseDto).isNotNull();
-        assertThat(cardResponseDto.lockStatus()).isEqualTo(BankingCardLockStatus.LOCKED);
+        assertThat(cardResponseDto.cardStatus()).isEqualTo(BankingCardStatus.LOCKED);
     }
 
     @Test
-    @DisplayName("Should update card lock status to unlocked")
-    void shouldUpdateCardLockStatusToUnlocked() throws Exception {
+    @DisplayName("Should update card status to active")
+    void shouldUnlockCard() throws Exception {
         // given
         login(customer);
 
-        BankingCardUpdateLockStatusRequest request = new BankingCardUpdateLockStatusRequest(
-                BankingCardLockStatus.UNLOCKED,
+        customerBankingCard.setCardStatus(BankingCardStatus.LOCKED);
+        bankingCardRepository.save(customerBankingCard);
+
+        BankingCardUpdateLockRequest request = new BankingCardUpdateLockRequest(
                 RAW_PASSWORD
         );
 
@@ -196,6 +198,6 @@ public class BankingCardManagementControllerTest extends AbstractControllerTest 
 
         // then
         assertThat(cardResponseDto).isNotNull();
-        assertThat(cardResponseDto.lockStatus()).isEqualTo(BankingCardLockStatus.UNLOCKED);
+        assertThat(cardResponseDto.cardStatus()).isEqualTo(BankingCardStatus.ACTIVE);
     }
 }

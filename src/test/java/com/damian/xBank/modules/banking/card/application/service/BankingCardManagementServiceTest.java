@@ -4,10 +4,10 @@ import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountType;
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdateDailyLimitRequest;
-import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdateLockStatusRequest;
+import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdateLockRequest;
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdatePinRequest;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
-import com.damian.xBank.modules.banking.card.domain.enums.BankingCardLockStatus;
+import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoundException;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardOwnershipException;
 import com.damian.xBank.modules.banking.card.infra.repository.BankingCardRepository;
@@ -259,13 +259,13 @@ public class BankingCardManagementServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should update card lock status")
-    void shouldUpdateCardLockStatus() {
+    @DisplayName("Should lock card")
+    void shouldLockCard() {
         // given
+        customerBankingCard.setCardStatus(BankingCardStatus.ACTIVE);
         setUpContext(customer);
 
-        BankingCardUpdateLockStatusRequest givenRequest = new BankingCardUpdateLockStatusRequest(
-                BankingCardLockStatus.LOCKED,
+        BankingCardUpdateLockRequest givenRequest = new BankingCardUpdateLockRequest(
                 RAW_PASSWORD
         );
 
@@ -281,7 +281,7 @@ public class BankingCardManagementServiceTest extends AbstractServiceTest {
 
         // then
         assertThat(customerBankingCard).isNotNull();
-        assertThat(customerBankingCard.getLockStatus()).isEqualTo(givenRequest.lockStatus());
+        assertThat(customerBankingCard.getStatus()).isEqualTo(BankingCardStatus.LOCKED);
         verify(bankingCardRepository, times(1)).save(any(BankingCard.class));
     }
 

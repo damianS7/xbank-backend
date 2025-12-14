@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.banking.card.application.service.admin;
 
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdateDailyLimitRequest;
-import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdateLockStatusRequest;
+import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdateLockRequest;
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdatePinRequest;
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdateStatusRequest;
 import com.damian.xBank.modules.banking.card.application.service.BankingCardManagementService;
@@ -63,7 +63,7 @@ public class AdminBankingCardManagementService {
      */
     public BankingCard updateLockStatus(
             Long bankingCardId,
-            BankingCardUpdateLockStatusRequest request
+            BankingCardUpdateLockRequest request
     ) {
         return bankingCardManagementService.updateLockStatus(bankingCardId, request);
     }

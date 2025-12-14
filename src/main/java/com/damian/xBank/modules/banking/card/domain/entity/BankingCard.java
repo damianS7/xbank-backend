@@ -1,7 +1,6 @@
 package com.damian.xBank.modules.banking.card.domain.entity;
 
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
-import com.damian.xBank.modules.banking.card.domain.enums.BankingCardLockStatus;
 import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.domain.enums.BankingCardType;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardInsufficientFundsException;
@@ -44,9 +43,6 @@ public class BankingCard {
     @Enumerated(EnumType.STRING)
     private BankingCardStatus cardStatus;
 
-    @Enumerated(EnumType.STRING)
-    private BankingCardLockStatus lockStatus;
-
     @Column
     private Instant createdAt;
 
@@ -54,9 +50,8 @@ public class BankingCard {
     private Instant updatedAt;
 
     public BankingCard() {
-        this.cardStatus = BankingCardStatus.ACTIVE;
+        this.cardStatus = BankingCardStatus.PENDING_ACTIVATION;
         this.cardType = BankingCardType.DEBIT;
-        this.lockStatus = BankingCardLockStatus.UNLOCKED;
         this.dailyLimit = BigDecimal.valueOf(3000);
     }
 
@@ -107,7 +102,7 @@ public class BankingCard {
         return this;
     }
 
-    public BankingCardStatus getCardStatus() {
+    public BankingCardStatus getStatus() {
         return cardStatus;
     }
 
@@ -170,15 +165,6 @@ public class BankingCard {
         return this;
     }
 
-    public BankingCardLockStatus getLockStatus() {
-        return lockStatus;
-    }
-
-    public BankingCard setLockStatus(BankingCardLockStatus lockStatus) {
-        this.lockStatus = lockStatus;
-        return this;
-    }
-
     public BigDecimal getDailyLimit() {
         return dailyLimit;
     }
@@ -213,14 +199,10 @@ public class BankingCard {
     }
 
     public boolean isLocked() {
-        return this.lockStatus == BankingCardLockStatus.LOCKED;
+        return this.getStatus() == BankingCardStatus.LOCKED;
     }
 
     public boolean isDisabled() {
         return this.cardStatus == BankingCardStatus.DISABLED;
-    }
-
-    public boolean isUsable() {
-        return !isDisabled() && !isLocked();
     }
 }

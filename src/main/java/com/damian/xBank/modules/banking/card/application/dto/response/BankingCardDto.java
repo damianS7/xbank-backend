@@ -1,6 +1,5 @@
 package com.damian.xBank.modules.banking.card.application.dto.response;
 
-import com.damian.xBank.modules.banking.card.domain.enums.BankingCardLockStatus;
 import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.domain.enums.BankingCardType;
 
@@ -19,7 +18,6 @@ public record BankingCardDto(
         LocalDate expiredDate,
         BankingCardType cardType,
         BankingCardStatus cardStatus,
-        BankingCardLockStatus lockStatus,
         Instant createdAt,
         Instant updatedAt
 ) {

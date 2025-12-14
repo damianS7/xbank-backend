@@ -18,8 +18,7 @@ public class BankingCardDtoMapper {
                 bankingCard.getDailyLimit(),
                 bankingCard.getExpiredDate(),
                 bankingCard.getCardType(),
-                bankingCard.getCardStatus(),
-                bankingCard.getLockStatus(),
+                bankingCard.getStatus(),
                 bankingCard.getCreatedAt(),
                 bankingCard.getUpdatedAt()
         );

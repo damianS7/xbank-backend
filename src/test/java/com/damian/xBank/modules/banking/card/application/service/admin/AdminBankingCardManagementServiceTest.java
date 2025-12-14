@@ -83,7 +83,7 @@ public class AdminBankingCardManagementServiceTest extends AbstractServiceTest {
         // then
         assertThat(cancelledCard.getCardNumber()).isEqualTo(customerBankingCard.getCardNumber());
         assertThat(cancelledCard.getCardType()).isEqualTo(customerBankingCard.getCardType());
-        assertThat(cancelledCard.getCardStatus()).isEqualTo(BankingCardStatus.DISABLED);
+        assertThat(cancelledCard.getStatus()).isEqualTo(BankingCardStatus.DISABLED);
         verify(bankingCardRepository, times(1)).save(any(BankingCard.class));
     }
 
