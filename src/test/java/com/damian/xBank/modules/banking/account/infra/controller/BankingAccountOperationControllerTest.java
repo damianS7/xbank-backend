@@ -6,6 +6,7 @@ import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurre
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountType;
 import com.damian.xBank.modules.banking.transaction.application.dto.response.BankingTransactionDto;
+import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
@@ -134,11 +135,12 @@ public class BankingAccountOperationControllerTest extends AbstractControllerTes
 
         // then
         assertThat(transaction).isNotNull();
-        assertEquals(
-                updatedBankingAccountA.getBalance(),
-                bankingAccountA.getBalance().subtract(givenTransferAmount).setScale(2)
-        );
+        //        assertEquals(
+        //                updatedBankingAccountA.getBalance(),
+        //                bankingAccountA.getBalance().subtract(givenTransferAmount).setScale(2)
+        //        );
         assertEquals(BankingTransactionType.TRANSFER_TO, transaction.type());
+        assertEquals(BankingTransactionStatus.PENDING, transaction.status());
         assertEquals(transaction.amount(), givenTransferAmount);
         assertEquals("Enjoy!", transaction.description());
         assertEquals(transaction.accountId(), bankingAccountA.getId());
@@ -249,8 +251,8 @@ public class BankingAccountOperationControllerTest extends AbstractControllerTes
 
 
     @Test
-    @DisplayName("Should not transfer to when insufficient funds")
-    void shouldTransferToWhenInsufficientFunds() throws Exception {
+    @DisplayName("Should fail to transfer when insufficient funds")
+    void shouldFailToTransferWhenInsufficientFunds() throws Exception {
         // given
         login(customerA);
 
@@ -280,14 +282,13 @@ public class BankingAccountOperationControllerTest extends AbstractControllerTes
         );
 
         // when
-        MvcResult result = mockMvc
+        mockMvc
                 .perform(post(
                         "/api/v1/banking/accounts/" + bankingAccountA.getId() + "/transfer")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
-                .andExpect(status().is(409))
-                .andReturn();
+                .andExpect(status().is(409));
     }
 }

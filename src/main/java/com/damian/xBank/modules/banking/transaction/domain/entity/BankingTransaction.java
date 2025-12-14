@@ -39,7 +39,7 @@ public class BankingTransaction {
     private String description;
 
     @Enumerated(EnumType.STRING)
-    private BankingTransactionType transactionType;
+    private BankingTransactionType type;
 
     @Enumerated(EnumType.STRING)
     private BankingTransactionStatus status;
@@ -65,9 +65,9 @@ public class BankingTransaction {
         this.createdAt = Instant.now();
     }
 
-    public BankingTransaction(BankingTransactionType transactionType) {
+    public BankingTransaction(BankingTransactionType type) {
         this();
-        this.transactionType = transactionType;
+        this.type = type;
     }
 
     public static BankingTransaction create() {
@@ -106,11 +106,11 @@ public class BankingTransaction {
     }
 
     public BankingTransactionType getType() {
-        return transactionType;
+        return type;
     }
 
     public BankingTransaction setType(BankingTransactionType transactionType) {
-        this.transactionType = transactionType;
+        this.type = transactionType;
         return this;
     }
 
