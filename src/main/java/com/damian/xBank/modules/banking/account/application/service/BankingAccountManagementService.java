@@ -109,38 +109,6 @@ public class BankingAccountManagementService {
     /**
      * Set alias for a banking account
      *
-     * @param customer       the customer who changes the alias
-     * @param bankingAccount the banking account to update
-     * @param alias          the new alias
-     * @return the updated banking account
-     */
-    private BankingAccount setAccountAlias(
-            Customer customer,
-            BankingAccount bankingAccount,
-            String alias
-    ) {
-        // business rules only for customers
-        if (AuthHelper.isCustomer(customer)) {
-
-            BankingAccountGuard.forAccount(bankingAccount)
-                               .assertOwnership(customer)
-                               .assertNotSuspended()
-                               .assertNotClosed();
-        }
-
-        // we mark the account as closed
-        bankingAccount.setAlias(alias);
-
-        // we change the updateAt timestamp field
-        bankingAccount.setUpdatedAt(Instant.now());
-
-        // save the data and return BankingAccount
-        return bankingAccountRepository.save(bankingAccount);
-    }
-
-    /**
-     * Set alias for a banking account
-     *
      * @param bankingAccountId the id of the banking account to set alias
      * @param request          the request with the new alias
      * @return the updated banking account
@@ -159,7 +127,22 @@ public class BankingAccountManagementService {
                 ) // Banking account not found
         );
 
-        //        AuthHelper.validatePassword(currentCustomer.getAccount(), request.password());
-        return this.setAccountAlias(currentCustomer, bankingAccount, request.alias());
+        // validations rules only for customers
+        if (AuthHelper.isCustomer(currentCustomer)) {
+
+            BankingAccountGuard.forAccount(bankingAccount)
+                               .assertOwnership(currentCustomer)
+                               .assertNotSuspended()
+                               .assertNotClosed();
+        }
+
+        // we mark the account as closed
+        bankingAccount.setAlias(request.alias());
+
+        // we change the updateAt timestamp field
+        bankingAccount.setUpdatedAt(Instant.now());
+
+        // save the data and return BankingAccount
+        return bankingAccountRepository.save(bankingAccount);
     }
 }
