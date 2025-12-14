@@ -5,12 +5,40 @@ import com.damian.xBank.shared.exception.Exceptions;
 
 import java.util.Set;
 
-// TODO
 public enum BankingCardStatus {
+    /**
+     * Disabled by admin
+     * <p>
+     * From this state transitions are not allowed.
+     */
     DISABLED,
+
+    /**
+     * Card expired by time.
+     * <p>
+     * From this state transitions are not allowed.
+     */
     EXPIRED,
+
+    /**
+     * Activated card.
+     * <p>
+     * From this state transitions to DISABLED or EXPIRED are allowed.
+     */
     ACTIVE,
+
+    /**
+     * Locked by user
+     * <p>
+     * From this state transitions are not allowed.
+     */
     LOCKED,
+
+    /**
+     * Emitted but not activated by user.
+     * <p>
+     * From this state transitions to ACTIVE, DISABLED or EXPIRED are allowed.
+     */
     PENDING_ACTIVATION;
 
     private Set<BankingCardStatus> allowedTransitions;
@@ -38,47 +66,6 @@ public enum BankingCardStatus {
         );
     }
 
-
-    /**
-     * Disabled by admin
-     * <p>
-     * From this state transitions are not allowed.
-     */
-    //    DISABLED(Set.of()),
-
-    /**
-     * Card expired by time.
-     * <p>
-     * From this state transitions are not allowed.
-     */
-    //    EXPIRED(Set.of()),
-
-    /**
-     * Activated card.
-     * <p>
-     * From this state transitions to DISABLED or EXPIRED are allowed.
-     */
-    //    ACTIVE(Set.of(DISABLED, EXPIRED, LOCKED)),
-
-    /**
-     * Locked by user
-     * <p>
-     * From this state transitions are not allowed.
-     */
-    //    LOCKED(Set.of(ACTIVE, DISABLED, EXPIRED)),
-
-    /**
-     * Emitted but not activated by user.
-     * <p>
-     * From this state transitions to ACTIVE, DISABLED or EXPIRED are allowed.
-     */
-    //    PENDING_ACTIVATION(Set.of(ACTIVE, DISABLED, EXPIRED));
-
-    //    private final Set<BankingCardStatus> allowedTransitions;
-
-    //    BankingCardStatus(Set<BankingCardStatus> allowedTransitions) {
-    //        this.allowedTransitions = allowedTransitions;
-    //    }
     public boolean canTransitionTo(BankingCardStatus newStatus) {
         return allowedTransitions.contains(newStatus);
     }
