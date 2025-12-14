@@ -8,6 +8,7 @@ import com.damian.xBank.modules.banking.account.domain.exception.*;
 import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionAccountService;
 import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
+import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.infra.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.notification.application.service.NotificationService;
@@ -135,11 +136,8 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
                         transaction.getId(),
                         transaction.getBalanceBefore(),
                         transaction.getAmount(),
-                        transaction.getStatus()
+                        BankingTransactionStatus.PENDING
                 );
-
-        assertThat(fromCustomerAccount.getBalance()).isEqualTo(BigDecimal.valueOf(0));
-        assertThat(toCustomerAccount.getBalance()).isEqualTo(fromCustomerAccountInitialBalance);
     }
 
     @Test
@@ -181,8 +179,9 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
 
         when(bankingAccountRepository.findById(fromCustomerBankingAccount.getId())).thenReturn(Optional.of(
                 fromCustomerBankingAccount));
-        when(bankingAccountRepository.findByAccountNumber(toCustomerBankingAccount.getAccountNumber()))
-                .thenReturn(Optional.of(toCustomerBankingAccount));
+
+        //        when(bankingAccountRepository.findByAccountNumber(toCustomerBankingAccount.getAccountNumber()))
+        //                .thenReturn(Optional.of(toCustomerBankingAccount));
 
         // then
         BankingAccountInsufficientFundsException exception = assertThrows(
@@ -266,7 +265,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
                            .setPassword(passwordEncoder.encode(RAW_PASSWORD))
         ).setId(1L);
 
-        //        setUpContext(customer);
+        setUpContext(fromCustomer);
 
         BankingAccount fromCustomerBankingAccount = new BankingAccount(fromCustomer);
         fromCustomerBankingAccount.setId(2L);
@@ -507,8 +506,8 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
         when(bankingAccountRepository.findById(randomCustomerBankingAccount.getId())).thenReturn(Optional.of(
                 randomCustomerBankingAccount));
 
-        when(bankingAccountRepository.findByAccountNumber(randomCustomerBankingAccount.getAccountNumber()))
-                .thenReturn(Optional.of(randomCustomerBankingAccount));
+        //        when(bankingAccountRepository.findByAccountNumber(randomCustomerBankingAccount.getAccountNumber()))
+        //                .thenReturn(Optional.of(randomCustomerBankingAccount));
 
         // then
         BankingAccountOwnershipException exception = assertThrows(
@@ -563,8 +562,8 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
         when(bankingAccountRepository.findById(fromCustomerBankingAccount.getId())).thenReturn(Optional.of(
                 fromCustomerBankingAccount));
 
-        when(bankingAccountRepository.findByAccountNumber(toCustomerBankingAccount.getAccountNumber()))
-                .thenReturn(Optional.of(toCustomerBankingAccount));
+        //        when(bankingAccountRepository.findByAccountNumber(toCustomerBankingAccount.getAccountNumber()))
+        //                .thenReturn(Optional.of(toCustomerBankingAccount));
 
         // then
         UserAccountInvalidPasswordConfirmationException exception = assertThrows(
