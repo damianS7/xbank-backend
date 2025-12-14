@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.banking.account.domain.enums;
 
-import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountTransitionStatusException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountStatusTransitionException;
 import com.damian.xBank.shared.AbstractServiceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -31,7 +31,7 @@ public class BankingAccountStatusTest extends AbstractServiceTest {
             assertThatThrownBy(() ->
                     fromStatus.validateTransition(targetStatus)
             )
-                    .isInstanceOf(BankingAccountTransitionStatusException.class)
+                    .isInstanceOf(BankingAccountStatusTransitionException.class)
                     .hasMessageContaining(fromStatus.name());
         }
     }
