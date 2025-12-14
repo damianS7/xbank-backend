@@ -124,6 +124,12 @@ public class BankingTransaction {
         return this;
     }
 
+    public BankingTransaction updateStatus(BankingTransactionStatus toStatus) {
+        this.status.validateTransition(toStatus);
+        this.status = toStatus;
+        return this;
+    }
+
     public Instant getCreatedAt() {
         return createdAt;
     }
