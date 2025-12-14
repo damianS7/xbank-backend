@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.banking.transaction.domain.enums;
 
-import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionStatusNotAllowedException;
+import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionStatusTransitionException;
 import com.damian.xBank.shared.exception.Exceptions;
 
 import java.util.Set;
@@ -27,7 +27,7 @@ public enum BankingTransactionStatus {
 
     public void validateTransition(BankingTransactionStatus newStatus) {
         if (!canTransitionTo(newStatus)) {
-            throw new BankingTransactionStatusNotAllowedException(
+            throw new BankingTransactionStatusTransitionException(
                     // TODO review this
                     String.format(Exceptions.BANKING.TRANSACTION.INVALID_STATUS_CHANGE, this, newStatus), 0L
             );

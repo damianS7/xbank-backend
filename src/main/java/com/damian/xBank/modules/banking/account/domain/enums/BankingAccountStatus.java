@@ -1,8 +1,66 @@
 package com.damian.xBank.modules.banking.account.domain.enums;
 
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountTransitionStatusException;
+import com.damian.xBank.shared.exception.Exceptions;
+
+import java.util.Set;
+
 public enum BankingAccountStatus {
-    PENDING_ACTIVATION, // TODO for removal?
-    ACTIVE,
+    /**
+     * Disabled by admin
+     * <p>
+     * From this state transitions are not allowed.
+     */
     CLOSED,
-    SUSPENDED
+
+    /**
+     * Account suspended by admin or system.
+     * <p>
+     * From this state transitions are not allowed.
+     */
+    SUSPENDED,
+
+    /**
+     * Activated account.
+     * <p>
+     * From this state transitions to CLOSE or SUSPENDED are allowed.
+     */
+    ACTIVE,
+
+    /**
+     * Created but not activated by user.
+     * <p>
+     * From this state transitions to ACTIVE, CLOSED are allowed.
+     */
+    PENDING_ACTIVATION;
+
+    private Set<BankingAccountStatus> allowedTransitions;
+
+    static {
+        CLOSED.allowedTransitions = Set.of();
+        SUSPENDED.allowedTransitions = Set.of();
+
+        ACTIVE.allowedTransitions = Set.of(
+                CLOSED,
+                SUSPENDED
+        );
+
+        PENDING_ACTIVATION.allowedTransitions = Set.of(
+                ACTIVE,
+                CLOSED
+        );
+    }
+
+    public boolean canTransitionTo(BankingAccountStatus newStatus) {
+        return allowedTransitions.contains(newStatus);
+    }
+
+    public void validateTransition(BankingAccountStatus newStatus) {
+        if (!canTransitionTo(newStatus)) {
+            throw new BankingAccountTransitionStatusException(
+                    // TODO review this
+                    String.format(Exceptions.BANKING.ACCOUNT.INVALID_TRANSITION_STATUS, this, newStatus), 0L
+            );
+        }
+    }
 }
