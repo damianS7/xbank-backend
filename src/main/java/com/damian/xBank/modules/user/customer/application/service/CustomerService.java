@@ -1,15 +1,16 @@
 package com.damian.xBank.modules.user.customer.application.service;
 
 import com.damian.xBank.modules.user.customer.application.dto.request.CustomerUpdateRequest;
+import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
 import com.damian.xBank.modules.user.customer.domain.exception.CustomerException;
 import com.damian.xBank.modules.user.customer.domain.exception.CustomerNotFoundException;
 import com.damian.xBank.modules.user.customer.domain.exception.CustomerUpdateAuthorizationException;
 import com.damian.xBank.modules.user.customer.domain.exception.CustomerUpdateException;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.modules.user.customer.infra.repository.CustomerRepository;
 import com.damian.xBank.shared.exception.Exceptions;
-import com.damian.xBank.shared.utils.AuthHelper;
+import com.damian.xBank.shared.security.AuthenticationContext;
+import com.damian.xBank.shared.security.PasswordValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -23,11 +24,17 @@ import java.time.LocalDate;
 public class CustomerService {
     private static final Logger log = LoggerFactory.getLogger(CustomerService.class);
     private final CustomerRepository customerRepository;
+    private final AuthenticationContext authenticationContext;
+    private final PasswordValidator passwordValidator;
 
     public CustomerService(
-            CustomerRepository customerRepository
+            CustomerRepository customerRepository,
+            AuthenticationContext authenticationContext,
+            PasswordValidator passwordValidator
     ) {
         this.customerRepository = customerRepository;
+        this.authenticationContext = authenticationContext;
+        this.passwordValidator = passwordValidator;
     }
 
     /**
@@ -81,7 +88,7 @@ public class CustomerService {
 
     // returns the logged customer
     public Customer getCustomer() {
-        Customer currentCustomer = AuthHelper.getCurrentCustomer();
+        Customer currentCustomer = authenticationContext.getCurrentCustomer();
         return this.getCustomer(currentCustomer.getId());
     }
 
@@ -92,7 +99,7 @@ public class CustomerService {
      * @return Customer the updated customer
      */
     public Customer updateCustomer(CustomerUpdateRequest request) {
-        final Customer currentCustomer = AuthHelper.getCurrentCustomer();
+        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
 
         log.debug("Updating customer id: {}", currentCustomer.getId());
         return this.updateCustomer(currentCustomer.getId(), request);
@@ -107,7 +114,7 @@ public class CustomerService {
      * @throws CustomerNotFoundException if the profile is not found
      */
     public Customer updateCustomer(Long customerId, CustomerUpdateRequest request) {
-        final Customer currentCustomer = AuthHelper.getCurrentCustomer();
+        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
 
         // find the customer we want to modify
         Customer customer = customerRepository
@@ -125,7 +132,7 @@ public class CustomerService {
         }
 
         // we validate the password before updating the profile
-        AuthHelper.validatePassword(customer, request.currentPassword());
+        passwordValidator.validatePassword(customer, request.currentPassword());
 
         // we iterate over the fields (if any)
         request.fieldsToUpdate().forEach((key, value) -> {

@@ -10,7 +10,7 @@ import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.modules.user.customer.domain.exception.CustomerNotFoundException;
 import com.damian.xBank.modules.user.customer.infra.repository.CustomerRepository;
 import com.damian.xBank.shared.exception.Exceptions;
-import com.damian.xBank.shared.utils.AuthHelper;
+import com.damian.xBank.shared.security.AuthenticationContext;
 import net.datafaker.Faker;
 import org.springframework.stereotype.Service;
 
@@ -21,15 +21,18 @@ public class BankingAccountService {
     private final CustomerRepository customerRepository;
     private final BankingAccountRepository bankingAccountRepository;
     private final Faker faker;
+    private final AuthenticationContext authenticationContext;
 
     public BankingAccountService(
             BankingAccountRepository bankingAccountRepository,
             CustomerRepository customerRepository,
-            Faker faker
+            Faker faker,
+            AuthenticationContext authenticationContext
     ) {
         this.bankingAccountRepository = bankingAccountRepository;
         this.customerRepository = customerRepository;
         this.faker = faker;
+        this.authenticationContext = authenticationContext;
     }
 
     /**
@@ -39,7 +42,7 @@ public class BankingAccountService {
      */
     public Set<BankingAccount> getLoggedCustomerBankingAccounts() {
         // we extract the customer logged from the SecurityContext
-        final Customer currentCustomer = AuthHelper.getCurrentCustomer();
+        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
 
         return this.getCustomerBankingAccounts(currentCustomer.getId());
     }
@@ -63,7 +66,7 @@ public class BankingAccountService {
      */
     public BankingAccount createBankingAccount(BankingAccountCreateRequest request) {
         // we extract the customer logged from the SecurityContext
-        final Customer currentCustomer = AuthHelper.getCurrentCustomer();
+        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
 
         return this.createBankingAccount(currentCustomer.getId(), request);
     }

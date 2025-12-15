@@ -16,7 +16,8 @@ import com.damian.xBank.modules.notification.domain.enums.NotificationType;
 import com.damian.xBank.modules.notification.domain.event.NotificationEvent;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.exception.Exceptions;
-import com.damian.xBank.shared.utils.AuthHelper;
+import com.damian.xBank.shared.security.AuthenticationContext;
+import com.damian.xBank.shared.security.PasswordValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,15 +30,21 @@ public class BankingAccountOperationService {
     private final BankingTransactionAccountService bankingTransactionAccountService;
     private final BankingAccountRepository bankingAccountRepository;
     private final NotificationService notificationService;
+    private final PasswordValidator passwordValidator;
+    private final AuthenticationContext authenticationContext;
 
     public BankingAccountOperationService(
             BankingTransactionAccountService bankingTransactionAccountService,
             BankingAccountRepository bankingAccountRepository,
-            NotificationService notificationService
+            NotificationService notificationService,
+            PasswordValidator passwordValidator,
+            AuthenticationContext authenticationContext
     ) {
         this.bankingTransactionAccountService = bankingTransactionAccountService;
         this.bankingAccountRepository = bankingAccountRepository;
         this.notificationService = notificationService;
+        this.passwordValidator = passwordValidator;
+        this.authenticationContext = authenticationContext;
     }
 
     /**
@@ -60,7 +67,7 @@ public class BankingAccountOperationService {
                         )
                 );
 
-        final Customer customer = AuthHelper.getCurrentCustomer();
+        final Customer customer = authenticationContext.getCurrentCustomer();
 
         // run validations and throw if any throw exception
         BankingAccountGuard
@@ -69,7 +76,7 @@ public class BankingAccountOperationService {
                 .assertSufficientFunds(request.amount());
 
         // validate customer password
-        AuthHelper.validatePassword(customer, request.password());
+        passwordValidator.validatePassword(customer, request.password());
 
         // TODO move this block to the other method?
         // Banking account to receive funds

@@ -4,7 +4,7 @@ import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTran
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotFoundException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionOwnershipException;
-import com.damian.xBank.shared.utils.ApiResponse;
+import com.damian.xBank.shared.dto.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;

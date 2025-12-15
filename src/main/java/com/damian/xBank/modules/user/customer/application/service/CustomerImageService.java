@@ -1,17 +1,18 @@
 package com.damian.xBank.modules.user.customer.application.service;
 
-import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountNotFoundException;
+import com.damian.xBank.infrastructure.storage.FileStorageService;
+import com.damian.xBank.infrastructure.storage.ImageProcessingService;
+import com.damian.xBank.infrastructure.storage.ImageUploaderService;
+import com.damian.xBank.infrastructure.storage.ImageValidationService;
+import com.damian.xBank.infrastructure.storage.exception.ImageTooLargeException;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
+import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountNotFoundException;
 import com.damian.xBank.modules.user.account.account.infra.repository.UserAccountRepository;
 import com.damian.xBank.modules.user.customer.domain.exception.CustomerImageNotFoundException;
-import com.damian.xBank.shared.domain.User;
 import com.damian.xBank.shared.exception.Exceptions;
-import com.damian.xBank.shared.infrastructure.storage.FileStorageService;
-import com.damian.xBank.shared.infrastructure.storage.ImageProcessingService;
-import com.damian.xBank.shared.infrastructure.storage.ImageUploaderService;
-import com.damian.xBank.shared.infrastructure.storage.ImageValidationService;
-import com.damian.xBank.shared.infrastructure.storage.exception.ImageTooLargeException;
-import com.damian.xBank.shared.utils.AuthHelper;
+import com.damian.xBank.shared.security.AuthenticationContext;
+import com.damian.xBank.shared.security.PasswordValidator;
+import com.damian.xBank.shared.security.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -29,6 +30,7 @@ public class CustomerImageService {
     private final UserAccountRepository userAccountRepository;
     private final ImageUploaderService imageUploaderService;
     private final FileStorageService fileStorageService;
+    private final PasswordValidator passwordValidator;
     private final ImageProcessingService imageProcessingService;
     private final ImageValidationService imageValidationService;
     private final long COMPRESS_SIZE_TRIGGER = 250L * 1024; // 250 kb
@@ -36,19 +38,23 @@ public class CustomerImageService {
     private final int MAX_WIDTH = 500; // 500px
     private final int MAX_HEIGHT = 500; // 500px
     private final String[] ALLOWED_IMAGE_TYPES = {"image/jpg", "image/jpeg", "image/png"};
+    private final AuthenticationContext authenticationContext;
 
     public CustomerImageService(
             FileStorageService fileStorageService,
             UserAccountRepository userAccountRepository,
-            ImageUploaderService imageUploaderService,
+            ImageUploaderService imageUploaderService, PasswordValidator passwordValidator,
             ImageProcessingService imageProcessingService,
-            ImageValidationService imageValidationService
+            ImageValidationService imageValidationService,
+            AuthenticationContext authenticationContext
     ) {
         this.fileStorageService = fileStorageService;
         this.userAccountRepository = userAccountRepository;
         this.imageUploaderService = imageUploaderService;
+        this.passwordValidator = passwordValidator;
         this.imageProcessingService = imageProcessingService;
         this.imageValidationService = imageValidationService;
+        this.authenticationContext = authenticationContext;
     }
 
     public String getProfileImageFolder(Long userId) {
@@ -67,11 +73,11 @@ public class CustomerImageService {
      * @throws ImageTooLargeException if the image size exceeds the limit
      */
     public File uploadUserImage(String currentPassword, MultipartFile image) {
-        final User currentUser = AuthHelper.getCurrentUser();
+        final User currentUser = authenticationContext.getCurrentUser();
         log.debug("Uploading user: {} user image", currentUser.getId());
 
         // validate password
-        AuthHelper.validatePassword(currentUser, currentPassword);
+        passwordValidator.validatePassword(currentUser, currentPassword);
 
         // run basic image validations
         imageValidationService.validateImage(
@@ -137,7 +143,7 @@ public class CustomerImageService {
      * @return the current user photo resource
      */
     public Resource getUserImage() {
-        final User currentUser = AuthHelper.getCurrentUser();
+        final User currentUser = authenticationContext.getCurrentUser();
 
         return this.getUserImage(currentUser.getId());
     }

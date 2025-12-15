@@ -4,7 +4,7 @@ import com.damian.xBank.modules.setting.UserSettings;
 import com.damian.xBank.modules.setting.UserSettingsConverter;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
-import com.damian.xBank.shared.domain.User;
+import com.damian.xBank.shared.security.User;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;

@@ -4,8 +4,9 @@ import com.damian.xBank.modules.user.account.account.application.dto.request.Use
 import com.damian.xBank.modules.user.account.account.application.dto.request.UserAccountPasswordResetSetRequest;
 import com.damian.xBank.modules.user.account.account.application.dto.request.UserAccountPasswordUpdateRequest;
 import com.damian.xBank.modules.user.account.account.application.service.UserAccountPasswordService;
-import com.damian.xBank.modules.user.account.token.domain.entity.UserAccountToken;
 import com.damian.xBank.modules.user.account.token.application.service.UserAccountTokenService;
+import com.damian.xBank.modules.user.account.token.domain.entity.UserAccountToken;
+import com.damian.xBank.shared.dto.ApiResponse;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,7 +57,7 @@ public class UserAccountPasswordController {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(com.damian.xBank.shared.utils.ApiResponse.success(
+                .body(ApiResponse.success(
                         "A password reset link has been sent to your email address."));
     }
 
@@ -73,6 +74,6 @@ public class UserAccountPasswordController {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(com.damian.xBank.shared.utils.ApiResponse.success("Password reset successfully."));
+                .body(ApiResponse.success("Password reset successfully."));
     }
 }

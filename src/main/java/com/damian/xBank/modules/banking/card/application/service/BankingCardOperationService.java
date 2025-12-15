@@ -15,7 +15,7 @@ import com.damian.xBank.modules.notification.application.service.NotificationSer
 import com.damian.xBank.modules.notification.domain.enums.NotificationType;
 import com.damian.xBank.modules.notification.domain.event.NotificationEvent;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
-import com.damian.xBank.shared.utils.AuthHelper;
+import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -29,17 +29,20 @@ public class BankingCardOperationService {
     private final BankingTransactionCardService bankingTransactionCardService;
     private final BankingCardRepository bankingCardRepository;
     private final NotificationService notificationService;
+    private final AuthenticationContext authenticationContext;
 
     public BankingCardOperationService(
             BankingTransactionAccountService bankingTransactionAccountService,
             BankingTransactionCardService bankingTransactionCardService,
             BankingCardRepository bankingCardRepository,
-            NotificationService notificationService
+            NotificationService notificationService,
+            AuthenticationContext authenticationContext
     ) {
         this.bankingTransactionAccountService = bankingTransactionAccountService;
         this.bankingTransactionCardService = bankingTransactionCardService;
         this.bankingCardRepository = bankingCardRepository;
         this.notificationService = notificationService;
+        this.authenticationContext = authenticationContext;
     }
 
     /**
@@ -104,7 +107,7 @@ public class BankingCardOperationService {
             String description,
             BankingTransactionType transactionType
     ) {
-        final Customer customerLogged = AuthHelper.getCurrentCustomer();
+        final Customer customerLogged = authenticationContext.getCurrentCustomer();
 
         // run validations and throw if any throw exception
         BankingCardGuard.forCard(card)
@@ -129,7 +132,7 @@ public class BankingCardOperationService {
         // Notify the user
         notificationService.publish(
                 new NotificationEvent(
-                        customerLogged.getId(),
+                        customerLogged.getAccount().getId(),
                         NotificationType.TRANSACTION,
                         Map.of(
                                 "transaction", BankingTransactionDtoMapper.toBankingTransactionDto(transaction)

@@ -2,7 +2,7 @@ package com.damian.xBank.modules.setting.infra.exception;
 
 import com.damian.xBank.modules.setting.domain.exception.SettingNotFoundException;
 import com.damian.xBank.modules.setting.domain.exception.SettingNotOwnerException;
-import com.damian.xBank.shared.utils.ApiResponse;
+import com.damian.xBank.shared.dto.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;

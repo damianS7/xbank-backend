@@ -4,7 +4,7 @@ import com.damian.xBank.modules.user.customer.domain.exception.CustomerImageNotF
 import com.damian.xBank.modules.user.customer.domain.exception.CustomerNotFoundException;
 import com.damian.xBank.modules.user.customer.domain.exception.CustomerUpdateAuthorizationException;
 import com.damian.xBank.modules.user.customer.domain.exception.CustomerUpdateException;
-import com.damian.xBank.shared.utils.ApiResponse;
+import com.damian.xBank.shared.dto.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;

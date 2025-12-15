@@ -11,7 +11,7 @@ import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingAccountCardsLimitException;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.exception.Exceptions;
-import com.damian.xBank.shared.utils.AuthHelper;
+import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,13 +19,16 @@ public class BankingAccountCardManagementService {
     private final int MAX_CARDS_PER_ACCOUNT = 5;
     private final BankingCardService bankingCardService;
     private final BankingAccountRepository bankingAccountRepository;
+    private final AuthenticationContext authenticationContext;
 
     public BankingAccountCardManagementService(
             BankingAccountRepository bankingAccountRepository,
-            BankingCardService bankingCardService
+            BankingCardService bankingCardService,
+            AuthenticationContext authenticationContext
     ) {
         this.bankingAccountRepository = bankingAccountRepository;
         this.bankingCardService = bankingCardService;
+        this.authenticationContext = authenticationContext;
     }
 
     /**
@@ -37,7 +40,7 @@ public class BankingAccountCardManagementService {
      */
     public BankingCard requestCard(Long bankingAccountId, BankingAccountCardRequest request) {
         // Customer logged
-        final Customer currentCustomer = AuthHelper.getCurrentCustomer();
+        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
 
         // we get the BankingAccount to associate the card created.
         final BankingAccount bankingAccount = bankingAccountRepository
@@ -49,7 +52,7 @@ public class BankingAccountCardManagementService {
                 );
 
         // if the logged customer is not admin
-        if (!AuthHelper.isAdmin(currentCustomer)) {
+        if (!currentCustomer.isAdmin()) {
             // check if the account belongs to this customer.
             BankingAccountGuard.forAccount(bankingAccount)
                                .assertOwnership(currentCustomer);

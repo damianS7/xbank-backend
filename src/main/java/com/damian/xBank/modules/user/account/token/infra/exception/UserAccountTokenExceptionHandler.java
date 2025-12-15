@@ -3,7 +3,7 @@ package com.damian.xBank.modules.user.account.token.infra.exception;
 import com.damian.xBank.modules.user.account.token.domain.exception.UserAccountTokenExpiredException;
 import com.damian.xBank.modules.user.account.token.domain.exception.UserAccountTokenNotFoundException;
 import com.damian.xBank.modules.user.account.token.domain.exception.UserAccountTokenUsedException;
-import com.damian.xBank.shared.utils.ApiResponse;
+import com.damian.xBank.shared.dto.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;

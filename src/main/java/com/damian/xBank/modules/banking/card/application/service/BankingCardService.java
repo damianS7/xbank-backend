@@ -5,7 +5,7 @@ import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.enums.BankingCardType;
 import com.damian.xBank.modules.banking.card.infra.repository.BankingCardRepository;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
-import com.damian.xBank.shared.utils.AuthHelper;
+import com.damian.xBank.shared.security.AuthenticationContext;
 import net.datafaker.Faker;
 import org.springframework.stereotype.Service;
 
@@ -16,13 +16,16 @@ import java.util.Set;
 @Service
 public class BankingCardService {
 
+    private final AuthenticationContext authenticationContext;
     private final BankingCardRepository bankingCardRepository;
     private final Faker faker;
 
     public BankingCardService(
+            AuthenticationContext authenticationContext,
             BankingCardRepository bankingCardRepository,
             Faker faker
     ) {
+        this.authenticationContext = authenticationContext;
         this.bankingCardRepository = bankingCardRepository;
         this.faker = faker;
     }
@@ -30,7 +33,7 @@ public class BankingCardService {
     // return the cards of the logged customer
     public Set<BankingCard> getCustomerBankingCards() {
         // Customer logged
-        final Customer currentCustomer = AuthHelper.getCurrentCustomer();
+        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
 
         return this.getCustomerBankingCards(currentCustomer.getId());
     }
@@ -59,7 +62,7 @@ public class BankingCardService {
         // save the card
         return bankingCardRepository.save(bankingCard);
     }
-    
+
     public String generateCardNumber() {
         return faker.number().digits(16);
     }

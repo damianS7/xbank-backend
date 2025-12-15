@@ -7,9 +7,9 @@ import com.damian.xBank.modules.setting.domain.exception.SettingNotFoundExceptio
 import com.damian.xBank.modules.setting.domain.exception.SettingNotOwnerException;
 import com.damian.xBank.modules.setting.infra.repository.SettingRepository;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
-import com.damian.xBank.shared.domain.User;
 import com.damian.xBank.shared.exception.Exceptions;
-import com.damian.xBank.shared.utils.AuthHelper;
+import com.damian.xBank.shared.security.AuthenticationContext;
+import com.damian.xBank.shared.security.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,16 +18,19 @@ import org.springframework.stereotype.Service;
 public class SettingService {
     private static final Logger log = LoggerFactory.getLogger(SettingService.class);
     private final SettingRepository settingRepository;
+    private final AuthenticationContext authenticationContext;
 
     public SettingService(
-            SettingRepository settingRepository
+            SettingRepository settingRepository,
+            AuthenticationContext authenticationContext
     ) {
         this.settingRepository = settingRepository;
+        this.authenticationContext = authenticationContext;
     }
 
     // get all the settings for the current user
     public Setting getSettings() {
-        User currentUser = AuthHelper.getCurrentUser();
+        User currentUser = authenticationContext.getCurrentUser();
         return settingRepository
                 .findByUser_Id(currentUser.getId())
                 .orElseThrow(
@@ -39,7 +42,7 @@ public class SettingService {
 
     // Update settings for the current user
     public Setting updateSettings(SettingsUpdateRequest request) {
-        User currentUser = AuthHelper.getCurrentUser();
+        User currentUser = authenticationContext.getCurrentUser();
 
         // find the setting by settingId
         Setting userSettings = settingRepository

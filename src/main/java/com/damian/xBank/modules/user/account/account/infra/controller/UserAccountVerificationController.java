@@ -1,10 +1,11 @@
 package com.damian.xBank.modules.user.account.account.infra.controller;
 
 import com.damian.xBank.modules.user.account.account.application.dto.request.UserAccountVerificationResendRequest;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.application.service.UserAccountVerificationService;
-import com.damian.xBank.modules.user.account.token.domain.entity.UserAccountToken;
+import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.token.application.service.UserAccountTokenService;
+import com.damian.xBank.modules.user.account.token.domain.entity.UserAccountToken;
+import com.damian.xBank.shared.dto.ApiResponse;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +40,7 @@ public class UserAccountVerificationController {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(com.damian.xBank.shared.utils.ApiResponse.success(
+                .body(ApiResponse.success(
                         "Your account has been verified. You can now log in with your credentials."));
     }
 
@@ -57,7 +58,7 @@ public class UserAccountVerificationController {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(com.damian.xBank.shared.utils.ApiResponse.success(
+                .body(ApiResponse.success(
                         "A verification link has been sent to your email."));
     }
 }

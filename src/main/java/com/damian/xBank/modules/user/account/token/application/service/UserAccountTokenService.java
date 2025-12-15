@@ -1,16 +1,16 @@
 package com.damian.xBank.modules.user.account.token.application.service;
 
 import com.damian.xBank.modules.user.account.account.application.dto.request.UserAccountPasswordResetRequest;
+import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
 import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountNotFoundException;
 import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountVerificationNotPendingException;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.infra.repository.UserAccountRepository;
+import com.damian.xBank.modules.user.account.token.domain.entity.UserAccountToken;
 import com.damian.xBank.modules.user.account.token.domain.enums.UserAccountTokenType;
 import com.damian.xBank.modules.user.account.token.domain.exception.UserAccountTokenExpiredException;
 import com.damian.xBank.modules.user.account.token.domain.exception.UserAccountTokenNotFoundException;
 import com.damian.xBank.modules.user.account.token.domain.exception.UserAccountTokenUsedException;
-import com.damian.xBank.modules.user.account.token.domain.entity.UserAccountToken;
 import com.damian.xBank.modules.user.account.token.infra.repository.UserAccountTokenRepository;
 import com.damian.xBank.shared.exception.Exceptions;
 import org.slf4j.Logger;

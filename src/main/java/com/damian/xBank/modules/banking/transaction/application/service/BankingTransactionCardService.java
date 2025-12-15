@@ -8,7 +8,7 @@ import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransact
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotFoundException;
 import com.damian.xBank.modules.banking.transaction.infra.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
-import com.damian.xBank.shared.utils.AuthHelper;
+import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,13 +17,16 @@ import java.math.BigDecimal;
 
 @Service
 public class BankingTransactionCardService {
+    private final AuthenticationContext authenticationContext;
     private final BankingTransactionRepository bankingTransactionRepository;
     private final BankingTransactionAccountService bankingTransactionAccountService;
 
     public BankingTransactionCardService(
+            AuthenticationContext authenticationContext,
             BankingTransactionRepository bankingTransactionRepository,
             BankingTransactionAccountService bankingTransactionAccountService
     ) {
+        this.authenticationContext = authenticationContext;
         this.bankingTransactionRepository = bankingTransactionRepository;
         this.bankingTransactionAccountService = bankingTransactionAccountService;
     }
@@ -88,7 +91,7 @@ public class BankingTransactionCardService {
      * @return BankingTransaction confirmed transaction
      */
     public BankingTransaction confirmTransaction(Long transactionId) {
-        final Customer currentCustomer = AuthHelper.getCurrentCustomer();
+        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
 
         BankingTransaction transaction = bankingTransactionRepository
                 .findById(transactionId)

@@ -1,18 +1,19 @@
 package com.damian.xBank.modules.user.account.account.application.service;
 
+import com.damian.xBank.infrastructure.mail.EmailSenderService;
 import com.damian.xBank.modules.user.account.account.application.dto.request.UserAccountPasswordResetSetRequest;
 import com.damian.xBank.modules.user.account.account.application.dto.request.UserAccountPasswordUpdateRequest;
+import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountNotFoundException;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.infra.repository.UserAccountRepository;
+import com.damian.xBank.modules.user.account.token.application.service.UserAccountTokenService;
 import com.damian.xBank.modules.user.account.token.domain.entity.UserAccountToken;
 import com.damian.xBank.modules.user.account.token.infra.repository.UserAccountTokenRepository;
-import com.damian.xBank.modules.user.account.token.application.service.UserAccountTokenService;
-import com.damian.xBank.shared.domain.User;
 import com.damian.xBank.shared.exception.Exceptions;
-import com.damian.xBank.shared.infrastructure.mail.EmailSenderService;
-import com.damian.xBank.shared.utils.AuthHelper;
+import com.damian.xBank.shared.security.AuthenticationContext;
+import com.damian.xBank.shared.security.PasswordValidator;
+import com.damian.xBank.shared.security.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
@@ -26,27 +27,30 @@ public class UserAccountPasswordService {
     private static final Logger log = LoggerFactory.getLogger(UserAccountPasswordService.class);
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserAccountRepository userAccountRepository;
+    private final PasswordValidator passwordValidator;
     private final EmailSenderService emailSenderService;
     private final UserAccountTokenRepository userAccountTokenRepository;
     private final Environment env;
-    private final UserAccountVerificationService userAccountVerificationService;
     private final UserAccountTokenService userAccountTokenService;
+    private final AuthenticationContext authenticationContext;
 
     public UserAccountPasswordService(
             BCryptPasswordEncoder bCryptPasswordEncoder,
             UserAccountRepository userAccountRepository,
+            PasswordValidator passwordValidator,
             EmailSenderService emailSenderService,
             UserAccountTokenRepository userAccountTokenRepository,
             Environment env,
-            UserAccountVerificationService userAccountVerificationService,
-            UserAccountTokenService userAccountTokenService
+            UserAccountTokenService userAccountTokenService,
+            AuthenticationContext authenticationContext
     ) {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userAccountRepository = userAccountRepository;
+        this.passwordValidator = passwordValidator;
         this.emailSenderService = emailSenderService;
         this.userAccountTokenRepository = userAccountTokenRepository;
         this.env = env;
-        this.userAccountVerificationService = userAccountVerificationService;
+        this.authenticationContext = authenticationContext;
         this.userAccountTokenService = userAccountTokenService;
     }
 
@@ -91,10 +95,10 @@ public class UserAccountPasswordService {
      */
     public void updatePassword(UserAccountPasswordUpdateRequest request) {
         // we extract the email from the User stored in the SecurityContext
-        final User currentUser = AuthHelper.getCurrentUser();
+        final User currentUser = authenticationContext.getCurrentUser();
 
         // Before making any changes we check that the password sent by the user matches the one in the entity
-        AuthHelper.validatePassword(currentUser, request.currentPassword());
+        passwordValidator.validatePassword(currentUser, request.currentPassword());
 
         // update the password
         this.updatePassword(currentUser.getId(), request.newPassword());

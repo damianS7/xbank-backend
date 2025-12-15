@@ -14,7 +14,8 @@ import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTran
 import com.damian.xBank.modules.banking.transaction.infra.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
-import com.damian.xBank.shared.utils.AuthHelper;
+import com.damian.xBank.shared.security.AuthenticationContext;
+import com.damian.xBank.shared.security.PasswordValidator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,20 +23,26 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-@Service
+@Service // TODO
 public class BankingTransactionAccountService {
     //    private final BankingAccountOperationService bankingAccountOperationService;
     private final BankingAccountRepository bankingAccountRepository;
     private final BankingTransactionRepository bankingTransactionRepository;
+    private final AuthenticationContext authenticationContext;
+    private final PasswordValidator passwordValidator;
 
     public BankingTransactionAccountService(
             //            BankingAccountOperationService bankingAccountOperationService,
             BankingAccountRepository bankingAccountRepository,
-            BankingTransactionRepository bankingTransactionRepository
+            BankingTransactionRepository bankingTransactionRepository,
+            AuthenticationContext authenticationContext,
+            PasswordValidator passwordValidator
     ) {
         //        this.bankingAccountOperationService = bankingAccountOperationService;
         this.bankingAccountRepository = bankingAccountRepository;
         this.bankingTransactionRepository = bankingTransactionRepository;
+        this.authenticationContext = authenticationContext;
+        this.passwordValidator = passwordValidator;
     }
 
     /**
@@ -50,7 +57,7 @@ public class BankingTransactionAccountService {
             BankingTransactionConfirmRequest request
     ) {
         // Customer logged
-        final Customer currentCustomer = AuthHelper.getCurrentCustomer();
+        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
 
         BankingTransaction transaction = bankingTransactionRepository
                 .findById(transactionId)
@@ -63,7 +70,7 @@ public class BankingTransactionAccountService {
                                .assertOwnership(currentCustomer);
 
         // check the password
-        AuthHelper.validatePassword(currentCustomer, request.password());
+        passwordValidator.validatePassword(currentCustomer, request.password());
 
         // TODO
         //        switch (transaction.getType()) {
@@ -109,7 +116,7 @@ public class BankingTransactionAccountService {
      */
     public Page<BankingTransaction> getTransactions(Long bankingAccountId, Pageable pageable) {
         // Customer logged
-        final Customer currentCustomer = AuthHelper.getCurrentCustomer();
+        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
 
         BankingAccount account = bankingAccountRepository
                 .findById(bankingAccountId)
@@ -132,7 +139,7 @@ public class BankingTransactionAccountService {
      */
     public Page<BankingTransaction> getPendingTransactions(Pageable pageable) {
         // Customer logged
-        final Customer currentCustomer = AuthHelper.getCurrentCustomer();
+        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
 
         return bankingTransactionRepository.findByStatusAndBankingAccount_Customer_Id(
                 BankingTransactionStatus.PENDING,
@@ -193,7 +200,7 @@ public class BankingTransactionAccountService {
      */
     public BankingTransaction getTransaction(Long transactionId) {
         // Customer logged
-        final Customer currentCustomer = AuthHelper.getCurrentCustomer();
+        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
 
         BankingTransaction transaction = bankingTransactionRepository
                 .findById(transactionId)
@@ -225,7 +232,7 @@ public class BankingTransactionAccountService {
             BankingTransactionUpdateStatusRequest request
     ) {
         // Customer logged
-        final Customer currentCustomer = AuthHelper.getCurrentCustomer();
+        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
 
         // transaction to update
         final BankingTransaction bankingTransaction = bankingTransactionRepository

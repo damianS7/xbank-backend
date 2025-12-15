@@ -14,7 +14,7 @@ import com.damian.xBank.modules.notification.application.service.NotificationSer
 import com.damian.xBank.modules.notification.domain.enums.NotificationType;
 import com.damian.xBank.modules.notification.domain.event.NotificationEvent;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
-import com.damian.xBank.shared.utils.AuthHelper;
+import com.damian.xBank.shared.security.AuthenticationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -28,15 +28,18 @@ public class AdminBankingAccountOperationService {
     private final BankingTransactionAccountService bankingTransactionAccountService;
     private final BankingAccountRepository bankingAccountRepository;
     private final NotificationService notificationService;
+    private final AuthenticationContext authenticationContext;
 
     public AdminBankingAccountOperationService(
             BankingTransactionAccountService bankingTransactionAccountService,
             BankingAccountRepository bankingAccountRepository,
-            NotificationService notificationService
+            NotificationService notificationService,
+            AuthenticationContext authenticationContext
     ) {
         this.bankingTransactionAccountService = bankingTransactionAccountService;
         this.bankingAccountRepository = bankingAccountRepository;
         this.notificationService = notificationService;
+        this.authenticationContext = authenticationContext;
     }
 
     /**
@@ -50,7 +53,7 @@ public class AdminBankingAccountOperationService {
             Long bankingAccountId,
             BankingAccountDepositRequest request
     ) {
-        final Customer customer = AuthHelper.getCurrentCustomer();
+        final Customer customer = authenticationContext.getCurrentCustomer();
 
         // The account to deposit into
         final BankingAccount bankingAccount = bankingAccountRepository
@@ -88,7 +91,7 @@ public class AdminBankingAccountOperationService {
         // Notify receiver
         notificationService.publish(
                 new NotificationEvent(
-                        bankingAccount.getOwner().getId(),
+                        bankingAccount.getOwner().getAccount().getId(),
                         NotificationType.TRANSACTION,
                         Map.of(
                                 "transaction", BankingTransactionDtoMapper.toBankingTransactionDto(transaction)

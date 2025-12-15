@@ -266,4 +266,12 @@ public class Customer {
     public String getEmail() {
         return account.getEmail();
     }
+
+    public boolean isAdmin() {
+        return this.getRole() == UserAccountRole.ADMIN;
+    }
+
+    public boolean isCustomer() {
+        return this.getRole() == UserAccountRole.CUSTOMER;
+    }
 }

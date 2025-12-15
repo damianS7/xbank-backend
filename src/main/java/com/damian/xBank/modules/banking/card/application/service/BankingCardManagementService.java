@@ -10,7 +10,8 @@ import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoun
 import com.damian.xBank.modules.banking.card.infra.repository.BankingCardRepository;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.exception.Exceptions;
-import com.damian.xBank.shared.utils.AuthHelper;
+import com.damian.xBank.shared.security.AuthenticationContext;
+import com.damian.xBank.shared.security.PasswordValidator;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -18,12 +19,18 @@ import java.time.Instant;
 @Service
 public class BankingCardManagementService {
 
+    private final PasswordValidator passwordValidator;
     private final BankingCardRepository bankingCardRepository;
+    private final AuthenticationContext authenticationContext;
 
     public BankingCardManagementService(
-            BankingCardRepository bankingCardRepository
+            PasswordValidator passwordValidator,
+            BankingCardRepository bankingCardRepository,
+            AuthenticationContext authenticationContext
     ) {
+        this.passwordValidator = passwordValidator;
         this.bankingCardRepository = bankingCardRepository;
+        this.authenticationContext = authenticationContext;
     }
 
     /**
@@ -45,16 +52,16 @@ public class BankingCardManagementService {
                 ));
 
         // Customer logged
-        final Customer currentCustomer = AuthHelper.getCurrentCustomer();
+        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
 
         // run validations if not admin
-        if (!AuthHelper.isAdmin(currentCustomer)) {
+        if (!currentCustomer.isAdmin()) {
 
             BankingCardGuard
                     .forCard(bankingCard)
                     .assertOwnership(currentCustomer);
 
-            AuthHelper.validatePassword(currentCustomer.getAccount(), request.password());
+            passwordValidator.validatePassword(currentCustomer.getAccount(), request.password());
         }
 
         BankingCardStatus nextStatus = BankingCardStatus.ACTIVE;
@@ -88,7 +95,7 @@ public class BankingCardManagementService {
             BankingCardUpdateDailyLimitRequest request
     ) {
         // Customer logged
-        final Customer currentCustomer = AuthHelper.getCurrentCustomer();
+        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
 
         // Banking card to set limit on
         final BankingCard bankingCard = bankingCardRepository.findById(bankingCardId).orElseThrow(
@@ -98,13 +105,13 @@ public class BankingCardManagementService {
                 ));
 
         // run validations if not admin
-        if (!AuthHelper.isAdmin(currentCustomer)) {
+        if (!currentCustomer.isAdmin()) {
 
             BankingCardGuard
                     .forCard(bankingCard)
                     .assertOwnership(currentCustomer);
 
-            AuthHelper.validatePassword(currentCustomer.getAccount(), request.password());
+            passwordValidator.validatePassword(currentCustomer.getAccount(), request.password());
         }
 
         // we set the limit of the card
@@ -126,7 +133,7 @@ public class BankingCardManagementService {
      */
     public BankingCard updatePin(Long bankingCardId, BankingCardUpdatePinRequest request) {
         // Customer logged
-        final Customer currentCustomer = AuthHelper.getCurrentCustomer();
+        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
 
         // Banking card to set pin on
         final BankingCard bankingCard = bankingCardRepository.findById(bankingCardId).orElseThrow(
@@ -136,13 +143,13 @@ public class BankingCardManagementService {
                 ));
 
         // run validations if not admin
-        if (!AuthHelper.isAdmin(currentCustomer)) {
+        if (!currentCustomer.isAdmin()) {
 
             BankingCardGuard
                     .forCard(bankingCard)
                     .assertOwnership(currentCustomer);
 
-            AuthHelper.validatePassword(currentCustomer.getAccount(), request.password());
+            passwordValidator.validatePassword(currentCustomer.getAccount(), request.password());
         }
 
         // we set the new pin
