@@ -1,4 +1,4 @@
-package com.damian.xBank.shared.infrastructure.storage.exception;
+package com.damian.xBank.infrastructure.storage.exception;
 
 public class FileStorageFailedException extends FileStorageException {
 

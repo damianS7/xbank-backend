@@ -1,7 +1,7 @@
-package com.damian.xBank.shared.infrastructure.storage;
+package com.damian.xBank.infrastructure.storage;
 
-import com.damian.xBank.shared.domain.User;
-import com.damian.xBank.shared.utils.AuthHelper;
+import com.damian.xBank.shared.security.AuthenticationContext;
+import com.damian.xBank.shared.security.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -21,11 +21,14 @@ public class ImageUploaderService {
     public static final String UPLOAD_PATH = "uploads/images/users/{userId}";
     private static final Logger log = LoggerFactory.getLogger(ImageUploaderService.class);
     private final FileStorageService fileStorageService;
+    private final AuthenticationContext authenticationContext;
 
     public ImageUploaderService(
-            FileStorageService fileStorageService
+            FileStorageService fileStorageService,
+            AuthenticationContext authenticationContext
     ) {
         this.fileStorageService = fileStorageService;
+        this.authenticationContext = authenticationContext;
     }
 
     public static String getUserUploadFolder(Long userId) {
@@ -36,7 +39,7 @@ public class ImageUploaderService {
      * Uploads an image to the server
      */
     public File uploadImage(MultipartFile file, String folder, String filename) {
-        final User currentUser = AuthHelper.getCurrentUser();
+        final User currentUser = authenticationContext.getCurrentUser();
         Path path = Paths.get(
                 getUserUploadFolder(currentUser.getId()),
                 folder

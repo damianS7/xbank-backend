@@ -1,8 +1,8 @@
-package com.damian.xBank.shared.infrastructure.storage.exception;
+package com.damian.xBank.infrastructure.storage.exception;
 
+import com.damian.xBank.shared.dto.ApiResponse;
 import com.damian.xBank.shared.exception.ApplicationException;
 import com.damian.xBank.shared.exception.Exceptions;
-import com.damian.xBank.shared.utils.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
