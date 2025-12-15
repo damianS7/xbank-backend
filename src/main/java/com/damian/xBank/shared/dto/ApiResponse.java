@@ -1,4 +1,4 @@
-package com.damian.xBank.shared.utils;
+package com.damian.xBank.shared.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.http.HttpStatus;
