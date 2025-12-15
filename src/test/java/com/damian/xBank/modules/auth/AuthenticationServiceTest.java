@@ -2,14 +2,14 @@ package com.damian.xBank.modules.auth;
 
 import com.damian.xBank.modules.auth.application.dto.AuthenticationRequest;
 import com.damian.xBank.modules.auth.application.dto.AuthenticationResponse;
+import com.damian.xBank.modules.auth.application.service.AuthenticationService;
 import com.damian.xBank.modules.auth.domain.exception.AccountNotVerifiedException;
 import com.damian.xBank.modules.auth.domain.exception.AccountSuspendedException;
-import com.damian.xBank.modules.auth.application.service.AuthenticationService;
-import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
+import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.domain.User;
 import com.damian.xBank.shared.exception.Exceptions;
+import com.damian.xBank.shared.security.User;
 import com.damian.xBank.shared.utils.JwtUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,7 +47,7 @@ public class AuthenticationServiceTest extends AbstractServiceTest {
         UserAccount userAccount = UserAccount.create()
                                              .setId(1L)
                                              .setEmail("user@demo.com")
-                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                                             .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
                                              .setAccountStatus(UserAccountStatus.VERIFIED);
 
         User user = new User(userAccount);
@@ -79,7 +79,7 @@ public class AuthenticationServiceTest extends AbstractServiceTest {
         UserAccount userAccount = UserAccount.create()
                                              .setId(1L)
                                              .setEmail("user@demo.com")
-                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                                             .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
                                              .setAccountStatus(UserAccountStatus.VERIFIED);
 
         AuthenticationRequest request = new AuthenticationRequest(
@@ -112,7 +112,7 @@ public class AuthenticationServiceTest extends AbstractServiceTest {
         UserAccount userAccount = UserAccount.create()
                                              .setId(1L)
                                              .setEmail("user@demo.com")
-                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                                             .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
                                              .setAccountStatus(UserAccountStatus.SUSPENDED);
 
         AuthenticationRequest request = new AuthenticationRequest(
@@ -146,7 +146,7 @@ public class AuthenticationServiceTest extends AbstractServiceTest {
         UserAccount userAccount = UserAccount.create()
                                              .setId(1L)
                                              .setEmail("user@demo.com")
-                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                                             .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
                                              .setAccountStatus(UserAccountStatus.PENDING_VERIFICATION);
 
         AuthenticationRequest request = new AuthenticationRequest(

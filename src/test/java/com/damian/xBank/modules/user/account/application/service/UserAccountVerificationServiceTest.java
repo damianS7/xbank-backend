@@ -1,14 +1,14 @@
-package com.damian.xBank.modules.user.account;
+package com.damian.xBank.modules.user.account.application.service;
 
+import com.damian.xBank.modules.user.account.account.application.service.UserAccountVerificationService;
+import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
 import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountVerificationNotPendingException;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.infra.repository.UserAccountRepository;
-import com.damian.xBank.modules.user.account.account.application.service.UserAccountVerificationService;
-import com.damian.xBank.modules.user.account.token.domain.enums.UserAccountTokenType;
-import com.damian.xBank.modules.user.account.token.domain.entity.UserAccountToken;
-import com.damian.xBank.modules.user.account.token.infra.repository.UserAccountTokenRepository;
 import com.damian.xBank.modules.user.account.token.application.service.UserAccountTokenService;
+import com.damian.xBank.modules.user.account.token.domain.entity.UserAccountToken;
+import com.damian.xBank.modules.user.account.token.domain.enums.UserAccountTokenType;
+import com.damian.xBank.modules.user.account.token.infra.repository.UserAccountTokenRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,7 +43,7 @@ public class UserAccountVerificationServiceTest extends AbstractServiceTest {
                 .create()
                 .setId(10L)
                 .setEmail("user@demo.com")
-                .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+                .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD));
 
         UserAccountToken activationToken = new UserAccountToken(userAccount);
         activationToken.setToken("sdfsidjgfiosdjfi");
@@ -70,7 +70,7 @@ public class UserAccountVerificationServiceTest extends AbstractServiceTest {
                 .create()
                 .setId(10L)
                 .setEmail("user@demo.com")
-                .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
                 .setAccountStatus(UserAccountStatus.SUSPENDED);
 
         UserAccountToken activationToken = new UserAccountToken(userAccount);
@@ -93,7 +93,7 @@ public class UserAccountVerificationServiceTest extends AbstractServiceTest {
                 .create()
                 .setId(10L)
                 .setEmail("user@demo.com")
-                .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
                 .setAccountStatus(UserAccountStatus.VERIFIED);
 
         UserAccountToken activationToken = new UserAccountToken(userAccount);

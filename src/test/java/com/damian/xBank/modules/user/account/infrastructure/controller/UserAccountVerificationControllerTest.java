@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.user.account;
+package com.damian.xBank.modules.user.account.infrastructure.controller;
 
 import com.damian.xBank.modules.user.account.account.application.dto.request.UserAccountPasswordResetSetRequest;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;

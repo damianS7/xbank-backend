@@ -7,8 +7,11 @@ import com.damian.xBank.modules.notification.infra.repository.NotificationReposi
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountNotFoundException;
 import com.damian.xBank.modules.user.account.account.infra.repository.UserAccountRepository;
+import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.customer.infra.repository.CustomerRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.Exceptions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -36,52 +39,67 @@ public class NotificationServiceTest extends AbstractServiceTest {
     @Mock
     private UserAccountRepository userAccountRepository;
 
+    @Mock
+    private CustomerRepository customerRepository;
+
     @InjectMocks
     private NotificationService notificationService;
+
+    private Customer customer;
+    private Customer customer2;
+
+    @BeforeEach
+    void setUp() {
+        customer = Customer.create(
+                UserAccount.create()
+                           .setId(1L)
+                           .setEmail("customer@demo.com")
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+        ).setId(1L);
+
+        customer2 = Customer.create(
+                UserAccount.create()
+                           .setId(2L)
+                           .setEmail("customer2@demo.com")
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+        ).setId(2L);
+
+    }
 
     @Test
     @DisplayName("should get notifications")
     void shouldGetNotifications() {
         // given
-        UserAccount user = UserAccount.create()
-                                      .setId(1L)
-                                      .setEmail("publisher@demo.com")
-                                      .setPassword(passwordEncoder.encode(RAW_PASSWORD));
-        setUpContext(user);
+        setUpContext(customer.getAccount());
 
         // when
         Pageable pageable = mock(Pageable.class);
         Page<Notification> page = new PageImpl<>(
                 List.of(
-                        Notification.create(user),
-                        Notification.create(user),
-                        Notification.create(user)
+                        Notification.create(customer),
+                        Notification.create(customer),
+                        Notification.create(customer)
                 )
         );
 
-        when(notificationRepository.findAllByUserId(user.getId(), pageable)).thenReturn(page);
+        when(notificationRepository.findAllByUserId(customer.getId(), pageable)).thenReturn(page);
 
         Page<Notification> result = notificationService.getNotifications(pageable);
 
         // then
         assertThat(result).isEqualTo(page);
         assertThat(result.getTotalElements()).isEqualTo(page.getTotalElements());
-        verify(notificationRepository).findAllByUserId(user.getId(), pageable);
+        verify(notificationRepository).findAllByUserId(customer.getId(), pageable);
     }
 
     @Test
     @DisplayName("should delete notifications")
     void shouldDeleteNotifications() {
         // given
-        UserAccount user = UserAccount.create()
-                                      .setId(1L)
-                                      .setEmail("publisher@demo.com")
-                                      .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+        setUpContext(customer.getAccount());
 
-        Notification notification = Notification.create(user)
+        Notification notification = Notification.create(customer)
                                                 .setId(1L);
-
-        setUpContext(user);
         notificationService.deleteNotifications(List.of(notification.getId()));
         verify(notificationRepository).deleteAllByIdInAndUser_Id(anyList(), anyLong());
     }
@@ -90,11 +108,7 @@ public class NotificationServiceTest extends AbstractServiceTest {
     @DisplayName("should get notifications and removes sink on cancel")
     void shouldGetNotificationsAndRemovesSink() throws NoSuchFieldException, IllegalAccessException {
         // given
-        UserAccount user = UserAccount.create()
-                                      .setId(1L)
-                                      .setEmail("publisher@demo.com")
-                                      .setPassword(passwordEncoder.encode(RAW_PASSWORD));
-        setUpContext(user);
+        setUpContext(customer.getAccount());
 
         Flux<NotificationEvent> flux = notificationService.getNotificationsForUser();
 
@@ -116,16 +130,6 @@ public class NotificationServiceTest extends AbstractServiceTest {
     @DisplayName("should publish notification")
     void shouldPublishNotification() {
         // given
-        UserAccount publisher = UserAccount.create()
-                                           .setId(1L)
-                                           .setEmail("publisher@demo.com")
-                                           .setPassword(passwordEncoder.encode(RAW_PASSWORD));
-        //        setUpContext(publisher);
-
-        UserAccount recipient = UserAccount.create()
-                                           .setId(2L)
-                                           .setEmail("recipient@demo.com")
-                                           .setPassword(passwordEncoder.encode(RAW_PASSWORD));
 
         Map<String, Object> metadata = Map.of(
                 "postId", 3L,
@@ -133,14 +137,14 @@ public class NotificationServiceTest extends AbstractServiceTest {
         );
 
         NotificationEvent event = new NotificationEvent(
-                recipient.getId(),
+                customer2.getId(),
                 NotificationType.INFO,
                 metadata,
                 Instant.now().toString()
         );
 
         // when
-        when(userAccountRepository.findById(recipient.getId())).thenReturn(Optional.of(recipient));
+        when(userAccountRepository.findById(anyLong())).thenReturn(Optional.of(customer2.getAccount()));
         when(notificationRepository.save(any()))
                 .thenAnswer(i -> i.getArguments()[0]);
         notificationService.publish(event);
@@ -149,44 +153,10 @@ public class NotificationServiceTest extends AbstractServiceTest {
         verify(notificationRepository).save(any());
     }
 
-    //    @Test
-    //    @DisplayName("should not publish when publisher and recipient are the same")
-    //    void shouldNotPublishNotificationWhenPublisherAndRecipientAreTheSame() {
-    //        // given
-    //        UserAccount publisher = UserAccount.create()
-    //                                           .setId(1L)
-    //                                           .setEmail("publisher@demo.com")
-    //                                           .setPassword(passwordEncoder.encode(RAW_PASSWORD));
-    //
-    //        setUpContext(publisher);
-    //
-    //        Map<String, Object> metadata = Map.of(
-    //                "postId", 1L,
-    //                "userName", "userName"
-    //        );
-    //
-    //        NotificationEvent event = new NotificationEvent(
-    //                publisher.getId(), // same as publisher
-    //                NotificationType.INFO,
-    //                metadata,
-    //                Instant.now().toString()
-    //        );
-    //        // when
-    //        notificationService.publishNotification(event);
-    //
-    //        verify(notificationRepository, never()).save(any());
-    //    }
-
     @Test
     @DisplayName("should not publish when recipient not found")
     void shouldNotPublishNotificationWhenRecipientNotFound() {
         // given
-        UserAccount publisher = UserAccount.create()
-                                           .setId(1L)
-                                           .setEmail("publisher@demo.com")
-                                           .setPassword(passwordEncoder.encode(RAW_PASSWORD));
-
-        //        setUpContext(publisher);
 
         Map<String, Object> metadata = Map.of(
                 "postId", 1L,

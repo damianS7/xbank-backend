@@ -51,7 +51,7 @@ public class BankingAccountCardManagementServiceTest extends AbstractServiceTest
         UserAccount userAccount = UserAccount.create()
                                              .setId(1L)
                                              .setEmail("customer@demo.com")
-                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+                                             .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD));
 
         Customer customer = Customer.create()
                                     .setId(1L)
@@ -92,7 +92,7 @@ public class BankingAccountCardManagementServiceTest extends AbstractServiceTest
         UserAccount userAccount = UserAccount.create()
                                              .setId(1L)
                                              .setEmail("customer@demo.com")
-                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+                                             .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD));
 
         Customer customer = Customer.create()
                                     .setId(1L)
@@ -128,7 +128,7 @@ public class BankingAccountCardManagementServiceTest extends AbstractServiceTest
         UserAccount userAccount = UserAccount.create()
                                              .setId(1L)
                                              .setEmail("customer@demo.com")
-                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+                                             .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD));
 
         Customer customer = Customer.create()
                                     .setId(1L)
@@ -137,7 +137,7 @@ public class BankingAccountCardManagementServiceTest extends AbstractServiceTest
         UserAccount userAccountB = UserAccount.create()
                                               .setId(2L)
                                               .setEmail("customer@demo.com")
-                                              .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+                                              .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD));
 
         Customer customerB = Customer.create()
                                      .setId(2L)
@@ -174,7 +174,7 @@ public class BankingAccountCardManagementServiceTest extends AbstractServiceTest
                                               .setId(1L)
                                               .setRole(UserAccountRole.ADMIN)
                                               .setEmail("customer@demo.com")
-                                              .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+                                              .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD));
 
         Customer admin = Customer.create()
                                  .setId(1L)
@@ -183,7 +183,7 @@ public class BankingAccountCardManagementServiceTest extends AbstractServiceTest
         UserAccount userAccount = UserAccount.create()
                                              .setId(2L)
                                              .setEmail("customer@demo.com")
-                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+                                             .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD));
 
         Customer customer = Customer.create()
                                     .setId(2L)
@@ -225,7 +225,7 @@ public class BankingAccountCardManagementServiceTest extends AbstractServiceTest
         UserAccount userAccount = UserAccount.create()
                                              .setId(1L)
                                              .setEmail("customer@demo.com")
-                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+                                             .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD));
 
         Customer customer = Customer.create()
                                     .setId(1L)

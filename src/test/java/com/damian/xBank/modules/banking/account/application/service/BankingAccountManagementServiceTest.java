@@ -49,7 +49,7 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
                 UserAccount.create()
                            .setId(1L)
                            .setEmail("customer@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(1L);
 
         setUpContext(customer);
@@ -89,7 +89,7 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
                 UserAccount.create()
                            .setId(1L)
                            .setEmail("customer@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(1L);
 
         setUpContext(customer);
@@ -123,7 +123,7 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
                 UserAccount.create()
                            .setId(1L)
                            .setEmail("customer@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(1L);
 
         setUpContext(customer);
@@ -157,7 +157,7 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
                 UserAccount.create()
                            .setId(1L)
                            .setEmail("customer@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(1L);
 
         setUpContext(customer);
@@ -193,7 +193,7 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
                 UserAccount.create()
                            .setId(1L)
                            .setEmail("customer@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(1L);
 
         setUpContext(customer);
@@ -230,7 +230,7 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
                 UserAccount.create()
                            .setId(1L)
                            .setEmail("customer@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(1L);
 
         // given
@@ -238,7 +238,7 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
                 UserAccount.create()
                            .setId(2L)
                            .setEmail("customer2@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(2L);
 
         setUpContext(customer);
@@ -278,7 +278,7 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
                            .setId(1L)
                            .setRole(UserAccountRole.ADMIN)
                            .setEmail("customerAdmin@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(1L);
 
         // given
@@ -286,7 +286,7 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
                 UserAccount.create()
                            .setId(2L)
                            .setEmail("customer@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(2L);
 
         setUpContext(customerAdmin);
@@ -324,7 +324,7 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
                 UserAccount.create()
                            .setId(1L)
                            .setEmail("customer@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(1L);
 
         setUpContext(customer);

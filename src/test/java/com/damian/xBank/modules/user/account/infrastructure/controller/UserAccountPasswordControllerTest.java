@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.user.account;
+package com.damian.xBank.modules.user.account.infrastructure.controller;
 
 import com.damian.xBank.modules.user.account.account.application.dto.request.UserAccountPasswordResetRequest;
 import com.damian.xBank.modules.user.account.account.application.dto.request.UserAccountPasswordResetSetRequest;
@@ -8,8 +8,8 @@ import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRol
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
 import com.damian.xBank.modules.user.account.token.domain.entity.UserAccountToken;
 import com.damian.xBank.shared.AbstractControllerTest;
+import com.damian.xBank.shared.dto.ApiResponse;
 import com.damian.xBank.shared.exception.Exceptions;
-import com.damian.xBank.shared.utils.ApiResponse;
 import com.damian.xBank.shared.utils.JsonHelper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.*;

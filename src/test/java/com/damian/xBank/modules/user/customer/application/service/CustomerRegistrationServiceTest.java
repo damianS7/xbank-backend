@@ -1,14 +1,13 @@
-package com.damian.xBank.modules.user.customer;
+package com.damian.xBank.modules.user.customer.application.service;
 
 import com.damian.xBank.modules.setting.application.service.SettingService;
-import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.application.service.UserAccountService;
+import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
+import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.customer.application.dto.request.CustomerRegistrationRequest;
-import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
 import com.damian.xBank.modules.user.customer.infra.repository.CustomerRepository;
-import com.damian.xBank.modules.user.customer.application.service.CustomerRegistrationService;
 import com.damian.xBank.shared.AbstractServiceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -46,7 +45,7 @@ public class CustomerRegistrationServiceTest extends AbstractServiceTest {
         customer = Customer.create()
                            .setId(1L)
                            .setEmail("customer@test.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
                            .setRole(UserAccountRole.USER)
                            .setFirstName("John")
                            .setLastName("Wick")

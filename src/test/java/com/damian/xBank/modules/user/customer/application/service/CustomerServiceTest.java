@@ -1,17 +1,16 @@
-package com.damian.xBank.modules.user.customer;
+package com.damian.xBank.modules.user.customer.application.service;
 
+import com.damian.xBank.modules.user.account.account.application.service.UserAccountService;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.account.account.infra.repository.UserAccountRepository;
-import com.damian.xBank.modules.user.account.account.application.service.UserAccountService;
 import com.damian.xBank.modules.user.customer.application.dto.request.CustomerUpdateRequest;
+import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
 import com.damian.xBank.modules.user.customer.domain.exception.CustomerNotFoundException;
 import com.damian.xBank.modules.user.customer.domain.exception.CustomerUpdateAuthorizationException;
 import com.damian.xBank.modules.user.customer.domain.exception.CustomerUpdateException;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.modules.user.customer.infra.repository.CustomerRepository;
-import com.damian.xBank.modules.user.customer.application.service.CustomerService;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.Exceptions;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +24,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -49,8 +47,8 @@ public class CustomerServiceTest extends AbstractServiceTest {
     @Mock
     private UserAccountService userAccountService;
 
-    @Mock
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    //    @Mock
+    //    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @InjectMocks
     private CustomerService customerService;
@@ -62,7 +60,7 @@ public class CustomerServiceTest extends AbstractServiceTest {
         customer = Customer.create()
                            .setId(1L)
                            .setEmail("customer@test.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setPassword(this.bCryptPasswordEncoder.encode(RAW_PASSWORD))
                            .setRole(UserAccountRole.USER)
                            .setFirstName("John")
                            .setLastName("Wick")
@@ -226,6 +224,14 @@ public class CustomerServiceTest extends AbstractServiceTest {
 
         // when
         when(customerRepository.findById(customer.getId())).thenReturn(Optional.of(customer));
+        //        doThrow(
+        //                new UserAccountInvalidPasswordConfirmationException(
+        //                        Exceptions.USER.ACCOUNT.INVALID_PASSWORD,
+        //                        customer.getId()
+        //                )
+        //        ).when(authenticationContext).validatePassword(
+        //                any(Customer.class), anyString());
+
         UserAccountInvalidPasswordConfirmationException exception = assertThrows(
                 UserAccountInvalidPasswordConfirmationException.class,
                 () -> customerService.updateCustomer(givenRequest)

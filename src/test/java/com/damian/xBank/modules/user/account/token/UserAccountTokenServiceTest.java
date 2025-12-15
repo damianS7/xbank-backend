@@ -1,16 +1,16 @@
 package com.damian.xBank.modules.user.account.token;
 
 import com.damian.xBank.modules.user.account.account.application.dto.request.UserAccountPasswordResetRequest;
-import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountNotFoundException;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
+import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountNotFoundException;
 import com.damian.xBank.modules.user.account.account.infra.repository.UserAccountRepository;
+import com.damian.xBank.modules.user.account.token.application.service.UserAccountTokenService;
+import com.damian.xBank.modules.user.account.token.domain.entity.UserAccountToken;
 import com.damian.xBank.modules.user.account.token.domain.enums.UserAccountTokenType;
 import com.damian.xBank.modules.user.account.token.domain.exception.UserAccountTokenExpiredException;
 import com.damian.xBank.modules.user.account.token.domain.exception.UserAccountTokenNotFoundException;
 import com.damian.xBank.modules.user.account.token.domain.exception.UserAccountTokenUsedException;
-import com.damian.xBank.modules.user.account.token.domain.entity.UserAccountToken;
 import com.damian.xBank.modules.user.account.token.infra.repository.UserAccountTokenRepository;
-import com.damian.xBank.modules.user.account.token.application.service.UserAccountTokenService;
 import com.damian.xBank.shared.AbstractServiceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,7 +45,7 @@ public class UserAccountTokenServiceTest extends AbstractServiceTest {
                 .create()
                 .setId(10L)
                 .setEmail("user@demo.com")
-                .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+                .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD));
 
         UserAccountToken userAccountToken = new UserAccountToken();
         userAccountToken.setAccount(userAccount);
@@ -87,7 +87,7 @@ public class UserAccountTokenServiceTest extends AbstractServiceTest {
                 .create()
                 .setId(10L)
                 .setEmail("user@demo.com")
-                .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+                .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD));
 
         UserAccountToken userAccountToken = new UserAccountToken();
         userAccountToken.setAccount(userAccount);
@@ -114,7 +114,7 @@ public class UserAccountTokenServiceTest extends AbstractServiceTest {
                 .create()
                 .setId(10L)
                 .setEmail("user@demo.com")
-                .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+                .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD));
 
         UserAccountToken userAccountToken = new UserAccountToken();
         userAccountToken.setAccount(userAccount);
@@ -141,7 +141,7 @@ public class UserAccountTokenServiceTest extends AbstractServiceTest {
         UserAccount userAccount = UserAccount
                 .create()
                 .setEmail("userAccount@test.com")
-                .setPassword(passwordEncoder.encode(passwordEncoder.encode(RAW_PASSWORD)));
+                .setPassword(bCryptPasswordEncoder.encode(bCryptPasswordEncoder.encode(RAW_PASSWORD)));
 
         UserAccountToken givenActivationToken = UserAccountToken.create()
                                                                 .setAccount(userAccount)
@@ -179,7 +179,7 @@ public class UserAccountTokenServiceTest extends AbstractServiceTest {
                 .create()
                 .setId(10L)
                 .setEmail("user@demo.com")
-                .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+                .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD));
 
         UserAccountPasswordResetRequest passwordResetRequest = new UserAccountPasswordResetRequest(
                 user.getEmail()
@@ -207,7 +207,7 @@ public class UserAccountTokenServiceTest extends AbstractServiceTest {
                 .create()
                 .setId(10L)
                 .setEmail("user@demo.com")
-                .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+                .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD));
 
         UserAccountPasswordResetRequest passwordResetRequest = new UserAccountPasswordResetRequest(
                 userAccount.getEmail()

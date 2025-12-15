@@ -14,7 +14,7 @@ import com.damian.xBank.modules.user.account.account.infra.repository.UserAccoun
 import com.damian.xBank.modules.user.account.token.infra.repository.UserAccountTokenRepository;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.modules.user.customer.infra.repository.CustomerRepository;
-import com.damian.xBank.shared.domain.User;
+import com.damian.xBank.shared.security.User;
 import com.damian.xBank.shared.utils.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
@@ -87,6 +87,9 @@ public abstract class AbstractControllerTest {
     void tearDown() {
         notificationRepository.deleteAll();
         settingRepository.deleteAll();
+        transactionRepository.deleteAll();
+        bankingCardRepository.deleteAll();
+        bankingAccountRepository.deleteAll();
         userAccountTokenRepository.deleteAll();
         userAccountRepository.deleteAll();
         customerRepository.deleteAll();

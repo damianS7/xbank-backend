@@ -8,7 +8,7 @@ import com.damian.xBank.modules.setting.domain.enums.SettingMultifactor;
 import com.damian.xBank.modules.setting.domain.enums.SettingTheme;
 import com.damian.xBank.modules.setting.infra.repository.SettingRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.domain.User;
+import com.damian.xBank.shared.security.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

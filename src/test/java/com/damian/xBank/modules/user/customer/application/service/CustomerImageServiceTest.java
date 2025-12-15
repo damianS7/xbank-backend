@@ -1,18 +1,17 @@
-package com.damian.xBank.modules.user.customer;
+package com.damian.xBank.modules.user.customer.application.service;
 
+import com.damian.xBank.infrastructure.storage.FileStorageService;
+import com.damian.xBank.infrastructure.storage.ImageProcessingService;
+import com.damian.xBank.infrastructure.storage.ImageUploaderService;
+import com.damian.xBank.infrastructure.storage.ImageValidationService;
+import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountNotFoundException;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.infra.repository.UserAccountRepository;
-import com.damian.xBank.modules.user.customer.domain.exception.CustomerImageNotFoundException;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
-import com.damian.xBank.modules.user.customer.application.service.CustomerImageService;
+import com.damian.xBank.modules.user.customer.domain.exception.CustomerImageNotFoundException;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.Exceptions;
-import com.damian.xBank.shared.infrastructure.storage.FileStorageService;
-import com.damian.xBank.shared.infrastructure.storage.ImageProcessingService;
-import com.damian.xBank.shared.infrastructure.storage.ImageUploaderService;
-import com.damian.xBank.shared.infrastructure.storage.ImageValidationService;
 import com.damian.xBank.shared.utils.ImageTestHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -58,7 +57,7 @@ public class CustomerImageServiceTest extends AbstractServiceTest {
         UserAccount userAccount = UserAccount.create()
                                              .setId(1L)
                                              .setEmail("user@test.com")
-                                             .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                                             .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
                                              .setRole(UserAccountRole.CUSTOMER);
 
         customer = Customer.create(userAccount)

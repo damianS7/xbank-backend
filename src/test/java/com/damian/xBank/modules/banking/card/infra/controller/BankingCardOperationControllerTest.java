@@ -51,6 +51,13 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
                            .setGender(CustomerGender.MALE);
         customer.getAccount().setAccountStatus(UserAccountStatus.VERIFIED);
         customerRepository.save(customer);
+        System.out.println(
+                String.format(
+                        "Generated customer with customerId: %s and userId: %s",
+                        customer.getId(),
+                        customer.getAccount().getId()
+                )
+        );
 
         customerBankingAccount = BankingAccount
                 .create()

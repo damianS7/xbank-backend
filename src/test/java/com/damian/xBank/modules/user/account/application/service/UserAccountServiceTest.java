@@ -1,11 +1,12 @@
-package com.damian.xBank.modules.user.account;
+package com.damian.xBank.modules.user.account.application.service;
 
 import com.damian.xBank.modules.user.account.account.application.dto.request.UserAccountEmailUpdateRequest;
+import com.damian.xBank.modules.user.account.account.application.service.UserAccountService;
+import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountEmailTakenException;
 import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountInvalidPasswordConfirmationException;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.infra.repository.UserAccountRepository;
-import com.damian.xBank.modules.user.account.account.application.service.UserAccountService;
+import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.Exceptions;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +14,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
 
@@ -31,6 +34,10 @@ public class UserAccountServiceTest extends AbstractServiceTest {
     @InjectMocks
     private UserAccountService userAccountService;
     private UserAccount userAccount;
+    private Customer customer;
+
+    @Spy
+    private BCryptPasswordEncoder passwordEncoder;
 
     @BeforeEach
     void setUp() {
@@ -38,6 +45,10 @@ public class UserAccountServiceTest extends AbstractServiceTest {
                                  .setId(2L)
                                  .setEmail("user@demo.com")
                                  .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+
+        customer = Customer.create()
+                           .setId(1L)
+                           .setAccount(userAccount);
     }
 
     @Test

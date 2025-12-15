@@ -1,21 +1,18 @@
-package com.damian.xBank.modules.user.customer;
+package com.damian.xBank.modules.user.customer.infrastructure.controller;
 
 import com.damian.xBank.modules.user.customer.application.dto.request.CustomerUpdateRequest;
 import com.damian.xBank.modules.user.customer.application.dto.response.CustomerDetailDto;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
 import com.damian.xBank.shared.AbstractControllerTest;
-import com.damian.xBank.shared.infrastructure.storage.FileStorageService;
-import com.damian.xBank.shared.infrastructure.storage.ImageUploaderService;
-import com.damian.xBank.shared.infrastructure.storage.exception.FileStorageNotFoundException;
+import com.damian.xBank.infrastructure.storage.FileStorageService;
+import com.damian.xBank.infrastructure.storage.ImageUploaderService;
+import com.damian.xBank.infrastructure.storage.exception.FileStorageNotFoundException;
 import com.damian.xBank.shared.utils.ImageTestHelper;
 import com.damian.xBank.shared.utils.JsonHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -42,9 +39,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class CustomerControllerTest extends AbstractControllerTest {
     private Customer customer;
 

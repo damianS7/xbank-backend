@@ -49,7 +49,7 @@ public class BankingCardManagementServiceTest extends AbstractServiceTest {
                 UserAccount.create()
                            .setId(1L)
                            .setEmail("customer@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(1L);
 
         customerBankingAccount = BankingAccount
@@ -119,7 +119,7 @@ public class BankingCardManagementServiceTest extends AbstractServiceTest {
                 UserAccount.create()
                            .setId(2L)
                            .setEmail("customerNotOwner@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(2L);
 
         setUpContext(customerNotOwner);
@@ -213,7 +213,7 @@ public class BankingCardManagementServiceTest extends AbstractServiceTest {
                 UserAccount.create()
                            .setId(2L)
                            .setEmail("customerNotOwner@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(2L);
 
         setUpContext(customerNotOwner);
@@ -313,7 +313,7 @@ public class BankingCardManagementServiceTest extends AbstractServiceTest {
                 UserAccount.create()
                            .setId(2L)
                            .setEmail("customerNotOwner@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(2L);
 
         setUpContext(customerNotOwner);

@@ -58,7 +58,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
                 UserAccount.create()
                            .setId(1L)
                            .setEmail("fromCustomer@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(1L);
 
         setUpContext(fromCustomer);
@@ -74,7 +74,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
                 UserAccount.create()
                            .setId(2L)
                            .setEmail("toCustomer@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(2L);
 
         BankingAccount toCustomerAccount = new BankingAccount(toCustomer);
@@ -148,7 +148,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
                 UserAccount.create()
                            .setId(1L)
                            .setEmail("fromCustomer@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(1L);
 
         setUpContext(fromCustomer);
@@ -162,7 +162,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
                 UserAccount.create()
                            .setId(2L)
                            .setEmail("toCustomer@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(2L);
 
         BankingAccount toCustomerBankingAccount = new BankingAccount(toCustomer);
@@ -204,7 +204,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
                 UserAccount.create()
                            .setId(1L)
                            .setEmail("fromCustomer@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(1L);
 
         setUpContext(fromCustomer);
@@ -219,7 +219,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
                 UserAccount.create()
                            .setId(2L)
                            .setEmail("toCustomer@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(2L);
 
         BankingAccount toCustomerBankingAccount = new BankingAccount(toCustomer);
@@ -262,7 +262,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
                 UserAccount.create()
                            .setId(1L)
                            .setEmail("fromCustomer@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(1L);
 
         setUpContext(fromCustomer);
@@ -277,7 +277,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
                 UserAccount.create()
                            .setId(2L)
                            .setEmail("toCustomer@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(2L);
 
         BankingAccount toCustomerBankingAccount = new BankingAccount(toCustomer);
@@ -320,7 +320,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
                 UserAccount.create()
                            .setId(1L)
                            .setEmail("fromCustomer@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(1L);
 
         setUpContext(fromCustomer);
@@ -335,7 +335,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
                 UserAccount.create()
                            .setId(2L)
                            .setEmail("toCustomer@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(2L);
 
         BankingAccount toCustomerBankingAccount = new BankingAccount(toCustomer);
@@ -377,7 +377,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
                 UserAccount.create()
                            .setId(1L)
                            .setEmail("customer@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(1L);
 
         setUpContext(customer);
@@ -392,7 +392,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
                 UserAccount.create()
                            .setId(2L)
                            .setEmail("toCustomer@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(2L);
 
         BankingAccount toCustomerBankingAccount = new BankingAccount(toCustomer);
@@ -434,7 +434,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
                 UserAccount.create()
                            .setId(1L)
                            .setEmail("fromCustomer@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(1L);
 
         setUpContext(fromCustomer);
@@ -478,7 +478,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
                 UserAccount.create()
                            .setId(1L)
                            .setEmail("fromCustomer@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(1L);
 
         setUpContext(loggedCustomer);
@@ -487,7 +487,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
                 UserAccount.create()
                            .setId(2L)
                            .setEmail("toCustomer@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(2L);
 
         BankingAccount randomCustomerBankingAccount = new BankingAccount(randomCustomer);
@@ -530,7 +530,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
                 UserAccount.create()
                            .setId(1L)
                            .setEmail("fromCustomer@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(1L);
 
         setUpContext(fromCustomer);
@@ -544,7 +544,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
                 UserAccount.create()
                            .setId(2L)
                            .setEmail("customerB@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(2L);
 
         BankingAccount toCustomerBankingAccount = new BankingAccount(toCustomer);

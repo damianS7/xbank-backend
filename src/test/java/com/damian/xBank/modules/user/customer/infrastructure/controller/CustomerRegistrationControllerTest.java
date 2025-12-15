@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.user.customer;
+package com.damian.xBank.modules.user.customer.infrastructure.controller;
 
 import com.damian.xBank.modules.setting.application.dto.response.SettingDto;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
@@ -6,15 +6,12 @@ import com.damian.xBank.modules.user.customer.application.dto.request.CustomerRe
 import com.damian.xBank.modules.user.customer.application.dto.response.CustomerDetailDto;
 import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
 import com.damian.xBank.shared.AbstractControllerTest;
+import com.damian.xBank.shared.dto.ApiResponse;
 import com.damian.xBank.shared.exception.Exceptions;
-import com.damian.xBank.shared.utils.ApiResponse;
 import com.damian.xBank.shared.utils.JsonHelper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -27,9 +24,6 @@ import java.time.LocalDate;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class CustomerRegistrationControllerTest extends AbstractControllerTest {
 
     @Test

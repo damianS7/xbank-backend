@@ -10,7 +10,7 @@ import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountSta
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
 import com.damian.xBank.shared.AbstractControllerTest;
-import com.damian.xBank.shared.domain.User;
+import com.damian.xBank.shared.security.User;
 import com.damian.xBank.shared.utils.JwtUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.BeforeEach;
