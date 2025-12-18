@@ -89,9 +89,7 @@ public class AuthenticationServiceTest extends AbstractServiceTest {
 
         // when
         when(authenticationManager.authenticate(any()))
-                .thenThrow(new BadCredentialsException(
-                        ErrorCodes.USER_ACCOUNT_BAD_CREDENTIALS
-                ));
+                .thenThrow(new BadCredentialsException(ErrorCodes.AUTH_LOGIN_BAD_CREDENTIALS));
 
         BadCredentialsException exception = assertThrows(
                 BadCredentialsException.class,
@@ -99,7 +97,7 @@ public class AuthenticationServiceTest extends AbstractServiceTest {
         );
 
         // Then
-        assertEquals(ErrorCodes.USER_ACCOUNT_BAD_CREDENTIALS, exception.getMessage());
+        assertEquals(ErrorCodes.AUTH_LOGIN_BAD_CREDENTIALS, exception.getMessage());
     }
 
     @Test

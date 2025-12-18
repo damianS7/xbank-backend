@@ -8,6 +8,7 @@ import com.damian.xBank.shared.exception.ErrorCodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,14 +54,14 @@ public class AuthExceptionHandler {
     public ResponseEntity<?> handleBadCredentials(RuntimeException e) {
         log.warn("Failed login attempt. Bad credentials.", e);
 
-        //        String message = messageSource.getMessage(
-        //                ex.getErrorCode(),
-        //                ex.getArgs(),
-        //                LocaleContextHolder.getLocale()
-        //        );
+        String message = messageSource.getMessage(
+                ErrorCodes.AUTH_LOGIN_BAD_CREDENTIALS,
+                null,
+                LocaleContextHolder.getLocale()
+        );
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                             .body(ApiResponse.error(ErrorCodes.USER_ACCOUNT_BAD_CREDENTIALS));
+                             .body(ApiResponse.error(message));
     }
 
     @ExceptionHandler(

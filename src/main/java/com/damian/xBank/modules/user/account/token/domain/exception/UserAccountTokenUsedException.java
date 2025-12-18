@@ -4,10 +4,10 @@ import com.damian.xBank.shared.exception.ErrorCodes;
 
 public class UserAccountTokenUsedException extends UserAccountTokenException {
     public UserAccountTokenUsedException(Long accountId, String token) {
-        super(ErrorCodes.USER_ACCOUNT_VERIFICATION_TOKEN_USER, accountId, new Object[]{token});
+        super(ErrorCodes.USER_ACCOUNT_VERIFICATION_TOKEN_USED, accountId, new Object[]{token});
     }
 
     public UserAccountTokenUsedException(String email, String token) {
-        super(ErrorCodes.USER_ACCOUNT_VERIFICATION_TOKEN_USER, email, new Object[]{token});
+        super(ErrorCodes.USER_ACCOUNT_VERIFICATION_TOKEN_USED, email, new Object[]{token});
     }
 }

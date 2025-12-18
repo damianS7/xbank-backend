@@ -2,29 +2,28 @@ package com.damian.xBank.shared.exception;
 
 public class ErrorCodes {
 
+    // Generics
+    public static final String VALIDATION_FAILED = "generic.validation_failed";
+
     // Login/Security
-    public static final String AUTH_LOGIN_INVALID_CREDENTIALS = "auth.login.invalid_credentials";
+    public static final String AUTH_LOGIN_BAD_CREDENTIALS = "auth.login.bad_credentials";
     public static final String AUTH_JWT_TOKEN_EXPIRED = "auth.jwt.token.expired";
     public static final String AUTH_JWT_TOKEN_INVALID = "auth.jwt.token.invalid";
-
-    // Generics
-    public static final String VALIDATION_FAILED = "Validation failed.";
 
     // User account
     public static final String USER_ACCOUNT_NOT_FOUND = "user.account.not_found";
     public static final String USER_ACCOUNT_SUSPENDED = "user.account.suspended";
     public static final String USER_ACCOUNT_EMAIL_TAKEN = "user.account.email_taken";
     public static final String USER_ACCOUNT_INVALID_PASSWORD = "user.account.invalid_password";
-    public static final String USER_ACCOUNT_BAD_CREDENTIALS = "user.account.bad_credentials";
     public static final String USER_ACCOUNT_NOT_VERIFIED = "user.account.not_verified";
 
     // User account verification
-    public static final String USER_ACCOUNT_VERIFICATION_NOT_ELEGIBLE = "user.account.not_elegible";
-    public static final String USER_ACCOUNT_VERIFICATION_TOKEN_NOT_FOUND = "user.account.not_elegible";
-    public static final String USER_ACCOUNT_VERIFICATION_TOKEN_USER = "user.account.not_elegible";
-    public static final String USER_ACCOUNT_VERIFICATION_TOKEN_EXPIRED = "user.account.not_elegible";
+    public static final String USER_ACCOUNT_VERIFICATION_NOT_PENDING = "user.account.verification.not_pending";
+    public static final String USER_ACCOUNT_VERIFICATION_TOKEN_NOT_FOUND = "user.account.verification.token.not_found";
+    public static final String USER_ACCOUNT_VERIFICATION_TOKEN_USED = "user.account.verification.token.used";
+    public static final String USER_ACCOUNT_VERIFICATION_TOKEN_EXPIRED = "user.account.verification.token.expired";
 
-    // Customer
+    // Customer TODO  review from here
     public static final String CUSTOMER_NOT_OWNER = "customer.not_owner";
     public static final String CUSTOMER_NOT_FOUND = "customer.not_found";
     public static final String CUSTOMER_UPDATE_FAILED = "customer.update_failed";

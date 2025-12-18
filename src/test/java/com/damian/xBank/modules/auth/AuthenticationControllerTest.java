@@ -121,7 +121,7 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
                 .isNotNull()
                 .extracting(ApiResponse::getMessage)
                 .isEqualTo(
-                        ErrorCodes.USER_ACCOUNT_BAD_CREDENTIALS
+                        ErrorCodes.AUTH_LOGIN_BAD_CREDENTIALS
                 );
     }
 
