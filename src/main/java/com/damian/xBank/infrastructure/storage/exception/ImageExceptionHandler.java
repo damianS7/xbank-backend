@@ -2,7 +2,7 @@ package com.damian.xBank.infrastructure.storage.exception;
 
 import com.damian.xBank.shared.dto.ApiResponse;
 import com.damian.xBank.shared.exception.ApplicationException;
-import com.damian.xBank.shared.exception.Exceptions;
+import com.damian.xBank.shared.exception.ErrorCodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
@@ -66,7 +66,7 @@ public class ImageExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                              .body(ApiResponse.error(
-                                     Exceptions.STORAGE_IMAGE_UPLOAD_FAILED,
+                                     ErrorCodes.STORAGE_IMAGE_UPLOAD_FAILED,
                                      HttpStatus.INTERNAL_SERVER_ERROR
                              ));
     }
@@ -76,7 +76,7 @@ public class ImageExceptionHandler {
         log.error("Image upload failed at: {} failed.", ex.getPath(), ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                              .body(ApiResponse.error(
-                                     Exceptions.STORAGE_IMAGE_UPLOAD_FAILED,
+                                     ErrorCodes.STORAGE_IMAGE_UPLOAD_FAILED,
                                      HttpStatus.INTERNAL_SERVER_ERROR
                              ));
     }

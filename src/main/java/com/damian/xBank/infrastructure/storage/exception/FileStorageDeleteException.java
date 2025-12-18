@@ -1,11 +1,11 @@
 package com.damian.xBank.infrastructure.storage.exception;
 
-import com.damian.xBank.shared.exception.Exceptions;
+import com.damian.xBank.shared.exception.ErrorCodes;
 
 public class FileStorageDeleteException extends FileStorageException {
 
     public FileStorageDeleteException(String path, String filename) {
-        super(Exceptions.STORAGE_FILE_DELETE_FAILED, path, filename);
+        super(ErrorCodes.STORAGE_FILE_DELETE_FAILED, path, filename);
     }
 
 }

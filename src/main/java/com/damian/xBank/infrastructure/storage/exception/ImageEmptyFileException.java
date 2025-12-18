@@ -1,10 +1,10 @@
 package com.damian.xBank.infrastructure.storage.exception;
 
 import com.damian.xBank.shared.exception.ApplicationException;
-import com.damian.xBank.shared.exception.Exceptions;
+import com.damian.xBank.shared.exception.ErrorCodes;
 
 public class ImageEmptyFileException extends ApplicationException {
     public ImageEmptyFileException(String filename) {
-        super(Exceptions.STORAGE_IMAGE_EMPTY, filename, new Object[]{});
+        super(ErrorCodes.STORAGE_IMAGE_EMPTY, filename, new Object[]{});
     }
 }

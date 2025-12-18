@@ -1,15 +1,14 @@
 package com.damian.xBank.shared.exception;
 
-public class Exceptions {
-    // Generics
-    public static final String NOT_OWNER = "You are not allowed to access this resource.";
-    public static final String NOT_FOUND = "Resource not found.";
-    public static final String VALIDATION_FAILED = "Validation failed.";
+public class ErrorCodes {
 
     // Login/Security
-    public static final String LOGIN_BAD_CREDENTIALS = "";
-    public static final String JWT_TOKEN_EXPIRED = "jwt.token_expired";
-    public static final String JWT_TOKEN_INVALID = "jwt.token_invalid";
+    public static final String AUTH_LOGIN_INVALID_CREDENTIALS = "auth.login.invalid_credentials";
+    public static final String AUTH_JWT_TOKEN_EXPIRED = "auth.jwt.token.expired";
+    public static final String AUTH_JWT_TOKEN_INVALID = "auth.jwt.token.invalid";
+
+    // Generics
+    public static final String VALIDATION_FAILED = "Validation failed.";
 
     // User account
     public static final String USER_ACCOUNT_NOT_FOUND = "user.account.not_found";

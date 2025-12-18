@@ -17,7 +17,7 @@ import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.exception.Exceptions;
+import com.damian.xBank.shared.exception.ErrorCodes;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -193,7 +193,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(Exceptions.BANKING_ACCOUNT_INSUFFICIENT_FUNDS, exception.getMessage());
+        assertEquals(ErrorCodes.BANKING_ACCOUNT_INSUFFICIENT_FUNDS, exception.getMessage());
     }
 
     @Test
@@ -251,7 +251,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(Exceptions.BANKING_ACCOUNT_DIFFERENT_CURRENCY, exception.getMessage());
+        assertEquals(ErrorCodes.BANKING_ACCOUNT_DIFFERENT_CURRENCY, exception.getMessage());
     }
 
     @Test
@@ -309,7 +309,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(Exceptions.BANKING_ACCOUNT_NOT_FOUND, exception.getMessage());
+        assertEquals(ErrorCodes.BANKING_ACCOUNT_NOT_FOUND, exception.getMessage());
     }
 
     @Test
@@ -366,7 +366,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(Exceptions.BANKING_ACCOUNT_CLOSED, exception.getMessage());
+        assertEquals(ErrorCodes.BANKING_ACCOUNT_CLOSED, exception.getMessage());
     }
 
     @Test
@@ -423,7 +423,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(Exceptions.BANKING_ACCOUNT_SUSPENDED, exception.getMessage());
+        assertEquals(ErrorCodes.BANKING_ACCOUNT_SUSPENDED, exception.getMessage());
     }
 
     @Test
@@ -467,7 +467,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(Exceptions.BANKING_ACCOUNT_SAME_DESTINATION, exception.getMessage());
+        assertEquals(ErrorCodes.BANKING_ACCOUNT_SAME_DESTINATION, exception.getMessage());
     }
 
     @Test
@@ -519,7 +519,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(Exceptions.BANKING_ACCOUNT_OWNERSHIP, exception.getMessage());
+        assertEquals(ErrorCodes.BANKING_ACCOUNT_OWNERSHIP, exception.getMessage());
     }
 
     @Test
@@ -575,7 +575,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertThat(exception.getMessage()).isEqualTo(Exceptions.USER_ACCOUNT_INVALID_PASSWORD);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.USER_ACCOUNT_INVALID_PASSWORD);
     }
 
 }

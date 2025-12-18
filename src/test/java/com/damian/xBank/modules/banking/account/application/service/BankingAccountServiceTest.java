@@ -10,7 +10,7 @@ import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.modules.user.customer.domain.exception.CustomerNotFoundException;
 import com.damian.xBank.modules.user.customer.infra.repository.CustomerRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.exception.Exceptions;
+import com.damian.xBank.shared.exception.ErrorCodes;
 import net.datafaker.Faker;
 import net.datafaker.providers.base.Country;
 import net.datafaker.providers.base.Finance;
@@ -180,7 +180,7 @@ public class BankingAccountServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertThat(exception.getMessage()).isEqualTo(Exceptions.CUSTOMER_NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.CUSTOMER_NOT_FOUND);
         verify(bankingAccountRepository, times(0)).save(any(BankingAccount.class));
     }
 }

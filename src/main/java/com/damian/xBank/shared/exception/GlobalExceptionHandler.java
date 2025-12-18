@@ -130,7 +130,7 @@ public class GlobalExceptionHandler {
         log.warn("Validation failed: {} errors -> {}", errors.size(), errors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                              .body(ApiResponse.error(
-                                     Exceptions.VALIDATION_FAILED,
+                                     ErrorCodes.VALIDATION_FAILED,
                                      errors,
                                      HttpStatus.BAD_REQUEST
                              ));

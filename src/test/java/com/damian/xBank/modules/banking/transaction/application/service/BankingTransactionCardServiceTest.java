@@ -14,7 +14,7 @@ import com.damian.xBank.modules.banking.transaction.infra.repository.BankingTran
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.exception.Exceptions;
+import com.damian.xBank.shared.exception.ErrorCodes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -154,7 +154,7 @@ public class BankingTransactionCardServiceTest extends AbstractServiceTest {
 
         // then
         assertThat(exception).isNotNull();
-        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING_TRANSACTION_OWNERSHIP);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.BANKING_TRANSACTION_OWNERSHIP);
     }
 
     @Test
@@ -182,7 +182,7 @@ public class BankingTransactionCardServiceTest extends AbstractServiceTest {
 
         // then
         assertThat(exception).isNotNull();
-        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING_CARD_INSUFFICIENT_FUNDS);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.BANKING_CARD_INSUFFICIENT_FUNDS);
         assertThat(givenTransaction.getStatus()).isEqualTo(BankingTransactionStatus.PENDING);
         verify(bankingTransactionRepository, times(0)).save(any(BankingTransaction.class));
     }

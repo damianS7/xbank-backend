@@ -2,7 +2,7 @@ package com.damian.xBank.modules.banking.account.domain.enums;
 
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountStatusTransitionException;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.exception.Exceptions;
+import com.damian.xBank.shared.exception.ErrorCodes;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -33,7 +33,7 @@ public class BankingAccountStatusTest extends AbstractServiceTest {
                     fromStatus.validateTransition(targetStatus)
             )
                     .isInstanceOf(BankingAccountStatusTransitionException.class)
-                    .hasMessage(Exceptions.BANKING_ACCOUNT_INVALID_TRANSITION_STATUS);
+                    .hasMessage(ErrorCodes.BANKING_ACCOUNT_INVALID_TRANSITION_STATUS);
         }
     }
 }

@@ -19,7 +19,7 @@ import com.damian.xBank.modules.notification.domain.event.NotificationEvent;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.exception.Exceptions;
+import com.damian.xBank.shared.exception.ErrorCodes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -145,7 +145,7 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING_CARD_NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.BANKING_CARD_NOT_FOUND);
     }
 
     @Test
@@ -184,7 +184,7 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING_CARD_OWNERSHIP);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.BANKING_CARD_OWNERSHIP);
     }
 
     @Test
@@ -220,7 +220,7 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING_CARD_DISABLED);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.BANKING_CARD_DISABLED);
     }
 
     @Test
@@ -255,7 +255,7 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING_CARD_LOCKED);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.BANKING_CARD_LOCKED);
     }
 
     @Test
@@ -290,7 +290,7 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING_CARD_INSUFFICIENT_FUNDS);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.BANKING_CARD_INSUFFICIENT_FUNDS);
     }
 
     @Test

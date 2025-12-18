@@ -1,10 +1,10 @@
 package com.damian.xBank.modules.banking.transaction.domain.exception;
 
-import com.damian.xBank.shared.exception.Exceptions;
+import com.damian.xBank.shared.exception.ErrorCodes;
 
 public class BankingTransactionStatusTransitionException extends BankingTransactionException {
     public BankingTransactionStatusTransitionException(Long transactionId, Object[] args) {
-        super(Exceptions.BANKING_TRANSACTION_INVALID_TRANSITION_STATUS, transactionId, args);
+        super(ErrorCodes.BANKING_TRANSACTION_INVALID_TRANSITION_STATUS, transactionId, args);
     }
     // TODO
     //    public BankingTransactionStatusTransitionException(Object[] args) {

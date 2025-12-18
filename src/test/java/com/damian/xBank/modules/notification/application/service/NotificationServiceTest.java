@@ -10,7 +10,7 @@ import com.damian.xBank.modules.user.account.account.infra.repository.UserAccoun
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.modules.user.customer.infra.repository.CustomerRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.exception.Exceptions;
+import com.damian.xBank.shared.exception.ErrorCodes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -177,7 +177,7 @@ public class NotificationServiceTest extends AbstractServiceTest {
                 () -> notificationService.publish(event)
         );
 
-        assertEquals(Exceptions.USER_ACCOUNT_NOT_FOUND, exception.getMessage());
+        assertEquals(ErrorCodes.USER_ACCOUNT_NOT_FOUND, exception.getMessage());
         verify(notificationRepository, never()).save(any());
     }
 

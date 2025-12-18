@@ -14,7 +14,7 @@ import com.damian.xBank.modules.user.account.token.domain.entity.UserAccountToke
 import com.damian.xBank.modules.user.account.token.domain.enums.UserAccountTokenType;
 import com.damian.xBank.modules.user.account.token.infra.repository.UserAccountTokenRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.exception.Exceptions;
+import com.damian.xBank.shared.exception.ErrorCodes;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -103,7 +103,7 @@ public class UserAccountPasswordServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(Exceptions.USER_ACCOUNT_INVALID_PASSWORD, exception.getMessage());
+        assertEquals(ErrorCodes.USER_ACCOUNT_INVALID_PASSWORD, exception.getMessage());
     }
 
     @Test
@@ -135,7 +135,7 @@ public class UserAccountPasswordServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(Exceptions.USER_ACCOUNT_NOT_FOUND, exception.getMessage());
+        assertEquals(ErrorCodes.USER_ACCOUNT_NOT_FOUND, exception.getMessage());
     }
 
     @Test

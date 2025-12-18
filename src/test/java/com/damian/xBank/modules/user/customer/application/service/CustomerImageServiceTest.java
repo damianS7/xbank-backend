@@ -11,7 +11,7 @@ import com.damian.xBank.modules.user.account.account.infra.repository.UserAccoun
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.modules.user.customer.domain.exception.CustomerImageNotFoundException;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.exception.Exceptions;
+import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.ImageTestHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -104,7 +104,7 @@ public class CustomerImageServiceTest extends AbstractServiceTest {
 
         // then
         assertNotNull(exception);
-        assertEquals(Exceptions.USER_ACCOUNT_NOT_FOUND, exception.getMessage());
+        assertEquals(ErrorCodes.USER_ACCOUNT_NOT_FOUND, exception.getMessage());
     }
 
     @Test
@@ -124,7 +124,7 @@ public class CustomerImageServiceTest extends AbstractServiceTest {
 
         // then
         assertNotNull(exception);
-        assertEquals(Exceptions.CUSTOMER_IMAGE_NOT_FOUND, exception.getMessage());
+        assertEquals(ErrorCodes.CUSTOMER_IMAGE_NOT_FOUND, exception.getMessage());
     }
 
     @Test

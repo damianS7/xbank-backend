@@ -17,7 +17,7 @@ import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRol
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.modules.user.customer.infra.repository.CustomerRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.exception.Exceptions;
+import com.damian.xBank.shared.exception.ErrorCodes;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -112,7 +112,7 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(Exceptions.BANKING_ACCOUNT_CLOSED, exception.getMessage());
+        assertEquals(ErrorCodes.BANKING_ACCOUNT_CLOSED, exception.getMessage());
     }
 
     @Test
@@ -146,7 +146,7 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(Exceptions.BANKING_ACCOUNT_SUSPENDED, exception.getMessage());
+        assertEquals(ErrorCodes.BANKING_ACCOUNT_SUSPENDED, exception.getMessage());
     }
 
     @Test
@@ -217,7 +217,7 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertTrue(exception.getMessage().contains(Exceptions.BANKING_ACCOUNT_NOT_FOUND));
+        assertTrue(exception.getMessage().contains(ErrorCodes.BANKING_ACCOUNT_NOT_FOUND));
     }
 
     @Test
@@ -262,7 +262,7 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING_ACCOUNT_OWNERSHIP);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.BANKING_ACCOUNT_OWNERSHIP);
     }
 
     @Test

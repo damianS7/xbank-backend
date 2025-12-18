@@ -7,7 +7,7 @@ import com.damian.xBank.modules.user.customer.application.dto.response.CustomerD
 import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.dto.ApiResponse;
-import com.damian.xBank.shared.exception.Exceptions;
+import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.JsonHelper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.DisplayName;
@@ -165,7 +165,7 @@ public class CustomerRegistrationControllerTest extends AbstractControllerTest {
                 .isNotNull()
                 .extracting(ApiResponse::getMessage)
                 .asString()
-                .isEqualTo(Exceptions.VALIDATION_FAILED);
+                .isEqualTo(ErrorCodes.VALIDATION_FAILED);
     }
 
     @Test
@@ -208,7 +208,7 @@ public class CustomerRegistrationControllerTest extends AbstractControllerTest {
                 .extracting(
                         ApiResponse::getMessage
                 ).isEqualTo(
-                        Exceptions.VALIDATION_FAILED
+                        ErrorCodes.VALIDATION_FAILED
                 );
 
         assertThat(response.getErrors().get("email"))
@@ -261,7 +261,7 @@ public class CustomerRegistrationControllerTest extends AbstractControllerTest {
                 .isNotNull()
                 .extracting(ApiResponse::getMessage)
                 .asString()
-                .isEqualTo(Exceptions.USER_ACCOUNT_EMAIL_TAKEN);
+                .isEqualTo(ErrorCodes.USER_ACCOUNT_EMAIL_TAKEN);
 
     }
 
@@ -306,7 +306,7 @@ public class CustomerRegistrationControllerTest extends AbstractControllerTest {
                 .extracting(
                         ApiResponse::getMessage
                 ).isEqualTo(
-                        Exceptions.VALIDATION_FAILED
+                        ErrorCodes.VALIDATION_FAILED
                 );
 
         assertThat(response.getErrors().get("password"))

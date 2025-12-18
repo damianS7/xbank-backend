@@ -12,7 +12,7 @@ import com.damian.xBank.modules.user.customer.domain.exception.CustomerUpdateAut
 import com.damian.xBank.modules.user.customer.domain.exception.CustomerUpdateException;
 import com.damian.xBank.modules.user.customer.infra.repository.CustomerRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.exception.Exceptions;
+import com.damian.xBank.shared.exception.ErrorCodes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -140,7 +140,7 @@ public class CustomerServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(Exceptions.CUSTOMER_NOT_FOUND, exception.getMessage());
+        assertEquals(ErrorCodes.CUSTOMER_NOT_FOUND, exception.getMessage());
     }
 
     @Test
@@ -173,7 +173,7 @@ public class CustomerServiceTest extends AbstractServiceTest {
                 CustomerNotFoundException.class,
                 () -> customerService.deleteCustomer(id)
         );
-        assertEquals(Exceptions.CUSTOMER_NOT_FOUND, exception.getMessage());
+        assertEquals(ErrorCodes.CUSTOMER_NOT_FOUND, exception.getMessage());
         verify(customerRepository, never()).deleteById(anyLong());
     }
 
@@ -239,7 +239,7 @@ public class CustomerServiceTest extends AbstractServiceTest {
         );
 
         // Then
-        assertEquals(Exceptions.USER_ACCOUNT_INVALID_PASSWORD, exception.getMessage());
+        assertEquals(ErrorCodes.USER_ACCOUNT_INVALID_PASSWORD, exception.getMessage());
     }
 
     @Test
@@ -263,7 +263,7 @@ public class CustomerServiceTest extends AbstractServiceTest {
         );
 
         // Then
-        assertEquals(Exceptions.CUSTOMER_NOT_FOUND, exception.getMessage());
+        assertEquals(ErrorCodes.CUSTOMER_NOT_FOUND, exception.getMessage());
     }
 
     @Test
@@ -292,7 +292,7 @@ public class CustomerServiceTest extends AbstractServiceTest {
         );
 
         // Then
-        assertEquals(Exceptions.CUSTOMER_UPDATE_FAILED, exception.getMessage());
+        assertEquals(ErrorCodes.CUSTOMER_UPDATE_FAILED, exception.getMessage());
     }
 
     @Test
@@ -317,6 +317,6 @@ public class CustomerServiceTest extends AbstractServiceTest {
         );
 
         // Then
-        assertEquals(Exceptions.CUSTOMER_UPDATE_FAILED, exception.getMessage());
+        assertEquals(ErrorCodes.CUSTOMER_UPDATE_FAILED, exception.getMessage());
     }
 }

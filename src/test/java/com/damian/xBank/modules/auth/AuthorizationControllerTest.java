@@ -5,7 +5,7 @@ import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountSta
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
 import com.damian.xBank.shared.AbstractControllerTest;
-import com.damian.xBank.shared.exception.Exceptions;
+import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -109,7 +109,7 @@ public class AuthorizationControllerTest extends AbstractControllerTest {
                        .content(jsonRequest))
                .andDo(print())
                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.UNAUTHORIZED.value()))
-               .andExpect(jsonPath("$.message").value(Exceptions.JWT_TOKEN_EXPIRED))
+               .andExpect(jsonPath("$.message").value(ErrorCodes.AUTH_JWT_TOKEN_EXPIRED))
                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
     }
 
@@ -138,7 +138,7 @@ public class AuthorizationControllerTest extends AbstractControllerTest {
                        .content(jsonRequest))
                .andDo(print())
                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.UNAUTHORIZED.value()))
-               .andExpect(jsonPath("$.message").value(Exceptions.JWT_TOKEN_INVALID))
+               .andExpect(jsonPath("$.message").value(ErrorCodes.AUTH_JWT_TOKEN_INVALID))
                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
     }
 

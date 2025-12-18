@@ -1,7 +1,7 @@
 package com.damian.xBank.infrastructure.storage.exception;
 
 import com.damian.xBank.shared.dto.ApiResponse;
-import com.damian.xBank.shared.exception.Exceptions;
+import com.damian.xBank.shared.exception.ErrorCodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
@@ -57,7 +57,7 @@ public class FileStorageExceptionHandler {
         log.warn("File upload too large");
 
         String message = messageSource.getMessage(
-                Exceptions.STORAGE_UPLOAD_FILE_TOO_LARGE,
+                ErrorCodes.STORAGE_UPLOAD_FILE_TOO_LARGE,
                 null,
                 LocaleContextHolder.getLocale()
         );

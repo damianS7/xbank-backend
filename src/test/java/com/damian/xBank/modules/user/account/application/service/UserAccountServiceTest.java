@@ -8,7 +8,7 @@ import com.damian.xBank.modules.user.account.account.domain.exception.UserAccoun
 import com.damian.xBank.modules.user.account.account.infra.repository.UserAccountRepository;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.exception.Exceptions;
+import com.damian.xBank.shared.exception.ErrorCodes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -107,7 +107,7 @@ public class UserAccountServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(Exceptions.USER_ACCOUNT_EMAIL_TAKEN, exception.getMessage());
+        assertEquals(ErrorCodes.USER_ACCOUNT_EMAIL_TAKEN, exception.getMessage());
     }
 
     @Test
@@ -129,7 +129,7 @@ public class UserAccountServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(Exceptions.USER_ACCOUNT_INVALID_PASSWORD, exception.getMessage());
+        assertEquals(ErrorCodes.USER_ACCOUNT_INVALID_PASSWORD, exception.getMessage());
     }
 
 }

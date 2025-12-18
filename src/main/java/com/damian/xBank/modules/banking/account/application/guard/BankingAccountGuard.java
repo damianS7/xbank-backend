@@ -4,7 +4,7 @@ import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.exception.*;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
-import com.damian.xBank.shared.exception.Exceptions;
+import com.damian.xBank.shared.exception.ErrorCodes;
 
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -32,7 +32,7 @@ public class BankingAccountGuard {
         // compare account owner id with given customer id
         if (!Objects.equals(account.getOwner().getId(), customer.getId())) {
             throw new BankingAccountOwnershipException(
-                    Exceptions.BANKING_ACCOUNT_OWNERSHIP, account.getId(), customer.getId()
+                    ErrorCodes.BANKING_ACCOUNT_OWNERSHIP, account.getId(), customer.getId()
             );
         }
 

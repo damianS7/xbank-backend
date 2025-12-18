@@ -4,7 +4,7 @@ import com.damian.xBank.modules.auth.domain.exception.EmailNotFoundException;
 import com.damian.xBank.modules.auth.domain.exception.UserAccountNotVerifiedException;
 import com.damian.xBank.modules.auth.domain.exception.UserAccountSuspendedException;
 import com.damian.xBank.shared.dto.ApiResponse;
-import com.damian.xBank.shared.exception.Exceptions;
+import com.damian.xBank.shared.exception.ErrorCodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
@@ -60,7 +60,7 @@ public class AuthExceptionHandler {
         //        );
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                             .body(ApiResponse.error(Exceptions.USER_ACCOUNT_BAD_CREDENTIALS));
+                             .body(ApiResponse.error(ErrorCodes.USER_ACCOUNT_BAD_CREDENTIALS));
     }
 
     @ExceptionHandler(
@@ -72,7 +72,7 @@ public class AuthExceptionHandler {
     public ResponseEntity<?> handleLocked(RuntimeException e) {
         log.warn("Failed login attempt. Account is suspended.", e);
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                             .body(ApiResponse.error(Exceptions.USER_ACCOUNT_SUSPENDED));
+                             .body(ApiResponse.error(ErrorCodes.USER_ACCOUNT_SUSPENDED));
     }
 
     @ExceptionHandler(
@@ -85,7 +85,7 @@ public class AuthExceptionHandler {
         log.warn("Failed login attempt. Account not verified.", e);
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                              .body(
-                                     ApiResponse.error(Exceptions.USER_ACCOUNT_NOT_VERIFIED)
+                                     ApiResponse.error(ErrorCodes.USER_ACCOUNT_NOT_VERIFIED)
                              );
     }
 }

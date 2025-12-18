@@ -1,9 +1,9 @@
 package com.damian.xBank.modules.user.customer.domain.exception;
 
-import com.damian.xBank.shared.exception.Exceptions;
+import com.damian.xBank.shared.exception.ErrorCodes;
 
 public class CustomerUpdateAuthorizationException extends CustomerException {
     public CustomerUpdateAuthorizationException(Long customerId) {
-        super(Exceptions.CUSTOMER_UPDATE_FAILED, customerId);
+        super(ErrorCodes.CUSTOMER_UPDATE_FAILED, customerId);
     }
 }

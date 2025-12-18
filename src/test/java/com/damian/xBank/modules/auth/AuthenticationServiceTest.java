@@ -8,7 +8,7 @@ import com.damian.xBank.modules.auth.domain.exception.UserAccountSuspendedExcept
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.exception.Exceptions;
+import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.security.User;
 import com.damian.xBank.shared.utils.JwtUtil;
 import org.junit.jupiter.api.DisplayName;
@@ -90,7 +90,7 @@ public class AuthenticationServiceTest extends AbstractServiceTest {
         // when
         when(authenticationManager.authenticate(any()))
                 .thenThrow(new BadCredentialsException(
-                        Exceptions.USER_ACCOUNT_BAD_CREDENTIALS
+                        ErrorCodes.USER_ACCOUNT_BAD_CREDENTIALS
                 ));
 
         BadCredentialsException exception = assertThrows(
@@ -99,7 +99,7 @@ public class AuthenticationServiceTest extends AbstractServiceTest {
         );
 
         // Then
-        assertEquals(Exceptions.USER_ACCOUNT_BAD_CREDENTIALS, exception.getMessage());
+        assertEquals(ErrorCodes.USER_ACCOUNT_BAD_CREDENTIALS, exception.getMessage());
     }
 
     @Test
@@ -133,7 +133,7 @@ public class AuthenticationServiceTest extends AbstractServiceTest {
         );
 
         // Then
-        assertEquals(Exceptions.USER_ACCOUNT_SUSPENDED, exception.getMessage());
+        assertEquals(ErrorCodes.USER_ACCOUNT_SUSPENDED, exception.getMessage());
     }
 
     @Test
@@ -167,6 +167,6 @@ public class AuthenticationServiceTest extends AbstractServiceTest {
         );
 
         // Then
-        assertEquals(Exceptions.USER_ACCOUNT_NOT_VERIFIED, exception.getMessage());
+        assertEquals(ErrorCodes.USER_ACCOUNT_NOT_VERIFIED, exception.getMessage());
     }
 }
