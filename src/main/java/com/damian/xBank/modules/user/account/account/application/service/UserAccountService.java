@@ -9,7 +9,6 @@ import com.damian.xBank.modules.user.account.account.domain.exception.UserAccoun
 import com.damian.xBank.modules.user.account.account.infra.repository.UserAccountRepository;
 import com.damian.xBank.modules.user.account.token.application.service.UserAccountTokenService;
 import com.damian.xBank.modules.user.account.token.domain.entity.UserAccountToken;
-import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import com.damian.xBank.shared.security.PasswordValidator;
 import com.damian.xBank.shared.security.User;
@@ -61,9 +60,7 @@ public class UserAccountService {
 
         // check if the email is already taken
         if (userAccountRepository.existsByEmail(email)) {
-            throw new UserAccountEmailTakenException(
-                    Exceptions.USER.ACCOUNT.EMAIL_TAKEN, email
-            );
+            throw new UserAccountEmailTakenException(email);
         }
 
         // we create the user and assign the data
@@ -113,7 +110,7 @@ public class UserAccountService {
         // if the user does not exist we throw an exception
         return userAccountRepository.findById(userId).orElseThrow(
                 () -> new UserAccountNotFoundException(
-                        Exceptions.USER.ACCOUNT.NOT_FOUND, userId
+                        userId
                 )
         );
     }
@@ -138,12 +135,12 @@ public class UserAccountService {
 
         // we get the User entity so we can save at the end
         UserAccount user = userAccountRepository.findById(userId).orElseThrow(
-                () -> new UserAccountNotFoundException(Exceptions.USER.ACCOUNT.NOT_FOUND, userId)
+                () -> new UserAccountNotFoundException(userId)
         );
 
         // check if the email is already taken
         if (userAccountRepository.existsByEmail(newEmail)) {
-            throw new UserAccountEmailTakenException(Exceptions.USER.ACCOUNT.EMAIL_TAKEN, newEmail);
+            throw new UserAccountEmailTakenException(newEmail);
         }
 
         // set the new email

@@ -1,20 +1,11 @@
 package com.damian.xBank.infrastructure.storage.exception;
 
 import com.damian.xBank.shared.exception.ApplicationException;
+import com.damian.xBank.shared.exception.Exceptions;
 
 public class ImageTypeNotSupportedException extends ApplicationException {
-    private final String type;
 
-    public ImageTypeNotSupportedException(String message, String type) {
-        super(message);
-        this.type = type;
-    }
-
-    public ImageTypeNotSupportedException(String message) {
-        this(message, null);
-    }
-
-    public String getImageType() {
-        return type;
+    public ImageTypeNotSupportedException(String filename, String type) {
+        super(Exceptions.STORAGE_IMAGE_INVALID_TYPE, filename, new Object[]{type});
     }
 }

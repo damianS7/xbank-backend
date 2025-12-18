@@ -7,7 +7,6 @@ import com.damian.xBank.modules.setting.domain.exception.SettingNotFoundExceptio
 import com.damian.xBank.modules.setting.domain.exception.SettingNotOwnerException;
 import com.damian.xBank.modules.setting.infra.repository.SettingRepository;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
-import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import com.damian.xBank.shared.security.User;
 import org.slf4j.Logger;
@@ -34,9 +33,7 @@ public class SettingService {
         return settingRepository
                 .findByUser_Id(currentUser.getId())
                 .orElseThrow(
-                        () -> new SettingNotFoundException(
-                                Exceptions.CUSTOMER.SETTINGS.NOT_FOUND
-                        )
+                        () -> new SettingNotFoundException(currentUser.getId())
                 );
     }
 
@@ -48,12 +45,12 @@ public class SettingService {
         Setting userSettings = settingRepository
                 .findByUser_Id(currentUser.getId())
                 .orElseThrow(
-                        () -> new SettingNotFoundException(Exceptions.CUSTOMER.SETTINGS.NOT_FOUND, currentUser.getId())
+                        () -> new SettingNotFoundException(currentUser.getId())
                 );
 
         // check if the logged user is the owner of the setting.
         if (!userSettings.isOwner(currentUser)) {
-            throw new SettingNotOwnerException(Exceptions.CUSTOMER.SETTINGS.NOT_OWNER, currentUser.getId());
+            throw new SettingNotOwnerException(userSettings.getId(), currentUser.getId());
         }
 
         log.debug(

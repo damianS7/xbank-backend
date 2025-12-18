@@ -1,26 +1,10 @@
 package com.damian.xBank.infrastructure.storage.exception;
 
 import com.damian.xBank.shared.exception.ApplicationException;
+import com.damian.xBank.shared.exception.Exceptions;
 
 public class ImageNotFoundException extends ApplicationException {
-    private final String path;
-    private final String imageName;
-
-    public ImageNotFoundException(String message, String path, String imageName) {
-        super(message);
-        this.path = path;
-        this.imageName = imageName;
-    }
-
-    public ImageNotFoundException(String message) {
-        this(message, null, null);
-    }
-
-    public String getImageName() {
-        return imageName;
-    }
-
-    public String getPath() {
-        return path;
+    public ImageNotFoundException(String filename, String path) {
+        super(Exceptions.STORAGE_IMAGE_NOT_FOUND, filename, new Object[]{path});
     }
 }

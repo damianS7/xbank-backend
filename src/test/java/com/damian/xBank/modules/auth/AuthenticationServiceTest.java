@@ -3,8 +3,8 @@ package com.damian.xBank.modules.auth;
 import com.damian.xBank.modules.auth.application.dto.AuthenticationRequest;
 import com.damian.xBank.modules.auth.application.dto.AuthenticationResponse;
 import com.damian.xBank.modules.auth.application.service.AuthenticationService;
-import com.damian.xBank.modules.auth.domain.exception.AccountNotVerifiedException;
-import com.damian.xBank.modules.auth.domain.exception.AccountSuspendedException;
+import com.damian.xBank.modules.auth.domain.exception.UserAccountNotVerifiedException;
+import com.damian.xBank.modules.auth.domain.exception.UserAccountSuspendedException;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
 import com.damian.xBank.shared.AbstractServiceTest;
@@ -90,7 +90,7 @@ public class AuthenticationServiceTest extends AbstractServiceTest {
         // when
         when(authenticationManager.authenticate(any()))
                 .thenThrow(new BadCredentialsException(
-                        Exceptions.USER.ACCOUNT.BAD_CREDENTIALS
+                        Exceptions.USER_ACCOUNT_BAD_CREDENTIALS
                 ));
 
         BadCredentialsException exception = assertThrows(
@@ -99,7 +99,7 @@ public class AuthenticationServiceTest extends AbstractServiceTest {
         );
 
         // Then
-        assertEquals(Exceptions.USER.ACCOUNT.BAD_CREDENTIALS, exception.getMessage());
+        assertEquals(Exceptions.USER_ACCOUNT_BAD_CREDENTIALS, exception.getMessage());
     }
 
     @Test
@@ -127,13 +127,13 @@ public class AuthenticationServiceTest extends AbstractServiceTest {
         when(jwtUtil.generateToken(anyMap(), anyString())).thenReturn(token);
         when(authentication.getPrincipal()).thenReturn(user);
 
-        AccountSuspendedException exception = assertThrows(
-                AccountSuspendedException.class,
+        UserAccountSuspendedException exception = assertThrows(
+                UserAccountSuspendedException.class,
                 () -> authenticationService.login(request)
         );
 
         // Then
-        assertEquals(Exceptions.USER.ACCOUNT.SUSPENDED, exception.getMessage());
+        assertEquals(Exceptions.USER_ACCOUNT_SUSPENDED, exception.getMessage());
     }
 
     @Test
@@ -161,12 +161,12 @@ public class AuthenticationServiceTest extends AbstractServiceTest {
         when(jwtUtil.generateToken(anyMap(), anyString())).thenReturn(token);
         when(authentication.getPrincipal()).thenReturn(user);
 
-        AccountNotVerifiedException exception = assertThrows(
-                AccountNotVerifiedException.class,
+        UserAccountNotVerifiedException exception = assertThrows(
+                UserAccountNotVerifiedException.class,
                 () -> authenticationService.login(request)
         );
 
         // Then
-        assertEquals(Exceptions.USER.ACCOUNT.NOT_VERIFIED, exception.getMessage());
+        assertEquals(Exceptions.USER_ACCOUNT_NOT_VERIFIED, exception.getMessage());
     }
 }

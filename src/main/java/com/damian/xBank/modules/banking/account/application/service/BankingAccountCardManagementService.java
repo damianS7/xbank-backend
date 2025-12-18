@@ -10,7 +10,6 @@ import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingAccountCardsLimitException;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
-import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.stereotype.Service;
 
@@ -46,9 +45,7 @@ public class BankingAccountCardManagementService {
         final BankingAccount bankingAccount = bankingAccountRepository
                 .findById(bankingAccountId)
                 .orElseThrow(
-                        () -> new BankingAccountNotFoundException(
-                                Exceptions.BANKING.ACCOUNT.NOT_FOUND, bankingAccountId
-                        )
+                        () -> new BankingAccountNotFoundException(bankingAccountId)
                 );
 
         // if the logged customer is not admin
@@ -60,9 +57,7 @@ public class BankingAccountCardManagementService {
 
         // if customer has reached the maximum amount of cards per account.
         if (countActiveCards(bankingAccount) >= MAX_CARDS_PER_ACCOUNT) {
-            throw new BankingAccountCardsLimitException(
-                    Exceptions.BANKING.ACCOUNT.CARD_LIMIT, bankingAccountId
-            );
+            throw new BankingAccountCardsLimitException(bankingAccountId);
         }
 
         // create the card and associate to the account and return it.

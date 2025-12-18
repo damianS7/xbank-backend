@@ -8,7 +8,6 @@ import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountNotFoundException;
 import com.damian.xBank.modules.user.account.account.infra.repository.UserAccountRepository;
 import com.damian.xBank.modules.user.customer.infra.repository.CustomerRepository;
-import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import com.damian.xBank.shared.security.User;
 import org.slf4j.Logger;
@@ -136,10 +135,7 @@ public class NotificationService {
                             "Notification failed: recipient: {} not found.",
                             notificationEvent.recipientId()
                     );
-                    return new UserAccountNotFoundException(
-                            Exceptions.USER.ACCOUNT.NOT_FOUND,
-                            notificationEvent.recipientId()
-                    );
+                    return new UserAccountNotFoundException(notificationEvent.recipientId());
                 });
 
         // create and save notification to the database

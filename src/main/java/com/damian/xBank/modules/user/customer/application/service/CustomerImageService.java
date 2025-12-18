@@ -9,7 +9,6 @@ import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountNotFoundException;
 import com.damian.xBank.modules.user.account.account.infra.repository.UserAccountRepository;
 import com.damian.xBank.modules.user.customer.domain.exception.CustomerImageNotFoundException;
-import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import com.damian.xBank.shared.security.PasswordValidator;
 import com.damian.xBank.shared.security.User;
@@ -115,15 +114,12 @@ public class CustomerImageService {
     public Resource getUserImage(Long userId) {
         // find the user
         UserAccount user = userAccountRepository.findById(userId).orElseThrow(
-                () -> new UserAccountNotFoundException(Exceptions.CUSTOMER.IMAGE.NOT_FOUND, userId)
+                () -> new UserAccountNotFoundException(userId)
         );
 
         // check if the user has a user photo filename stored in db
         if (user.getCustomer().getPhotoPath() == null) {
-            throw new CustomerImageNotFoundException(
-                    Exceptions.CUSTOMER.IMAGE.NOT_FOUND,
-                    user.getId()
-            );
+            throw new CustomerImageNotFoundException(user.getId()); // TODO user.getCustomer.getId
         }
 
         log.debug("Getting user: {} user image: {}", userId, user.getCustomer().getPhotoPath());

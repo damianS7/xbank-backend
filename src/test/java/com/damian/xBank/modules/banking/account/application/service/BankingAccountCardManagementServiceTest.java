@@ -118,7 +118,7 @@ public class BankingAccountCardManagementServiceTest extends AbstractServiceTest
         );
 
         // then
-        assertEquals(Exceptions.BANKING.ACCOUNT.NOT_FOUND, exception.getMessage());
+        assertEquals(Exceptions.BANKING_ACCOUNT_NOT_FOUND, exception.getMessage());
     }
 
     @Test
@@ -163,7 +163,7 @@ public class BankingAccountCardManagementServiceTest extends AbstractServiceTest
         );
 
         // then
-        assertEquals(Exceptions.BANKING.ACCOUNT.ACCESS_FORBIDDEN, exception.getMessage());
+        assertEquals(Exceptions.BANKING_ACCOUNT_OWNERSHIP, exception.getMessage());
     }
 
     @Test
@@ -256,6 +256,6 @@ public class BankingAccountCardManagementServiceTest extends AbstractServiceTest
         );
 
         // then
-        assertEquals(Exceptions.BANKING.ACCOUNT.CARD_LIMIT, exception.getMessage());
+        assertEquals(Exceptions.BANKING_ACCOUNT_CARD_LIMIT, exception.getMessage());
     }
 }

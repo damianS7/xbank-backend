@@ -3,7 +3,6 @@ package com.damian.xBank.modules.banking.transaction.application.guard;
 import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionOwnershipException;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
-import com.damian.xBank.shared.exception.Exceptions;
 
 public class BankingTransactionGuard {
     private final BankingTransaction transaction;
@@ -28,7 +27,7 @@ public class BankingTransactionGuard {
         // compare account owner id with given customer id
         if (!transaction.belongsTo(customer)) {
             throw new BankingTransactionOwnershipException(
-                    Exceptions.BANKING.TRANSACTION.OWNERSHIP, transaction.getId(), customer.getId()
+                    transaction.getId(), customer.getId()
             );
         }
 

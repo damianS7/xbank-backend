@@ -108,7 +108,7 @@ public class BankingCardManagementServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING.CARD.NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING_CARD_NOT_FOUND);
     }
 
     @Test
@@ -135,7 +135,7 @@ public class BankingCardManagementServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING.CARD.OWNERSHIP);
+        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING_CARD_OWNERSHIP);
     }
 
     @Test
@@ -155,7 +155,7 @@ public class BankingCardManagementServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertThat(exception.getMessage()).isEqualTo(Exceptions.USER.ACCOUNT.INVALID_PASSWORD);
+        assertThat(exception.getMessage()).isEqualTo(Exceptions.USER_ACCOUNT_INVALID_PASSWORD);
     }
 
     @Test
@@ -202,7 +202,7 @@ public class BankingCardManagementServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING.CARD.NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING_CARD_NOT_FOUND);
     }
 
     @Test
@@ -232,7 +232,7 @@ public class BankingCardManagementServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING.CARD.OWNERSHIP);
+        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING_CARD_OWNERSHIP);
     }
 
     @Test
@@ -255,7 +255,7 @@ public class BankingCardManagementServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertThat(exception.getMessage()).isEqualTo(Exceptions.USER.ACCOUNT.INVALID_PASSWORD);
+        assertThat(exception.getMessage()).isEqualTo(Exceptions.USER_ACCOUNT_INVALID_PASSWORD);
     }
 
     @Test
@@ -302,7 +302,7 @@ public class BankingCardManagementServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING.CARD.NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING_CARD_NOT_FOUND);
     }
 
     @Test
@@ -329,7 +329,7 @@ public class BankingCardManagementServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING.CARD.OWNERSHIP);
+        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING_CARD_OWNERSHIP);
     }
 
     @Test
@@ -349,6 +349,6 @@ public class BankingCardManagementServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertThat(exception.getMessage()).isEqualTo(Exceptions.USER.ACCOUNT.INVALID_PASSWORD);
+        assertThat(exception.getMessage()).isEqualTo(Exceptions.USER_ACCOUNT_INVALID_PASSWORD);
     }
 }

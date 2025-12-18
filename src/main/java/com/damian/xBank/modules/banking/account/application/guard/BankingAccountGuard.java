@@ -32,7 +32,7 @@ public class BankingAccountGuard {
         // compare account owner id with given customer id
         if (!Objects.equals(account.getOwner().getId(), customer.getId())) {
             throw new BankingAccountOwnershipException(
-                    Exceptions.BANKING.ACCOUNT.OWNERSHIP, account.getId(), customer.getId()
+                    Exceptions.BANKING_ACCOUNT_OWNERSHIP, account.getId(), customer.getId()
             );
         }
 
@@ -49,9 +49,7 @@ public class BankingAccountGuard {
     public BankingAccountGuard assertSufficientFunds(BigDecimal amount) {
 
         if (!account.hasSufficientFunds(amount)) {
-            throw new BankingAccountInsufficientFundsException(
-                    Exceptions.BANKING.ACCOUNT.INSUFFICIENT_FUNDS, account.getId()
-            );
+            throw new BankingAccountInsufficientFundsException(account.getId());
         }
 
         return this;

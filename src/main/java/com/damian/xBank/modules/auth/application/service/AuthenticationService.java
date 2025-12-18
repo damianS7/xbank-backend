@@ -2,10 +2,9 @@ package com.damian.xBank.modules.auth.application.service;
 
 import com.damian.xBank.modules.auth.application.dto.AuthenticationRequest;
 import com.damian.xBank.modules.auth.application.dto.AuthenticationResponse;
-import com.damian.xBank.modules.auth.domain.exception.AccountNotVerifiedException;
-import com.damian.xBank.modules.auth.domain.exception.AccountSuspendedException;
+import com.damian.xBank.modules.auth.domain.exception.UserAccountNotVerifiedException;
+import com.damian.xBank.modules.auth.domain.exception.UserAccountSuspendedException;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
-import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.security.User;
 import com.damian.xBank.shared.utils.JwtUtil;
 import org.slf4j.Logger;
@@ -41,8 +40,8 @@ public class AuthenticationService {
      *
      * @param request Contains the fields needed to login into the service
      * @return Contains the data (User, Profile) and the token
-     * @throws BadCredentialsException     if credentials are invalid
-     * @throws AccountNotVerifiedException if the account is not verified
+     * @throws BadCredentialsException         if credentials are invalid
+     * @throws UserAccountNotVerifiedException if the account is not verified
      */
     public AuthenticationResponse login(AuthenticationRequest request) {
         final String email = request.email();
@@ -69,16 +68,12 @@ public class AuthenticationService {
 
         // check if the account is disabled
         if (currentUser.getAccount().getAccountStatus().equals(UserAccountStatus.SUSPENDED)) {
-            throw new AccountSuspendedException(
-                    Exceptions.USER.ACCOUNT.SUSPENDED
-            );
+            throw new UserAccountSuspendedException(email);
         }
 
         // check if the account is verified
         if (currentUser.getAccount().getAccountStatus().equals(UserAccountStatus.PENDING_VERIFICATION)) {
-            throw new AccountNotVerifiedException(
-                    Exceptions.USER.ACCOUNT.NOT_VERIFIED
-            );
+            throw new UserAccountNotVerifiedException(email);
         }
 
         // Return the user data and the token

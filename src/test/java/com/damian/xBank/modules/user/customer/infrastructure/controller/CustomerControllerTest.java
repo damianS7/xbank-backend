@@ -1,13 +1,13 @@
 package com.damian.xBank.modules.user.customer.infrastructure.controller;
 
+import com.damian.xBank.infrastructure.storage.FileStorageService;
+import com.damian.xBank.infrastructure.storage.ImageUploaderService;
+import com.damian.xBank.infrastructure.storage.exception.FileStorageNotFoundException;
 import com.damian.xBank.modules.user.customer.application.dto.request.CustomerUpdateRequest;
 import com.damian.xBank.modules.user.customer.application.dto.response.CustomerDetailDto;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
 import com.damian.xBank.shared.AbstractControllerTest;
-import com.damian.xBank.infrastructure.storage.FileStorageService;
-import com.damian.xBank.infrastructure.storage.ImageUploaderService;
-import com.damian.xBank.infrastructure.storage.exception.FileStorageNotFoundException;
 import com.damian.xBank.shared.utils.ImageTestHelper;
 import com.damian.xBank.shared.utils.JsonHelper;
 import org.junit.jupiter.api.BeforeEach;
@@ -170,7 +170,7 @@ public class CustomerControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("Should not get customer image when not exist")
+    @DisplayName("Should not get customer image when file not exist")
     void shouldNotGetCustomerImageWhenNotExist() throws Exception {
         // given
         login(customer);
@@ -182,6 +182,26 @@ public class CustomerControllerTest extends AbstractControllerTest {
         mockMvc
                 .perform(
                         get("/api/v1/customers/{id}/image", customer.getId())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+                .andDo(print())
+                .andExpect(status().is(HttpStatus.NOT_FOUND.value()))
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    @DisplayName("Should fail to get customer image when customer not exist")
+    void shouldFailToGetCustomerImageWhenCustomerNotExist() throws Exception {
+        // given
+        login(customer);
+
+        //        when(fileStorageService.getFile(anyString(), anyString())).thenThrow(
+        //                FileStorageNotFoundException.class
+        //        );
+
+        mockMvc
+                .perform(
+                        get("/api/v1/customers/{id}/image", 99L)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
                 .andDo(print())

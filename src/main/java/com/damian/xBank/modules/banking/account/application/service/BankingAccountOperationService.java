@@ -15,7 +15,6 @@ import com.damian.xBank.modules.notification.application.service.NotificationSer
 import com.damian.xBank.modules.notification.domain.enums.NotificationType;
 import com.damian.xBank.modules.notification.domain.event.NotificationEvent;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
-import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import com.damian.xBank.shared.security.PasswordValidator;
 import org.springframework.stereotype.Service;
@@ -62,9 +61,7 @@ public class BankingAccountOperationService {
         final BankingAccount fromBankingAccount = bankingAccountRepository
                 .findById(fromBankingAccountId)
                 .orElseThrow(
-                        () -> new BankingAccountNotFoundException(
-                                Exceptions.BANKING.ACCOUNT.NOT_FOUND, fromBankingAccountId
-                        )
+                        () -> new BankingAccountNotFoundException(fromBankingAccountId)
                 );
 
         final Customer customer = authenticationContext.getCurrentCustomer();
@@ -83,9 +80,7 @@ public class BankingAccountOperationService {
         final BankingAccount toBankingAccount = bankingAccountRepository
                 .findByAccountNumber(request.toBankingAccountNumber())
                 .orElseThrow(
-                        () -> new BankingAccountNotFoundException(
-                                Exceptions.BANKING.ACCOUNT.NOT_FOUND, request.toBankingAccountNumber()
-                        )
+                        () -> new BankingAccountNotFoundException(request.toBankingAccountNumber())
                 );
 
         return this.executeTransfer(

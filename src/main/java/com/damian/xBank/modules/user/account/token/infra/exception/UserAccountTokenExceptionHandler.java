@@ -6,6 +6,8 @@ import com.damian.xBank.modules.user.account.token.domain.exception.UserAccountT
 import com.damian.xBank.shared.dto.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class UserAccountTokenExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(UserAccountTokenExceptionHandler.class);
+    private final MessageSource messageSource;
+
+    public UserAccountTokenExceptionHandler(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
 
     // Token Exceptions
     @ExceptionHandler(UserAccountTokenNotFoundException.class) // 404
@@ -24,11 +31,18 @@ public class UserAccountTokenExceptionHandler {
     ) {
         log.warn(
                 "user: {} account token: {} not found.",
-                ex.getAccountId(),
-                ex.getToken()
+                ex.getResourceId(),
+                ex.getArgs()[0]
         );
+
+        String message = messageSource.getMessage(
+                ex.getErrorCode(),
+                ex.getArgs(),
+                LocaleContextHolder.getLocale()
+        );
+
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body(ApiResponse.error(ex.getMessage(), HttpStatus.NOT_FOUND));
+                             .body(ApiResponse.error(message, HttpStatus.NOT_FOUND));
     }
 
     @ExceptionHandler(UserAccountTokenUsedException.class) // 403
@@ -37,11 +51,18 @@ public class UserAccountTokenExceptionHandler {
     ) {
         log.warn(
                 "User: {} account token: {} is already used.",
-                ex.getAccountId(),
-                ex.getToken()
+                ex.getResourceId(),
+                ex.getArgs()[0]
         );
+
+        String message = messageSource.getMessage(
+                ex.getErrorCode(),
+                ex.getArgs(),
+                LocaleContextHolder.getLocale()
+        );
+
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                             .body(ApiResponse.error(ex.getMessage(), HttpStatus.FORBIDDEN));
+                             .body(ApiResponse.error(message, HttpStatus.FORBIDDEN));
     }
 
     @ExceptionHandler(UserAccountTokenExpiredException.class) // 410
@@ -50,10 +71,17 @@ public class UserAccountTokenExceptionHandler {
     ) {
         log.warn(
                 "account: {} account token: {} is expired.",
-                ex.getAccountId(),
-                ex.getToken()
+                ex.getResourceId(),
+                ex.getArgs()[0]
         );
+
+        String message = messageSource.getMessage(
+                ex.getErrorCode(),
+                ex.getArgs(),
+                LocaleContextHolder.getLocale()
+        );
+
         return ResponseEntity.status(HttpStatus.GONE)
-                             .body(ApiResponse.error(ex.getMessage(), HttpStatus.GONE));
+                             .body(ApiResponse.error(message, HttpStatus.GONE));
     }
 }

@@ -121,7 +121,7 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
                 .isNotNull()
                 .extracting(ApiResponse::getMessage)
                 .isEqualTo(
-                        Exceptions.USER.ACCOUNT.BAD_CREDENTIALS
+                        Exceptions.USER_ACCOUNT_BAD_CREDENTIALS
                 );
     }
 
@@ -160,7 +160,7 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
                 .isNotNull()
                 .extracting(ApiResponse::getMessage)
                 .isEqualTo(
-                        Exceptions.USER.ACCOUNT.SUSPENDED
+                        Exceptions.USER_ACCOUNT_SUSPENDED
                 );
 
         // undo changes
@@ -200,7 +200,7 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
                 .isNotNull()
                 .extracting(ApiResponse::getMessage)
                 .isEqualTo(
-                        Exceptions.COMMON.VALIDATION_FAILED
+                        Exceptions.VALIDATION_FAILED
                 );
 
         assertThat(response.getErrors().get("email"))
@@ -240,7 +240,7 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
                 .isNotNull()
                 .extracting(ApiResponse::getMessage)
                 .isEqualTo(
-                        Exceptions.COMMON.VALIDATION_FAILED
+                        Exceptions.VALIDATION_FAILED
                 );
 
         assertThat(response.getErrors().get("password"))
@@ -285,7 +285,7 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
                 .isNotNull()
                 .extracting(ApiResponse::getMessage)
                 .isEqualTo(
-                        Exceptions.USER.ACCOUNT.NOT_VERIFIED
+                        Exceptions.USER_ACCOUNT_NOT_VERIFIED
                 );
 
         // undo changes to customer

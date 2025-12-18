@@ -1,11 +1,13 @@
 package com.damian.xBank.modules.user.account.account.domain.exception;
 
+import com.damian.xBank.shared.exception.Exceptions;
+
 public class UserAccountVerificationNotPendingException extends UserAccountException {
-    public UserAccountVerificationNotPendingException(String message, Long accountId) {
-        super(message, accountId);
+    public UserAccountVerificationNotPendingException(Long accountId) {
+        super(Exceptions.USER_ACCOUNT_VERIFICATION_NOT_ELEGIBLE, accountId);
     }
 
-    public UserAccountVerificationNotPendingException(String message, String email) {
-        super(message, email);
+    public UserAccountVerificationNotPendingException(String email) {
+        super(Exceptions.USER_ACCOUNT_VERIFICATION_NOT_ELEGIBLE, email);
     }
 }

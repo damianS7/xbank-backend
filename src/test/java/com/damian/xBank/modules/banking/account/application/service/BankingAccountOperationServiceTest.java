@@ -193,7 +193,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(Exceptions.BANKING.ACCOUNT.INSUFFICIENT_FUNDS, exception.getMessage());
+        assertEquals(Exceptions.BANKING_ACCOUNT_INSUFFICIENT_FUNDS, exception.getMessage());
     }
 
     @Test
@@ -251,7 +251,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(Exceptions.BANKING.TRANSACTION.DIFFERENT_CURRENCY, exception.getMessage());
+        assertEquals(Exceptions.BANKING_ACCOUNT_DIFFERENT_CURRENCY, exception.getMessage());
     }
 
     @Test
@@ -309,7 +309,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(Exceptions.BANKING.ACCOUNT.NOT_FOUND, exception.getMessage());
+        assertEquals(Exceptions.BANKING_ACCOUNT_NOT_FOUND, exception.getMessage());
     }
 
     @Test
@@ -366,7 +366,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(Exceptions.BANKING.ACCOUNT.CLOSED, exception.getMessage());
+        assertEquals(Exceptions.BANKING_ACCOUNT_CLOSED, exception.getMessage());
     }
 
     @Test
@@ -423,7 +423,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(Exceptions.BANKING.ACCOUNT.SUSPENDED, exception.getMessage());
+        assertEquals(Exceptions.BANKING_ACCOUNT_SUSPENDED, exception.getMessage());
     }
 
     @Test
@@ -467,7 +467,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(Exceptions.BANKING.ACCOUNT.SAME_DESTINATION, exception.getMessage());
+        assertEquals(Exceptions.BANKING_ACCOUNT_SAME_DESTINATION, exception.getMessage());
     }
 
     @Test
@@ -519,7 +519,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(Exceptions.BANKING.ACCOUNT.OWNERSHIP, exception.getMessage());
+        assertEquals(Exceptions.BANKING_ACCOUNT_OWNERSHIP, exception.getMessage());
     }
 
     @Test
@@ -575,7 +575,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(Exceptions.USER.ACCOUNT.INVALID_PASSWORD, exception.getMessage());
+        assertThat(exception.getMessage()).isEqualTo(Exceptions.USER_ACCOUNT_INVALID_PASSWORD);
     }
 
 }

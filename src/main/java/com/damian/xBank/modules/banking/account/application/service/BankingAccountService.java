@@ -9,7 +9,6 @@ import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountR
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.modules.user.customer.domain.exception.CustomerNotFoundException;
 import com.damian.xBank.modules.user.customer.infra.repository.CustomerRepository;
-import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import net.datafaker.Faker;
 import org.springframework.stereotype.Service;
@@ -82,9 +81,7 @@ public class BankingAccountService {
     public BankingAccount createBankingAccount(Long customerId, BankingAccountCreateRequest request) {
         // we get the Customer entity so we can save at the end
         final Customer customer = customerRepository.findById(customerId).orElseThrow(
-                () -> new CustomerNotFoundException(
-                        Exceptions.CUSTOMER.NOT_FOUND, customerId
-                )
+                () -> new CustomerNotFoundException(customerId)
         );
 
         return this.createBankingAccount(customer, request.type(), request.currency());

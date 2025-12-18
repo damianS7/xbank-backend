@@ -109,7 +109,7 @@ public class AuthorizationControllerTest extends AbstractControllerTest {
                        .content(jsonRequest))
                .andDo(print())
                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.UNAUTHORIZED.value()))
-               .andExpect(jsonPath("$.message").value(Exceptions.JWT.TOKEN.EXPIRED))
+               .andExpect(jsonPath("$.message").value(Exceptions.JWT_TOKEN_EXPIRED))
                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
     }
 
@@ -138,7 +138,7 @@ public class AuthorizationControllerTest extends AbstractControllerTest {
                        .content(jsonRequest))
                .andDo(print())
                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.UNAUTHORIZED.value()))
-               .andExpect(jsonPath("$.message").value(Exceptions.JWT.TOKEN.INVALID))
+               .andExpect(jsonPath("$.message").value(Exceptions.JWT_TOKEN_INVALID))
                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
     }
 

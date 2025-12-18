@@ -32,7 +32,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -139,7 +140,7 @@ public class CustomerServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertTrue(exception.getMessage().contains("Customer not found"));
+        assertEquals(Exceptions.CUSTOMER_NOT_FOUND, exception.getMessage());
     }
 
     @Test
@@ -172,7 +173,7 @@ public class CustomerServiceTest extends AbstractServiceTest {
                 CustomerNotFoundException.class,
                 () -> customerService.deleteCustomer(id)
         );
-        assertTrue(exception.getMessage().contains("Customer not found"));
+        assertEquals(Exceptions.CUSTOMER_NOT_FOUND, exception.getMessage());
         verify(customerRepository, never()).deleteById(anyLong());
     }
 
@@ -238,7 +239,7 @@ public class CustomerServiceTest extends AbstractServiceTest {
         );
 
         // Then
-        assertEquals(Exceptions.USER.ACCOUNT.INVALID_PASSWORD, exception.getMessage());
+        assertEquals(Exceptions.USER_ACCOUNT_INVALID_PASSWORD, exception.getMessage());
     }
 
     @Test
@@ -262,7 +263,7 @@ public class CustomerServiceTest extends AbstractServiceTest {
         );
 
         // Then
-        assertEquals(Exceptions.CUSTOMER.NOT_FOUND, exception.getMessage());
+        assertEquals(Exceptions.CUSTOMER_NOT_FOUND, exception.getMessage());
     }
 
     @Test
@@ -291,7 +292,7 @@ public class CustomerServiceTest extends AbstractServiceTest {
         );
 
         // Then
-        assertEquals(Exceptions.CUSTOMER.NOT_OWNER, exception.getMessage());
+        assertEquals(Exceptions.CUSTOMER_UPDATE_FAILED, exception.getMessage());
     }
 
     @Test
@@ -316,6 +317,6 @@ public class CustomerServiceTest extends AbstractServiceTest {
         );
 
         // Then
-        assertEquals(Exceptions.CUSTOMER.UPDATE_FAILED, exception.getMessage());
+        assertEquals(Exceptions.CUSTOMER_UPDATE_FAILED, exception.getMessage());
     }
 }

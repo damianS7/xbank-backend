@@ -7,6 +7,8 @@ import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTran
 import com.damian.xBank.shared.dto.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,38 +18,70 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Order(1)
 @RestControllerAdvice
 public class BankingTransactionExceptionHandler {
-
     private static final Logger log = LoggerFactory.getLogger(BankingTransactionExceptionHandler.class);
+    private final MessageSource messageSource;
+
+    public BankingTransactionExceptionHandler(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
 
     @ExceptionHandler(BankingTransactionOwnershipException.class)
     public ResponseEntity<ApiResponse<String>> handleOwnershipException(BankingTransactionOwnershipException ex) {
         log.warn(
                 "Unauthorized access to Transaction {} from customer: {}",
-                ex.getId(),
-                ex.getCustomerId()
+                ex.getResourceId(),
+                ex.getArgs()[0]
         );
+
+        String message = messageSource.getMessage(
+                ex.getErrorCode(),
+                ex.getArgs(),
+                LocaleContextHolder.getLocale()
+        );
+
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                             .body(ApiResponse.error(ex.getMessage(), HttpStatus.FORBIDDEN));
+                             .body(ApiResponse.error(message, HttpStatus.FORBIDDEN));
     }
 
     @ExceptionHandler(BankingTransactionNotFoundException.class)
-    public ResponseEntity<?> handleNotFound(BankingTransactionNotFoundException e) {
-        log.warn("Transaction: {} not found", e.getId());
+    public ResponseEntity<?> handleNotFound(BankingTransactionNotFoundException ex) {
+        log.warn("Transaction: {} not found", ex.getResourceId());
+
+        String message = messageSource.getMessage(
+                ex.getErrorCode(),
+                ex.getArgs(),
+                LocaleContextHolder.getLocale()
+        );
+
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body(ApiResponse.error(e.getMessage(), HttpStatus.NOT_FOUND));
+                             .body(ApiResponse.error(message, HttpStatus.NOT_FOUND));
     }
 
     @ExceptionHandler(BankingTransactionException.class)
     public ResponseEntity<ApiResponse<String>> handleException(BankingTransactionException ex) {
-        log.warn("Transaction: {} internal error.", ex.getId());
+        log.warn("Transaction: {} internal error.", ex.getResourceId());
+
+        String message = messageSource.getMessage(
+                ex.getErrorCode(),
+                ex.getArgs(),
+                LocaleContextHolder.getLocale()
+        );
+
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                             .body(ApiResponse.error(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR));
+                             .body(ApiResponse.error(message, HttpStatus.INTERNAL_SERVER_ERROR));
     }
 
     @ExceptionHandler(BankingTransactionAuthorizationException.class)
     public ResponseEntity<ApiResponse<String>> handleAuthorizationException(BankingTransactionAuthorizationException ex) {
-        log.warn("Transaction: {} authorization exception.", ex.getId());
+        log.warn("Transaction: {} authorization exception.", ex.getResourceId());
+
+        String message = messageSource.getMessage(
+                ex.getErrorCode(),
+                ex.getArgs(),
+                LocaleContextHolder.getLocale()
+        );
+
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                             .body(ApiResponse.error(ex.getMessage(), HttpStatus.FORBIDDEN));
+                             .body(ApiResponse.error(message, HttpStatus.FORBIDDEN));
     }
 }

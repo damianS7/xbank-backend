@@ -5,7 +5,6 @@ import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountD
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountTransferCurrencyMismatchException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountTransferException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountTransferSameAccountException;
-import com.damian.xBank.shared.exception.Exceptions;
 
 import java.util.Objects;
 
@@ -31,10 +30,7 @@ public class BankingAccountOperationGuard {
 
         // if currencies are different, throw exception
         if (!Objects.equals(account.getAccountCurrency(), toBankingAccount.getAccountCurrency())) {
-            throw new BankingAccountTransferCurrencyMismatchException(
-                    Exceptions.BANKING.TRANSACTION.DIFFERENT_CURRENCY,
-                    toBankingAccount.getId()
-            );
+            throw new BankingAccountTransferCurrencyMismatchException(toBankingAccount.getId());
         }
 
         return this;
@@ -51,10 +47,7 @@ public class BankingAccountOperationGuard {
 
         // check bankingAccount and toBankingAccount are not the same
         if (account.getId().equals(toBankingAccount.getId())) {
-            throw new BankingAccountTransferSameAccountException(
-                    Exceptions.BANKING.ACCOUNT.SAME_DESTINATION,
-                    toBankingAccount.getId()
-            );
+            throw new BankingAccountTransferSameAccountException(toBankingAccount.getId());
         }
 
         return this;

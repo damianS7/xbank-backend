@@ -10,7 +10,6 @@ import com.damian.xBank.modules.user.account.account.infra.repository.UserAccoun
 import com.damian.xBank.modules.user.account.token.application.service.UserAccountTokenService;
 import com.damian.xBank.modules.user.account.token.domain.entity.UserAccountToken;
 import com.damian.xBank.modules.user.account.token.infra.repository.UserAccountTokenRepository;
-import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import com.damian.xBank.shared.security.PasswordValidator;
 import com.damian.xBank.shared.security.User;
@@ -66,10 +65,8 @@ public class UserAccountPasswordService {
         // we get the UserAuth entity so we can save.
         UserAccount userAccount = userAccountRepository.findById(userId).orElseThrow(
                 () -> {
-                    log.warn("Failed to update password. No user found with id: {}", userId);
-                    return new UserAccountNotFoundException(
-                            Exceptions.USER.ACCOUNT.NOT_FOUND, userId
-                    );
+                    log.warn("Failed to update password");
+                    return new UserAccountNotFoundException(userId);
                 }
         );
 

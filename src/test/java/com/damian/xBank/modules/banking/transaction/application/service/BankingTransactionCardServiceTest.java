@@ -154,7 +154,7 @@ public class BankingTransactionCardServiceTest extends AbstractServiceTest {
 
         // then
         assertThat(exception).isNotNull();
-        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING.TRANSACTION.OWNERSHIP);
+        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING_TRANSACTION_OWNERSHIP);
     }
 
     @Test
@@ -182,7 +182,7 @@ public class BankingTransactionCardServiceTest extends AbstractServiceTest {
 
         // then
         assertThat(exception).isNotNull();
-        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING.CARD.INSUFFICIENT_FUNDS);
+        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING_CARD_INSUFFICIENT_FUNDS);
         assertThat(givenTransaction.getStatus()).isEqualTo(BankingTransactionStatus.PENDING);
         verify(bankingTransactionRepository, times(0)).save(any(BankingTransaction.class));
     }

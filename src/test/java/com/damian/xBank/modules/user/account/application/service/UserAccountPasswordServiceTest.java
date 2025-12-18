@@ -103,7 +103,7 @@ public class UserAccountPasswordServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(Exceptions.USER.ACCOUNT.INVALID_PASSWORD, exception.getMessage());
+        assertEquals(Exceptions.USER_ACCOUNT_INVALID_PASSWORD, exception.getMessage());
     }
 
     @Test
@@ -135,7 +135,7 @@ public class UserAccountPasswordServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(Exceptions.USER.ACCOUNT.NOT_FOUND, exception.getMessage());
+        assertEquals(Exceptions.USER_ACCOUNT_NOT_FOUND, exception.getMessage());
     }
 
     @Test

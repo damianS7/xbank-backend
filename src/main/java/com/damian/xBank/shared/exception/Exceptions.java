@@ -1,129 +1,83 @@
 package com.damian.xBank.shared.exception;
 
 public class Exceptions {
+    // Generics
+    public static final String NOT_OWNER = "You are not allowed to access this resource.";
+    public static final String NOT_FOUND = "Resource not found.";
+    public static final String VALIDATION_FAILED = "Validation failed.";
 
-    public static class USER {
+    // Login/Security
+    public static final String LOGIN_BAD_CREDENTIALS = "";
+    public static final String JWT_TOKEN_EXPIRED = "jwt.token_expired";
+    public static final String JWT_TOKEN_INVALID = "jwt.token_invalid";
 
-        public static class ACCOUNT {
-            public static final String BAD_CREDENTIALS = "Invalid email or password.";
-            public static final String NOT_FOUND = "Account not found.";
-            public static final String INVALID_PASSWORD = "Password does not match.";
-            public static final String SUSPENDED = "Account has been suspended.";
-            public static final String NOT_VERIFIED = "Account email is not verified.";
-            public static final String EMAIL_TAKEN = "This email is already registered.";
+    // User account
+    public static final String USER_ACCOUNT_NOT_FOUND = "user.account.not_found";
+    public static final String USER_ACCOUNT_SUSPENDED = "user.account.suspended";
+    public static final String USER_ACCOUNT_EMAIL_TAKEN = "user.account.email_taken";
+    public static final String USER_ACCOUNT_INVALID_PASSWORD = "user.account.invalid_password";
+    public static final String USER_ACCOUNT_BAD_CREDENTIALS = "user.account.bad_credentials";
+    public static final String USER_ACCOUNT_NOT_VERIFIED = "user.account.not_verified";
 
+    // User account verification
+    public static final String USER_ACCOUNT_VERIFICATION_NOT_ELEGIBLE = "user.account.not_elegible";
+    public static final String USER_ACCOUNT_VERIFICATION_TOKEN_NOT_FOUND = "user.account.not_elegible";
+    public static final String USER_ACCOUNT_VERIFICATION_TOKEN_USER = "user.account.not_elegible";
+    public static final String USER_ACCOUNT_VERIFICATION_TOKEN_EXPIRED = "user.account.not_elegible";
 
-            public static class VERIFICATION {
-                public static final String NOT_ELIGIBLE = "Account is not eligible for activation.";
+    // Customer
+    public static final String CUSTOMER_NOT_OWNER = "customer.not_owner";
+    public static final String CUSTOMER_NOT_FOUND = "customer.not_found";
+    public static final String CUSTOMER_UPDATE_FAILED = "customer.update_failed";
+    public static final String CUSTOMER_IMAGE_NOT_FOUND = "customer.image.not_found";
 
-                public static class TOKEN {
-                    public static final String NOT_FOUND = "Token not found.";
-                    public static final String USED = "This token has already been used.";
-                    public static final String EXPIRED = "This token has expired.";
-                }
-            }
-        }
+    // Notification
+    public static final String NOTIFICATION_NOT_FOUND = "notification.not_found";
 
-    }
+    // Setting
+    public static final String SETTING_NOT_OWNER = "setting.not_owner";
+    public static final String SETTING_NOT_FOUND = "setting.not_found";
 
-    public static class CUSTOMER {
-        public static final String EMAIL_TAKEN = "Email is already taken.";
-        public static final String NOT_FOUND = "Customer not found.";
-        public static final String NOT_OWNER = "Customer ownership violation.";
-        public static final String UPDATE_FAILED = "Customer update failed.";
+    // Banking account
+    public static final String BANKING_ACCOUNT_SUSPENDED = "banking.account.suspended";
+    public static final String BANKING_ACCOUNT_CLOSED = "banking.account.closed";
+    public static final String BANKING_ACCOUNT_SAME_DESTINATION = "banking.account.same_destination";
+    public static final String BANKING_ACCOUNT_DIFFERENT_CURRENCY = "banking.account.different_currency";
+    public static final String BANKING_ACCOUNT_NOT_FOUND = "banking.account.not_found";
+    public static final String BANKING_ACCOUNT_CARD_LIMIT = "banking.account.card_limit";
+    public static final String BANKING_ACCOUNT_DISABLED = "banking.account.disabled";
+    public static final String BANKING_ACCOUNT_OWNERSHIP = "banking.account.not_owner";
+    public static final String BANKING_ACCOUNT_INSUFFICIENT_FUNDS = "banking.account.insufficient_funds";
+    public static final String BANKING_ACCOUNT_INVALID_TRANSITION_STATUS = "banking.account.invalid_transition_status";
+    public static final String BANKING_ACCOUNT_FAILED_DEPOSIT = "banking.account.failed_deposit";
 
-        public static class IMAGE {
-            public static final String NOT_FOUND = "Profile photo not found.";
-            public static final String FILE_SIZE_LIMIT = "Profile photo is too large.";
-            public static final String ONLY_IMAGES_ALLOWED = "Profile photo must be an image.";
-            public static final String EMPTY_FILE = "File is empty.";
-            public static final String UPLOAD_FAILED = "Profile photo upload failed.";
-        }
+    // Banking card
+    public static final String BANKING_CARD_OWNERSHIP = "banking.card.not_owner";
+    public static final String BANKING_CARD_INVALID_TRANSITION_STATUS = "banking.card.invalid_transition_status";
+    public static final String BANKING_CARD_NOT_FOUND = "banking.card.not_found";
+    public static final String BANKING_CARD_LOCKED = "banking.card.locked";
+    public static final String BANKING_CARD_INVALID_PIN = "banking.card.invalid_pin";
+    public static final String BANKING_CARD_DISABLED = "banking.card.disabled";
+    public static final String BANKING_CARD_INSUFFICIENT_FUNDS = "banking.card.insufficient_funds";
 
-        public static class SETTINGS {
-            public static final String NOT_FOUND = "Setting not found.";
-            public static final String NOT_OWNER = "You are not the owner of this setting.";
-        }
+    // Transactions
+    public static final String BANKING_TRANSACTION_NOT_FOUND = "banking.transaction.not_found";
+    public static final String BANKING_TRANSACTION_OWNERSHIP = "banking.transaction.not_owner";
+    public static final String
+            BANKING_TRANSACTION_INVALID_TRANSITION_STATUS
+            = "banking.transaction.invalid_transition_status";
 
-        public static class NOTIFICATION {
-            public static final String SELF_NOTIFICATION = "You cannot notify yourself.";
-        }
-    }
+    // Storage
+    public static final String STORAGE_FILE_NOT_FOUND = "storage.file.not_found";
+    public static final String STORAGE_FILE_INVALID_PATH = "storage.invalid_path";
+    public static final String STORAGE_FILE_FAILED = "storage.failed";
+    public static final String STORAGE_FILE_DELETE_FAILED = "storage.delete_failed";
+    public static final String STORAGE_UPLOAD_FILE_TOO_LARGE = "storage.upload.file.too_large";
 
-
-    public static class IMAGE {
-        public static final String NOT_FOUND = "Image not found.";
-        public static final String INVALID_PATH = "Image path is invalid.";
-        public static final String TOO_LARGE = "Image is too large.";
-        public static final String TYPE_NOT_SUPPORTED = "Image type not supported.";
-        public static final String EMPTY = "Image file is empty.";
-        public static final String INVALID = "Image is not valid.";
-        public static final String UPLOAD_FAILED = "Image upload failed.";
-        public static final String TYPE_NOT_DETECTED = "Image type could not be detected.";
-    }
-
-    public static class JWT {
-        public static class TOKEN {
-            public static final String EXPIRED = "JWT token has expired.";
-            public static final String INVALID = "Invalid JWT token.";
-        }
-    }
-
-    public static class COMMON {
-        public static final String NOT_OWNER = "You are not allowed to access this resource.";
-        public static final String NOT_FOUND = "Resource not found.";
-        public static final String VALIDATION_FAILED = "Validation failed.";
-    }
-
-    public static class STORAGE {
-        public static final String NOT_FOUND = "File not found.";
-        public static final String INVALID_PATH = "Path is invalid.";
-        public static final String FAILED = "File storage failed.";
-    }
-
-
-    public static class BANKING {
-        public static class ACCOUNT {
-            public static final String SUSPENDED = "This account is suspended.";
-            public static final String CLOSED = "This account is disabled.";
-            public static final String SAME_DESTINATION = "You cannot transfer to the same account.";
-            public static final String NOT_FOUND = "Account not found.";
-            public static final String CARD_LIMIT = "The account has reached the maximum number of cards allowed.";
-            public static final String LOCKED = "Account is locked.";
-            public static final String DISABLED = "Account is disabled.";
-            public static final String ACCESS_FORBIDDEN = "You are not the owner of this account.";
-            public static final String OWNERSHIP = "You are not the owner of this account.";
-            public static final String INSUFFICIENT_FUNDS = "Insufficient funds.";
-            public static final String INVALID_TRANSITION_STATUS = "Account cannot transition from %s to %s";
-        }
-
-        public static class CARD {
-            public static final String OWNERSHIP = "You are not the owner of this card.";
-            public static final String INVALID_TRANSITION_STATUS = "Card cannot transition from %s to %s";
-            public static final String NOT_FOUND = "Card not found.";
-            public static final String LOCKED = "Card is locked.";
-            public static final String INVALID_PIN = "Incorrect card pin.";
-            public static final String DISABLED = "Card is disabled.";
-            public static final String ACCESS_FORBIDDEN = "You are not the owner of this card.";
-            public static final String INSUFFICIENT_FUNDS = "Insufficient funds.";
-        }
-
-        public static class TRANSACTION {
-            public static final String NOT_FOUND = "Transaction not found.";
-            public static final String ACCESS_FORBIDDEN = "You are not the owner of this transaction.";
-            public static final String INVALID_TYPE = "Invalid transaction type";
-            public static final String DIFFERENT_CURRENCY = "Transactions must be in the same currency.";
-            public static final String FAILED_DEPOSIT = "Failed to deposit.";
-            public static final String OWNERSHIP = "You are not the owner of this transaction.";
-            public static final String
-                    INVALID_STATUS_CHANGE
-                    = "BankingTransactionStatus cannot transition from %s to %s";
-        }
-
-        public static class OPERATION {
-            public static final String FAILED_DEPOSIT = "Transaction not found.";
-        }
-    }
+    public static final String STORAGE_IMAGE_NOT_FOUND = "storage.image.not_found";
+    public static final String STORAGE_IMAGE_INVALID_PATH = "storage.image.invalid_path";
+    public static final String STORAGE_IMAGE_UPLOAD_FAILED = "storage.image.upload_failed";
+    public static final String STORAGE_IMAGE_INVALID_TYPE = "storage.image.invalid_type";
+    public static final String STORAGE_IMAGE_EMPTY = "storage.image.empty_file";
+    public static final String STORAGE_IMAGE_UPLOAD_TOO_LARGE = "storage.upload.image.too_large";
 }
-
-

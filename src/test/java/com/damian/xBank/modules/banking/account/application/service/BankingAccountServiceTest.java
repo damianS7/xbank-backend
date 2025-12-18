@@ -180,7 +180,7 @@ public class BankingAccountServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertThat(exception.getMessage()).isEqualTo(Exceptions.CUSTOMER.NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(Exceptions.CUSTOMER_NOT_FOUND);
         verify(bankingAccountRepository, times(0)).save(any(BankingAccount.class));
     }
 }

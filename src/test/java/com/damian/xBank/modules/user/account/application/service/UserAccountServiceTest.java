@@ -107,7 +107,7 @@ public class UserAccountServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(Exceptions.USER.ACCOUNT.EMAIL_TAKEN, exception.getMessage());
+        assertEquals(Exceptions.USER_ACCOUNT_EMAIL_TAKEN, exception.getMessage());
     }
 
     @Test
@@ -129,7 +129,7 @@ public class UserAccountServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(Exceptions.USER.ACCOUNT.INVALID_PASSWORD, exception.getMessage());
+        assertEquals(Exceptions.USER_ACCOUNT_INVALID_PASSWORD, exception.getMessage());
     }
 
 }

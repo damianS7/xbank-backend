@@ -3,7 +3,6 @@ package com.damian.xBank.modules.banking.card.application.guard;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.exception.*;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
-import com.damian.xBank.shared.exception.Exceptions;
 
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -30,9 +29,7 @@ public class BankingCardGuard {
 
         // compare card owner id with given customer id
         if (!Objects.equals(card.getOwner().getId(), customer.getId())) {
-            throw new BankingCardOwnershipException(
-                    Exceptions.BANKING.CARD.OWNERSHIP, card.getId(), customer.getId()
-            );
+            throw new BankingCardOwnershipException(card.getId(), customer.getId());
         }
 
         return this;
@@ -62,9 +59,7 @@ public class BankingCardGuard {
 
         // check card status
         if (card.isDisabled()) {
-            throw new BankingCardDisabledException(
-                    Exceptions.BANKING.CARD.DISABLED, card.getId()
-            );
+            throw new BankingCardDisabledException(card.getId());
         }
 
         return this;
@@ -80,9 +75,7 @@ public class BankingCardGuard {
 
         // check lock status
         if (card.isLocked()) {
-            throw new BankingCardLockedException(
-                    Exceptions.BANKING.CARD.LOCKED, card.getId()
-            );
+            throw new BankingCardLockedException(card.getId());
         }
 
         return this;
@@ -98,9 +91,7 @@ public class BankingCardGuard {
 
         // check card pin
         if (!Objects.equals(card.getCardPin(), PIN)) {
-            throw new BankingCardInvalidPinException(
-                    Exceptions.BANKING.CARD.INVALID_PIN, card.getId()
-            );
+            throw new BankingCardInvalidPinException(card.getId());
         }
 
         return this;
@@ -117,10 +108,7 @@ public class BankingCardGuard {
 
         // check if card has enough funds
         if (!card.hasSufficientFunds(amount)) {
-            throw new BankingCardInsufficientFundsException(
-                    Exceptions.BANKING.CARD.INSUFFICIENT_FUNDS,
-                    card.getId()
-            );
+            throw new BankingCardInsufficientFundsException(card.getId());
         }
 
         return this;

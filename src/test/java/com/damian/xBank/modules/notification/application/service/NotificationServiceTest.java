@@ -177,7 +177,7 @@ public class NotificationServiceTest extends AbstractServiceTest {
                 () -> notificationService.publish(event)
         );
 
-        assertEquals(Exceptions.USER.ACCOUNT.NOT_FOUND, exception.getMessage());
+        assertEquals(Exceptions.USER_ACCOUNT_NOT_FOUND, exception.getMessage());
         verify(notificationRepository, never()).save(any());
     }
 

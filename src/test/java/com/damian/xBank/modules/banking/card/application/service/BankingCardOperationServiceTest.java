@@ -145,7 +145,7 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING.CARD.NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING_CARD_NOT_FOUND);
     }
 
     @Test
@@ -184,7 +184,7 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING.CARD.OWNERSHIP);
+        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING_CARD_OWNERSHIP);
     }
 
     @Test
@@ -220,7 +220,7 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING.CARD.DISABLED);
+        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING_CARD_DISABLED);
     }
 
     @Test
@@ -255,7 +255,7 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING.CARD.LOCKED);
+        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING_CARD_LOCKED);
     }
 
     @Test
@@ -290,7 +290,7 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING.CARD.INSUFFICIENT_FUNDS);
+        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING_CARD_INSUFFICIENT_FUNDS);
     }
 
     @Test

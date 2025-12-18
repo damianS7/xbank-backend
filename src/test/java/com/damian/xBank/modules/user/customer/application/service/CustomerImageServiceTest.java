@@ -104,7 +104,7 @@ public class CustomerImageServiceTest extends AbstractServiceTest {
 
         // then
         assertNotNull(exception);
-        assertEquals(Exceptions.CUSTOMER.IMAGE.NOT_FOUND, exception.getMessage());
+        assertEquals(Exceptions.USER_ACCOUNT_NOT_FOUND, exception.getMessage());
     }
 
     @Test
@@ -124,7 +124,7 @@ public class CustomerImageServiceTest extends AbstractServiceTest {
 
         // then
         assertNotNull(exception);
-        assertEquals(Exceptions.CUSTOMER.IMAGE.NOT_FOUND, exception.getMessage());
+        assertEquals(Exceptions.CUSTOMER_IMAGE_NOT_FOUND, exception.getMessage());
     }
 
     @Test

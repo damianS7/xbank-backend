@@ -165,7 +165,7 @@ public class CustomerRegistrationControllerTest extends AbstractControllerTest {
                 .isNotNull()
                 .extracting(ApiResponse::getMessage)
                 .asString()
-                .isEqualTo(Exceptions.COMMON.VALIDATION_FAILED);
+                .isEqualTo(Exceptions.VALIDATION_FAILED);
     }
 
     @Test
@@ -208,7 +208,7 @@ public class CustomerRegistrationControllerTest extends AbstractControllerTest {
                 .extracting(
                         ApiResponse::getMessage
                 ).isEqualTo(
-                        Exceptions.COMMON.VALIDATION_FAILED
+                        Exceptions.VALIDATION_FAILED
                 );
 
         assertThat(response.getErrors().get("email"))
@@ -261,7 +261,7 @@ public class CustomerRegistrationControllerTest extends AbstractControllerTest {
                 .isNotNull()
                 .extracting(ApiResponse::getMessage)
                 .asString()
-                .isEqualTo(Exceptions.USER.ACCOUNT.EMAIL_TAKEN);
+                .isEqualTo(Exceptions.USER_ACCOUNT_EMAIL_TAKEN);
 
     }
 
@@ -306,7 +306,7 @@ public class CustomerRegistrationControllerTest extends AbstractControllerTest {
                 .extracting(
                         ApiResponse::getMessage
                 ).isEqualTo(
-                        Exceptions.COMMON.VALIDATION_FAILED
+                        Exceptions.VALIDATION_FAILED
                 );
 
         assertThat(response.getErrors().get("password"))

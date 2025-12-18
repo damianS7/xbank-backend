@@ -1,13 +1,11 @@
 package com.damian.xBank.infrastructure.storage.exception;
 
+import com.damian.xBank.shared.exception.Exceptions;
+
 public class FileStorageNotFoundException extends FileStorageException {
 
-    public FileStorageNotFoundException(String message, String path, String fileName) {
-        super(message, path, fileName);
-    }
-
-    public FileStorageNotFoundException(String message) {
-        this(message, null, null);
+    public FileStorageNotFoundException(String path, String fileName) {
+        super(Exceptions.STORAGE_FILE_NOT_FOUND, path, fileName);
     }
 
 }

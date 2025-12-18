@@ -8,7 +8,6 @@ import com.damian.xBank.modules.user.customer.domain.exception.CustomerNotFoundE
 import com.damian.xBank.modules.user.customer.domain.exception.CustomerUpdateAuthorizationException;
 import com.damian.xBank.modules.user.customer.domain.exception.CustomerUpdateException;
 import com.damian.xBank.modules.user.customer.infra.repository.CustomerRepository;
-import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import com.damian.xBank.shared.security.PasswordValidator;
 import org.slf4j.Logger;
@@ -47,9 +46,7 @@ public class CustomerService {
     public boolean deleteCustomer(Long customerId) {
         // if the customer does not exist we throw an exception
         if (!customerRepository.existsById(customerId)) {
-            throw new CustomerNotFoundException(
-                    Exceptions.CUSTOMER.NOT_FOUND, customerId
-            );
+            throw new CustomerNotFoundException(customerId);
         }
 
         // we delete the customer
@@ -80,9 +77,7 @@ public class CustomerService {
     public Customer getCustomer(Long customerId) {
         // if the customer does not exist we throw an exception
         return customerRepository.findById(customerId).orElseThrow(
-                () -> new CustomerNotFoundException(
-                        Exceptions.CUSTOMER.NOT_FOUND, customerId
-                )
+                () -> new CustomerNotFoundException(customerId)
         );
     }
 
@@ -119,16 +114,13 @@ public class CustomerService {
         // find the customer we want to modify
         Customer customer = customerRepository
                 .findById(customerId)
-                .orElseThrow(() -> new CustomerNotFoundException(
-                        Exceptions.CUSTOMER.NOT_FOUND, customerId)
+                .orElseThrow(
+                        () -> new CustomerNotFoundException(customerId)
                 );
 
         // we make sure that this profile belongs to the current customer
         if (!customer.getId().equals(currentCustomer.getId())) {
-            throw new CustomerUpdateAuthorizationException(
-                    Exceptions.CUSTOMER.NOT_OWNER,
-                    customerId
-            );
+            throw new CustomerUpdateAuthorizationException(customerId);
         }
 
         // we validate the password before updating the profile
@@ -147,7 +139,7 @@ public class CustomerService {
                 case "gender" -> customer.setGender(CustomerGender.valueOf((String) value));
                 case "birthdate" -> customer.setBirthdate(LocalDate.parse((String) value));
                 default -> throw new CustomerUpdateException(
-                        Exceptions.CUSTOMER.UPDATE_FAILED, customerId, key, value.toString()
+                        customerId, new Object[]{key, value.toString()}
                 );
             }
         });

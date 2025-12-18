@@ -112,7 +112,7 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(Exceptions.BANKING.ACCOUNT.CLOSED, exception.getMessage());
+        assertEquals(Exceptions.BANKING_ACCOUNT_CLOSED, exception.getMessage());
     }
 
     @Test
@@ -146,7 +146,7 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(Exceptions.BANKING.ACCOUNT.SUSPENDED, exception.getMessage());
+        assertEquals(Exceptions.BANKING_ACCOUNT_SUSPENDED, exception.getMessage());
     }
 
     @Test
@@ -217,9 +217,7 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertTrue(exception.getMessage().contains(
-                Exceptions.BANKING.ACCOUNT.NOT_FOUND
-        ));
+        assertTrue(exception.getMessage().contains(Exceptions.BANKING_ACCOUNT_NOT_FOUND));
     }
 
     @Test
@@ -264,9 +262,7 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertTrue(exception.getMessage().contains(
-                Exceptions.BANKING.ACCOUNT.ACCESS_FORBIDDEN
-        ));
+        assertThat(exception.getMessage()).isEqualTo(Exceptions.BANKING_ACCOUNT_OWNERSHIP);
     }
 
     @Test

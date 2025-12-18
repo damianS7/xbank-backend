@@ -2,7 +2,6 @@ package com.damian.xBank.config.security;
 
 import com.damian.xBank.modules.auth.application.service.CustomUserDetailsService;
 import com.damian.xBank.modules.auth.domain.exception.EmailNotFoundException;
-import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.exception.JwtTokenExpiredException;
 import com.damian.xBank.shared.exception.JwtTokenInvalidException;
 import com.damian.xBank.shared.utils.JwtUtil;
@@ -79,7 +78,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             log.debug("Jwt token is invalid.");
             // token is invalid. 401
             authenticationEntryPoint.commence(
-                    request, response, new JwtTokenInvalidException(Exceptions.JWT.TOKEN.INVALID)
+                    request, response, new JwtTokenInvalidException()
             );
             return;
         }
@@ -88,7 +87,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             log.debug("Jwt token is expired.");
             // If the token has expired, then we need to send back a 401.
             authenticationEntryPoint.commence(
-                    request, response, new JwtTokenExpiredException(Exceptions.JWT.TOKEN.EXPIRED)
+                    request, response, new JwtTokenExpiredException()
             );
             return;
         }

@@ -3,7 +3,6 @@ package com.damian.xBank.infrastructure.storage;
 import com.damian.xBank.infrastructure.storage.exception.ImageEmptyFileException;
 import com.damian.xBank.infrastructure.storage.exception.ImageTooLargeException;
 import com.damian.xBank.infrastructure.storage.exception.ImageTypeNotSupportedException;
-import com.damian.xBank.shared.exception.Exceptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -33,7 +32,7 @@ public class ImageValidationService {
      */
     public void validateImage(MultipartFile file, long maxFileSize, String[] allowedImageTypes) {
         if (file.isEmpty()) {
-            throw new ImageEmptyFileException(Exceptions.IMAGE.EMPTY);
+            throw new ImageEmptyFileException(file.getOriginalFilename());
         }
 
         String contentType = file.getContentType();
@@ -41,11 +40,11 @@ public class ImageValidationService {
                                          .anyMatch(ct -> ct.equalsIgnoreCase(contentType));
 
         if (!imageTypeAllowed) {
-            throw new ImageTypeNotSupportedException(Exceptions.IMAGE.TYPE_NOT_SUPPORTED);
+            throw new ImageTypeNotSupportedException(file.getOriginalFilename(), contentType);
         }
 
         if (file.getSize() > maxFileSize) {
-            throw new ImageTooLargeException(Exceptions.IMAGE.TOO_LARGE);
+            throw new ImageTooLargeException(file.getOriginalFilename(), maxFileSize);
         }
 
         log.debug("Image: {} validated.", file.getOriginalFilename());

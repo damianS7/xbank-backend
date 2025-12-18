@@ -5,10 +5,7 @@ import com.damian.xBank.shared.exception.Exceptions;
 
 public class BankingAccountCardsLimitException extends BankingAccountException {
     public BankingAccountCardsLimitException(Long bankingAccountId) {
-        this(Exceptions.BANKING.ACCOUNT.CARD_LIMIT, bankingAccountId);
+        super(Exceptions.BANKING_ACCOUNT_CARD_LIMIT, bankingAccountId);
     }
 
-    public BankingAccountCardsLimitException(String message, Long bankingAccountId) {
-        super(message, bankingAccountId);
-    }
 }

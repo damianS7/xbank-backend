@@ -9,7 +9,6 @@ import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoundException;
 import com.damian.xBank.modules.banking.card.infra.repository.BankingCardRepository;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
-import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import com.damian.xBank.shared.security.PasswordValidator;
 import org.springframework.stereotype.Service;
@@ -47,9 +46,7 @@ public class BankingCardManagementService {
         // Banking card to be updated
         final BankingCard bankingCard = bankingCardRepository.findById(bankingCardId).orElseThrow(
                 // Banking card not found
-                () -> new BankingCardNotFoundException(
-                        Exceptions.BANKING.CARD.NOT_FOUND, bankingCardId
-                ));
+                () -> new BankingCardNotFoundException(bankingCardId));
 
         // Customer logged
         final Customer currentCustomer = authenticationContext.getCurrentCustomer();
@@ -100,9 +97,7 @@ public class BankingCardManagementService {
         // Banking card to set limit on
         final BankingCard bankingCard = bankingCardRepository.findById(bankingCardId).orElseThrow(
                 // Banking card not found
-                () -> new BankingCardNotFoundException(
-                        Exceptions.BANKING.CARD.NOT_FOUND, bankingCardId
-                ));
+                () -> new BankingCardNotFoundException(bankingCardId));
 
         // run validations if not admin
         if (!currentCustomer.isAdmin()) {
@@ -138,9 +133,7 @@ public class BankingCardManagementService {
         // Banking card to set pin on
         final BankingCard bankingCard = bankingCardRepository.findById(bankingCardId).orElseThrow(
                 // Banking card not found
-                () -> new BankingCardNotFoundException(
-                        Exceptions.BANKING.CARD.NOT_FOUND, bankingCardId
-                ));
+                () -> new BankingCardNotFoundException(bankingCardId));
 
         // run validations if not admin
         if (!currentCustomer.isAdmin()) {

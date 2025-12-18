@@ -12,7 +12,6 @@ import com.damian.xBank.modules.user.account.token.domain.exception.UserAccountT
 import com.damian.xBank.modules.user.account.token.domain.exception.UserAccountTokenNotFoundException;
 import com.damian.xBank.modules.user.account.token.domain.exception.UserAccountTokenUsedException;
 import com.damian.xBank.modules.user.account.token.infra.repository.UserAccountTokenRepository;
-import com.damian.xBank.shared.exception.Exceptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -49,33 +48,21 @@ public class UserAccountTokenService {
                 .findByToken(token)
                 .orElseThrow(
                         () -> {
-                            log.error("Failed to validate token. Token not found.");
-                            return new UserAccountTokenNotFoundException(
-                                    Exceptions.USER.ACCOUNT.VERIFICATION.TOKEN.NOT_FOUND,
-                                    token,
-                                    null
-                            );
+                            log.error("Failed to validate token. Token {} not found.", token);
+                            return new UserAccountTokenNotFoundException();
                         }
                 );
 
         // check expiration
         if (!userAccountToken.getExpiresAt().isAfter(Instant.now())) {
-            log.error("Failed to validate token. Token expired.");
-            throw new UserAccountTokenExpiredException(
-                    Exceptions.USER.ACCOUNT.VERIFICATION.TOKEN.EXPIRED,
-                    token,
-                    userAccountToken.getAccount().getId()
-            );
+            log.error("Failed to validate token. Token {} expired.", token);
+            throw new UserAccountTokenExpiredException(userAccountToken.getAccount().getId(), token);
         }
 
         // check if token is already used
         if (userAccountToken.isUsed()) {
-            log.error("Failed to validate token. Token used.");
-            throw new UserAccountTokenUsedException(
-                    Exceptions.USER.ACCOUNT.VERIFICATION.TOKEN.USED,
-                    token,
-                    userAccountToken.getAccount().getId()
-            );
+            log.error("Failed to validate token. Token {} used.", token);
+            throw new UserAccountTokenUsedException(userAccountToken.getAccount().getId(), token);
         }
 
         return userAccountToken;
@@ -95,7 +82,7 @@ public class UserAccountTokenService {
         UserAccount userAccount = userAccountRepository.findByEmail(email).orElseThrow(
                 () -> {
                     log.error("Failed to generate verification token. UserAccount for: {} not found.", email);
-                    return new UserAccountNotFoundException(Exceptions.USER.ACCOUNT.NOT_FOUND, email);
+                    return new UserAccountNotFoundException(email);
                 }
         );
 
@@ -105,10 +92,7 @@ public class UserAccountTokenService {
                     "Failed to generate verification token. UserAccount for: {} is not awaiting verification.",
                     email
             );
-            throw new UserAccountVerificationNotPendingException(
-                    Exceptions.USER.ACCOUNT.VERIFICATION.NOT_ELIGIBLE,
-                    email
-            );
+            throw new UserAccountVerificationNotPendingException(email);
         }
 
         // check if AccountToken exists orElse create a new one
@@ -148,7 +132,7 @@ public class UserAccountTokenService {
                                     "Failed to generate password reset token. No account found for: {}",
                                     request.email()
                             );
-                            return new UserAccountNotFoundException(Exceptions.USER.ACCOUNT.NOT_FOUND, request.email());
+                            return new UserAccountNotFoundException(request.email());
                         }
                 );
 

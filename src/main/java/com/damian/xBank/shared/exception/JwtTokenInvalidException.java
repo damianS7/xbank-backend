@@ -4,7 +4,7 @@ import org.springframework.security.core.AuthenticationException;
 
 // Remove and use ExpiredJwtException instead
 public class JwtTokenInvalidException extends AuthenticationException {
-    public JwtTokenInvalidException(String message) {
-        super(message);
+    public JwtTokenInvalidException() {
+        super(Exceptions.JWT_TOKEN_INVALID);
     }
 }

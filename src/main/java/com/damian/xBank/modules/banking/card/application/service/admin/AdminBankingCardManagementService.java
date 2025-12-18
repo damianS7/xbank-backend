@@ -8,7 +8,6 @@ import com.damian.xBank.modules.banking.card.application.service.BankingCardMana
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoundException;
 import com.damian.xBank.modules.banking.card.infra.repository.BankingCardRepository;
-import com.damian.xBank.shared.exception.Exceptions;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -40,9 +39,7 @@ public class AdminBankingCardManagementService {
         // Banking card to cancel
         final BankingCard bankingCard = bankingCardRepository.findById(bankingCardId).orElseThrow(
                 // Banking card not found
-                () -> new BankingCardNotFoundException(
-                        Exceptions.BANKING.CARD.NOT_FOUND, bankingCardId
-                ));
+                () -> new BankingCardNotFoundException(bankingCardId));
 
         // we mark the card as disabled
         bankingCard.setCardStatus(request.status());

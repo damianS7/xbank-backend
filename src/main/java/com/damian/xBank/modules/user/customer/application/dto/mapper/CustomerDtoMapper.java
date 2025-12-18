@@ -6,7 +6,6 @@ import com.damian.xBank.modules.user.account.account.domain.exception.UserAccoun
 import com.damian.xBank.modules.user.customer.application.dto.response.CustomerDetailDto;
 import com.damian.xBank.modules.user.customer.application.dto.response.CustomerDto;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
-import com.damian.xBank.shared.exception.Exceptions;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -33,8 +32,9 @@ public class CustomerDtoMapper {
     public static CustomerDetailDto toCustomerWithAccountDto(Customer customer) {
         UserAccountDto customerAccountDto = Optional.ofNullable(
                 UserAccountDtoMapper.toUserDto(customer.getAccount())
-        ).orElseThrow(() -> new UserAccountNotFoundException(
-                Exceptions.USER.ACCOUNT.NOT_FOUND, 0L));
+        ).orElseThrow(
+                () -> new UserAccountNotFoundException(0L)
+        );
 
         //        Set<BankingAccountDto> bankingAccountsDTO = Optional.ofNullable(customer.getBankingAccounts())
         //                                                            .orElseGet(Collections::emptySet)

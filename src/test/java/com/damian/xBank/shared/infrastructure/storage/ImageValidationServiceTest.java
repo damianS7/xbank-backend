@@ -57,7 +57,7 @@ public class ImageValidationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(Exceptions.IMAGE.EMPTY, ex.getMessage());
+        assertEquals(Exceptions.STORAGE_IMAGE_EMPTY, ex.getMessage());
     }
 
     @Test
@@ -80,7 +80,7 @@ public class ImageValidationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(Exceptions.IMAGE.TYPE_NOT_SUPPORTED, ex.getMessage());
+        assertEquals(Exceptions.STORAGE_IMAGE_INVALID_TYPE, ex.getMessage());
     }
 
     @Test
@@ -103,6 +103,6 @@ public class ImageValidationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(Exceptions.IMAGE.TOO_LARGE, ex.getMessage());
+        assertEquals(Exceptions.STORAGE_IMAGE_UPLOAD_TOO_LARGE, ex.getMessage());
     }
 }

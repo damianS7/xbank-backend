@@ -1,6 +1,6 @@
 package com.damian.xBank.shared.utils;
 
-import com.damian.xBank.shared.exception.Exceptions;
+import com.damian.xBank.infrastructure.storage.exception.ImageTypeNotSupportedException;
 import org.springframework.core.io.Resource;
 
 import java.io.File;
@@ -12,7 +12,7 @@ public class ImageHelper {
         try {
             return ImageHelper.getContentType(resource.getFile());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new ImageTypeNotSupportedException(resource.getFilename(), "");
         }
     }
 
@@ -21,7 +21,7 @@ public class ImageHelper {
         try {
             contentType = Files.probeContentType(file.toPath());
         } catch (IOException e) {
-            throw new RuntimeException(Exceptions.IMAGE.TYPE_NOT_DETECTED, e);
+            throw new ImageTypeNotSupportedException(file.getName(), "");
         }
 
         if (contentType == null) {

@@ -1,9 +1,8 @@
 package com.damian.xBank.infrastructure.storage;
 
-import com.damian.xBank.infrastructure.storage.exception.FileStorageException;
+import com.damian.xBank.infrastructure.storage.exception.FileStorageDeleteException;
 import com.damian.xBank.infrastructure.storage.exception.FileStorageFailedException;
 import com.damian.xBank.infrastructure.storage.exception.FileStorageNotFoundException;
-import com.damian.xBank.shared.exception.Exceptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -46,7 +45,6 @@ public class FileStorageService {
             resource = new UrlResource(path.toUri());
         } catch (MalformedURLException e) {
             throw new FileStorageNotFoundException(
-                    Exceptions.STORAGE.NOT_FOUND,
                     path.toAbsolutePath().toString(),
                     path.getFileName().toString()
             );
@@ -54,7 +52,6 @@ public class FileStorageService {
 
         if (!resource.exists()) {
             throw new FileStorageNotFoundException(
-                    Exceptions.STORAGE.NOT_FOUND,
                     path.toString(),
                     path.getFileName().toString()
             );
@@ -81,7 +78,7 @@ public class FileStorageService {
             Files.createDirectories(filePath.getParent());
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            throw new FileStorageFailedException(Exceptions.STORAGE.FAILED, path, filename);
+            throw new FileStorageFailedException(path, filename);
         }
 
         log.debug("Stored file: {} at: {}", filename, filePath.getParent());
@@ -100,7 +97,10 @@ public class FileStorageService {
 
         // check if file actually exists
         if (!filePath.toFile().exists()) {
-            throw new FileStorageNotFoundException(Exceptions.STORAGE.NOT_FOUND, filePath.toString(), filename);
+            throw new FileStorageNotFoundException(
+                    filePath.toString(),
+                    filename
+            );
         }
 
         log.debug("Retrieving file: {} at: {}", filename, filePath.getParent());
@@ -122,11 +122,7 @@ public class FileStorageService {
                 log.debug("Deleted file: {} at: {}", filename, filePath.getParent());
             }
         } catch (IOException e) {
-            throw new FileStorageException(
-                    Exceptions.STORAGE.INVALID_PATH,
-                    filePath.getParent().toString(),
-                    filename
-            );
+            throw new FileStorageDeleteException(filePath.getParent().toString(), filename);
         }
 
     }

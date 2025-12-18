@@ -3,7 +3,6 @@ package com.damian.xBank.modules.auth.application.service;
 import com.damian.xBank.modules.auth.domain.exception.EmailNotFoundException;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.infra.repository.UserAccountRepository;
-import com.damian.xBank.shared.exception.Exceptions;
 import com.damian.xBank.shared.security.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,9 +31,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(
                         () -> {
                             log.debug("Failed to find a user with email: {}", email);
-                            return new EmailNotFoundException(
-                                    Exceptions.USER.ACCOUNT.BAD_CREDENTIALS, email
-                            );
+                            return new EmailNotFoundException(email); // TODO UserAccountNotFoundEx?
                         }
                 );
 

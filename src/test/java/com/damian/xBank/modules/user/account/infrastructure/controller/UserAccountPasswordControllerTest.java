@@ -117,7 +117,7 @@ public class UserAccountPasswordControllerTest extends AbstractControllerTest {
                 .extracting(
                         ApiResponse::getMessage
                 ).isEqualTo(
-                        Exceptions.COMMON.VALIDATION_FAILED
+                        Exceptions.VALIDATION_FAILED
                 );
 
         assertThat(response.getErrors().get("newPassword"))
@@ -161,7 +161,7 @@ public class UserAccountPasswordControllerTest extends AbstractControllerTest {
                 .extracting(
                         ApiResponse::getMessage
                 ).isEqualTo(
-                        Exceptions.COMMON.VALIDATION_FAILED
+                        Exceptions.VALIDATION_FAILED
                 );
 
         assertThat(response.getErrors().get("newPassword"))
