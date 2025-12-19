@@ -262,7 +262,7 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.BANKING_ACCOUNT_OWNERSHIP);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.BANKING_ACCOUNT_NOT_OWNER);
     }
 
     @Test

@@ -32,7 +32,7 @@ public class BankingAccountGuard {
         // compare account owner id with given customer id
         if (!Objects.equals(account.getOwner().getId(), customer.getId())) {
             throw new BankingAccountOwnershipException(
-                    ErrorCodes.BANKING_ACCOUNT_OWNERSHIP, account.getId(), customer.getId()
+                    ErrorCodes.BANKING_ACCOUNT_NOT_OWNER, account.getId(), customer.getId()
             );
         }
 

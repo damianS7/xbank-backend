@@ -135,7 +135,7 @@ public class BankingCardManagementServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.BANKING_CARD_OWNERSHIP);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.BANKING_CARD_NOT_OWNER);
     }
 
     @Test
@@ -232,7 +232,7 @@ public class BankingCardManagementServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.BANKING_CARD_OWNERSHIP);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.BANKING_CARD_NOT_OWNER);
     }
 
     @Test
@@ -329,7 +329,7 @@ public class BankingCardManagementServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.BANKING_CARD_OWNERSHIP);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.BANKING_CARD_NOT_OWNER);
     }
 
     @Test

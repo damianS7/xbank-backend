@@ -163,7 +163,7 @@ public class BankingAccountCardManagementServiceTest extends AbstractServiceTest
         );
 
         // then
-        assertEquals(ErrorCodes.BANKING_ACCOUNT_OWNERSHIP, exception.getMessage());
+        assertEquals(ErrorCodes.BANKING_ACCOUNT_NOT_OWNER, exception.getMessage());
     }
 
     @Test

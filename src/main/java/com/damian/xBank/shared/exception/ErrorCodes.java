@@ -23,11 +23,40 @@ public class ErrorCodes {
     public static final String USER_ACCOUNT_VERIFICATION_TOKEN_USED = "user.account.verification.token.used";
     public static final String USER_ACCOUNT_VERIFICATION_TOKEN_EXPIRED = "user.account.verification.token.expired";
 
-    // Customer TODO  review from here
+    // Customer
     public static final String CUSTOMER_NOT_OWNER = "customer.not_owner";
     public static final String CUSTOMER_NOT_FOUND = "customer.not_found";
     public static final String CUSTOMER_UPDATE_FAILED = "customer.update_failed";
     public static final String CUSTOMER_IMAGE_NOT_FOUND = "customer.image.not_found";
+
+    // Banking account
+    public static final String BANKING_ACCOUNT_NOT_OWNER = "banking.account.not_owner";
+    public static final String BANKING_ACCOUNT_NOT_FOUND = "banking.account.not_found";
+    public static final String BANKING_ACCOUNT_SUSPENDED = "banking.account.suspended";
+    public static final String BANKING_ACCOUNT_CLOSED = "banking.account.closed";
+    public static final String BANKING_ACCOUNT_DISABLED = "banking.account.disabled";
+    public static final String BANKING_ACCOUNT_TRANSFER_SAME_DESTINATION = "banking.account.same_destination";
+    public static final String BANKING_ACCOUNT_TRANSFER_DIFFERENT_CURRENCY = "banking.account.different_currency";
+    public static final String BANKING_ACCOUNT_CARD_LIMIT = "banking.account.card_limit";
+    public static final String BANKING_ACCOUNT_INSUFFICIENT_FUNDS = "banking.account.insufficient_funds";
+    public static final String BANKING_ACCOUNT_INVALID_TRANSITION_STATUS = "banking.account.invalid_transition_status";
+    public static final String BANKING_ACCOUNT_FAILED_DEPOSIT = "banking.account.failed_deposit";
+
+    // Banking card
+    public static final String BANKING_CARD_NOT_FOUND = "banking.card.not_found";
+    public static final String BANKING_CARD_NOT_OWNER = "banking.card.not_owner";
+    public static final String BANKING_CARD_INVALID_TRANSITION_STATUS = "banking.card.invalid_transition_status";
+    public static final String BANKING_CARD_LOCKED = "banking.card.locked";
+    public static final String BANKING_CARD_INVALID_PIN = "banking.card.invalid_pin";
+    public static final String BANKING_CARD_DISABLED = "banking.card.disabled";
+    public static final String BANKING_CARD_INSUFFICIENT_FUNDS = "banking.card.insufficient_funds";
+
+    // Transactions
+    public static final String BANKING_TRANSACTION_NOT_FOUND = "banking.transaction.not_found";
+    public static final String BANKING_TRANSACTION_NOT_OWNER = "banking.transaction.not_owner";
+    public static final String
+            BANKING_TRANSACTION_INVALID_TRANSITION_STATUS
+            = "banking.transaction.invalid_transition_status";
 
     // Notification
     public static final String NOTIFICATION_NOT_FOUND = "notification.not_found";
@@ -36,35 +65,6 @@ public class ErrorCodes {
     public static final String SETTING_NOT_OWNER = "setting.not_owner";
     public static final String SETTING_NOT_FOUND = "setting.not_found";
 
-    // Banking account
-    public static final String BANKING_ACCOUNT_SUSPENDED = "banking.account.suspended";
-    public static final String BANKING_ACCOUNT_CLOSED = "banking.account.closed";
-    public static final String BANKING_ACCOUNT_SAME_DESTINATION = "banking.account.same_destination";
-    public static final String BANKING_ACCOUNT_DIFFERENT_CURRENCY = "banking.account.different_currency";
-    public static final String BANKING_ACCOUNT_NOT_FOUND = "banking.account.not_found";
-    public static final String BANKING_ACCOUNT_CARD_LIMIT = "banking.account.card_limit";
-    public static final String BANKING_ACCOUNT_DISABLED = "banking.account.disabled";
-    public static final String BANKING_ACCOUNT_OWNERSHIP = "banking.account.not_owner";
-    public static final String BANKING_ACCOUNT_INSUFFICIENT_FUNDS = "banking.account.insufficient_funds";
-    public static final String BANKING_ACCOUNT_INVALID_TRANSITION_STATUS = "banking.account.invalid_transition_status";
-    public static final String BANKING_ACCOUNT_FAILED_DEPOSIT = "banking.account.failed_deposit";
-
-    // Banking card
-    public static final String BANKING_CARD_OWNERSHIP = "banking.card.not_owner";
-    public static final String BANKING_CARD_INVALID_TRANSITION_STATUS = "banking.card.invalid_transition_status";
-    public static final String BANKING_CARD_NOT_FOUND = "banking.card.not_found";
-    public static final String BANKING_CARD_LOCKED = "banking.card.locked";
-    public static final String BANKING_CARD_INVALID_PIN = "banking.card.invalid_pin";
-    public static final String BANKING_CARD_DISABLED = "banking.card.disabled";
-    public static final String BANKING_CARD_INSUFFICIENT_FUNDS = "banking.card.insufficient_funds";
-
-    // Transactions
-    public static final String BANKING_TRANSACTION_NOT_FOUND = "banking.transaction.not_found";
-    public static final String BANKING_TRANSACTION_OWNERSHIP = "banking.transaction.not_owner";
-    public static final String
-            BANKING_TRANSACTION_INVALID_TRANSITION_STATUS
-            = "banking.transaction.invalid_transition_status";
-
     // Storage
     public static final String STORAGE_FILE_NOT_FOUND = "storage.file.not_found";
     public static final String STORAGE_FILE_INVALID_PATH = "storage.invalid_path";
@@ -72,10 +72,11 @@ public class ErrorCodes {
     public static final String STORAGE_FILE_DELETE_FAILED = "storage.delete_failed";
     public static final String STORAGE_UPLOAD_FILE_TOO_LARGE = "storage.upload.file.too_large";
 
+    // Image Storage
     public static final String STORAGE_IMAGE_NOT_FOUND = "storage.image.not_found";
-    public static final String STORAGE_IMAGE_INVALID_PATH = "storage.image.invalid_path";
     public static final String STORAGE_IMAGE_UPLOAD_FAILED = "storage.image.upload_failed";
+    public static final String STORAGE_IMAGE_UPLOAD_TOO_LARGE = "storage.image.upload.file_too_large";
+    public static final String STORAGE_IMAGE_INVALID_PATH = "storage.image.invalid_path";
     public static final String STORAGE_IMAGE_INVALID_TYPE = "storage.image.invalid_type";
     public static final String STORAGE_IMAGE_EMPTY = "storage.image.empty_file";
-    public static final String STORAGE_IMAGE_UPLOAD_TOO_LARGE = "storage.upload.image.too_large";
 }

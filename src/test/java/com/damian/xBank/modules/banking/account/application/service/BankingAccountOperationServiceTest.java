@@ -251,7 +251,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(ErrorCodes.BANKING_ACCOUNT_DIFFERENT_CURRENCY, exception.getMessage());
+        assertEquals(ErrorCodes.BANKING_ACCOUNT_TRANSFER_DIFFERENT_CURRENCY, exception.getMessage());
     }
 
     @Test
@@ -467,7 +467,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(ErrorCodes.BANKING_ACCOUNT_SAME_DESTINATION, exception.getMessage());
+        assertEquals(ErrorCodes.BANKING_ACCOUNT_TRANSFER_SAME_DESTINATION, exception.getMessage());
     }
 
     @Test
@@ -519,7 +519,7 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(ErrorCodes.BANKING_ACCOUNT_OWNERSHIP, exception.getMessage());
+        assertEquals(ErrorCodes.BANKING_ACCOUNT_NOT_OWNER, exception.getMessage());
     }
 
     @Test

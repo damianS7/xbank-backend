@@ -154,7 +154,7 @@ public class BankingTransactionCardServiceTest extends AbstractServiceTest {
 
         // then
         assertThat(exception).isNotNull();
-        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.BANKING_TRANSACTION_OWNERSHIP);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.BANKING_TRANSACTION_NOT_OWNER);
     }
 
     @Test

@@ -7,6 +7,9 @@ import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
+    // TODO
+    //    private String errorCode;
+    //    private String resourceId;
     private String message;
     private T data;
     private Map<String, String> errors;
