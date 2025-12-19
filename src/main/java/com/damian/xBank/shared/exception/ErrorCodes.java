@@ -78,5 +78,7 @@ public class ErrorCodes {
     public static final String STORAGE_IMAGE_UPLOAD_TOO_LARGE = "storage.image.upload.file_too_large";
     public static final String STORAGE_IMAGE_INVALID_PATH = "storage.image.invalid_path";
     public static final String STORAGE_IMAGE_INVALID_TYPE = "storage.image.invalid_type";
+    public static final String STORAGE_IMAGE_FAILED_RESIZE = "storage.image.failed_resize";
+    public static final String STORAGE_IMAGE_FAILED_COMPRESS = "storage.image.failed_compression";
     public static final String STORAGE_IMAGE_EMPTY = "storage.image.empty_file";
 }

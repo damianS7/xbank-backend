@@ -124,7 +124,7 @@ public class ImageProcessingService {
             log.debug("Image compressed successfully into {} bytes", baos.size());
             return baos.toByteArray();
         } catch (IOException e) {
-            throw new ImageCompressionFailedException(e.getMessage());
+            throw new ImageCompressionFailedException();
         }
     }
 

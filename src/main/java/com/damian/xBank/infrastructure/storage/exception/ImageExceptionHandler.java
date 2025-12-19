@@ -59,24 +59,31 @@ public class ImageExceptionHandler {
         log.error("Image resize failed.", ex);
 
         String message = messageSource.getMessage(
-                ex.getErrorCode(),
+                ErrorCodes.STORAGE_IMAGE_UPLOAD_FAILED,
                 ex.getArgs(),
                 LocaleContextHolder.getLocale()
         );
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                              .body(ApiResponse.error(
-                                     ErrorCodes.STORAGE_IMAGE_UPLOAD_FAILED,
+                                     message,
                                      HttpStatus.INTERNAL_SERVER_ERROR
                              ));
     }
 
     @ExceptionHandler(ImageUploadFailedException.class)
     public ResponseEntity<ApiResponse<String>> handleUploadFailed(ImageUploadFailedException ex) {
-        log.error("Image upload failed at: {} failed.", ex.getPath(), ex);
+        log.error("Image upload failed at: {} failed.", ex.getResourceId(), ex);
+
+        String message = messageSource.getMessage(
+                ErrorCodes.STORAGE_IMAGE_UPLOAD_FAILED,
+                ex.getArgs(),
+                LocaleContextHolder.getLocale()
+        );
+
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                              .body(ApiResponse.error(
-                                     ErrorCodes.STORAGE_IMAGE_UPLOAD_FAILED,
+                                     message,
                                      HttpStatus.INTERNAL_SERVER_ERROR
                              ));
     }

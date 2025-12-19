@@ -17,13 +17,6 @@ public class ApplicationException extends RuntimeException {
         this.args = args;
     }
 
-    // TODO for removal
-    public ApplicationException(
-            String errorCode
-    ) {
-        this(errorCode, null, null);
-    }
-
     public String getErrorCode() {
         return errorCode;
     }

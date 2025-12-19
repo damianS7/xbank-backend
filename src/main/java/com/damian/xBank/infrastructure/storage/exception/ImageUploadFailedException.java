@@ -1,20 +1,10 @@
 package com.damian.xBank.infrastructure.storage.exception;
 
 import com.damian.xBank.shared.exception.ApplicationException;
+import com.damian.xBank.shared.exception.ErrorCodes;
 
 public class ImageUploadFailedException extends ApplicationException {
-    private final String path;
-
-    public ImageUploadFailedException(String message, String path) {
-        super(message);
-        this.path = path;
-    }
-
-    public ImageUploadFailedException(String message) {
-        this(message, null);
-    }
-
-    public String getPath() {
-        return path;
+    public ImageUploadFailedException(String path) {
+        super(ErrorCodes.STORAGE_IMAGE_UPLOAD_FAILED, path, new Object[]{});
     }
 }
