@@ -291,4 +291,38 @@ public class BankingAccountOperationControllerTest extends AbstractControllerTes
                 .andDo(print())
                 .andExpect(status().is(409));
     }
+
+    @Test
+    @DisplayName("Should fail to transfer when account not exists")
+    void shouldFailToTransferWhenAccountNotExists() throws Exception {
+        // given
+        login(customerA);
+
+        BigDecimal givenTransferAmount = BigDecimal.valueOf(100);
+
+        BankingAccount bankingAccountB = new BankingAccount(customerB);
+        bankingAccountB.setAccountNumber("DE1234567890123456789012");
+        bankingAccountB.setAccountType(BankingAccountType.SAVINGS);
+        bankingAccountB.setAccountCurrency(BankingAccountCurrency.EUR);
+        bankingAccountB.setAccountStatus(BankingAccountStatus.ACTIVE);
+        bankingAccountB.setBalance(BigDecimal.valueOf(200));
+        bankingAccountRepository.save(bankingAccountB);
+
+        BankingAccountTransferRequest request = new BankingAccountTransferRequest(
+                bankingAccountB.getAccountNumber(),
+                "Enjoy!",
+                givenTransferAmount,
+                RAW_PASSWORD
+        );
+
+        // when
+        mockMvc
+                .perform(post(
+                        "/api/v1/banking/accounts/" + 99L + "/transfer")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().is(404));
+    }
 }
