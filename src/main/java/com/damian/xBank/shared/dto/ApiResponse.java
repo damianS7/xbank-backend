@@ -53,7 +53,12 @@ public class ApiResponse<T> {
             HttpStatus status,
             MessageSource messageSource
     ) {
-        ApiResponse<T> response = error(exception.getErrorCode(), exception.getArgs(), status, messageSource);
+        ApiResponse<T> response = error(
+                exception.getErrorCode(),
+                exception.getArgs(),
+                status,
+                messageSource
+        );
         response.setResourceId(exception.getResourceId());
         return response;
     }
