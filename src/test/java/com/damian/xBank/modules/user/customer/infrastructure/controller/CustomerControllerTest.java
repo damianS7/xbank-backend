@@ -176,7 +176,7 @@ public class CustomerControllerTest extends AbstractControllerTest {
         login(customer);
 
         when(fileStorageService.getFile(anyString(), anyString())).thenThrow(
-                FileStorageNotFoundException.class
+                new FileStorageNotFoundException("/path/", "image.jpg")
         );
 
         mockMvc

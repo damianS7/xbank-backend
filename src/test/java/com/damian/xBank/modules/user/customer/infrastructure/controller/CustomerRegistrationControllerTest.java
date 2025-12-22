@@ -259,7 +259,7 @@ public class CustomerRegistrationControllerTest extends AbstractControllerTest {
         // then
         assertThat(response)
                 .isNotNull()
-                .extracting(ApiResponse::getMessage)
+                .extracting(ApiResponse::getErrorCode)
                 .asString()
                 .isEqualTo(ErrorCodes.USER_ACCOUNT_EMAIL_TAKEN);
 

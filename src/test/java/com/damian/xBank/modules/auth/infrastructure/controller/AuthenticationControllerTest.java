@@ -119,7 +119,7 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
         // then
         assertThat(response)
                 .isNotNull()
-                .extracting(ApiResponse::getMessage)
+                .extracting(ApiResponse::getErrorCode)
                 .isEqualTo(
                         ErrorCodes.AUTH_LOGIN_BAD_CREDENTIALS
                 );
@@ -158,7 +158,7 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
         // then
         assertThat(response)
                 .isNotNull()
-                .extracting(ApiResponse::getMessage)
+                .extracting(ApiResponse::getErrorCode)
                 .isEqualTo(
                         ErrorCodes.USER_ACCOUNT_SUSPENDED
                 );
@@ -283,7 +283,7 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
 
         assertThat(response)
                 .isNotNull()
-                .extracting(ApiResponse::getMessage)
+                .extracting(ApiResponse::getErrorCode)
                 .isEqualTo(
                         ErrorCodes.USER_ACCOUNT_NOT_VERIFIED
                 );

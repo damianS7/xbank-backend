@@ -34,7 +34,6 @@ public class BankingCardStatusTest extends AbstractServiceTest {
             )
                     .isInstanceOf(BankingCardStatusTransitionException.class)
                     .hasMessage(ErrorCodes.BANKING_CARD_INVALID_TRANSITION_STATUS);
-            //                    .hasMessageContaining(fromStatus.name());
         }
     }
 }

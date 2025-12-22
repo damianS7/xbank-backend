@@ -147,8 +147,8 @@ public class BankingAccountOperationControllerTest extends AbstractControllerTes
     }
 
     @Test
-    @DisplayName("Should not transfer to same account number")
-    void shouldNotTransferToSameAccount() throws Exception {
+    @DisplayName("Should fail to transfer to same account number")
+    void shouldFailToTransferToSameAccount() throws Exception {
         // given
         login(customerA);
 
