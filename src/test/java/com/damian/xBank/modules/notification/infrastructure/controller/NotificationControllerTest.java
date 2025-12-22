@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.notification.infra.controller;
+package com.damian.xBank.modules.notification.infrastructure.controller;
 
 import com.damian.xBank.modules.notification.application.dto.request.NotificationDeleteRequest;
 import com.damian.xBank.modules.notification.application.dto.response.NotificationDto;

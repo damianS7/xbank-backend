@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.auth;
+package com.damian.xBank.modules.auth.infrastructure.controller;
 
 import com.damian.xBank.modules.auth.application.dto.AuthenticationRequest;
 import com.damian.xBank.modules.auth.application.dto.AuthenticationResponse;

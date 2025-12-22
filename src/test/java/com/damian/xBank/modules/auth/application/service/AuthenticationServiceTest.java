@@ -1,8 +1,7 @@
-package com.damian.xBank.modules.auth;
+package com.damian.xBank.modules.auth.application.service;
 
 import com.damian.xBank.modules.auth.application.dto.AuthenticationRequest;
 import com.damian.xBank.modules.auth.application.dto.AuthenticationResponse;
-import com.damian.xBank.modules.auth.application.service.AuthenticationService;
 import com.damian.xBank.modules.auth.domain.exception.UserAccountNotVerifiedException;
 import com.damian.xBank.modules.auth.domain.exception.UserAccountSuspendedException;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;

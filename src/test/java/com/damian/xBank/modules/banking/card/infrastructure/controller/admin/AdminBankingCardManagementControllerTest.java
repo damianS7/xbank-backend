@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.banking.card.infra.controller.admin;
+package com.damian.xBank.modules.banking.card.infrastructure.controller.admin;
 
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurrency;

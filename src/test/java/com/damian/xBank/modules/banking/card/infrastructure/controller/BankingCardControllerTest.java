@@ -1,13 +1,10 @@
-package com.damian.xBank.modules.banking.transaction.infra.controller;
+package com.damian.xBank.modules.banking.card.infrastructure.controller;
 
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountType;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
-import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
-import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
-import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
@@ -25,7 +22,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class BankingTransactionAccountControllerTest extends AbstractControllerTest {
+public class BankingCardControllerTest extends AbstractControllerTest {
     private Customer customer;
     private BankingAccount customerBankingAccount;
     private BankingCard customerBankingCard;
@@ -65,61 +62,21 @@ public class BankingTransactionAccountControllerTest extends AbstractControllerT
                 .setCardCvv("123")
                 .setCardPin("1234");
 
-        customerBankingAccount.addTransaction(
-                BankingTransaction
-                        .create()
-                        .setBankingAccount(customerBankingAccount)
-                        .setBankingCard(customerBankingCard)
-                        .setDescription("Amazon.com")
-                        .setBalanceBefore(BigDecimal.valueOf(1000))
-                        .setBalanceAfter(BigDecimal.valueOf(900))
-                        .setStatus(BankingTransactionStatus.PENDING)
-                        .setAmount(BigDecimal.valueOf(100))
-                        .setType(BankingTransactionType.CARD_CHARGE)
-        );
-
-        customerBankingAccount.addTransaction(
-                BankingTransaction
-                        .create()
-                        .setBankingAccount(customerBankingAccount)
-                        .setBankingCard(customerBankingCard)
-                        .setDescription("Netflix.com")
-                        .setBalanceBefore(BigDecimal.valueOf(900))
-                        .setBalanceAfter(BigDecimal.valueOf(870))
-                        .setStatus(BankingTransactionStatus.COMPLETED)
-                        .setAmount(BigDecimal.valueOf(30))
-                        .setType(BankingTransactionType.CARD_CHARGE)
-        );
-
-        customerBankingAccount.addTransaction(
-                BankingTransaction
-                        .create()
-                        .setBankingAccount(customerBankingAccount)
-                        .setBankingCard(customerBankingCard)
-                        .setDescription("HBO.com")
-                        .setBalanceBefore(BigDecimal.valueOf(870))
-                        .setBalanceAfter(BigDecimal.valueOf(850))
-                        .setStatus(BankingTransactionStatus.PENDING)
-                        .setAmount(BigDecimal.valueOf(20))
-                        .setType(BankingTransactionType.CARD_CHARGE)
-        );
-
         customerBankingAccount.addBankingCard(customerBankingCard);
         bankingAccountRepository.save(customerBankingAccount);
     }
 
     @Test
-    @DisplayName("Should get paged account transactions")
-    void shouldGetAccountTransactions() throws Exception {
+    @DisplayName("Should get customer banking cards")
+    void shouldGetCustomerCards() throws Exception {
         // given
         login(customer);
 
         // when
         // then
-        mockMvc.perform(get("/api/v1/banking/accounts/{id}/transactions", customerBankingAccount.getId())
+        mockMvc.perform(get("/api/v1/banking/cards")
                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
                .andDo(print())
                .andExpect(status().is(200));
-
     }
 }

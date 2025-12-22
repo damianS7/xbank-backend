@@ -8,7 +8,7 @@ import com.damian.xBank.modules.banking.card.application.dto.request.BankingCard
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.domain.exception.*;
-import com.damian.xBank.modules.banking.card.infra.repository.BankingCardRepository;
+import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionAccountService;
 import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionCardService;
 import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;

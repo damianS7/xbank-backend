@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.banking.account.infra.controller;
+package com.damian.xBank.modules.banking.account.infrastructure.controller;
 
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountAliasUpdateRequest;
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCardRequest;

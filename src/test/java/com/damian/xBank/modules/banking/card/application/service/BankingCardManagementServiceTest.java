@@ -10,7 +10,7 @@ import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoundException;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardOwnershipException;
-import com.damian.xBank.modules.banking.card.infra.repository.BankingCardRepository;
+import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;

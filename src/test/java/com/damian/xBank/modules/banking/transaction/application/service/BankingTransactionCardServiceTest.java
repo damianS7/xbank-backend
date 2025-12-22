@@ -5,12 +5,12 @@ import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurre
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountType;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardInsufficientFundsException;
-import com.damian.xBank.modules.banking.card.infra.repository.BankingCardRepository;
+import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionOwnershipException;
-import com.damian.xBank.modules.banking.transaction.infra.repository.BankingTransactionRepository;
+import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.AbstractServiceTest;

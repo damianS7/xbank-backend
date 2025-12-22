@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.banking.account.infra.controller.admin;
+package com.damian.xBank.modules.banking.account.infrastructure.controller.admin;
 
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountDepositRequest;
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
