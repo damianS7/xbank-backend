@@ -56,7 +56,7 @@ public enum BankingAccountStatus {
 
     public void validateTransition(BankingAccountStatus newStatus) {
         if (!canTransitionTo(newStatus)) {
-            throw new BankingAccountStatusTransitionException(0L, new Object[]{this, newStatus});
+            throw new BankingAccountStatusTransitionException(this.name(), newStatus.name());
         }
     }
 }

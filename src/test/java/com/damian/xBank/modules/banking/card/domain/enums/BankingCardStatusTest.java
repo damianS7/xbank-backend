@@ -29,8 +29,10 @@ public class BankingCardStatusTest extends AbstractServiceTest {
     @DisplayName("Should not allow any transitions from terminal states")
     void shouldNotAllowTransitionsFromTerminalStates(BankingCardStatus fromStatus) {
         for (BankingCardStatus targetStatus : BankingCardStatus.values()) {
-            assertThatThrownBy(() ->
-                    fromStatus.validateTransition(targetStatus)
+            assertThatThrownBy(() -> {
+                        System.out.println(fromStatus + " -> " + targetStatus);
+                        fromStatus.validateTransition(targetStatus);
+                    }
             )
                     .isInstanceOf(BankingCardStatusTransitionException.class)
                     .hasMessage(ErrorCodes.BANKING_CARD_INVALID_TRANSITION_STATUS);
