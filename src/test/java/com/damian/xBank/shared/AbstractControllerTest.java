@@ -41,7 +41,8 @@ public abstract class AbstractControllerTest {
     @Container
     @ServiceConnection
     protected static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16")
-            .withReuse(true);
+            .withReuse(true)
+            .withInitScript("init_postgres.sql");
 
     protected final String RAW_PASSWORD = "123456";
 
