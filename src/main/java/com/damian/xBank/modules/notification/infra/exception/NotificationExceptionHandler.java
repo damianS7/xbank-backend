@@ -6,7 +6,6 @@ import com.damian.xBank.shared.dto.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,14 +29,8 @@ public class NotificationExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleNotFoundException(NotificationNotFoundException ex) {
         log.warn("Notification: {} not found", ex.getResourceId());
 
-        String message = messageSource.getMessage(
-                ex.getErrorCode(),
-                ex.getArgs(),
-                LocaleContextHolder.getLocale()
-        );
-
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body(ApiResponse.error(message, HttpStatus.NOT_FOUND));
+                             .body(ApiResponse.error(ex, HttpStatus.NOT_FOUND, messageSource));
     }
 
 
@@ -45,13 +38,7 @@ public class NotificationExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleApplicationException(NotificationException ex) {
         log.warn("Notification: {} internal error.", ex.getResourceId());
 
-        String message = messageSource.getMessage(
-                ex.getErrorCode(),
-                ex.getArgs(),
-                LocaleContextHolder.getLocale()
-        );
-
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                             .body(ApiResponse.error(message, HttpStatus.INTERNAL_SERVER_ERROR));
+                             .body(ApiResponse.error(ex, HttpStatus.INTERNAL_SERVER_ERROR, messageSource));
     }
 }

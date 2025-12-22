@@ -8,7 +8,6 @@ import com.damian.xBank.shared.dto.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,55 +32,31 @@ public class BankingTransactionExceptionHandler {
                 ex.getArgs()[0]
         );
 
-        String message = messageSource.getMessage(
-                ex.getErrorCode(),
-                ex.getArgs(),
-                LocaleContextHolder.getLocale()
-        );
-
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                             .body(ApiResponse.error(message, HttpStatus.FORBIDDEN));
+                             .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
     }
 
     @ExceptionHandler(BankingTransactionNotFoundException.class)
     public ResponseEntity<?> handleNotFound(BankingTransactionNotFoundException ex) {
         log.warn("Transaction: {} not found", ex.getResourceId());
 
-        String message = messageSource.getMessage(
-                ex.getErrorCode(),
-                ex.getArgs(),
-                LocaleContextHolder.getLocale()
-        );
-
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body(ApiResponse.error(message, HttpStatus.NOT_FOUND));
+                             .body(ApiResponse.error(ex, HttpStatus.NOT_FOUND, messageSource));
     }
 
     @ExceptionHandler(BankingTransactionException.class)
     public ResponseEntity<ApiResponse<String>> handleException(BankingTransactionException ex) {
         log.warn("Transaction: {} internal error.", ex.getResourceId());
 
-        String message = messageSource.getMessage(
-                ex.getErrorCode(),
-                ex.getArgs(),
-                LocaleContextHolder.getLocale()
-        );
-
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                             .body(ApiResponse.error(message, HttpStatus.INTERNAL_SERVER_ERROR));
+                             .body(ApiResponse.error(ex, HttpStatus.INTERNAL_SERVER_ERROR, messageSource));
     }
 
     @ExceptionHandler(BankingTransactionAuthorizationException.class)
     public ResponseEntity<ApiResponse<String>> handleAuthorizationException(BankingTransactionAuthorizationException ex) {
         log.warn("Transaction: {} authorization exception.", ex.getResourceId());
 
-        String message = messageSource.getMessage(
-                ex.getErrorCode(),
-                ex.getArgs(),
-                LocaleContextHolder.getLocale()
-        );
-
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                             .body(ApiResponse.error(message, HttpStatus.FORBIDDEN));
+                             .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
     }
 }

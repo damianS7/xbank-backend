@@ -8,7 +8,6 @@ import com.damian.xBank.shared.dto.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,25 +36,14 @@ public class CustomerExceptionHandler {
                 ex.getResourceId()
         );
 
-        String message = messageSource.getMessage(
-                ex.getErrorCode(),
-                ex.getArgs(),
-                LocaleContextHolder.getLocale()
-        );
-
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body(ApiResponse.error(message, HttpStatus.UNAUTHORIZED));
+                             .body(ApiResponse.error(ex, HttpStatus.UNAUTHORIZED, messageSource));
     }
 
     @ExceptionHandler(CustomerUpdateException.class) // 400
     public ResponseEntity<ApiResponse<String>> handleCustomerUpdate(
             CustomerUpdateException ex
     ) {
-        String message = messageSource.getMessage(
-                ex.getErrorCode(),
-                ex.getArgs(),
-                LocaleContextHolder.getLocale()
-        );
 
         log.warn(
                 "Customer id: {} failed to update field: {} with value: {}.",
@@ -65,7 +53,7 @@ public class CustomerExceptionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body(ApiResponse.error(message, HttpStatus.BAD_REQUEST));
+                             .body(ApiResponse.error(ex, HttpStatus.BAD_REQUEST, messageSource));
     }
 
     @ExceptionHandler(CustomerNotFoundException.class) // 404
@@ -77,14 +65,8 @@ public class CustomerExceptionHandler {
                 ex.getResourceId()
         );
 
-        String message = messageSource.getMessage(
-                ex.getErrorCode(),
-                ex.getArgs(),
-                LocaleContextHolder.getLocale()
-        );
-
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body(ApiResponse.error(message, HttpStatus.NOT_FOUND));
+                             .body(ApiResponse.error(ex, HttpStatus.NOT_FOUND, messageSource));
     }
 
     @ExceptionHandler(CustomerImageNotFoundException.class) // 404
@@ -96,13 +78,7 @@ public class CustomerExceptionHandler {
                 ex.getResourceId()
         );
 
-        String message = messageSource.getMessage(
-                ex.getErrorCode(),
-                ex.getArgs(),
-                LocaleContextHolder.getLocale()
-        );
-
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body(ApiResponse.error(message, HttpStatus.NOT_FOUND));
+                             .body(ApiResponse.error(ex, HttpStatus.NOT_FOUND, messageSource));
     }
 }

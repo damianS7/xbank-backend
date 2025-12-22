@@ -5,7 +5,6 @@ import com.damian.xBank.shared.dto.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,21 +33,15 @@ public class UserAccountExceptionHandler {
                 ex.getResourceId()
         );
 
-        String message = messageSource.getMessage(
-                ex.getErrorCode(),
-                ex.getArgs(),
-                LocaleContextHolder.getLocale()
-        );
-        
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body(ApiResponse.error(message, HttpStatus.NOT_FOUND));
+                             .body(ApiResponse.error(ex, HttpStatus.NOT_FOUND, messageSource));
     }
 
     @ExceptionHandler(UserAccountEmailTakenException.class) // Handle conflict (409)
     public ResponseEntity<ApiResponse<String>> handleEmailAlreadyTaken(UserAccountEmailTakenException ex) {
         log.warn("email: {} is already taken.", ex.getResourceId(), ex);
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                             .body(ApiResponse.error(ex.getMessage(), HttpStatus.CONFLICT));
+                             .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
     }
 
     @ExceptionHandler(UserAccountVerificationNotPendingException.class) // Handle conflict (409)
@@ -57,7 +50,7 @@ public class UserAccountExceptionHandler {
     ) {
         log.warn("account: {} is not pending for verification.", ex.getResourceId());
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                             .body(ApiResponse.error(ex.getMessage(), HttpStatus.CONFLICT));
+                             .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
     }
 
 
@@ -67,7 +60,7 @@ public class UserAccountExceptionHandler {
     ) {
         log.warn("user: {} failed to confirm password.", ex.getResourceId());
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                             .body(ApiResponse.error(ex.getMessage(), HttpStatus.FORBIDDEN));
+                             .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
     }
 
     @ExceptionHandler(UserAccountUpdateException.class) // 400
@@ -81,6 +74,6 @@ public class UserAccountExceptionHandler {
                 ex.getValue()
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body(ApiResponse.error(ex.getMessage(), HttpStatus.BAD_REQUEST));
+                             .body(ApiResponse.error(ex, HttpStatus.BAD_REQUEST, messageSource));
     }
 }

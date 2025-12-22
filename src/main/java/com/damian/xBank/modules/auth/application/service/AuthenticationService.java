@@ -52,7 +52,7 @@ public class AuthenticationService {
         auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         email, password)
-        );
+        ); // TODO review AuthenticationControllerTest. LockedException/DisabledException not catch
 
         // Get the authenticated user
         final User currentUser = ((User) auth.getPrincipal());
