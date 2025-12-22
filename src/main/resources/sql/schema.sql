@@ -160,7 +160,7 @@ CREATE TABLE public.banking_cards (
 	card_pin varchar(4) NOT NULL,
 	card_cvv varchar(3) NOT NULL,
 	daily_limit numeric(15, 2) DEFAULT 0.00 NOT NULL,
-	expired_date timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	expired_date date NOT NULL,
 	notes text NULL,
 	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
 	updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,

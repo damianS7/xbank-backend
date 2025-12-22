@@ -6,6 +6,8 @@ import com.damian.xBank.modules.banking.card.domain.enums.BankingCardType;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardInsufficientFundsException;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -41,6 +43,8 @@ public class BankingCard {
     private LocalDate expiredDate;
 
     @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
+    @Column(name = "card_status", columnDefinition = "banking_card_status_type")
     private BankingCardStatus cardStatus;
 
     @Column
