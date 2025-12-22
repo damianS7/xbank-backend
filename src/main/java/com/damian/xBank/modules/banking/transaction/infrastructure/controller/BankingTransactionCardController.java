@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.banking.transaction.infra.controller;
+package com.damian.xBank.modules.banking.transaction.infrastructure.controller;
 
 import com.damian.xBank.modules.banking.transaction.application.dto.mapper.BankingTransactionDtoMapper;
 import com.damian.xBank.modules.banking.transaction.application.dto.response.BankingTransactionDto;
@@ -44,7 +44,7 @@ public class BankingTransactionCardController {
     ) {
         Page<BankingTransaction> transactions = bankingTransactionCardService
                 .getTransactions(id, pageable);
-        
+
         Page<BankingTransactionDto> pagedTransactionsDto = BankingTransactionDtoMapper
                 .toBankingTransactionPageDto(transactions);
 

@@ -5,7 +5,7 @@ import com.damian.xBank.modules.setting.application.dto.request.SettingsUpdateRe
 import com.damian.xBank.modules.setting.domain.entity.Setting;
 import com.damian.xBank.modules.setting.domain.exception.SettingNotFoundException;
 import com.damian.xBank.modules.setting.domain.exception.SettingNotOwnerException;
-import com.damian.xBank.modules.setting.infra.repository.SettingRepository;
+import com.damian.xBank.modules.setting.infrastructure.repository.SettingRepository;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import com.damian.xBank.shared.security.User;

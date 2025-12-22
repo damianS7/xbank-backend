@@ -3,7 +3,7 @@ package com.damian.xBank.modules.banking.card.application.service;
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.enums.BankingCardType;
-import com.damian.xBank.modules.banking.card.infra.repository.BankingCardRepository;
+import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import net.datafaker.Faker;

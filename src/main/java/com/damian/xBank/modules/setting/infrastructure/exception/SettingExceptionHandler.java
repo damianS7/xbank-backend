@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.setting.infra.exception;
+package com.damian.xBank.modules.setting.infrastructure.exception;
 
 import com.damian.xBank.modules.setting.domain.exception.SettingNotFoundException;
 import com.damian.xBank.modules.setting.domain.exception.SettingNotOwnerException;

@@ -3,7 +3,7 @@ package com.damian.xBank.modules.banking.card.application.job;
 import com.damian.xBank.modules.banking.card.application.service.BankingCardService;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
-import com.damian.xBank.modules.banking.card.infra.repository.BankingCardRepository;
+import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;

@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.banking.transaction.infra.repository;
+package com.damian.xBank.modules.banking.transaction.infrastructure.repository;
 
 import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;

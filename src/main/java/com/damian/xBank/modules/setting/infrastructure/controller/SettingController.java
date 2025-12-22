@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.setting.infra.controller;
+package com.damian.xBank.modules.setting.infrastructure.controller;
 
 import com.damian.xBank.modules.setting.application.dto.mapper.SettingDtoMapper;
 import com.damian.xBank.modules.setting.application.dto.request.SettingsUpdateRequest;

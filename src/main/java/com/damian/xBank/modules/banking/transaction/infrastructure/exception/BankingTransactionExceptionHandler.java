@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.banking.transaction.infra.exception;
+package com.damian.xBank.modules.banking.transaction.infrastructure.exception;
 
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionAuthorizationException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionException;

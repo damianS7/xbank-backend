@@ -6,7 +6,7 @@ import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransac
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotFoundException;
-import com.damian.xBank.modules.banking.transaction.infra.repository.BankingTransactionRepository;
+import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.data.domain.Page;

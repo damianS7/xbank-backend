@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.banking.card.infra.repository;
+package com.damian.xBank.modules.banking.card.infrastructure.repository;
 
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;

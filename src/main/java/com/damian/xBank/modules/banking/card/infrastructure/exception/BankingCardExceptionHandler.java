@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.banking.card.infra.exception;
+package com.damian.xBank.modules.banking.card.infrastructure.exception;
 
 import com.damian.xBank.modules.banking.card.domain.exception.*;
 import com.damian.xBank.shared.dto.ApiResponse;

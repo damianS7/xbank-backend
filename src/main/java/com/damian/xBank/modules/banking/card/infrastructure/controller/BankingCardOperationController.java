@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.banking.card.infra.controller;
+package com.damian.xBank.modules.banking.card.infrastructure.controller;
 
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardSpendRequest;
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardWithdrawRequest;
