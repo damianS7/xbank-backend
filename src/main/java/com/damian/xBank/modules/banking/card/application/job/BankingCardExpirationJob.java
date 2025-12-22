@@ -1,4 +1,4 @@
-package com.damian.xBank;
+package com.damian.xBank.modules.banking.card.application.job;
 
 import com.damian.xBank.modules.banking.card.application.service.BankingCardService;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
