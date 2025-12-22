@@ -71,7 +71,7 @@ public class CustomerImageService {
      * @return image filename
      * @throws ImageTooLargeException if the image size exceeds the limit
      */
-    public File uploadUserImage(String currentPassword, MultipartFile image) {
+    public File uploadImage(String currentPassword, MultipartFile image) {
         final User currentUser = authenticationContext.getCurrentUser();
         log.debug("Uploading user: {} user image", currentUser.getId());
 
@@ -111,7 +111,7 @@ public class CustomerImageService {
      * @throws UserAccountNotFoundException   if the user does not exist
      * @throws CustomerImageNotFoundException if the user photo does not exist in the db
      */
-    public Resource getUserImage(Long userId) {
+    public Resource getImage(Long userId) {
         // find the user
         UserAccount user = userAccountRepository.findById(userId).orElseThrow(
                 () -> new UserAccountNotFoundException(userId)
@@ -119,7 +119,7 @@ public class CustomerImageService {
 
         // check if the user has a user photo filename stored in db
         if (user.getCustomer().getPhotoPath() == null) {
-            throw new CustomerImageNotFoundException(user.getId()); // TODO user.getCustomer.getId
+            throw new CustomerImageNotFoundException(user.getCustomer().getId());
         }
 
         log.debug("Getting user: {} user image: {}", userId, user.getCustomer().getPhotoPath());
@@ -138,9 +138,9 @@ public class CustomerImageService {
      *
      * @return the current user photo resource
      */
-    public Resource getUserImage() {
+    public Resource getImage() {
         final User currentUser = authenticationContext.getCurrentUser();
 
-        return this.getUserImage(currentUser.getId());
+        return this.getImage(currentUser.getId());
     }
 }

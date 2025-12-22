@@ -66,7 +66,7 @@ public class CustomerImageServiceTest extends AbstractServiceTest {
 
     @Test
     @DisplayName("Should get customer image")
-    void shouldGetUserImage() throws IOException {
+    void shouldGetImage() throws IOException {
         // given
         File givenFile = ImageTestHelper.multipartToFile(
                 ImageTestHelper.createDefaultJpg()
@@ -80,7 +80,7 @@ public class CustomerImageServiceTest extends AbstractServiceTest {
                 .getId())).thenReturn(Optional.of(customer.getAccount()));
         when(fileStorageService.getFile(anyString(), anyString())).thenReturn(givenFile);
         when(fileStorageService.createResource(givenFile)).thenReturn(givenResource);
-        Resource resource = customerImageService.getUserImage(customer.getAccount().getId());
+        Resource resource = customerImageService.getImage(customer.getAccount().getId());
 
         // then
         assertNotNull(resource);
@@ -90,7 +90,7 @@ public class CustomerImageServiceTest extends AbstractServiceTest {
 
     @Test
     @DisplayName("Should not get user image when user not found")
-    void shouldNotGetUserImageWhenUserNotFound() throws IOException {
+    void shouldNotGetUserImageWhenNotFound() throws IOException {
         // given
         UserAccount userAccount = customer.getAccount();
 
@@ -99,7 +99,7 @@ public class CustomerImageServiceTest extends AbstractServiceTest {
 
         UserAccountNotFoundException exception = assertThrows(
                 UserAccountNotFoundException.class,
-                () -> customerImageService.getUserImage(userAccount.getId())
+                () -> customerImageService.getImage(userAccount.getId())
         );
 
         // then
@@ -109,7 +109,7 @@ public class CustomerImageServiceTest extends AbstractServiceTest {
 
     @Test
     @DisplayName("Should not get user image when user image is null")
-    void shouldNotGetUserImageWhenUserImageIsNull() throws IOException {
+    void shouldNotGetUserImageWhenImageIsNull() throws IOException {
         // given
         UserAccount userAccount = customer.getAccount();
         userAccount.getCustomer().setPhotoPath(null);
@@ -119,7 +119,7 @@ public class CustomerImageServiceTest extends AbstractServiceTest {
 
         CustomerImageNotFoundException exception = assertThrows(
                 CustomerImageNotFoundException.class,
-                () -> customerImageService.getUserImage(userAccount.getId())
+                () -> customerImageService.getImage(userAccount.getId())
         );
 
         // then
@@ -129,7 +129,7 @@ public class CustomerImageServiceTest extends AbstractServiceTest {
 
     @Test
     @DisplayName("Should upload user image")
-    void shouldUploadUserImage() {
+    void shouldUploadImage() {
         // given
         UserAccount userAccount = customer.getAccount();
         setUpContext(userAccount);
@@ -147,7 +147,7 @@ public class CustomerImageServiceTest extends AbstractServiceTest {
                 anyString()
         )).thenReturn(tempFile);
 
-        File uploadedImage = customerImageService.uploadUserImage(
+        File uploadedImage = customerImageService.uploadImage(
                 RAW_PASSWORD, givenMultipart
         );
 
