@@ -114,4 +114,33 @@ public class AdminBankingAccountOperationControllerTest extends AbstractControll
         assertEquals(BankingTransactionType.DEPOSIT, transaction.type());
         assertEquals(transaction.amount(), givenDepositAmount);
     }
+
+    @Test
+    @DisplayName("Should fail to deposit into banking account when not admin")
+    void shouldNotDepositWhenNotAdmin() throws Exception {
+        // given
+        login(customer);
+
+        BankingAccount bankingAccount = new BankingAccount(customer);
+        bankingAccount.setAccountNumber("ES1234567890123456789012");
+        bankingAccount.setAccountType(BankingAccountType.SAVINGS);
+        bankingAccount.setAccountCurrency(BankingAccountCurrency.EUR);
+        bankingAccount.setAccountStatus(BankingAccountStatus.ACTIVE);
+        bankingAccount.setBalance(BigDecimal.valueOf(1000));
+        bankingAccountRepository.save(bankingAccount);
+
+        BankingAccountDepositRequest request = new BankingAccountDepositRequest(
+                "DAMIAN MG",
+                BigDecimal.valueOf(100)
+        );
+
+        // when
+        mockMvc
+                .perform(post("/api/v1/admin/banking/accounts/{id}/deposit", bankingAccount.getId())
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().is(403));
+    }
 }

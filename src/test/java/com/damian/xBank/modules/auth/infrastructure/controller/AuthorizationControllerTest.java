@@ -159,6 +159,4 @@ public class AuthorizationControllerTest extends AbstractControllerTest {
                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.UNAUTHORIZED.value()))
                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
     }
-
-    // TODO shouldNotHaveAccessToAdminEndpint
 }
