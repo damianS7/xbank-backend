@@ -129,13 +129,13 @@ public class NotificationService {
     public void publish(NotificationEvent notificationEvent) {
         // find recipient user who will receive the notification
         UserAccount recipient = userAccountRepository
-                .findById(notificationEvent.recipientId())
+                .findById(notificationEvent.toUserId())
                 .orElseThrow(() -> {
                     log.warn(
                             "Notification failed: recipient: {} not found.",
-                            notificationEvent.recipientId()
+                            notificationEvent.toUserId()
                     );
-                    return new UserAccountNotFoundException(notificationEvent.recipientId());
+                    return new UserAccountNotFoundException(notificationEvent.toUserId());
                 });
 
         // create and save notification to the database
@@ -146,7 +146,7 @@ public class NotificationService {
         notificationRepository.save(notification);
 
         // emit event to the recipient if connected
-        var sink = userSinks.get(notificationEvent.recipientId());
+        var sink = userSinks.get(notificationEvent.toUserId());
         if (sink != null) {
             sink.tryEmitNext(notificationEvent);
         }
@@ -154,7 +154,7 @@ public class NotificationService {
         log.debug(
                 "Notification ({}) sent to user: {}",
                 notificationEvent.type(),
-                notificationEvent.recipientId()
+                notificationEvent.toUserId()
         );
     }
 }
