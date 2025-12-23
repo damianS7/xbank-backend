@@ -62,7 +62,7 @@ public class CustomerServiceTest extends AbstractServiceTest {
                            .setId(1L)
                            .setEmail("customer@test.com")
                            .setPassword(this.bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                           .setRole(UserAccountRole.USER)
+                           .setRole(UserAccountRole.CUSTOMER)
                            .setFirstName("John")
                            .setLastName("Wick")
                            .setGender(CustomerGender.MALE)

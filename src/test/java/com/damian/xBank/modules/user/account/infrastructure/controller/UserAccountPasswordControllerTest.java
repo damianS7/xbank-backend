@@ -192,7 +192,7 @@ public class UserAccountPasswordControllerTest extends AbstractControllerTest {
         UserAccount unverifiedUser = UserAccount.create()
                                                 .setEmail("non-verified-user@demo.com")
                                                 .setPassword(passwordEncoder.encode(this.RAW_PASSWORD))
-                                                .setRole(UserAccountRole.USER)
+                                                .setRole(UserAccountRole.CUSTOMER)
                                                 .setAccountStatus(UserAccountStatus.PENDING_VERIFICATION);
         userAccountRepository.save(unverifiedUser);
 
