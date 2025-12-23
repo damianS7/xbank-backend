@@ -3,7 +3,6 @@ package com.damian.xBank.modules.banking.card.application.service;
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdateDailyLimitRequest;
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdateLockRequest;
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdatePinRequest;
-import com.damian.xBank.modules.banking.card.application.guard.BankingCardGuard;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoundException;
@@ -54,9 +53,7 @@ public class BankingCardManagementService {
         // run validations if not admin
         if (!currentCustomer.isAdmin()) {
 
-            BankingCardGuard
-                    .forCard(bankingCard)
-                    .assertOwnership(currentCustomer);
+            bankingCard.assertOwnedBy(currentCustomer.getId());
 
             passwordValidator.validatePassword(currentCustomer.getAccount(), request.password());
         }
@@ -102,9 +99,7 @@ public class BankingCardManagementService {
         // run validations if not admin
         if (!currentCustomer.isAdmin()) {
 
-            BankingCardGuard
-                    .forCard(bankingCard)
-                    .assertOwnership(currentCustomer);
+            bankingCard.assertOwnedBy(currentCustomer.getId());
 
             passwordValidator.validatePassword(currentCustomer.getAccount(), request.password());
         }
@@ -138,9 +133,7 @@ public class BankingCardManagementService {
         // run validations if not admin
         if (!currentCustomer.isAdmin()) {
 
-            BankingCardGuard
-                    .forCard(bankingCard)
-                    .assertOwnership(currentCustomer);
+            bankingCard.assertOwnedBy(currentCustomer.getId());
 
             passwordValidator.validatePassword(currentCustomer.getAccount(), request.password());
         }

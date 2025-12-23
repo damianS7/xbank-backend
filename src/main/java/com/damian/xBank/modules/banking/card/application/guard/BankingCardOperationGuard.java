@@ -28,11 +28,10 @@ public class BankingCardOperationGuard {
     ) {
 
         // check the account status and see if can be used to operate
-        BankingCardGuard.forCard(card)
-                        // check the funds from the sender account
-                        .assertSufficientFunds(amount)
-                        .assertCorrectPin(cardPin)
-                        .assertUsable();
+        // run validations for the card and throw exception
+        card.assertUsable()
+            .assertCorrectPin(cardPin)
+            .assertSufficientFunds(amount);
 
         return this;
     }

@@ -3,7 +3,7 @@ package com.damian.xBank.modules.banking.card.domain.entity;
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.domain.enums.BankingCardType;
-import com.damian.xBank.modules.banking.card.domain.exception.BankingCardInsufficientFundsException;
+import com.damian.xBank.modules.banking.card.domain.exception.*;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcType;
@@ -12,6 +12,7 @@ import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Entity
 @Table(name = "banking_cards")
@@ -189,10 +190,19 @@ public class BankingCard {
         return this.getBankingAccount().hasSufficientFunds(amount);
     }
 
-    public void assertSufficientFunds(BigDecimal amount) {
+    /**
+     * Assert the has sufficient funds.
+     *
+     * @param amount the amount to check
+     * @return the current validator instance for chaining
+     * @throws BankingCardInsufficientFundsException if the card does not have sufficient funds
+     */
+    public BankingCard assertSufficientFunds(BigDecimal amount) {
         if (!this.hasSufficientFunds(amount)) {
-            throw new BankingCardInsufficientFundsException(this.getId());
+            throw new BankingCardInsufficientFundsException(this.getId(), getBalance(), amount);
         }
+
+        return this;
     }
 
     public BankingCard chargeAmount(BigDecimal amount) {
@@ -214,5 +224,92 @@ public class BankingCard {
 
     public boolean isDisabled() {
         return this.cardStatus == BankingCardStatus.DISABLED;
+    }
+
+    public boolean isOwnedBy(Long customerId) {
+
+        // compare card owner id with given customer id
+        return Objects.equals(getOwner().getId(), customerId);
+    }
+
+
+    /**
+     * Assert the ownership of the card belongs to {@link Customer}.
+     *
+     * @param customerId the customer to check ownership against
+     * @return the current validator instance for chaining
+     * @throws BankingCardOwnershipException if the card does not belong to the customer
+     */
+    public BankingCard assertOwnedBy(Long customerId) {
+
+        // compare card owner id with given customer id
+        if (!isOwnedBy(customerId)) {
+            throw new BankingCardOwnershipException(getId(), customerId);
+        }
+
+        return this;
+    }
+
+    /**
+     * Assert the card PIN matches.
+     *
+     * @return the current validator instance for chaining
+     * @throws BankingCardInvalidPinException if the card PIN does not equals to the given PIN
+     */
+    public BankingCard assertCorrectPin(String PIN) {
+
+        // check card pin
+        if (!Objects.equals(getCardPin(), PIN)) {
+            throw new BankingCardInvalidPinException(getId());
+        }
+
+        return this;
+    }
+
+    /**
+     * Assert card is not DISABLED.
+     *
+     * @return the current validator instance for chaining
+     * @throws BankingCardDisabledException if the card is locked
+     */
+    public BankingCard assertEnabled() {
+
+        // check card status
+        if (isDisabled()) {
+            throw new BankingCardDisabledException(getId());
+        }
+
+        return this;
+    }
+
+    /**
+     * Assert card is not LOCKED.
+     *
+     * @return the current validator instance for chaining
+     * @throws BankingCardLockedException if the card is locked
+     */
+    public BankingCard assertUnlocked() {
+
+        // check lock status
+        if (isLocked()) {
+            throw new BankingCardLockedException(getId());
+        }
+
+        return this;
+    }
+
+    /**
+     * Assert card is not DISABLED or LOCKED and can be used for any operation.
+     *
+     * @return the current validator instance for chaining
+     * @throws BankingCardDisabledException if the card is disabled
+     * @throws BankingCardLockedException   if the card is locked
+     */
+    public BankingCard assertUsable() {
+
+        this.assertEnabled()
+            .assertUnlocked();
+
+        return this;
     }
 }

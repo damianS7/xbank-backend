@@ -2,7 +2,6 @@ package com.damian.xBank.modules.banking.card.application.service;
 
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardSpendRequest;
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardWithdrawRequest;
-import com.damian.xBank.modules.banking.card.application.guard.BankingCardGuard;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoundException;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
@@ -109,12 +108,11 @@ public class BankingCardOperationService {
     ) {
         final Customer customerLogged = authenticationContext.getCurrentCustomer();
 
-        // run validations and throw if any throw exception
-        BankingCardGuard.forCard(card)
-                        .assertOwnership(customerLogged)
-                        .assertUsable()
-                        .assertCorrectPin(cardPin)
-                        .assertSufficientFunds(amount);
+        // run validations for the card and throw exception
+        card.assertOwnedBy(customerLogged.getId())
+            .assertUsable()
+            .assertCorrectPin(cardPin)
+            .assertSufficientFunds(amount);
 
         // store here the transaction as PENDING
         BankingTransaction transaction = bankingTransactionCardService.generateTransaction(
