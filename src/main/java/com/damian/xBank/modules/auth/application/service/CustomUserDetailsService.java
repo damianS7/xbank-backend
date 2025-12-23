@@ -1,14 +1,14 @@
 package com.damian.xBank.modules.auth.application.service;
 
-import com.damian.xBank.modules.auth.domain.exception.EmailNotFoundException;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.infra.repository.UserAccountRepository;
+import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.security.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,17 +21,17 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) {
         return loadUserByEmail(username);
     }
 
-    public UserDetails loadUserByEmail(String email) throws EmailNotFoundException {
+    public UserDetails loadUserByEmail(String email) {
         UserAccount user = userAccountRepository
                 .findByEmail(email)
                 .orElseThrow(
                         () -> {
                             log.debug("Failed to find a user with email: {}", email);
-                            return new EmailNotFoundException(email); // TODO UserAccountNotFoundEx?
+                            return new BadCredentialsException(ErrorCodes.AUTH_LOGIN_BAD_CREDENTIALS);
                         }
                 );
 

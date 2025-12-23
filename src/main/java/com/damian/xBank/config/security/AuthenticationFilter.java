@@ -1,7 +1,6 @@
 package com.damian.xBank.config.security;
 
 import com.damian.xBank.modules.auth.application.service.CustomUserDetailsService;
-import com.damian.xBank.modules.auth.domain.exception.EmailNotFoundException;
 import com.damian.xBank.shared.exception.JwtTokenExpiredException;
 import com.damian.xBank.shared.exception.JwtTokenInvalidException;
 import com.damian.xBank.shared.utils.JwtUtil;
@@ -13,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -102,12 +102,10 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             try {
                 // Load the user details from the database.
                 userDetails = customUserDetailsService.loadUserByEmail(email);
-            } catch (EmailNotFoundException exception) {
+            } catch (BadCredentialsException exception) {
                 // In case no such user exists by this email, then we sent 401
                 log.debug("Failed to authenticate user with email: {}", email);
-                authenticationEntryPoint.commence(
-                        request, response, exception
-                );
+                authenticationEntryPoint.commence(request, response, exception);
                 return;
             }
 
