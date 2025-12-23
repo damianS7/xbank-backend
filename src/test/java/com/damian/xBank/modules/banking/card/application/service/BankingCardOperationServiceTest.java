@@ -331,5 +331,38 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
         assertThat(customerBankingAccount.getBalance()).isEqualTo(BigDecimal.ZERO);
     }
 
-    // TODO shouldFailToWithdraw
+    @Test
+    @DisplayName("Should fail to withdraw when insufficient funds")
+    void shouldFailToWithdrawWhenInsufficientFunds() {
+        // given
+        setUpContext(customer);
+
+        BankingCardWithdrawRequest withdrawRequest = new BankingCardWithdrawRequest(
+                customerBankingAccount.getBalance().add(BigDecimal.ONE),
+                customerBankingCard.getCardPin()
+        );
+
+        BankingTransaction givenBankingTransaction = new BankingTransaction(customerBankingAccount);
+        givenBankingTransaction.setType(BankingTransactionType.WITHDRAWAL);
+        givenBankingTransaction.setAmount(withdrawRequest.amount());
+        givenBankingTransaction.setDescription("WITHDRAWAL");
+
+        when(bankingCardRepository.findById(anyLong())).thenReturn(Optional.of(customerBankingCard));
+
+        // then
+        BankingCardInsufficientFundsException exception = assertThrows(
+                BankingCardInsufficientFundsException.class,
+                () -> bankingCardOperationService.withdraw(
+                        customerBankingCard.getId(),
+                        withdrawRequest
+                )
+        );
+
+        // then
+        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.BANKING_CARD_INSUFFICIENT_FUNDS);
+
+        // then
+        assertThat(customerBankingAccount.getBalance()).isEqualTo(BigDecimal.ZERO);
+    }
+
 }

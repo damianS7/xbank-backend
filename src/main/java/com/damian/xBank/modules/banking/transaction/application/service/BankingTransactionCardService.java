@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.banking.transaction.application.service;
 
+import com.damian.xBank.modules.banking.card.application.guard.BankingCardGuard;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.transaction.application.guard.BankingTransactionGuard;
 import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
@@ -79,6 +80,10 @@ public class BankingTransactionCardService {
                 amount,
                 description
         );
+
+        // TODO this here or remove?
+        BankingCardGuard.forCard(bankingCard)
+                        .assertSufficientFunds(amount);
 
         return bankingTransactionAccountService.recordTransaction(transaction);
     }

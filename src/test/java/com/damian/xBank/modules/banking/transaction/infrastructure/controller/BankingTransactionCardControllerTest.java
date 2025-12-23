@@ -118,6 +118,6 @@ public class BankingTransactionCardControllerTest extends AbstractControllerTest
 
     }
 
-    // TODO: shouldConfirmTransaction
+    // TODO shouldConfirmTransaction
 
 }
