@@ -189,6 +189,12 @@ public class BankingCard {
         return this.getBankingAccount().hasSufficientFunds(amount);
     }
 
+    public void assertSufficientFunds(BigDecimal amount) {
+        if (!this.hasSufficientFunds(amount)) {
+            throw new BankingCardInsufficientFundsException(this.getId());
+        }
+    }
+
     public BankingCard chargeAmount(BigDecimal amount) {
         if (!this.hasSufficientFunds(amount)) {
             throw new BankingCardInsufficientFundsException(this.getId());
