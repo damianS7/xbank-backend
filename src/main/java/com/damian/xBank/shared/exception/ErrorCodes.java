@@ -60,6 +60,7 @@ public class ErrorCodes {
 
     // Notification
     public static final String NOTIFICATION_NOT_FOUND = "notification.not_found";
+    public static final String NOTIFICATION_NOT_OWNER = "notification.not_owner";
 
     // Setting
     public static final String SETTING_NOT_OWNER = "setting.not_owner";

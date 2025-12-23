@@ -89,10 +89,8 @@ public class NotificationService {
                         () -> new NotificationNotFoundException(id)
                 );
 
-        // TODO check ownership
-        if (!notification.getOwner().getId().equals(currentUser.getAccount().getId())) {
-            // throw
-        }
+        // Assert notification is owned by currentUser or throw
+        notification.assertOwnedBy(currentUser.getId());
 
         // delete notification
         notificationRepository.delete(notification);

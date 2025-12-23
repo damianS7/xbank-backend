@@ -1,6 +1,7 @@
 package com.damian.xBank.modules.notification.domain.entity;
 
 import com.damian.xBank.modules.notification.domain.enums.NotificationType;
+import com.damian.xBank.modules.notification.domain.exception.NotificationNotOwnerException;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import jakarta.persistence.*;
@@ -111,5 +112,15 @@ public class Notification {
     public Notification setMetadata(Map<String, Object> metadata) {
         this.metadata = metadata;
         return this;
+    }
+
+    public boolean isOwnedBy(Long userId) {
+        return getOwner().getId().equals(userId);
+    }
+
+    public void assertOwnedBy(Long userId) {
+        if (!isOwnedBy(userId)) {
+            throw new NotificationNotOwnerException(getId(), userId);
+        }
     }
 }
