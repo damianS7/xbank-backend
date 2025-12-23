@@ -3,8 +3,6 @@ package com.damian.xBank.modules.auth.application.service;
 import com.damian.xBank.modules.auth.application.dto.AuthenticationRequest;
 import com.damian.xBank.modules.auth.application.dto.AuthenticationResponse;
 import com.damian.xBank.modules.auth.domain.exception.UserAccountNotVerifiedException;
-import com.damian.xBank.modules.auth.domain.exception.UserAccountSuspendedException;
-import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
 import com.damian.xBank.shared.security.User;
 import com.damian.xBank.shared.utils.JwtUtil;
 import org.slf4j.Logger;
@@ -46,13 +44,10 @@ public class AuthenticationService {
     public AuthenticationResponse login(AuthenticationRequest request) {
         final String email = request.email();
         final String password = request.password();
-        final Authentication auth;
 
-        // Authenticate the user
-        auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        email, password)
-        ); // TODO review AuthenticationControllerTest. LockedException/DisabledException not catch
+        final Authentication auth = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(email, password)
+        );
 
         // Get the authenticated user
         final User currentUser = ((User) auth.getPrincipal());
@@ -65,16 +60,6 @@ public class AuthenticationService {
                 claims,
                 email
         );
-
-        // check if the account is disabled
-        if (currentUser.getAccount().getAccountStatus().equals(UserAccountStatus.SUSPENDED)) {
-            throw new UserAccountSuspendedException(email);
-        }
-
-        // check if the account is verified
-        if (currentUser.getAccount().getAccountStatus().equals(UserAccountStatus.PENDING_VERIFICATION)) {
-            throw new UserAccountNotVerifiedException(email);
-        }
 
         // Return the user data and the token
         log.info("Login successful for user: {}", email);
