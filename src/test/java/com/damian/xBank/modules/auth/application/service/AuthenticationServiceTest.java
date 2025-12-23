@@ -100,12 +100,9 @@ public class AuthenticationServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("should not login when account is suspended")
-    void shouldNotLoginWhenAccountIsSuspended() {
+    @DisplayName("should not login when account is locked or suspended")
+    void shouldNotLoginWhenAccountIsLockedOrSuspended() {
         // given
-        Authentication authentication = mock(Authentication.class);
-        String token = "jwt-token";
-
         UserAccount userAccount = UserAccount.create()
                                              .setId(1L)
                                              .setEmail("user@demo.com")
@@ -117,12 +114,10 @@ public class AuthenticationServiceTest extends AbstractServiceTest {
                 userAccount.getPassword()
         );
 
-        User user = new User(userAccount);
-
         // when
-        when(authenticationManager.authenticate(any())).thenReturn(authentication);
-        when(jwtUtil.generateToken(anyMap(), anyString())).thenReturn(token);
-        when(authentication.getPrincipal()).thenReturn(user);
+        when(authenticationManager.authenticate(any())).thenThrow(
+                new UserAccountSuspendedException(userAccount.getEmail())
+        );
 
         UserAccountSuspendedException exception = assertThrows(
                 UserAccountSuspendedException.class,
@@ -134,12 +129,9 @@ public class AuthenticationServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("should not login when account is not verified")
-    void shouldNotLoginWhenAccountIsNotVerified() {
+    @DisplayName("should not login when account is disabled or not verified")
+    void shouldNotLoginWhenAccountIsDisabledOrNotVerified() {
         // given
-        Authentication authentication = mock(Authentication.class);
-        String token = "jwt-token";
-
         UserAccount userAccount = UserAccount.create()
                                              .setId(1L)
                                              .setEmail("user@demo.com")
@@ -151,12 +143,10 @@ public class AuthenticationServiceTest extends AbstractServiceTest {
                 userAccount.getPassword()
         );
 
-        User user = new User(userAccount);
-
         // when
-        when(authenticationManager.authenticate(any())).thenReturn(authentication);
-        when(jwtUtil.generateToken(anyMap(), anyString())).thenReturn(token);
-        when(authentication.getPrincipal()).thenReturn(user);
+        when(authenticationManager.authenticate(any())).thenThrow(
+                new UserAccountNotVerifiedException(userAccount.getEmail())
+        );
 
         UserAccountNotVerifiedException exception = assertThrows(
                 UserAccountNotVerifiedException.class,
