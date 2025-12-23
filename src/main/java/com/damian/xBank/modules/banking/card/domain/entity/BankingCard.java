@@ -206,9 +206,8 @@ public class BankingCard {
     }
 
     public BankingCard chargeAmount(BigDecimal amount) {
-        if (!this.hasSufficientFunds(amount)) {
-            throw new BankingCardInsufficientFundsException(this.getId());
-        }
+        // assert sufficient funds or throw exception
+        this.assertSufficientFunds(amount);
 
         this.getBankingAccount().subtractBalance(amount);
         return this;
