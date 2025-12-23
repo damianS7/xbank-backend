@@ -10,19 +10,26 @@ import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountN
 import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
-import com.damian.xBank.shared.utils.AuthHelper;
+import com.damian.xBank.shared.security.AuthenticationContext;
+import com.damian.xBank.shared.security.PasswordValidator;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 
 @Service
 public class BankingAccountManagementService {
+    private final AuthenticationContext authenticationContext;
     private final BankingAccountRepository bankingAccountRepository;
+    private final PasswordValidator passwordValidator;
 
     public BankingAccountManagementService(
-            BankingAccountRepository bankingAccountRepository
+            AuthenticationContext authenticationContext,
+            BankingAccountRepository bankingAccountRepository,
+            PasswordValidator passwordValidator
     ) {
+        this.authenticationContext = authenticationContext;
         this.bankingAccountRepository = bankingAccountRepository;
+        this.passwordValidator = passwordValidator;
     }
 
     /**
@@ -42,9 +49,9 @@ public class BankingAccountManagementService {
         if (customer.getAccount().getRole() == UserAccountRole.CUSTOMER) {
 
             BankingAccountGuard.forAccount(bankingAccount)
-                               .ownership(customer)
-                               .notSuspended()
-                               .notClosed();
+                               .assertOwnership(customer)
+                               .assertNotSuspended()
+                               .assertNotClosed();
         }
 
         // we mark the account as closed
@@ -68,7 +75,7 @@ public class BankingAccountManagementService {
             BankingAccountOpenRequest request
     ) {
         // Customer logged
-        final Customer currentCustomer = AuthHelper.getCurrentCustomer();
+        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
 
         // Banking account to be open
         final BankingAccount bankingAccount = bankingAccountRepository
@@ -92,7 +99,7 @@ public class BankingAccountManagementService {
             BankingAccountCloseRequest request
     ) {
         // Customer logged
-        final Customer currentCustomer = AuthHelper.getCurrentCustomer();
+        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
 
         // Banking account to be closed
         final BankingAccount bankingAccount = bankingAccountRepository.findById(bankingAccountId).orElseThrow(
@@ -101,41 +108,9 @@ public class BankingAccountManagementService {
                 ) // Banking account not found
         );
 
-        AuthHelper.validatePassword(currentCustomer.getAccount(), request.password());
+        passwordValidator.validatePassword(currentCustomer.getAccount(), request.password());
 
         return this.updateStatus(currentCustomer, bankingAccount, BankingAccountStatus.CLOSED);
-    }
-
-    /**
-     * Set alias for a banking account
-     *
-     * @param customer       the customer who changes the alias
-     * @param bankingAccount the banking account to update
-     * @param alias          the new alias
-     * @return the updated banking account
-     */
-    private BankingAccount setAccountAlias(
-            Customer customer,
-            BankingAccount bankingAccount,
-            String alias
-    ) {
-        // business rules only for customers
-        if (AuthHelper.isCustomer(customer)) {
-
-            BankingAccountGuard.forAccount(bankingAccount)
-                               .ownership(customer)
-                               .notSuspended()
-                               .notClosed();
-        }
-
-        // we mark the account as closed
-        bankingAccount.setAlias(alias);
-
-        // we change the updateAt timestamp field
-        bankingAccount.setUpdatedAt(Instant.now());
-
-        // save the data and return BankingAccount
-        return bankingAccountRepository.save(bankingAccount);
     }
 
     /**
@@ -150,7 +125,7 @@ public class BankingAccountManagementService {
             BankingAccountAliasUpdateRequest request
     ) {
         // Customer logged
-        final Customer currentCustomer = AuthHelper.getCurrentCustomer();
+        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
 
         // Banking account to set alias
         final BankingAccount bankingAccount = bankingAccountRepository.findById(bankingAccountId).orElseThrow(
@@ -159,7 +134,22 @@ public class BankingAccountManagementService {
                 ) // Banking account not found
         );
 
-        //        AuthHelper.validatePassword(currentCustomer.getAccount(), request.password());
-        return this.setAccountAlias(currentCustomer, bankingAccount, request.alias());
+        // validations rules only for customers
+        if (!currentCustomer.isAdmin()) {
+
+            BankingAccountGuard.forAccount(bankingAccount)
+                               .assertOwnership(currentCustomer)
+                               .assertNotSuspended()
+                               .assertNotClosed();
+        }
+
+        // we mark the account as closed
+        bankingAccount.setAlias(request.alias());
+
+        // we change the updateAt timestamp field
+        bankingAccount.setUpdatedAt(Instant.now());
+
+        // save the data and return BankingAccount
+        return bankingAccountRepository.save(bankingAccount);
     }
 }

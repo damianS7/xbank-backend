@@ -2,17 +2,13 @@ package com.damian.xBank.modules.auth.application.service;
 
 import com.damian.xBank.modules.auth.application.dto.AuthenticationRequest;
 import com.damian.xBank.modules.auth.application.dto.AuthenticationResponse;
-import com.damian.xBank.modules.auth.domain.exception.AccountNotVerifiedException;
-import com.damian.xBank.modules.auth.domain.exception.AccountSuspendedException;
-import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
-import com.damian.xBank.shared.domain.User;
-import com.damian.xBank.shared.exception.Exceptions;
+import com.damian.xBank.modules.auth.domain.exception.UserAccountNotVerifiedException;
+import com.damian.xBank.modules.auth.domain.exception.UserAccountSuspendedException;
+import com.damian.xBank.shared.security.User;
 import com.damian.xBank.shared.utils.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -41,19 +37,29 @@ public class AuthenticationService {
      *
      * @param request Contains the fields needed to login into the service
      * @return Contains the data (User, Profile) and the token
-     * @throws BadCredentialsException     if credentials are invalid
-     * @throws AccountNotVerifiedException if the account is not verified
+     * @throws BadCredentialsException         if credentials are invalid
+     * @throws UserAccountNotVerifiedException if the account is not verified
      */
     public AuthenticationResponse login(AuthenticationRequest request) {
         final String email = request.email();
         final String password = request.password();
-        final Authentication auth;
 
-        // Authenticate the user
-        auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        email, password)
-        );
+        //                final Authentication auth = authenticationManager.authenticate(
+        //                        new UsernamePasswordAuthenticationToken(email, password)
+        //                );
+
+        Authentication auth = null;
+
+        try {
+            auth = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(email, password)
+            );
+        } catch (DisabledException e) {
+            throw new UserAccountNotVerifiedException(email);
+        } catch (LockedException e) {
+            throw new UserAccountSuspendedException(email);
+        }
+
 
         // Get the authenticated user
         final User currentUser = ((User) auth.getPrincipal());
@@ -66,20 +72,6 @@ public class AuthenticationService {
                 claims,
                 email
         );
-
-        // check if the account is disabled
-        if (currentUser.getAccount().getAccountStatus().equals(UserAccountStatus.SUSPENDED)) {
-            throw new AccountSuspendedException(
-                    Exceptions.USER.ACCOUNT.SUSPENDED
-            );
-        }
-
-        // check if the account is verified
-        if (currentUser.getAccount().getAccountStatus().equals(UserAccountStatus.PENDING_VERIFICATION)) {
-            throw new AccountNotVerifiedException(
-                    Exceptions.USER.ACCOUNT.NOT_VERIFIED
-            );
-        }
 
         // Return the user data and the token
         log.info("Login successful for user: {}", email);

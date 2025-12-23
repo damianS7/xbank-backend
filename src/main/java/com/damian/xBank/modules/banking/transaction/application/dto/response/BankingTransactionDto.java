@@ -13,9 +13,10 @@ public record BankingTransactionDto(
         Long cardId,
         BigDecimal amount,
         BankingAccountCurrency currency,
-        BigDecimal lastBalance,
-        BankingTransactionType transactionType,
-        BankingTransactionStatus transactionStatus,
+        BigDecimal balanceBefore,
+        BigDecimal balanceAfter,
+        BankingTransactionType type,
+        BankingTransactionStatus status,
         String description,
         Instant createdAt,
         Instant updatedAt

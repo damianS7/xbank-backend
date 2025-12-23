@@ -4,7 +4,7 @@ import com.damian.xBank.modules.banking.account.application.dto.mapper.BankingAc
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCreateRequest;
 import com.damian.xBank.modules.banking.account.application.dto.response.BankingAccountDto;
 import com.damian.xBank.modules.banking.account.application.dto.response.BankingAccountSummaryDto;
-import com.damian.xBank.modules.banking.account.application.service.BankingAccountCardManagerService;
+import com.damian.xBank.modules.banking.account.application.service.BankingAccountCardManagementService;
 import com.damian.xBank.modules.banking.account.application.service.BankingAccountManagementService;
 import com.damian.xBank.modules.banking.account.application.service.BankingAccountService;
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
@@ -20,16 +20,16 @@ import java.util.Set;
 public class BankingAccountController {
     private final BankingAccountService bankingAccountService;
     private final BankingAccountManagementService bankingAccountManagementService;
-    private final BankingAccountCardManagerService bankingAccountCardManagerService;
+    private final BankingAccountCardManagementService bankingAccountCardManagementService;
 
     public BankingAccountController(
             BankingAccountService bankingAccountService,
             BankingAccountManagementService bankingAccountManagementService,
-            BankingAccountCardManagerService bankingAccountCardManagerService
+            BankingAccountCardManagementService bankingAccountCardManagementService
     ) {
         this.bankingAccountService = bankingAccountService;
         this.bankingAccountManagementService = bankingAccountManagementService;
-        this.bankingAccountCardManagerService = bankingAccountCardManagerService;
+        this.bankingAccountCardManagementService = bankingAccountCardManagementService;
     }
 
     // return all the accounts from the logged customer
@@ -46,7 +46,7 @@ public class BankingAccountController {
     }
 
     // endpoint for logged customer to request for a new BankingAccount
-    @PostMapping("/banking/accounts/request")
+    @PostMapping("/banking/accounts")
     public ResponseEntity<?> requestBankingAccount(
             @Validated @RequestBody
             BankingAccountCreateRequest request

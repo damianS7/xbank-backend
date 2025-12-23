@@ -4,9 +4,10 @@ import com.damian.xBank.modules.user.customer.domain.exception.CustomerImageNotF
 import com.damian.xBank.modules.user.customer.domain.exception.CustomerNotFoundException;
 import com.damian.xBank.modules.user.customer.domain.exception.CustomerUpdateAuthorizationException;
 import com.damian.xBank.modules.user.customer.domain.exception.CustomerUpdateException;
-import com.damian.xBank.shared.utils.ApiResponse;
+import com.damian.xBank.shared.dto.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.MessageSource;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class CustomerExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(CustomerExceptionHandler.class);
+    private final MessageSource messageSource;
+
+    public CustomerExceptionHandler(
+            MessageSource messageSource
+    ) {
+        this.messageSource = messageSource;
+    }
 
     // Customer exceptions
     @ExceptionHandler(CustomerUpdateAuthorizationException.class) // 401
@@ -25,24 +33,27 @@ public class CustomerExceptionHandler {
     ) {
         log.warn(
                 "Customer id: {} cannot be updated due authorization violation.",
-                ex.getCustomerId()
+                ex.getResourceId()
         );
+
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body(ApiResponse.error(ex.getMessage(), HttpStatus.UNAUTHORIZED));
+                             .body(ApiResponse.error(ex, HttpStatus.UNAUTHORIZED, messageSource));
     }
 
     @ExceptionHandler(CustomerUpdateException.class) // 400
     public ResponseEntity<ApiResponse<String>> handleCustomerUpdate(
             CustomerUpdateException ex
     ) {
+
         log.warn(
                 "Customer id: {} failed to update field: {} with value: {}.",
-                ex.getCustomerId(),
-                ex.getKey(),
-                ex.getValue()
+                ex.getResourceId(),
+                ex.getArgs()[0],
+                ex.getArgs()[1]
         );
+
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body(ApiResponse.error(ex.getMessage(), HttpStatus.BAD_REQUEST));
+                             .body(ApiResponse.error(ex, HttpStatus.BAD_REQUEST, messageSource));
     }
 
     @ExceptionHandler(CustomerNotFoundException.class) // 404
@@ -51,10 +62,11 @@ public class CustomerExceptionHandler {
     ) {
         log.warn(
                 "Customer id: {} not found.",
-                ex.getCustomerId()
+                ex.getResourceId()
         );
+
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body(ApiResponse.error(ex.getMessage(), HttpStatus.NOT_FOUND));
+                             .body(ApiResponse.error(ex, HttpStatus.NOT_FOUND, messageSource));
     }
 
     @ExceptionHandler(CustomerImageNotFoundException.class) // 404
@@ -63,9 +75,10 @@ public class CustomerExceptionHandler {
     ) {
         log.warn(
                 "Customer id: {} image not found.",
-                ex.getCustomerId()
+                ex.getResourceId()
         );
+
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body(ApiResponse.error(ex.getMessage(), HttpStatus.NOT_FOUND));
+                             .body(ApiResponse.error(ex, HttpStatus.NOT_FOUND, messageSource));
     }
 }

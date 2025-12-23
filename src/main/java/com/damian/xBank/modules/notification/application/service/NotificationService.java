@@ -1,15 +1,15 @@
 package com.damian.xBank.modules.notification.application.service;
 
+import com.damian.xBank.modules.notification.domain.entity.Notification;
 import com.damian.xBank.modules.notification.domain.event.NotificationEvent;
 import com.damian.xBank.modules.notification.domain.exception.NotificationNotFoundException;
-import com.damian.xBank.modules.notification.domain.entity.Notification;
 import com.damian.xBank.modules.notification.infra.repository.NotificationRepository;
-import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountNotFoundException;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
+import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountNotFoundException;
 import com.damian.xBank.modules.user.account.account.infra.repository.UserAccountRepository;
-import com.damian.xBank.shared.domain.User;
-import com.damian.xBank.shared.exception.Exceptions;
-import com.damian.xBank.shared.utils.AuthHelper;
+import com.damian.xBank.modules.user.customer.infra.repository.CustomerRepository;
+import com.damian.xBank.shared.security.AuthenticationContext;
+import com.damian.xBank.shared.security.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -26,16 +26,22 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class NotificationService {
     private static final Logger log = LoggerFactory.getLogger(NotificationService.class);
+    private final AuthenticationContext authenticationContext;
     private final NotificationRepository notificationRepository;
     private final UserAccountRepository userAccountRepository;
+    private final CustomerRepository customerRepository;
     private final Map<Long, Sinks.Many<NotificationEvent>> userSinks = new ConcurrentHashMap<>();
 
     public NotificationService(
+            AuthenticationContext authenticationContext,
             NotificationRepository notificationRepository,
-            UserAccountRepository userAccountRepository
+            UserAccountRepository userAccountRepository,
+            CustomerRepository customerRepository
     ) {
+        this.authenticationContext = authenticationContext;
         this.notificationRepository = notificationRepository;
         this.userAccountRepository = userAccountRepository;
+        this.customerRepository = customerRepository;
     }
 
     /**
@@ -45,7 +51,7 @@ public class NotificationService {
      * @return Page<Notification> a page of notifications
      */
     public Page<Notification> getNotifications(Pageable pageable) {
-        User currentUser = AuthHelper.getCurrentUser();
+        User currentUser = authenticationContext.getCurrentUser();
         log.debug("Fetching notifications for user: {}", currentUser.getId());
         return notificationRepository.findAllByUserId(currentUser.getId(), pageable);
     }
@@ -57,7 +63,7 @@ public class NotificationService {
      */
     @Transactional
     public void deleteNotifications(List<Long> notificationIds) {
-        User currentUser = AuthHelper.getCurrentUser();
+        User currentUser = authenticationContext.getCurrentUser();
 
         // delete selected notifications
         notificationRepository.deleteAllByIdInAndUser_Id(
@@ -75,7 +81,7 @@ public class NotificationService {
      */
     @Transactional
     public void deleteNotification(Long id) {
-        User currentUser = AuthHelper.getCurrentUser();
+        User currentUser = authenticationContext.getCurrentUser();
 
         Notification notification = notificationRepository
                 .findById(id)
@@ -101,7 +107,7 @@ public class NotificationService {
      * @return Flux<NotificationEvent> a stream of notifications
      */
     public Flux<NotificationEvent> getNotificationsForUser() {
-        User currentUser = AuthHelper.getCurrentUser();
+        User currentUser = authenticationContext.getCurrentUser();
 
         // create a sink for the user if not exists
         Sinks.Many<NotificationEvent> sink = userSinks.computeIfAbsent(
@@ -120,19 +126,16 @@ public class NotificationService {
      *
      * @param notificationEvent the notification event
      */
-    public void publishNotification(NotificationEvent notificationEvent) {
+    public void publish(NotificationEvent notificationEvent) {
         // find recipient user who will receive the notification
         UserAccount recipient = userAccountRepository
-                .findById(notificationEvent.recipientId())
+                .findById(notificationEvent.toUserId())
                 .orElseThrow(() -> {
                     log.warn(
                             "Notification failed: recipient: {} not found.",
-                            notificationEvent.recipientId()
+                            notificationEvent.toUserId()
                     );
-                    return new UserAccountNotFoundException(
-                            Exceptions.USER.ACCOUNT.NOT_FOUND,
-                            notificationEvent.recipientId()
-                    );
+                    return new UserAccountNotFoundException(notificationEvent.toUserId());
                 });
 
         // create and save notification to the database
@@ -143,7 +146,7 @@ public class NotificationService {
         notificationRepository.save(notification);
 
         // emit event to the recipient if connected
-        var sink = userSinks.get(notificationEvent.recipientId());
+        var sink = userSinks.get(notificationEvent.toUserId());
         if (sink != null) {
             sink.tryEmitNext(notificationEvent);
         }
@@ -151,7 +154,7 @@ public class NotificationService {
         log.debug(
                 "Notification ({}) sent to user: {}",
                 notificationEvent.type(),
-                notificationEvent.recipientId()
+                notificationEvent.toUserId()
         );
     }
 }

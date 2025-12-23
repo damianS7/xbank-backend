@@ -1,8 +1,8 @@
 package com.damian.xBank.modules.user.customer.domain.entity;
 
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
-import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
+import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
 import jakarta.persistence.*;
 
@@ -21,7 +21,7 @@ public class Customer {
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<BankingAccount> bankingAccounts;
 
-    @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private UserAccount account;
 
@@ -91,6 +91,14 @@ public class Customer {
     public Customer setRole(UserAccountRole role) {
         this.account.setRole(role);
         return this;
+    }
+
+    public UserAccountRole getRole() {
+        return this.account.getRole();
+    }
+
+    public boolean hasRole(UserAccountRole role) {
+        return this.account.getRole() == role;
     }
 
     public Long getId() {
@@ -257,5 +265,13 @@ public class Customer {
 
     public String getEmail() {
         return account.getEmail();
+    }
+
+    public boolean isAdmin() {
+        return this.getRole() == UserAccountRole.ADMIN;
+    }
+
+    public boolean isCustomer() {
+        return this.getRole() == UserAccountRole.CUSTOMER;
     }
 }

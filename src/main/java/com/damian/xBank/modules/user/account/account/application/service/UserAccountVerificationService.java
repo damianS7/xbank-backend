@@ -1,15 +1,14 @@
 package com.damian.xBank.modules.user.account.account.application.service;
 
+import com.damian.xBank.infrastructure.mail.EmailSenderService;
+import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
 import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountNotFoundException;
 import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountVerificationNotPendingException;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.infra.repository.UserAccountRepository;
+import com.damian.xBank.modules.user.account.token.application.service.UserAccountTokenService;
 import com.damian.xBank.modules.user.account.token.domain.entity.UserAccountToken;
 import com.damian.xBank.modules.user.account.token.infra.repository.UserAccountTokenRepository;
-import com.damian.xBank.modules.user.account.token.application.service.UserAccountTokenService;
-import com.damian.xBank.shared.exception.Exceptions;
-import com.damian.xBank.shared.infrastructure.mail.EmailSenderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
@@ -58,10 +57,7 @@ public class UserAccountVerificationService {
         // checks if the account is pending for activation.
         if (!account.getAccountStatus().equals(UserAccountStatus.PENDING_VERIFICATION)) {
             log.warn("Failed to verify account. UserAccount is not awaiting verification.");
-            throw new UserAccountVerificationNotPendingException(
-                    Exceptions.USER.ACCOUNT.VERIFICATION.NOT_ELIGIBLE,
-                    account.getId()
-            );
+            throw new UserAccountVerificationNotPendingException(account.getId());
         }
 
         // mark the token as used

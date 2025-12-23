@@ -4,10 +4,12 @@ import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
+import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Objects;
 
 @Entity
 @Table(name = "banking_transactions")
@@ -28,13 +30,17 @@ public class BankingTransaction {
     private BigDecimal amount;
 
     @Column(precision = 15, scale = 2)
-    private BigDecimal lastBalance;
+    private BigDecimal balanceBefore;
+
+    @Column(precision = 15, scale = 2)
+    private BigDecimal balanceAfter;
 
     @Column
     private String description;
 
+    @Column(name = "transaction_type")
     @Enumerated(EnumType.STRING)
-    private BankingTransactionType transactionType;
+    private BankingTransactionType type;
 
     @Enumerated(EnumType.STRING)
     private BankingTransactionStatus status;
@@ -51,7 +57,7 @@ public class BankingTransaction {
     }
 
     public BankingTransaction(BankingCard bankingCard) {
-        this(bankingCard.getAssociatedBankingAccount());
+        this(bankingCard.getBankingAccount());
     }
 
     public BankingTransaction() {
@@ -60,13 +66,17 @@ public class BankingTransaction {
         this.createdAt = Instant.now();
     }
 
-    public BankingTransaction(BankingTransactionType transactionType) {
+    public BankingTransaction(BankingTransactionType type) {
         this();
-        this.transactionType = transactionType;
+        this.type = type;
     }
 
     public static BankingTransaction create() {
         return new BankingTransaction();
+    }
+
+    public boolean belongsTo(Customer customer) {
+        return Objects.equals(getBankingAccount().getOwner().getId(), customer.getId());
     }
 
     public Long getId() {
@@ -78,11 +88,11 @@ public class BankingTransaction {
         return this;
     }
 
-    public BankingAccount getAssociatedBankingAccount() {
+    public BankingAccount getBankingAccount() {
         return bankingAccount;
     }
 
-    public BankingTransaction setAssociatedBankingAccount(BankingAccount account) {
+    public BankingTransaction setBankingAccount(BankingAccount account) {
         this.bankingAccount = account;
         return this;
     }
@@ -96,12 +106,12 @@ public class BankingTransaction {
         return this;
     }
 
-    public BankingTransactionType getTransactionType() {
-        return transactionType;
+    public BankingTransactionType getType() {
+        return type;
     }
 
-    public BankingTransaction setTransactionType(BankingTransactionType transactionType) {
-        this.transactionType = transactionType;
+    public BankingTransaction setType(BankingTransactionType transactionType) {
+        this.type = transactionType;
         return this;
     }
 
@@ -112,6 +122,12 @@ public class BankingTransaction {
 
     public BankingTransaction setStatus(BankingTransactionStatus status) {
         this.status = status;
+        return this;
+    }
+
+    public BankingTransaction updateStatus(BankingTransactionStatus toStatus) {
+        this.status.validateTransition(toStatus);
+        this.status = toStatus;
         return this;
     }
 
@@ -151,12 +167,21 @@ public class BankingTransaction {
         return this;
     }
 
-    public BigDecimal getLastBalance() {
-        return lastBalance;
+    public BigDecimal getBalanceBefore() {
+        return balanceBefore;
     }
 
-    public BankingTransaction setLastBalance(BigDecimal lastBalance) {
-        this.lastBalance = lastBalance;
+    public BankingTransaction setBalanceBefore(BigDecimal balanceBefore) {
+        this.balanceBefore = balanceBefore;
+        return this;
+    }
+
+    public BigDecimal getBalanceAfter() {
+        return balanceAfter;
+    }
+
+    public BankingTransaction setBalanceAfter(BigDecimal balanceAfter) {
+        this.balanceAfter = balanceAfter;
         return this;
     }
 }

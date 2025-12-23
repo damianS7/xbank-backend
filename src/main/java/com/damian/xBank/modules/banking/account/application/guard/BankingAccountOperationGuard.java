@@ -1,14 +1,13 @@
 package com.damian.xBank.modules.banking.account.application.guard;
 
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
-import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountStatus;
-import com.damian.xBank.modules.banking.account.domain.exception.*;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
-import com.damian.xBank.shared.exception.Exceptions;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountDepositException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountTransferCurrencyMismatchException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountTransferException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountTransferSameAccountException;
 
-import java.math.BigDecimal;
+import java.util.Objects;
 
-// TODO renamed to BankingAccountGuard or similar
 public class BankingAccountOperationGuard {
     private final BankingAccount account;
 
@@ -16,44 +15,22 @@ public class BankingAccountOperationGuard {
         this.account = account;
     }
 
-    public static BankingAccountOperationGuard validate(BankingAccount account) {
+    public static BankingAccountOperationGuard forAccount(BankingAccount account) {
         return new BankingAccountOperationGuard(account);
     }
 
     /**
-     * Validate the ownership of the {@link #account}.
+     * Validate that both {@link #account} and {@code toBankingAccount} have the same currency
      *
-     * @param customer the customer to check ownership against
+     * @param toBankingAccount the destination account to check
      * @return the current validator instance for chaining
-     * @throws BankingAccountOwnershipException if the account does not belong to the customer
+     * @throws BankingAccountTransferCurrencyMismatchException if the account does not belong to the customer
      */
-    public BankingAccountOperationGuard ownership(Customer customer) {
+    public BankingAccountOperationGuard assertCurrenciesMatch(BankingAccount toBankingAccount) {
 
-        // compare account owner id with given customer id
-        if (!account.getOwner().getId().equals(customer.getId())) {
-            throw new BankingAccountOwnershipException(
-                    Exceptions.BANKING.ACCOUNT.OWNERSHIP, account.getId(), customer.getId()
-            );
-        }
-
-        return this;
-    }
-
-    /**
-     * Validate if the {@link #account} has sufficient funds.
-     *
-     * @param amount the amount to check
-     * @return the current validator instance for chaining
-     * @throws BankingAccountInsufficientFundsException if the account does not belong to the customer
-     */
-    public BankingAccountOperationGuard sufficientFunds(BigDecimal amount) {
-
-        // check if account has enough funds
-        if (!account.hasEnoughFunds(amount)) {
-            throw new BankingAccountInsufficientFundsException(
-                    Exceptions.BANKING.ACCOUNT.INSUFFICIENT_FUNDS,
-                    account.getId()
-            );
+        // if currencies are different, throw exception
+        if (!Objects.equals(account.getAccountCurrency(), toBankingAccount.getAccountCurrency())) {
+            throw new BankingAccountTransferCurrencyMismatchException(toBankingAccount.getId());
         }
 
         return this;
@@ -64,93 +41,17 @@ public class BankingAccountOperationGuard {
      *
      * @param toBankingAccount the destination account to check
      * @return the current validator instance for chaining
-     * @throws BankingAccountTransferException if the account does not belong to the customer
+     * @throws BankingAccountTransferSameAccountException if the account does not belong to the customer
      */
-    private BankingAccountOperationGuard differentDestination(BankingAccount toBankingAccount) {
+    public BankingAccountOperationGuard assertDifferentAccounts(BankingAccount toBankingAccount) {
 
         // check bankingAccount and toBankingAccount are not the same
         if (account.getId().equals(toBankingAccount.getId())) {
-            throw new BankingAccountTransferException(
-                    Exceptions.BANKING.ACCOUNT.SAME_DESTINATION,
-                    account.getId(),
-                    toBankingAccount.getId()
-            );
+            throw new BankingAccountTransferSameAccountException(toBankingAccount.getId());
         }
 
         return this;
     }
-
-    /**
-     * Validate that both {@link #account} and {@code toBankingAccount} have the same currency
-     *
-     * @param toBankingAccount the destination account to check
-     * @return the current validator instance for chaining
-     * @throws BankingAccountTransferException if the account does not belong to the customer
-     */
-    private BankingAccountOperationGuard sameCurrency(BankingAccount toBankingAccount) {
-
-        // if currencies are different, throw exception
-        if (!account.getAccountCurrency().equals(toBankingAccount.getAccountCurrency())) {
-            throw new BankingAccountTransferException(
-                    Exceptions.BANKING.TRANSACTION.DIFFERENT_CURRENCY,
-                    account.getId(),
-                    toBankingAccount.getId()
-            );
-        }
-
-        return this;
-    }
-
-    /**
-     * Validate {@link #account} is not SUSPENDED.
-     *
-     * @return the current validator instance for chaining
-     * @throws BankingAccountException if the account does not belong to the customer
-     */
-    public BankingAccountOperationGuard notSuspended() {
-
-        final boolean isAccountSuspended = account.getAccountStatus().equals(BankingAccountStatus.SUSPENDED);
-
-        // check if account is SUSPENDED
-        if (isAccountSuspended) {
-            throw new BankingAccountSuspendedException(account.getId());
-        }
-
-        return this;
-    }
-
-    /**
-     * Validate {@link #account} is not CLOSED.
-     *
-     * @return the current validator instance for chaining
-     * @throws BankingAccountException if the account does not belong to the customer
-     */
-    public BankingAccountOperationGuard notClosed() {
-        final boolean isAccountClosed = account.getAccountStatus().equals(BankingAccountStatus.CLOSED);
-
-        // check if account is CLOSED
-        if (isAccountClosed) {
-            throw new BankingAccountClosedException(
-                    account.getId()
-            );
-        }
-
-        return this;
-    }
-
-    /**
-     * Validate {@link #account} is not CLOSED or SUSPENDED.
-     *
-     * @return the current validator instance for chaining
-     * @throws BankingAccountException if the account does not belong to the customer
-     */
-    public BankingAccountOperationGuard active() {
-        this.notSuspended();
-        this.notClosed();
-        return this;
-    }
-
-    // TODO review this
 
     /**
      * Validate a transfer between {@link #account} and {@code toBankingAccount}.
@@ -158,29 +59,38 @@ public class BankingAccountOperationGuard {
      * @return the current validator instance for chaining
      * @throws BankingAccountTransferException if the account does not belong to the customer
      */
-    public BankingAccountOperationGuard transfer(
-            BankingAccount toBankingAccount,
-            BigDecimal amount
+    public BankingAccountOperationGuard assertCanTransfer(
+            BankingAccount toBankingAccount
     ) {
         // check "account' and toBankingAccount are not the same
-        this.differentDestination(toBankingAccount);
+        this.assertDifferentAccounts(toBankingAccount);
 
-        // check currency are the same
-        this.sameCurrency(toBankingAccount);
-
-        // check the funds from the sender account
-        this.sufficientFunds(amount);
+        // check currency are the same on both accounts
+        this.assertCurrenciesMatch(toBankingAccount);
 
         // check the account status and see if can be used to operate
-        this.active();
+        BankingAccountGuard.forAccount(account)
+                           .assertActive();
 
-        BankingAccountOperationGuard.validate(toBankingAccount)
-                                    .active();
+        BankingAccountGuard.forAccount(toBankingAccount)
+                           .assertActive();
 
         return this;
     }
 
-    // TODO: add withdrawal validation method
-    // TODO: add deposit validation method
+    /**
+     * Assert that deposit can be carried out into {@link #account}.
+     *
+     * @return the current validator instance for chaining
+     * @throws BankingAccountDepositException if the deposit can not be carried out
+     */
+    public BankingAccountOperationGuard assertCanDeposit() {
+
+        // check the account status and see if can be used to operate
+        BankingAccountGuard.forAccount(account)
+                           .assertActive();
+
+        return this;
+    }
 
 }

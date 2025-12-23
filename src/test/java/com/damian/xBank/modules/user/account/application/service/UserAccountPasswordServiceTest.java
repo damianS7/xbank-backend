@@ -1,0 +1,173 @@
+package com.damian.xBank.modules.user.account.application.service;
+
+import com.damian.xBank.infrastructure.mail.EmailSenderService;
+import com.damian.xBank.modules.user.account.account.application.dto.request.UserAccountPasswordResetSetRequest;
+import com.damian.xBank.modules.user.account.account.application.dto.request.UserAccountPasswordUpdateRequest;
+import com.damian.xBank.modules.user.account.account.application.service.UserAccountPasswordService;
+import com.damian.xBank.modules.user.account.account.application.service.UserAccountVerificationService;
+import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
+import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountInvalidPasswordConfirmationException;
+import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountNotFoundException;
+import com.damian.xBank.modules.user.account.account.infra.repository.UserAccountRepository;
+import com.damian.xBank.modules.user.account.token.application.service.UserAccountTokenService;
+import com.damian.xBank.modules.user.account.token.domain.entity.UserAccountToken;
+import com.damian.xBank.modules.user.account.token.domain.enums.UserAccountTokenType;
+import com.damian.xBank.modules.user.account.token.infra.repository.UserAccountTokenRepository;
+import com.damian.xBank.shared.AbstractServiceTest;
+import com.damian.xBank.shared.exception.ErrorCodes;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
+
+public class UserAccountPasswordServiceTest extends AbstractServiceTest {
+
+    @Mock
+    private EmailSenderService emailSenderService;
+
+    @Mock
+    private UserAccountRepository userAccountRepository;
+
+    @InjectMocks
+    private UserAccountPasswordService userAccountPasswordService;
+
+    @Mock
+    private UserAccountTokenRepository userAccountTokenRepository;
+
+    @Mock
+    private UserAccountVerificationService userAccountVerificationService;
+
+    @Mock
+    private UserAccountTokenService userAccountTokenService;
+
+    @Test
+    @DisplayName("Should update account password")
+    void shouldUpdateAccountPassword() {
+        // given
+        final String rawNewPassword = "1234";
+        final String encodedNewPassword = bCryptPasswordEncoder.encode(rawNewPassword);
+
+        UserAccount user = UserAccount
+                .create()
+                .setId(10L)
+                .setEmail("user@demo.com")
+                .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD));
+
+        UserAccountPasswordUpdateRequest updateRequest = new UserAccountPasswordUpdateRequest(
+                RAW_PASSWORD,
+                rawNewPassword
+        );
+
+        // set the user on the context
+        setUpContext(user);
+
+        // when
+        when(bCryptPasswordEncoder.encode(rawNewPassword)).thenReturn(encodedNewPassword);
+        when(userAccountRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        userAccountPasswordService.updatePassword(updateRequest);
+
+        // then
+        verify(userAccountRepository, times(1)).save(user);
+    }
+
+    @Test
+    @DisplayName("Should not update password when current password failed")
+    void shouldNotUpdatePasswordWhenPasswordConfirmationFailed() {
+        // given
+        UserAccount user = UserAccount
+                .create()
+                .setId(10L)
+                .setEmail("user@demo.com")
+                .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD));
+
+        // set the user on the context
+        setUpContext(user);
+
+        UserAccountPasswordUpdateRequest updateRequest = new UserAccountPasswordUpdateRequest(
+                "wrongPassword",
+                "1234"
+        );
+
+        // when
+        UserAccountInvalidPasswordConfirmationException exception = assertThrows(
+                UserAccountInvalidPasswordConfirmationException.class,
+                () -> userAccountPasswordService.updatePassword(
+                        updateRequest
+                )
+        );
+
+        // then
+        assertEquals(ErrorCodes.USER_ACCOUNT_INVALID_PASSWORD, exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should not update password when account not found")
+    void shouldNotUpdatePasswordWhenAccountNotFound() {
+        // given
+        UserAccount user = UserAccount
+                .create()
+                .setId(10L)
+                .setEmail("user@demo.com")
+                .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD));
+
+        // set the user on the context
+        setUpContext(user);
+
+        UserAccountPasswordUpdateRequest updateRequest = new UserAccountPasswordUpdateRequest(
+                RAW_PASSWORD,
+                "1234678Ax$"
+        );
+
+        when(userAccountRepository.findById(user.getId()))
+                .thenReturn(Optional.empty());
+
+        UserAccountNotFoundException exception = assertThrows(
+                UserAccountNotFoundException.class,
+                () -> userAccountPasswordService.updatePassword(
+                        updateRequest
+                )
+        );
+
+        // then
+        assertEquals(ErrorCodes.USER_ACCOUNT_NOT_FOUND, exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should set a new password after reset password")
+    void shouldSetPasswordAfterGeneratePasswordResetToken() {
+        // given
+        final String rawNewPassword = "1111000";
+        final String encodedNewPassword = bCryptPasswordEncoder.encode(rawNewPassword);
+
+        UserAccount userAccount = UserAccount
+                .create()
+                .setId(10L)
+                .setEmail("user@demo.com")
+                .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD));
+
+        UserAccountPasswordResetSetRequest passwordResetRequest = new UserAccountPasswordResetSetRequest(
+                rawNewPassword
+        );
+
+        UserAccountToken token = new UserAccountToken(userAccount);
+        token.setToken(token.generateToken());
+        token.setType(UserAccountTokenType.RESET_PASSWORD);
+
+        // when
+        when(userAccountRepository.findById(userAccount.getId())).thenReturn(Optional.of(userAccount));
+        when(userAccountTokenService.validateToken(token.getToken())).thenReturn(token);
+        when(bCryptPasswordEncoder.encode(rawNewPassword)).thenReturn(encodedNewPassword);
+        when(userAccountRepository.save(any(UserAccount.class))).thenReturn(userAccount);
+        doNothing().when(emailSenderService).send(anyString(), anyString(), anyString());
+        userAccountPasswordService.passwordResetWithToken(token.getToken(), passwordResetRequest);
+
+        // then
+        assertEquals(userAccount.getPassword(), encodedNewPassword);
+    }
+}

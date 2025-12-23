@@ -1,14 +1,10 @@
 package com.damian.xBank.modules.banking.card.domain.exception;
 
-import com.damian.xBank.shared.exception.Exceptions;
+import com.damian.xBank.shared.exception.ErrorCodes;
 
 public class BankingCardInsufficientFundsException extends BankingCardException {
 
     public BankingCardInsufficientFundsException(Long bankingCardId) {
-        this(Exceptions.BANKING.CARD.INSUFFICIENT_FUNDS, bankingCardId);
-    }
-
-    public BankingCardInsufficientFundsException(String message, Long bankingCardId) {
-        super(message, bankingCardId);
+        super(ErrorCodes.BANKING_CARD_INSUFFICIENT_FUNDS, bankingCardId);
     }
 }

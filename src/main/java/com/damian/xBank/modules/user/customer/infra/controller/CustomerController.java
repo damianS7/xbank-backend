@@ -3,9 +3,9 @@ package com.damian.xBank.modules.user.customer.infra.controller;
 import com.damian.xBank.modules.user.customer.application.dto.mapper.CustomerDtoMapper;
 import com.damian.xBank.modules.user.customer.application.dto.request.CustomerUpdateRequest;
 import com.damian.xBank.modules.user.customer.application.dto.response.CustomerDetailDto;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.modules.user.customer.application.service.CustomerImageService;
 import com.damian.xBank.modules.user.customer.application.service.CustomerService;
+import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.utils.ImageHelper;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -69,7 +69,7 @@ public class CustomerController {
             @PathVariable @NotNull @Positive
             Long customerId
     ) {
-        Resource resource = customerImageService.getUserImage(customerId);
+        Resource resource = customerImageService.getImage(customerId);
         String contentType = ImageHelper.getContentType(resource);
 
         return ResponseEntity
@@ -82,7 +82,7 @@ public class CustomerController {
     // endpoint to get the current user profile image
     @GetMapping("/customers/image")
     public ResponseEntity<?> getProfileImage() {
-        Resource resource = customerImageService.getUserImage();
+        Resource resource = customerImageService.getImage();
         String contentType = ImageHelper.getContentType(resource);
 
         return ResponseEntity
@@ -99,8 +99,8 @@ public class CustomerController {
             String currentPassword,
             @RequestParam("file") MultipartFile file
     ) {
-        customerImageService.uploadUserImage(currentPassword, file);
-        Resource resource = customerImageService.getUserImage();
+        customerImageService.uploadImage(currentPassword, file);
+        Resource resource = customerImageService.getImage();
         String contentType = ImageHelper.getContentType(resource);
 
         return ResponseEntity

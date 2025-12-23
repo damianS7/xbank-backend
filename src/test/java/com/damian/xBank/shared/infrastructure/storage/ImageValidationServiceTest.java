@@ -1,10 +1,11 @@
 package com.damian.xBank.shared.infrastructure.storage;
 
+import com.damian.xBank.infrastructure.storage.ImageValidationService;
+import com.damian.xBank.infrastructure.storage.exception.ImageEmptyFileException;
+import com.damian.xBank.infrastructure.storage.exception.ImageTooLargeException;
+import com.damian.xBank.infrastructure.storage.exception.ImageTypeNotSupportedException;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.exception.Exceptions;
-import com.damian.xBank.shared.infrastructure.storage.exception.ImageEmptyFileException;
-import com.damian.xBank.shared.infrastructure.storage.exception.ImageTooLargeException;
-import com.damian.xBank.shared.infrastructure.storage.exception.ImageTypeNotSupportedException;
+import com.damian.xBank.shared.exception.ErrorCodes;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -56,7 +57,7 @@ public class ImageValidationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(Exceptions.IMAGE.EMPTY, ex.getMessage());
+        assertEquals(ErrorCodes.STORAGE_IMAGE_EMPTY, ex.getMessage());
     }
 
     @Test
@@ -79,7 +80,7 @@ public class ImageValidationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(Exceptions.IMAGE.TYPE_NOT_SUPPORTED, ex.getMessage());
+        assertEquals(ErrorCodes.STORAGE_IMAGE_INVALID_TYPE, ex.getMessage());
     }
 
     @Test
@@ -102,6 +103,6 @@ public class ImageValidationServiceTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(Exceptions.IMAGE.TOO_LARGE, ex.getMessage());
+        assertEquals(ErrorCodes.STORAGE_IMAGE_UPLOAD_TOO_LARGE, ex.getMessage());
     }
 }

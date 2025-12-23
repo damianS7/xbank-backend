@@ -1,5 +1,7 @@
 package com.damian.xBank.shared.infrastructure.storage;
 
+import com.damian.xBank.infrastructure.storage.ImageProcessingService;
+import com.damian.xBank.infrastructure.storage.MultipartImageAdapter;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.utils.ImageTestHelper;
 import org.junit.jupiter.api.DisplayName;

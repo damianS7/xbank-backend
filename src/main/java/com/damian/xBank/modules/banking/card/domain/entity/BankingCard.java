@@ -1,11 +1,13 @@
 package com.damian.xBank.modules.banking.card.domain.entity;
 
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
-import com.damian.xBank.modules.banking.card.domain.enums.BankingCardLockStatus;
 import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.domain.enums.BankingCardType;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardInsufficientFundsException;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -41,10 +43,9 @@ public class BankingCard {
     private LocalDate expiredDate;
 
     @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
+    @Column(name = "card_status", columnDefinition = "banking_card_status_type")
     private BankingCardStatus cardStatus;
-
-    @Enumerated(EnumType.STRING)
-    private BankingCardLockStatus lockStatus;
 
     @Column
     private Instant createdAt;
@@ -53,9 +54,8 @@ public class BankingCard {
     private Instant updatedAt;
 
     public BankingCard() {
-        this.cardStatus = BankingCardStatus.ENABLED;
+        this.cardStatus = BankingCardStatus.PENDING_ACTIVATION;
         this.cardType = BankingCardType.DEBIT;
-        this.lockStatus = BankingCardLockStatus.UNLOCKED;
         this.dailyLimit = BigDecimal.valueOf(3000);
     }
 
@@ -71,12 +71,17 @@ public class BankingCard {
         this.cardType = cardType;
     }
 
+    public static BankingCard create() {
+        return new BankingCard();
+    }
+
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public BankingCard setId(Long id) {
         this.id = id;
+        return this;
     }
 
     public Customer getOwner() {
@@ -87,106 +92,121 @@ public class BankingCard {
         return cardNumber;
     }
 
-    public void setCardNumber(String number) {
+    public BankingCard setCardNumber(String number) {
         this.cardNumber = number;
+        return this;
     }
 
     public BankingCardType getCardType() {
         return cardType;
     }
 
-    public void setCardType(BankingCardType cardType) {
+    public BankingCard setCardType(BankingCardType cardType) {
         this.cardType = cardType;
+        return this;
     }
 
-    public BankingCardStatus getCardStatus() {
+    public BankingCardStatus getStatus() {
         return cardStatus;
     }
 
-    public void setCardStatus(BankingCardStatus cardStatus) {
+    public BankingCard setCardStatus(BankingCardStatus cardStatus) {
         this.cardStatus = cardStatus;
+        return this;
     }
 
-    public BankingAccount getAssociatedBankingAccount() {
+    public BankingAccount getBankingAccount() {
         return bankingAccount;
     }
 
-    public void setAssociatedBankingAccount(BankingAccount bankingAccount) {
+    public BankingCard setAssociatedBankingAccount(BankingAccount bankingAccount) {
         this.bankingAccount = bankingAccount;
+        return this;
     }
 
     public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Instant createdAt) {
+    public BankingCard setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+        return this;
     }
 
     public Instant getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Instant updatedAt) {
+    public BankingCard setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
+        return this;
     }
 
     public LocalDate getExpiredDate() {
         return expiredDate;
     }
 
-    public void setExpiredDate(LocalDate expiredDate) {
+    public BankingCard setExpiredDate(LocalDate expiredDate) {
         this.expiredDate = expiredDate;
+        return this;
     }
 
     public String getCardCvv() {
         return cardCvv;
     }
 
-    public void setCardCvv(String CVV) {
+    public BankingCard setCardCvv(String CVV) {
         this.cardCvv = CVV;
+        return this;
     }
 
     public String getCardPin() {
         return cardPin;
     }
 
-    public void setCardPin(String cardPin) {
+    public BankingCard setCardPin(String cardPin) {
         this.cardPin = cardPin;
-    }
-
-    public BankingCardLockStatus getLockStatus() {
-        return lockStatus;
-    }
-
-    public void setLockStatus(BankingCardLockStatus lockStatus) {
-        this.lockStatus = lockStatus;
+        return this;
     }
 
     public BigDecimal getDailyLimit() {
         return dailyLimit;
     }
 
-    public void setDailyLimit(BigDecimal dailyLimit) {
+    public BankingCard setDailyLimit(BigDecimal dailyLimit) {
         this.dailyLimit = dailyLimit;
+        return this;
     }
 
     public BigDecimal getBalance() {
-        return this.getAssociatedBankingAccount().getBalance();
+        return this.getBankingAccount().getBalance();
     }
 
     // returns true if the operation can be carried
-    public boolean hasEnoughFundsToSpend(BigDecimal amount) {
+    public boolean hasSufficientFunds(BigDecimal amount) {
         // if its 0 then balance is equal to the amount willing to spend
         // if its 1 then balance is greater than the amount willing to spend
-        return this.getAssociatedBankingAccount().hasEnoughFunds(amount);
+        return this.getBankingAccount().hasSufficientFunds(amount);
     }
 
-    public BigDecimal chargeAmount(BigDecimal amount) {
-        return this.getAssociatedBankingAccount().subtractAmount(amount);
+    public BankingCard chargeAmount(BigDecimal amount) {
+        if (!this.hasSufficientFunds(amount)) {
+            throw new BankingCardInsufficientFundsException(this.getId());
+        }
+
+        this.getBankingAccount().subtractBalance(amount);
+        return this;
     }
 
     public String getHolderName() {
-        return this.getAssociatedBankingAccount().getOwner().getFullName();
+        return this.getBankingAccount().getOwner().getFullName();
+    }
+
+    public boolean isLocked() {
+        return this.getStatus() == BankingCardStatus.LOCKED;
+    }
+
+    public boolean isDisabled() {
+        return this.cardStatus == BankingCardStatus.DISABLED;
     }
 }

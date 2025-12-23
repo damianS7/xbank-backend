@@ -1,7 +1,9 @@
 package com.damian.xBank.modules.user.account.account.domain.exception;
 
+import com.damian.xBank.shared.exception.ErrorCodes;
+
 public class UserAccountInvalidPasswordConfirmationException extends UserAccountException {
-    public UserAccountInvalidPasswordConfirmationException(String message, Long userId) {
-        super(message, userId);
+    public UserAccountInvalidPasswordConfirmationException(Long accountId) {
+        super(ErrorCodes.USER_ACCOUNT_INVALID_PASSWORD, accountId);
     }
 }

@@ -1,21 +1,10 @@
 package com.damian.xBank.modules.setting.domain.exception;
 
-import com.damian.xBank.shared.exception.ApplicationException;
+import com.damian.xBank.shared.exception.ErrorCodes;
 
-public class SettingNotFoundException extends ApplicationException {
-    private final Long settingId;
+public class SettingNotFoundException extends SettingException {
 
-    public SettingNotFoundException(String message) {
-        this(message, null);
-    }
-
-    public SettingNotFoundException(String message, Long settingId) {
-        super(message);
-        this.settingId = settingId;
-
-    }
-
-    public Long getSettingId() {
-        return settingId;
+    public SettingNotFoundException(Long customerId) {
+        super(ErrorCodes.SETTING_NOT_FOUND, customerId);
     }
 }

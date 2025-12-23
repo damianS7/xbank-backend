@@ -1,17 +1,17 @@
 package com.damian.xBank.modules.user.account.account.application.service;
 
 import com.damian.xBank.modules.user.account.account.application.dto.request.UserAccountEmailUpdateRequest;
+import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountEmailTakenException;
 import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountNotFoundException;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.infra.repository.UserAccountRepository;
-import com.damian.xBank.modules.user.account.token.domain.entity.UserAccountToken;
 import com.damian.xBank.modules.user.account.token.application.service.UserAccountTokenService;
-import com.damian.xBank.shared.domain.User;
-import com.damian.xBank.shared.exception.Exceptions;
-import com.damian.xBank.shared.utils.AuthHelper;
+import com.damian.xBank.modules.user.account.token.domain.entity.UserAccountToken;
+import com.damian.xBank.shared.security.AuthenticationContext;
+import com.damian.xBank.shared.security.PasswordValidator;
+import com.damian.xBank.shared.security.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -28,17 +28,23 @@ public class UserAccountService {
     private final UserAccountVerificationService userAccountVerificationService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserAccountTokenService userAccountTokenService;
+    private final AuthenticationContext authenticationContext;
+    private final PasswordValidator passwordValidator;
 
     public UserAccountService(
             UserAccountRepository userAccountRepository,
             UserAccountVerificationService userAccountVerificationService,
             BCryptPasswordEncoder bCryptPasswordEncoder,
-            UserAccountTokenService userAccountTokenService
+            UserAccountTokenService userAccountTokenService,
+            AuthenticationContext authenticationContext,
+            PasswordValidator passwordValidator
     ) {
         this.userAccountRepository = userAccountRepository;
         this.userAccountVerificationService = userAccountVerificationService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userAccountTokenService = userAccountTokenService;
+        this.authenticationContext = authenticationContext;
+        this.passwordValidator = passwordValidator;
     }
 
     /**
@@ -54,9 +60,7 @@ public class UserAccountService {
 
         // check if the email is already taken
         if (userAccountRepository.existsByEmail(email)) {
-            throw new UserAccountEmailTakenException(
-                    Exceptions.USER.ACCOUNT.EMAIL_TAKEN, email
-            );
+            throw new UserAccountEmailTakenException(email);
         }
 
         // we create the user and assign the data
@@ -106,14 +110,14 @@ public class UserAccountService {
         // if the user does not exist we throw an exception
         return userAccountRepository.findById(userId).orElseThrow(
                 () -> new UserAccountNotFoundException(
-                        Exceptions.USER.ACCOUNT.NOT_FOUND, userId
+                        userId
                 )
         );
     }
 
     // returns the logged user
     public UserAccount getUser() {
-        User currentUser = AuthHelper.getCurrentUser();
+        User currentUser = authenticationContext.getCurrentUser();
         return this.getUser(currentUser.getId());
     }
 
@@ -131,12 +135,12 @@ public class UserAccountService {
 
         // we get the User entity so we can save at the end
         UserAccount user = userAccountRepository.findById(userId).orElseThrow(
-                () -> new UserAccountNotFoundException(Exceptions.USER.ACCOUNT.NOT_FOUND, userId)
+                () -> new UserAccountNotFoundException(userId)
         );
 
         // check if the email is already taken
         if (userAccountRepository.existsByEmail(newEmail)) {
-            throw new UserAccountEmailTakenException(Exceptions.USER.ACCOUNT.EMAIL_TAKEN, newEmail);
+            throw new UserAccountEmailTakenException(newEmail);
         }
 
         // set the new email
@@ -158,10 +162,10 @@ public class UserAccountService {
      */
     public UserAccount updateEmail(UserAccountEmailUpdateRequest request) {
         // we extract the email from the User stored in the SecurityContext
-        final User currentUser = AuthHelper.getCurrentUser();
+        final User currentUser = authenticationContext.getCurrentUser();
 
         // Before making any changes we check that the password sent by the user matches the one in the entity
-        AuthHelper.validatePassword(currentUser, request.currentPassword());
+        passwordValidator.validatePassword(currentUser, request.currentPassword());
 
         return this.updateEmail(currentUser.getId(), request.newEmail());
     }

@@ -1,0 +1,1 @@
+CREATE TYPE banking_card_status_type AS ENUM ('ACTIVE', 'DISABLED', 'EXPIRED', 'LOCKED', 'PENDING_ACTIVATION');
