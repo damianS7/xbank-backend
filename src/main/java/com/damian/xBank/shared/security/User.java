@@ -104,11 +104,11 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return !account.getAccountStatus().equals(UserAccountStatus.SUSPENDED);
+        return account.getAccountStatus() != UserAccountStatus.SUSPENDED;
     }
 
     @Override
     public boolean isEnabled() {
-        return account.getAccountStatus().equals(UserAccountStatus.VERIFIED);
+        return account.getAccountStatus() == UserAccountStatus.VERIFIED;
     }
 }
