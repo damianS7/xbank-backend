@@ -148,7 +148,7 @@ public class BankingAccountOperationService {
         // Notify receiver
         notificationService.publish(
                 new NotificationEvent(
-                        toBankingAccount.getOwner().getId(),
+                        toBankingAccount.getOwner().getAccount().getId(),
                         NotificationType.TRANSACTION,
                         Map.of(
                                 "transaction", BankingTransactionDtoMapper.toBankingTransactionDto(toTransaction)
