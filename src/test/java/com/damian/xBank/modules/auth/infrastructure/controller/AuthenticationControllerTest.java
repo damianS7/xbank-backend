@@ -126,8 +126,8 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("Should not login when account is disabled")
-    void shouldNotLoginWhenAccountIsSuspended() throws Exception {
+    @DisplayName("Should not login when account is locked or suspended")
+    void shouldNotLoginWhenAccountIsLockedOrSuspended() throws Exception {
         // given
         userAccount.setAccountStatus(UserAccountStatus.SUSPENDED);
         userAccountRepository.save(userAccount);
@@ -253,8 +253,8 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("Should not login when account is not activated")
-    void shouldNotLoginWhenAccountIsNotVerified() throws Exception {
+    @DisplayName("Should not login when account is disabled or not verified")
+    void shouldNotLoginWhenAccountIsDisabledOrNotVerified() throws Exception {
         // given
         userAccount.setAccountStatus(UserAccountStatus.PENDING_VERIFICATION);
         userAccountRepository.save(userAccount);
