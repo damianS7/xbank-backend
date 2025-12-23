@@ -63,12 +63,18 @@ public class SettingService {
         return settingRepository.save(userSettings);
     }
 
-    // TODO
-    public void createDefaultSettings(UserAccount userAccount) {
+    /**
+     * Create default settings for the user
+     *
+     * @param userAccount
+     */
+    public void initializeDefaultSettingsFor(UserAccount userAccount) {
         UserSettings defaultSettings = UserSettings.defaults();
-        Setting setting = new Setting();
-        setting.setUserAccount(userAccount);
-        setting.setSettings(defaultSettings);
+
+        Setting setting = Setting.create()
+                                 .setUserAccount(userAccount)
+                                 .setSettings(defaultSettings);
+
         settingRepository.save(setting);
     }
 }

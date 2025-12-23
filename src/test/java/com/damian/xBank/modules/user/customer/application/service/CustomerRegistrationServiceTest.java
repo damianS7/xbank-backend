@@ -76,7 +76,7 @@ public class CustomerRegistrationServiceTest extends AbstractServiceTest {
                                                   .setEmail(request.email());
 
         // when
-        doNothing().when(settingService).createDefaultSettings(any(UserAccount.class));
+        doNothing().when(settingService).initializeDefaultSettingsFor(any(UserAccount.class));
         when(userAccountService.createUserAccount(anyString(), anyString(), any()))
                 .thenReturn(givenUserAccount);
 

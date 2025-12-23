@@ -1,12 +1,12 @@
 package com.damian.xBank.modules.user.customer.application.service;
 
 import com.damian.xBank.modules.setting.application.service.SettingService;
-import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.application.service.UserAccountService;
+import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
+import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.customer.application.dto.request.CustomerRegistrationRequest;
-import com.damian.xBank.modules.user.customer.domain.exception.CustomerException;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.customer.domain.exception.CustomerException;
 import com.damian.xBank.modules.user.customer.infra.repository.CustomerRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,21 +47,21 @@ public class CustomerRegistrationService {
         );
 
         // we create the customer and assign the data
-        Customer customer = new Customer();
-        customer.setAccount(userAccount);
-        customer.setNationalId(request.nationalId());
-        customer.setFirstName(request.firstName());
-        customer.setLastName(request.lastName());
-        customer.setPhone(request.phoneNumber());
-        customer.setGender(request.gender());
-        customer.setBirthdate(request.birthdate());
-        customer.setCountry(request.country());
-        customer.setAddress(request.address());
-        customer.setPostalCode(request.zipCode());
-        customer.setPhotoPath("avatar.jpg");
+        Customer customer = Customer.create()
+                                    .setAccount(userAccount)
+                                    .setNationalId(request.nationalId())
+                                    .setFirstName(request.firstName())
+                                    .setLastName(request.lastName())
+                                    .setPhone(request.phoneNumber())
+                                    .setGender(request.gender())
+                                    .setBirthdate(request.birthdate())
+                                    .setCountry(request.country())
+                                    .setAddress(request.address())
+                                    .setPostalCode(request.zipCode())
+                                    .setPhotoPath("avatar.jpg");
 
         // Create default settings for the new customer
-        settingService.createDefaultSettings(customer.getAccount());
+        settingService.initializeDefaultSettingsFor(customer.getAccount());
 
         return customerRepository.save(customer);
     }
