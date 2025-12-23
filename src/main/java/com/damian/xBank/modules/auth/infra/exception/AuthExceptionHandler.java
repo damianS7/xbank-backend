@@ -1,6 +1,5 @@
 package com.damian.xBank.modules.auth.infra.exception;
 
-import com.damian.xBank.modules.auth.domain.exception.EmailNotFoundException;
 import com.damian.xBank.modules.auth.domain.exception.UserAccountNotVerifiedException;
 import com.damian.xBank.modules.auth.domain.exception.UserAccountSuspendedException;
 import com.damian.xBank.shared.dto.ApiResponse;
@@ -15,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -29,14 +27,8 @@ public class AuthExceptionHandler {
         this.messageSource = messageSource;
     }
 
-    @ExceptionHandler(
-            {
-                    UsernameNotFoundException.class,
-                    EmailNotFoundException.class,
-                    BadCredentialsException.class
-            }
-    )
-    public ResponseEntity<?> handleBadCredentials(RuntimeException e) {
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<?> handleBadCredentials(BadCredentialsException e) {
         log.warn("Failed login attempt. Bad credentials.", e);
 
         ApplicationException ex = new ApplicationException(
