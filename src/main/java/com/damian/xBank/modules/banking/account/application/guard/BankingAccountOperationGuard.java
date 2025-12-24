@@ -68,12 +68,11 @@ public class BankingAccountOperationGuard {
         // check currency are the same on both accounts
         this.assertCurrenciesMatch(toBankingAccount);
 
-        // check the account status and see if can be used to operate
-        BankingAccountGuard.forAccount(account)
-                           .assertActive();
+        // check if the source account is active
+        account.assertActive();
 
-        BankingAccountGuard.forAccount(toBankingAccount)
-                           .assertActive();
+        // check if the destiny account is active
+        toBankingAccount.assertActive();
 
         return this;
     }
@@ -87,8 +86,7 @@ public class BankingAccountOperationGuard {
     public BankingAccountOperationGuard assertCanDeposit() {
 
         // check the account status and see if can be used to operate
-        BankingAccountGuard.forAccount(account)
-                           .assertActive();
+        account.assertActive();
 
         return this;
     }
