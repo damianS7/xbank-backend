@@ -510,8 +510,8 @@ public class BankingAccountOperationServiceTest extends AbstractServiceTest {
         //                .thenReturn(Optional.of(randomCustomerBankingAccount));
 
         // then
-        BankingAccountOwnershipException exception = assertThrows(
-                BankingAccountOwnershipException.class,
+        BankingAccountNotOwnerException exception = assertThrows(
+                BankingAccountNotOwnerException.class,
                 () -> bankingAccountOperationService.transfer(
                         randomCustomerBankingAccount.getId(),
                         transferRequest

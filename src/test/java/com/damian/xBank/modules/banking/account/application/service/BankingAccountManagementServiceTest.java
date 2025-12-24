@@ -9,7 +9,7 @@ import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountStatu
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountType;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountClosedException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
-import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountOwnershipException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotOwnerException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountSuspendedException;
 import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
@@ -256,8 +256,8 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
         // when
         when(bankingAccountRepository.findById(givenBankingAccount.getId())).thenReturn(Optional.of(givenBankingAccount));
 
-        BankingAccountOwnershipException exception = assertThrows(
-                BankingAccountOwnershipException.class,
+        BankingAccountNotOwnerException exception = assertThrows(
+                BankingAccountNotOwnerException.class,
                 () -> bankingAccountManagementService.closeAccount(givenBankingAccount.getId(), request)
         );
 

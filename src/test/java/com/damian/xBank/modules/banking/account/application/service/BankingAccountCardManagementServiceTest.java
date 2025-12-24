@@ -3,7 +3,7 @@ package com.damian.xBank.modules.banking.account.application.service;
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCardRequest;
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
-import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountOwnershipException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotOwnerException;
 import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.card.application.service.BankingCardService;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
@@ -154,8 +154,8 @@ public class BankingAccountCardManagementServiceTest extends AbstractServiceTest
         // when
         when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.of(givenBankAccount));
 
-        BankingAccountOwnershipException exception = assertThrows(
-                BankingAccountOwnershipException.class,
+        BankingAccountNotOwnerException exception = assertThrows(
+                BankingAccountNotOwnerException.class,
                 () -> bankingAccountCardManagementService.requestCard(
                         givenBankAccount.getId(),
                         request
