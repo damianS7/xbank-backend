@@ -22,10 +22,6 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Map;
 
-// TODO
-// Method transfer should do the actual transfer instead executeTransfer?
-// customer should call to generateTransfer or something like that ...?
-// then after confirm the transaction it will call transfer method?
 @Service
 public class BankingAccountOperationService {
     private final BankingTransactionAccountService bankingTransactionAccountService;
@@ -48,30 +44,25 @@ public class BankingAccountOperationService {
         this.authenticationContext = authenticationContext;
     }
 
-    /**
-     * Transfer funds from one banking account to another.
-     *
-     * @param fromBankingAccountId ID of the banking account to transfer funds from
-     * @param request              Transfer request containing the details
-     * @return the created BankingTransaction
-     */
+
     public BankingTransaction transfer(
             Long fromBankingAccountId,
             BankingAccountTransferRequest request
     ) {
-        // Banking account to receive funds
+        // Customer logged
+        final Customer customer = authenticationContext.getCurrentCustomer();
+
+        // Banking account from where funds will be transfered.
         final BankingAccount fromBankingAccount = bankingAccountRepository
                 .findById(fromBankingAccountId)
                 .orElseThrow(
                         () -> new BankingAccountNotFoundException(fromBankingAccountId)
                 );
 
-        final Customer customer = authenticationContext.getCurrentCustomer();
-
         // run validations for the account and throw exception if fails
         fromBankingAccount
                 .assertOwnedBy(customer.getId())
-                //                .assertActive() TODO
+                .assertActive()
                 .assertSufficientFunds(request.amount());
 
         // validate customer password
@@ -161,7 +152,14 @@ public class BankingAccountOperationService {
         return fromTransaction;
     }
 
-    public BankingTransaction confirmTransfer(BankingTransaction transaction) {
+    public BankingTransaction confirmTransfer(Long transactionId) {
+        BankingTransaction transaction = bankingTransactionAccountService
+                .getTransaction(transactionId);
+
+
+        BankingAccount fromAccount = transaction.getBankingAccount();
+        BankingAccount toAccount = transaction.getBankingAccount();
+
         return null;
     }
 }

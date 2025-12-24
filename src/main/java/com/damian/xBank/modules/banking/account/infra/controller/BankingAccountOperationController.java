@@ -24,7 +24,7 @@ public class BankingAccountOperationController {
     }
 
     // endpoint for logged customer to transfer to another account
-    @PostMapping("/banking/accounts/{id}/transfer")
+    @PostMapping("/banking/accounts/{id}/transfer") // TODO remove
     public ResponseEntity<?> transfer(
             @PathVariable @NotNull @Positive
             Long id,
