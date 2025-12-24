@@ -1,6 +1,5 @@
 package com.damian.xBank.modules.banking.transaction.application.service;
 
-import com.damian.xBank.modules.banking.account.application.guard.BankingAccountGuard;
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
@@ -125,8 +124,7 @@ public class BankingTransactionAccountService {
                 );
 
         // validate account belongs to
-        BankingAccountGuard.forAccount(account)
-                           .assertOwnership(currentCustomer);
+        account.assertOwnedBy(currentCustomer.getId());
 
         return bankingTransactionRepository.findByBankingAccountId(bankingAccountId, pageable);
     }
