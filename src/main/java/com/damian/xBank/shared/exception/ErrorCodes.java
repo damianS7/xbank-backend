@@ -35,8 +35,6 @@ public class ErrorCodes {
     public static final String BANKING_ACCOUNT_SUSPENDED = "banking.account.suspended";
     public static final String BANKING_ACCOUNT_CLOSED = "banking.account.closed";
     public static final String BANKING_ACCOUNT_DISABLED = "banking.account.disabled";
-    public static final String BANKING_ACCOUNT_TRANSFER_SAME_DESTINATION = "banking.account.same_destination";
-    public static final String BANKING_ACCOUNT_TRANSFER_DIFFERENT_CURRENCY = "banking.account.different_currency";
     public static final String BANKING_ACCOUNT_CARD_LIMIT = "banking.account.card_limit";
     public static final String BANKING_ACCOUNT_INSUFFICIENT_FUNDS = "banking.account.insufficient_funds";
     public static final String BANKING_ACCOUNT_INVALID_TRANSITION_STATUS = "banking.account.invalid_transition_status";
@@ -57,6 +55,15 @@ public class ErrorCodes {
     public static final String
             BANKING_TRANSACTION_INVALID_TRANSITION_STATUS
             = "banking.transaction.invalid_transition_status";
+
+    // Transfers
+    public static final String BANKING_TRANSFER_NOT_FOUND = "banking.transfer.not_found";
+    public static final String BANKING_TRANSFER_NOT_OWNER = "banking.transfer.not_owner";
+    public static final String
+            BANKING_TRANSFER_INVALID_TRANSITION_STATUS
+            = "banking.transfer.invalid_transition_status";
+    public static final String BANKING_TRANSFER_SAME_DESTINATION = "banking.transfer.same_destination";
+    public static final String BANKING_TRANSFER_DIFFERENT_CURRENCY = "banking.transfer.different_currency";
 
     // Notification
     public static final String NOTIFICATION_NOT_FOUND = "notification.not_found";

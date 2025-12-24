@@ -10,7 +10,7 @@ public class BankingTransferStatusTransitionException extends BankingCardExcepti
     }
 
     public BankingTransferStatusTransitionException(Object[] args) {
-        super(ErrorCodes.BANKING_CARD_INVALID_TRANSITION_STATUS, args); // TODO add error code
+        super(ErrorCodes.BANKING_TRANSFER_INVALID_TRANSITION_STATUS, args);
     }
 
 }
