@@ -1,7 +1,6 @@
 package com.damian.xBank.modules.banking.transaction.infrastructure.controller;
 
 import com.damian.xBank.modules.banking.transaction.application.dto.mapper.BankingTransactionDtoMapper;
-import com.damian.xBank.modules.banking.transaction.application.dto.request.BankingTransactionConfirmRequest;
 import com.damian.xBank.modules.banking.transaction.application.dto.response.BankingTransactionDto;
 import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionAccountService;
 import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionCardService;
@@ -15,8 +14,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("/api/v1")
 @RestController
@@ -61,23 +62,6 @@ public class BankingTransactionController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(transactionDtoList);
-    }
-
-    // endpoint for logged customer to confirm a transaction
-    @PostMapping("/banking/transactions/{id}/confirm")
-    public ResponseEntity<?> confirmTransaction(
-            @PathVariable @NotNull @Positive
-            Long id,
-            @Validated @RequestBody
-            BankingTransactionConfirmRequest request
-    ) {
-        BankingTransaction transaction = bankingTransactionAccountService.confirmTransaction(id, request);
-        BankingTransactionDto transactionDto = BankingTransactionDtoMapper
-                .toBankingTransactionDto(transaction);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(transactionDto);
     }
 }
 
