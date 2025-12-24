@@ -33,7 +33,7 @@ public class BankingTransferController {
                 .body("transferDto");
     }
 
-    @GetMapping("/banking/transfers/{id}")
+    @GetMapping("/banking/transfers/{id}/confirm")
     public ResponseEntity<?> confirm() {
 
         return ResponseEntity
@@ -41,7 +41,7 @@ public class BankingTransferController {
                 .body("");
     }
 
-    @GetMapping("/banking/transfers/{id}")
+    @GetMapping("/banking/transfers/{id}/reject")
     public ResponseEntity<?> reject() {
 
         return ResponseEntity
