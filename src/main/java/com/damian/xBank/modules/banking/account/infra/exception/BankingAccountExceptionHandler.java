@@ -93,7 +93,7 @@ public class BankingAccountExceptionHandler {
     }
 
     @ExceptionHandler(BankingAccountNotFoundException.class)
-    public ResponseEntity<ApiResponse<String>> handleNotFoundException(BankingAccountNotFoundException ex) {
+    public ResponseEntity<ApiResponse<String>> handleNotFound(BankingAccountNotFoundException ex) {
         log.warn("Banking account: {} not found", ex.getResourceId());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -109,30 +109,18 @@ public class BankingAccountExceptionHandler {
     }
 
     @ExceptionHandler(BankingAccountCardsLimitException.class)
-    public ResponseEntity<ApiResponse<String>> handleConflitException(BankingAccountCardsLimitException ex) {
+    public ResponseEntity<ApiResponse<String>> handleCardLimit(BankingAccountCardsLimitException ex) {
         log.warn("Banking account: {} card limit per account reached", ex.getResourceId());
 
         return ResponseEntity.status(HttpStatus.CONFLICT)
                              .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
     }
 
-    @ExceptionHandler(BankingAccountOwnershipException.class)
-    public ResponseEntity<ApiResponse<String>> handleOwnershipException(BankingAccountOwnershipException ex) {
+    @ExceptionHandler(BankingAccountNotOwnerException.class)
+    public ResponseEntity<ApiResponse<String>> handleNotOwner(BankingAccountNotOwnerException ex) {
         log.warn(
                 "Unauthorized access from user {} on banking account: {}",
-                ex.getCustomerId(),
-                ex.getResourceId()
-        );
-
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                             .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
-    }
-
-    @ExceptionHandler(BankingAccountAuthorizationException.class)
-    public ResponseEntity<ApiResponse<String>> handleAuthorizationException(BankingAccountAuthorizationException ex) {
-        log.warn(
-                "Unauthorized operation from user {} on banking account: {}",
-                ex.getCustomerId(),
+                ex.getResourceId(),
                 ex.getResourceId()
         );
 
