@@ -1,7 +1,6 @@
 package com.damian.xBank.modules.banking.account.application.service;
 
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountTransferRequest;
-import com.damian.xBank.modules.banking.account.application.guard.BankingAccountGuard;
 import com.damian.xBank.modules.banking.account.application.guard.BankingAccountOperationGuard;
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
@@ -66,10 +65,10 @@ public class BankingAccountOperationService {
 
         final Customer customer = authenticationContext.getCurrentCustomer();
 
-        // run validations and throw if any throw exception
-        BankingAccountGuard
-                .forAccount(fromBankingAccount)
-                .assertOwnership(customer)
+        // run validations for the account and throw exception if fails
+        fromBankingAccount
+                .assertOwnedBy(customer.getId())
+                //                .assertActive() TODO
                 .assertSufficientFunds(request.amount());
 
         // validate customer password

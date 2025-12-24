@@ -1,7 +1,6 @@
 package com.damian.xBank.modules.banking.account.application.service;
 
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCardRequest;
-import com.damian.xBank.modules.banking.account.application.guard.BankingAccountGuard;
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
@@ -51,8 +50,7 @@ public class BankingAccountCardManagementService {
         // if the logged customer is not admin
         if (!currentCustomer.isAdmin()) {
             // check if the account belongs to this customer.
-            BankingAccountGuard.forAccount(bankingAccount)
-                               .assertOwnership(currentCustomer);
+            bankingAccount.assertOwnedBy(currentCustomer.getId());
         }
 
         // if customer has reached the maximum amount of cards per account.

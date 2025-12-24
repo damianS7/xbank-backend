@@ -3,7 +3,10 @@ package com.damian.xBank.modules.banking.account.domain.entity;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountType;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountClosedException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountInsufficientFundsException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotOwnerException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountSuspendedException;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
@@ -12,6 +15,7 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -216,6 +220,21 @@ public class BankingAccount {
         return this.getBalance().compareTo(amount) >= 0;
     }
 
+    /**
+     * Assert the account has sufficient funds.
+     *
+     * @param amount the amount to check
+     * @return the current validator instance for chaining
+     * @throws BankingAccountInsufficientFundsException if the account does not have sufficient funds
+     */
+    public BankingAccount assertSufficientFunds(BigDecimal amount) {
+        if (!this.hasSufficientFunds(amount)) {
+            throw new BankingAccountInsufficientFundsException(this.getId(), getBalance(), amount);
+        }
+
+        return this;
+    }
+
     public void subtractBalance(BigDecimal amount) {
         if (!this.hasSufficientFunds(amount)) {
             throw new BankingAccountInsufficientFundsException(this.getId());
@@ -227,5 +246,81 @@ public class BankingAccount {
     public BigDecimal addBalance(BigDecimal amount) {
         this.setBalance(this.getBalance().add(amount));
         return this.getBalance();
+    }
+
+    public boolean isOwnedBy(Long customerId) {
+
+        // compare account owner id with given customer id
+        return Objects.equals(getOwner().getId(), customerId);
+    }
+
+
+    /**
+     * Assert the ownership of the account belongs to {@link Customer}.
+     *
+     * @param customerId the customer to check ownership against
+     * @return the current validator instance for chaining
+     * @throws BankingAccountNotOwnerException if the account does not belong to the customer
+     */
+    public BankingAccount assertOwnedBy(Long customerId) {
+
+        // compare card owner id with given customer id
+        if (!isOwnedBy(customerId)) {
+            throw new BankingAccountNotOwnerException(getId(), customerId);
+        }
+
+        return this;
+    }
+
+    public boolean isSuspended() {
+        return getAccountStatus() == BankingAccountStatus.SUSPENDED;
+    }
+
+    /**
+     * Assert the account is not SUSPENDED.
+     *
+     * @return the current validator instance for chaining
+     * @throws BankingAccountSuspendedException if the account does not belong to the customer
+     */
+    public BankingAccount assertNotSuspended() {
+
+        // check if account is SUSPENDED
+        if (isSuspended()) {
+            throw new BankingAccountSuspendedException(getId());
+        }
+
+        return this;
+    }
+
+    public boolean isClosed() {
+        return getAccountStatus() == BankingAccountStatus.CLOSED;
+    }
+
+    /**
+     * Validate account is not CLOSED.
+     *
+     * @return the current validator instance for chaining
+     * @throws BankingAccountClosedException if the account does not belong to the customer
+     */
+    public BankingAccount assertNotClosed() {
+        // check if account is CLOSED
+        if (isClosed()) {
+            throw new BankingAccountClosedException(getId());
+        }
+
+        return this;
+    }
+
+    /**
+     * Assert account is not CLOSED or SUSPENDED.
+     *
+     * @return the current validator instance for chaining
+     * @throws BankingAccountSuspendedException if the account does not belong to the customer
+     * @throws BankingAccountClosedException    if the account does not belong to the customer
+     */
+    public BankingAccount assertActive() {
+        this.assertNotSuspended();
+        this.assertNotClosed();
+        return this;
     }
 }

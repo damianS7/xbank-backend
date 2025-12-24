@@ -3,7 +3,6 @@ package com.damian.xBank.modules.banking.account.application.service;
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountAliasUpdateRequest;
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCloseRequest;
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountOpenRequest;
-import com.damian.xBank.modules.banking.account.application.guard.BankingAccountGuard;
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
@@ -48,10 +47,8 @@ public class BankingAccountManagementService {
         // business rules only for customers
         if (customer.getAccount().getRole() == UserAccountRole.CUSTOMER) {
 
-            BankingAccountGuard.forAccount(bankingAccount)
-                               .assertOwnership(customer)
-                               .assertNotSuspended()
-                               .assertNotClosed();
+            bankingAccount.assertOwnedBy(customer.getId())
+                          .assertActive();
         }
 
         // we mark the account as closed
@@ -137,10 +134,8 @@ public class BankingAccountManagementService {
         // validations rules only for customers
         if (!currentCustomer.isAdmin()) {
 
-            BankingAccountGuard.forAccount(bankingAccount)
-                               .assertOwnership(currentCustomer)
-                               .assertNotSuspended()
-                               .assertNotClosed();
+            bankingAccount.assertOwnedBy(currentCustomer.getId())
+                          .assertActive();
         }
 
         // we mark the account as closed

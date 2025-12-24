@@ -1,7 +1,6 @@
 package com.damian.xBank.modules.banking.account.application.service.admin;
 
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountDepositRequest;
-import com.damian.xBank.modules.banking.account.application.guard.BankingAccountGuard;
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
@@ -63,9 +62,8 @@ public class AdminBankingAccountOperationService {
                         ) // Banking account not found
                 );
 
-        // Validate account
-        BankingAccountGuard.forAccount(bankingAccount)
-                           .assertActive();
+        // Validate account is operable
+        bankingAccount.assertActive();
 
         BankingTransaction transaction = bankingTransactionAccountService.generateTransaction(
                 bankingAccount,
