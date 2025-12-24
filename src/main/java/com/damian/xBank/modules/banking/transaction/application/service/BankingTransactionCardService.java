@@ -1,7 +1,6 @@
 package com.damian.xBank.modules.banking.transaction.application.service;
 
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
-import com.damian.xBank.modules.banking.transaction.application.guard.BankingTransactionGuard;
 import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
@@ -104,8 +103,7 @@ public class BankingTransactionCardService {
 
 
         // run validations
-        BankingTransactionGuard.forTransaction(transaction)
-                               .assertOwnership(currentCustomer);
+        transaction.assertOwnedBy(currentCustomer.getId());
 
         // deduct money from card
         BankingCard card = transaction.getBankingCard();

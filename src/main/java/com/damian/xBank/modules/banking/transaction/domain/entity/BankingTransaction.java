@@ -4,7 +4,7 @@ import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotOwnerException;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -75,8 +75,8 @@ public class BankingTransaction {
         return new BankingTransaction();
     }
 
-    public boolean belongsTo(Customer customer) {
-        return Objects.equals(getBankingAccount().getOwner().getId(), customer.getId());
+    public boolean isOwnedBy(Long customerId) {
+        return Objects.equals(getBankingAccount().getOwner().getId(), customerId);
     }
 
     public Long getId() {
@@ -182,6 +182,23 @@ public class BankingTransaction {
 
     public BankingTransaction setBalanceAfter(BigDecimal balanceAfter) {
         this.balanceAfter = balanceAfter;
+        return this;
+    }
+
+    /**
+     * Assert the ownership of the transaction.
+     *
+     * @param customerId the customer to check ownership against
+     * @return the current validator instance for chaining
+     * @throws BankingTransactionNotOwnerException if the transaction does not belong to the customer
+     */
+    public BankingTransaction assertOwnedBy(Long customerId) {
+
+        // compare account owner id with given customer id
+        if (!isOwnedBy(customerId)) {
+            throw new BankingTransactionNotOwnerException(getId(), customerId);
+        }
+
         return this;
     }
 }

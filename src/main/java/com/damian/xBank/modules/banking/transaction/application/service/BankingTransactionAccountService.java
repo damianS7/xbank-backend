@@ -5,7 +5,6 @@ import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountN
 import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.transaction.application.dto.request.BankingTransactionConfirmRequest;
 import com.damian.xBank.modules.banking.transaction.application.dto.request.BankingTransactionUpdateStatusRequest;
-import com.damian.xBank.modules.banking.transaction.application.guard.BankingTransactionGuard;
 import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
@@ -65,8 +64,7 @@ public class BankingTransactionAccountService {
                 );
 
         // validate transaction belongs to user
-        BankingTransactionGuard.forTransaction(transaction)
-                               .assertOwnership(currentCustomer);
+        transaction.assertOwnedBy(currentCustomer.getId());
 
         // check the password
         passwordValidator.validatePassword(currentCustomer, request.password());
@@ -210,8 +208,7 @@ public class BankingTransactionAccountService {
         if (currentCustomer.hasRole(UserAccountRole.CUSTOMER)) {
 
             // check transactions belongs to user
-            BankingTransactionGuard.forTransaction(transaction)
-                                   .assertOwnership(currentCustomer);
+            transaction.assertOwnedBy(currentCustomer.getId());
 
         }
 
@@ -244,8 +241,7 @@ public class BankingTransactionAccountService {
         // if the logged customer is not admin
         if (currentCustomer.hasRole(UserAccountRole.CUSTOMER)) {
             // Only admin can update status
-            BankingTransactionGuard.forTransaction(bankingTransaction)
-                                   .assertOwnership(currentCustomer);
+            bankingTransaction.assertOwnedBy(currentCustomer.getId());
         }
 
         // we mark the account as closed
