@@ -310,4 +310,25 @@ public class BankingCard {
 
         return this;
     }
+
+    /**
+     * Validate that current card can spend.
+     *
+     * @param amount  the amount to spend
+     * @param cardPin the pin of the card
+     * @return the current validator instance for chaining
+     */
+    public BankingCard assertCanSpend(
+            BigDecimal amount,
+            String cardPin
+    ) {
+
+        // check the account status and see if can be used to operate
+        // run validations for the card and throw exception
+        this.assertUsable()
+            .assertCorrectPin(cardPin)
+            .assertSufficientFunds(amount);
+
+        return this;
+    }
 }
