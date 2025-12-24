@@ -3,8 +3,6 @@ package com.damian.xBank.modules.banking.transaction.application.service;
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
-import com.damian.xBank.modules.banking.transaction.application.dto.request.BankingTransactionConfirmRequest;
-import com.damian.xBank.modules.banking.transaction.application.dto.request.BankingTransactionUpdateStatusRequest;
 import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
@@ -13,7 +11,6 @@ import com.damian.xBank.modules.banking.transaction.infrastructure.repository.Ba
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.security.AuthenticationContext;
-import com.damian.xBank.shared.security.PasswordValidator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,62 +20,18 @@ import java.time.Instant;
 
 @Service // TODO
 public class BankingTransactionAccountService {
-    //    private final BankingAccountOperationService bankingAccountOperationService;
     private final BankingAccountRepository bankingAccountRepository;
     private final BankingTransactionRepository bankingTransactionRepository;
     private final AuthenticationContext authenticationContext;
-    private final PasswordValidator passwordValidator;
 
     public BankingTransactionAccountService(
-            //            BankingAccountOperationService bankingAccountOperationService,
             BankingAccountRepository bankingAccountRepository,
             BankingTransactionRepository bankingTransactionRepository,
-            AuthenticationContext authenticationContext,
-            PasswordValidator passwordValidator
+            AuthenticationContext authenticationContext
     ) {
-        //        this.bankingAccountOperationService = bankingAccountOperationService;
         this.bankingAccountRepository = bankingAccountRepository;
         this.bankingTransactionRepository = bankingTransactionRepository;
         this.authenticationContext = authenticationContext;
-        this.passwordValidator = passwordValidator;
-    }
-
-    /**
-     * Confirms a transaction and update the balances
-     *
-     * @param transactionId
-     * @param request
-     * @return
-     */
-    public BankingTransaction confirmTransaction(
-            Long transactionId,
-            BankingTransactionConfirmRequest request
-    ) {
-        // Customer logged
-        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
-
-        BankingTransaction transaction = bankingTransactionRepository
-                .findById(transactionId)
-                .orElseThrow(
-                        () -> new BankingTransactionNotFoundException(transactionId)
-                );
-
-        // validate transaction belongs to user
-        transaction.assertOwnedBy(currentCustomer.getId());
-
-        // check the password
-        passwordValidator.validatePassword(currentCustomer, request.password());
-
-        // TODO
-        //        switch (transaction.getType()) {
-        //            case TRANSFER_TO -> bankingAccountOperationService.confirmTransfer(transaction);
-        //            default -> throw new IllegalStateException("Unexpected value: " + transaction.getType());
-        //        }
-
-        transaction.setStatus(BankingTransactionStatus.COMPLETED);
-        bankingTransactionRepository.save(transaction);
-        return transaction;
-
     }
 
     /**
@@ -219,16 +172,13 @@ public class BankingTransactionAccountService {
      * It changes the status of the transaction
      *
      * @param bankingTransactionId
-     * @param request
+     * @param status               the new status to set
      * @return the updated transaction
      */
-    public BankingTransaction updateTransactionStatus(
+    public BankingTransaction updateStatus(
             Long bankingTransactionId,
-            BankingTransactionUpdateStatusRequest request
+            BankingTransactionStatus status
     ) {
-        // Customer logged
-        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
-
         // transaction to update
         final BankingTransaction bankingTransaction = bankingTransactionRepository
                 .findById(bankingTransactionId)
@@ -238,14 +188,8 @@ public class BankingTransactionAccountService {
                         )
                 );
 
-        // if the logged customer is not admin
-        if (currentCustomer.hasRole(UserAccountRole.CUSTOMER)) {
-            // Only admin can update status
-            bankingTransaction.assertOwnedBy(currentCustomer.getId());
-        }
-
-        // we mark the account as closed
-        bankingTransaction.updateStatus(request.transactionStatus());
+        // Validate (inside updateStatus method) and set the new status
+        bankingTransaction.updateStatus(status);
 
         // we change the updateAt timestamp field
         bankingTransaction.setUpdatedAt(Instant.now());
