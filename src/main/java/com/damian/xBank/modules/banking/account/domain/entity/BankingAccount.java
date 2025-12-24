@@ -3,7 +3,10 @@ package com.damian.xBank.modules.banking.account.domain.entity;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountType;
-import com.damian.xBank.modules.banking.account.domain.exception.*;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountClosedException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountInsufficientFundsException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotOwnerException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountSuspendedException;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
@@ -233,9 +236,7 @@ public class BankingAccount {
     }
 
     public void subtractBalance(BigDecimal amount) {
-        if (!this.hasSufficientFunds(amount)) {
-            throw new BankingAccountInsufficientFundsException(this.getId());
-        }
+        this.assertSufficientFunds(amount);
 
         this.setBalance(this.getBalance().subtract(amount));
     }
@@ -250,7 +251,6 @@ public class BankingAccount {
         // compare account owner id with given customer id
         return Objects.equals(getOwner().getId(), customerId);
     }
-
 
     /**
      * Assert the ownership of the account belongs to {@link Customer}.
@@ -318,64 +318,6 @@ public class BankingAccount {
     public BankingAccount assertActive() {
         this.assertNotSuspended();
         this.assertNotClosed();
-        return this;
-    }
-
-    /**
-     * Validate that current account and {@code toBankingAccount} have the same currency
-     *
-     * @param toBankingAccount the destination account to check
-     * @return the current validator instance for chaining
-     * @throws BankingAccountTransferCurrencyMismatchException if the account does not belong to the customer
-     */
-    public BankingAccount assertCurrenciesMatch(BankingAccount toBankingAccount) {
-
-        // if currencies are different, throw exception
-        if (!Objects.equals(getAccountCurrency(), toBankingAccount.getAccountCurrency())) {
-            throw new BankingAccountTransferCurrencyMismatchException(toBankingAccount.getId());
-        }
-
-        return this;
-    }
-
-    /**
-     * Validate that current account and {@code toBankingAccount} are not the same
-     *
-     * @param toBankingAccount the destination account to check
-     * @return the current validator instance for chaining
-     * @throws BankingAccountTransferSameAccountException if the account does not belong to the customer
-     */
-    public BankingAccount assertDifferentAccounts(BankingAccount toBankingAccount) {
-
-        // check bankingAccount and toBankingAccount are not the same
-        if (Objects.equals(getId(), toBankingAccount.getId())) {
-            throw new BankingAccountTransferSameAccountException(toBankingAccount.getId());
-        }
-
-        return this;
-    }
-
-    /**
-     * Validate a transfer between current account and {@code toBankingAccount}.
-     *
-     * @return the current validator instance for chaining
-     * @throws BankingAccountTransferException if the account does not belong to the customer
-     */
-    public BankingAccount assertCanTransfer(
-            BankingAccount toBankingAccount
-    ) {
-        // check "account' and toBankingAccount are not the same
-        this.assertDifferentAccounts(toBankingAccount);
-
-        // check currency are the same on both accounts
-        this.assertCurrenciesMatch(toBankingAccount);
-
-        // check if the source account is active
-        this.assertActive();
-
-        // check if the destiny account is active
-        toBankingAccount.assertActive();
-
         return this;
     }
 }
