@@ -236,13 +236,13 @@ public class BankingCard {
      *
      * @param customerId the customer to check ownership against
      * @return the current validator instance for chaining
-     * @throws BankingCardOwnershipException if the card does not belong to the customer
+     * @throws BankingCardNotOwnerException if the card does not belong to the customer
      */
     public BankingCard assertOwnedBy(Long customerId) {
 
         // compare card owner id with given customer id
         if (!isOwnedBy(customerId)) {
-            throw new BankingCardOwnershipException(getId(), customerId);
+            throw new BankingCardNotOwnerException(getId(), customerId);
         }
 
         return this;

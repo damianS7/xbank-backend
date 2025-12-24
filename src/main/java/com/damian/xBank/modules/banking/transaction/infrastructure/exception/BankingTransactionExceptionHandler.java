@@ -3,7 +3,7 @@ package com.damian.xBank.modules.banking.transaction.infrastructure.exception;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionAuthorizationException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotFoundException;
-import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionOwnershipException;
+import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotOwnerException;
 import com.damian.xBank.shared.dto.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +24,8 @@ public class BankingTransactionExceptionHandler {
         this.messageSource = messageSource;
     }
 
-    @ExceptionHandler(BankingTransactionOwnershipException.class)
-    public ResponseEntity<ApiResponse<String>> handleOwnershipException(BankingTransactionOwnershipException ex) {
+    @ExceptionHandler(BankingTransactionNotOwnerException.class)
+    public ResponseEntity<ApiResponse<String>> handleOwnershipException(BankingTransactionNotOwnerException ex) {
         log.warn(
                 "Unauthorized access to Transaction {} from customer: {}",
                 ex.getResourceId(),

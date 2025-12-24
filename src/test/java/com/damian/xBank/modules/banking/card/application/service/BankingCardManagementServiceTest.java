@@ -9,7 +9,7 @@ import com.damian.xBank.modules.banking.card.application.dto.request.BankingCard
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoundException;
-import com.damian.xBank.modules.banking.card.domain.exception.BankingCardOwnershipException;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotOwnerException;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountInvalidPasswordConfirmationException;
@@ -129,8 +129,8 @@ public class BankingCardManagementServiceTest extends AbstractServiceTest {
         // when
         when(bankingCardRepository.findById(anyLong())).thenReturn(Optional.of(customerBankingCard));
 
-        BankingCardOwnershipException exception = assertThrows(
-                BankingCardOwnershipException.class,
+        BankingCardNotOwnerException exception = assertThrows(
+                BankingCardNotOwnerException.class,
                 () -> bankingCardManagementService.updatePin(customerBankingCard.getId(), request)
         );
 
@@ -226,8 +226,8 @@ public class BankingCardManagementServiceTest extends AbstractServiceTest {
         // when
         when(bankingCardRepository.findById(anyLong())).thenReturn(Optional.of(customerBankingCard));
 
-        BankingCardOwnershipException exception = assertThrows(
-                BankingCardOwnershipException.class,
+        BankingCardNotOwnerException exception = assertThrows(
+                BankingCardNotOwnerException.class,
                 () -> bankingCardManagementService.updateDailyLimit(customerBankingCard.getId(), request)
         );
 
@@ -323,8 +323,8 @@ public class BankingCardManagementServiceTest extends AbstractServiceTest {
         // when
         when(bankingCardRepository.findById(anyLong())).thenReturn(Optional.of(customerBankingCard));
 
-        BankingCardOwnershipException exception = assertThrows(
-                BankingCardOwnershipException.class,
+        BankingCardNotOwnerException exception = assertThrows(
+                BankingCardNotOwnerException.class,
                 () -> bankingCardManagementService.updatePin(customerBankingCard.getId(), request)
         );
 

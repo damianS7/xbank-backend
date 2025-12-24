@@ -175,8 +175,8 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
         when(bankingCardRepository.findById(anyLong())).thenReturn(Optional.of(customerBankingCard));
 
         // then
-        BankingCardOwnershipException exception = assertThrows(
-                BankingCardOwnershipException.class,
+        BankingCardNotOwnerException exception = assertThrows(
+                BankingCardNotOwnerException.class,
                 () -> bankingCardOperationService.spend(
                         customerBankingCard.getId(),
                         spendRequest

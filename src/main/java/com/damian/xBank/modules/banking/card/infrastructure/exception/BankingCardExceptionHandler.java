@@ -61,8 +61,8 @@ public class BankingCardExceptionHandler {
                              .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
     }
 
-    @ExceptionHandler(BankingCardOwnershipException.class)
-    public ResponseEntity<ApiResponse<String>> handleOwnershipException(BankingCardOwnershipException ex) {
+    @ExceptionHandler(BankingCardNotOwnerException.class)
+    public ResponseEntity<ApiResponse<String>> handleOwnershipException(BankingCardNotOwnerException ex) {
         log.warn(
                 "Unauthorized access from user {} on banking card: {}",
                 ex.getArgs()[0],

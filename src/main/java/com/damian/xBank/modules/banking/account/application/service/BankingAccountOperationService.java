@@ -23,6 +23,10 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Map;
 
+// TODO
+// Method transfer should do the actual transfer instead executeTransfer?
+// customer should call to generateTransfer or something like that ...?
+// then after confirm the transaction it will call transfer method?
 @Service
 public class BankingAccountOperationService {
     private final BankingTransactionAccountService bankingTransactionAccountService;
@@ -99,7 +103,7 @@ public class BankingAccountOperationService {
      * @param amount
      * @param description
      * @return
-     */ // TODO
+     */
     @Transactional
     public BankingTransaction executeTransfer(
             BankingAccount fromBankingAccount,

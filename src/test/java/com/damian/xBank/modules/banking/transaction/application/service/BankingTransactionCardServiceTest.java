@@ -9,7 +9,7 @@ import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCa
 import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
-import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionOwnershipException;
+import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotOwnerException;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
@@ -147,8 +147,8 @@ public class BankingTransactionCardServiceTest extends AbstractServiceTest {
         when(bankingTransactionRepository.findById(anyLong())).thenReturn(Optional.of(givenTransaction));
 
         // then
-        BankingTransactionOwnershipException exception = assertThrows(
-                BankingTransactionOwnershipException.class,
+        BankingTransactionNotOwnerException exception = assertThrows(
+                BankingTransactionNotOwnerException.class,
                 () -> bankingTransactionCardService.confirmTransaction(givenTransaction.getId())
         );
 
