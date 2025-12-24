@@ -231,7 +231,6 @@ public class BankingCard {
         return Objects.equals(getOwner().getId(), customerId);
     }
 
-
     /**
      * Assert the ownership of the card belongs to {@link Customer}.
      *
