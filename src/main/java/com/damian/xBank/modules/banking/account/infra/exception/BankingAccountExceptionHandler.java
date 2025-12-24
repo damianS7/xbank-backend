@@ -71,27 +71,6 @@ public class BankingAccountExceptionHandler {
                              .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
     }
 
-    @ExceptionHandler(BankingAccountTransferSameAccountException.class)
-    public ResponseEntity<ApiResponse<String>> handleTransferSameAccount(BankingAccountTransferSameAccountException ex) {
-        log.warn("Banking transfer failed because both accounts are the same.");
-
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                             .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
-    }
-
-    @ExceptionHandler(BankingAccountTransferCurrencyMismatchException.class)
-    public ResponseEntity<ApiResponse<String>> handleCurrencyMismatch(
-            BankingAccountTransferCurrencyMismatchException ex
-    ) {
-        log.warn(
-                "Banking transfer failed due account destination {} has different a currency.",
-                ex.getResourceId()
-        );
-
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                             .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
-    }
-
     @ExceptionHandler(BankingAccountNotFoundException.class)
     public ResponseEntity<ApiResponse<String>> handleNotFound(BankingAccountNotFoundException ex) {
         log.warn("Banking account: {} not found", ex.getResourceId());

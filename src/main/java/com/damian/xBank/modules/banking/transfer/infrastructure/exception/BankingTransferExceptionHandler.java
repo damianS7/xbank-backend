@@ -1,6 +1,9 @@
 package com.damian.xBank.modules.banking.transfer.infrastructure.exception;
 
+import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferCurrencyMismatchException;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferNotFoundException;
+import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferSameException;
+import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferStatusTransitionException;
 import com.damian.xBank.shared.dto.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +24,21 @@ public class BankingTransferExceptionHandler {
         this.messageSource = messageSource;
     }
 
+    @ExceptionHandler(BankingTransferStatusTransitionException.class)
+    public ResponseEntity<ApiResponse<String>> handleStatusTransition(
+            BankingTransferStatusTransitionException ex
+    ) {
+        log.warn(
+                "Status transition failed from {} to {} on Banking transfer: {}",
+                ex.getArgs()[0],
+                ex.getArgs()[1],
+                ex.getResourceId()
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                             .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
+    }
+
     @ExceptionHandler(BankingTransferNotFoundException.class)
     public ResponseEntity<ApiResponse<String>> handleNotFound(BankingTransferNotFoundException ex) {
         log.warn("Banking transfer: {} not found", ex.getResourceId());
@@ -29,4 +47,24 @@ public class BankingTransferExceptionHandler {
                              .body(ApiResponse.error(ex, HttpStatus.NOT_FOUND, messageSource));
     }
 
+    @ExceptionHandler(BankingTransferSameException.class)
+    public ResponseEntity<ApiResponse<String>> handleTransferSameAccount(BankingTransferSameException ex) {
+        log.warn("Banking transfer failed because both accounts are the same.");
+
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                             .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
+    }
+
+    @ExceptionHandler(BankingTransferCurrencyMismatchException.class)
+    public ResponseEntity<ApiResponse<String>> handleCurrencyMismatch(
+            BankingTransferCurrencyMismatchException ex
+    ) {
+        log.warn(
+                "Banking transfer failed due account destination {} has different a currency.",
+                ex.getResourceId()
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                             .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
+    }
 }
