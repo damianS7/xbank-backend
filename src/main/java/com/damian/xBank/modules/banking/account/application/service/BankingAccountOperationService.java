@@ -1,7 +1,6 @@
 package com.damian.xBank.modules.banking.account.application.service;
 
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountTransferRequest;
-import com.damian.xBank.modules.banking.account.application.guard.BankingAccountOperationGuard;
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
@@ -113,8 +112,7 @@ public class BankingAccountOperationService {
     ) {
 
         // check if fromBankingAccount can transfer to toBankingAccount
-        BankingAccountOperationGuard
-                .forAccount(fromBankingAccount)
+        fromBankingAccount
                 .assertCanTransfer(toBankingAccount);
 
         BankingTransaction fromTransaction = this.bankingTransactionAccountService.buildTransaction(
