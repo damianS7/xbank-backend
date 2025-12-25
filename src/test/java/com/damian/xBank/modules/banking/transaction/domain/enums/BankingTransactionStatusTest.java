@@ -1,14 +1,11 @@
 package com.damian.xBank.modules.banking.transaction.domain.enums;
 
-import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionStatusTransitionException;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.exception.ErrorCodes;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class BankingTransactionStatusTest extends AbstractServiceTest {
 
@@ -19,9 +16,7 @@ public class BankingTransactionStatusTest extends AbstractServiceTest {
     )
     @DisplayName("Should validate transitions from PENDING_ACTIVATION")
     void shouldValidateTransitionsFromPendingActivation(BankingTransactionStatus toStatus) {
-        assertThatCode(() ->
-                BankingTransactionStatus.PENDING.validateTransition(toStatus)
-        ).doesNotThrowAnyException();
+        assertThat(BankingTransactionStatus.PENDING.canTransitionTo(toStatus)).isTrue();
     }
 
     @ParameterizedTest
@@ -29,11 +24,7 @@ public class BankingTransactionStatusTest extends AbstractServiceTest {
     @DisplayName("Should not validate any transitions from terminal states")
     void shouldNotValidateTransitionsFromTerminalStates(BankingTransactionStatus fromStatus) {
         for (BankingTransactionStatus targetStatus : BankingTransactionStatus.values()) {
-            assertThatThrownBy(() ->
-                    fromStatus.validateTransition(targetStatus)
-            )
-                    .isInstanceOf(BankingTransactionStatusTransitionException.class)
-                    .hasMessage(ErrorCodes.BANKING_TRANSACTION_INVALID_TRANSITION_STATUS);
+            assertThat(fromStatus.canTransitionTo(targetStatus)).isFalse();
         }
     }
 }

@@ -5,6 +5,7 @@ import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotOwnerException;
+import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionStatusTransitionException;
 import com.damian.xBank.modules.banking.transfer.domain.entity.BankingTransfer;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import jakarta.persistence.*;
@@ -137,14 +138,21 @@ public class BankingTransaction {
         return status;
     }
 
-    public BankingTransaction setStatus(BankingTransactionStatus status) {
-        this.status = status;
-        return this;
-    }
+    public BankingTransaction setStatus(BankingTransactionStatus newStatus) {
+        // if the actual status is the same as the new ... do nothing
+        if (this.status == newStatus) {
+            return this;
+        }
 
-    public BankingTransaction updateStatus(BankingTransactionStatus toStatus) {
-        this.status.validateTransition(toStatus);
-        this.status = toStatus;
+        if (!this.status.canTransitionTo(newStatus)) {
+            throw new BankingTransactionStatusTransitionException(
+                    this.id,
+                    this.status.name(),
+                    newStatus.name()
+            );
+        }
+
+        this.status = newStatus;
         return this;
     }
 
@@ -212,14 +220,12 @@ public class BankingTransaction {
     }
 
     public void complete() {
-        this.status.validateTransition(BankingTransactionStatus.COMPLETED);
-        this.status = BankingTransactionStatus.COMPLETED;
+        this.setStatus(BankingTransactionStatus.COMPLETED);
         this.updatedAt = Instant.now();
     }
 
     public void reject() {
-        this.status.validateTransition(BankingTransactionStatus.REJECTED);
-        this.status = BankingTransactionStatus.REJECTED;
+        this.setStatus(BankingTransactionStatus.REJECTED);
         this.updatedAt = Instant.now();
     }
 
