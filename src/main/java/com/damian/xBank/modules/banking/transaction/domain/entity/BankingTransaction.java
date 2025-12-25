@@ -90,8 +90,9 @@ public class BankingTransaction {
         return customer;
     }
 
-    public void setCustomer(Customer customer) {
+    public BankingTransaction setCustomer(Customer customer) {
         this.customer = customer;
+        return this;
     }
 
     public boolean isOwnedBy(Long customerId) {
@@ -113,6 +114,7 @@ public class BankingTransaction {
 
     public BankingTransaction setBankingAccount(BankingAccount account) {
         this.bankingAccount = account;
+        this.customer = account.getOwner();
         return this;
     }
 
@@ -198,6 +200,7 @@ public class BankingTransaction {
 
     public BankingTransaction setBankingCard(BankingCard bankingCard) {
         this.bankingCard = bankingCard;
+        this.customer = bankingCard.getOwner();
         return this;
     }
 
