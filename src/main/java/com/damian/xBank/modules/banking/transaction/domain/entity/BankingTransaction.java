@@ -6,6 +6,7 @@ import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransact
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotOwnerException;
 import com.damian.xBank.modules.banking.transfer.domain.entity.BankingTransfer;
+import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -18,6 +19,10 @@ public class BankingTransaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id", referencedColumnName = "id", nullable = false)
+    private Customer customer;
 
     @ManyToOne
     @JoinColumn(name = "account_id", referencedColumnName = "id", nullable = false)
@@ -78,6 +83,14 @@ public class BankingTransaction {
 
     public static BankingTransaction create() {
         return new BankingTransaction();
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 
     public boolean isOwnedBy(Long customerId) {
@@ -198,7 +211,7 @@ public class BankingTransaction {
         return this;
     }
 
-    public void confirm() {
+    public void complete() {
         this.status.validateTransition(BankingTransactionStatus.COMPLETED);
         this.status = BankingTransactionStatus.COMPLETED;
         this.updatedAt = Instant.now();

@@ -191,6 +191,7 @@ CREATE CAST (varchar as banking_transaction_type) WITH INOUT AS IMPLICIT;
 
 CREATE TABLE public.banking_transactions (
 	id int4 GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	customer_id int4 NOT NULL,
 	account_id int4 NOT NULL,
 	transfer_id int4 NULL,
 	card_id int4 NULL,
@@ -202,9 +203,12 @@ CREATE TABLE public.banking_transactions (
 	status public."banking_transaction_status_type" DEFAULT 'PENDING'::banking_transaction_status_type NOT NULL,
 	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
 	updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+    CONSTRAINT fk_transactions_customer FOREIGN KEY (customer_id)
+        REFERENCES public.customers(id)
+        ON DELETE CASCADE,
 	CONSTRAINT fk_transactions_account FOREIGN KEY (account_id)
-            REFERENCES public.banking_accounts(id)
-            ON DELETE CASCADE,
+        REFERENCES public.banking_accounts(id)
+        ON DELETE CASCADE,
     CONSTRAINT fk_transactions_card FOREIGN KEY (card_id)
         REFERENCES public.banking_cards(id)
         ON DELETE SET NULL,
