@@ -1,7 +1,5 @@
 package com.damian.xBank.modules.banking.transfer.domain.enums;
 
-import com.damian.xBank.modules.banking.card.domain.exception.BankingCardStatusTransitionException;
-
 import java.util.Set;
 
 public enum BankingTransferStatus {
@@ -42,11 +40,5 @@ public enum BankingTransferStatus {
 
     public boolean canTransitionTo(BankingTransferStatus newStatus) {
         return allowedTransitions.contains(newStatus);
-    }
-
-    public void validateTransition(BankingTransferStatus newStatus) {
-        if (!canTransitionTo(newStatus)) {
-            throw new BankingCardStatusTransitionException(this.name(), newStatus.name());
-        }
     }
 }

@@ -6,6 +6,7 @@ import com.damian.xBank.modules.banking.transfer.domain.enums.BankingTransferSta
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferCurrencyMismatchException;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferNotOwnerException;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferSameException;
+import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferStatusTransitionException;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import jakarta.persistence.*;
 
@@ -78,8 +79,21 @@ public class BankingTransfer {
         return status;
     }
 
-    public BankingTransfer setStatus(BankingTransferStatus status) {
-        this.status = status;
+    public BankingTransfer setStatus(BankingTransferStatus newStatus) {
+        // if the actual status is the same as the new ... do nothing
+        if (this.status == newStatus) {
+            return this;
+        }
+
+        if (!this.status.canTransitionTo(newStatus)) {
+            throw new BankingTransferStatusTransitionException(
+                    this.id,
+                    this.status.name(),
+                    newStatus.name()
+            );
+        }
+
+        this.status = newStatus;
         return this;
     }
 
@@ -182,14 +196,12 @@ public class BankingTransfer {
     }
 
     public void confirm() {
-        this.status.validateTransition(BankingTransferStatus.CONFIRMED);
-        this.status = BankingTransferStatus.CONFIRMED;
+        this.setStatus(BankingTransferStatus.CONFIRMED);
         this.updatedAt = Instant.now();
     }
 
     public void reject() {
-        this.status.validateTransition(BankingTransferStatus.REJECTED);
-        this.status = BankingTransferStatus.REJECTED;
+        this.setStatus(BankingTransferStatus.REJECTED);
         this.updatedAt = Instant.now();
     }
 
