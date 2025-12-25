@@ -12,6 +12,7 @@ public class BankingTransferDtoMapper {
                 bankingTransfer.getToAccount().getAccountNumber(),
                 bankingTransfer.getAmount(),
                 bankingTransfer.getStatus(),
+                bankingTransfer.getDescription(),
                 bankingTransfer.getCreatedAt(),
                 bankingTransfer.getUpdatedAt()
         );

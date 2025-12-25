@@ -11,6 +11,7 @@ public record BankingTransferDto(
         String toAccountNumber,
         BigDecimal amount,
         BankingTransferStatus status,
+        String description,
         Instant createdAt,
         Instant updatedAt
 ) {
