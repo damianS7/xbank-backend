@@ -1,6 +1,7 @@
 package com.damian.xBank.modules.banking.transfer.domain.entity;
 
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
+import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
 import com.damian.xBank.modules.banking.transfer.domain.enums.BankingTransferStatus;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferCurrencyMismatchException;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferNotOwnerException;
@@ -10,6 +11,9 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -36,6 +40,13 @@ public class BankingTransfer {
 
     @Column(length = 255, nullable = false)
     private String description;
+
+    @OneToMany(
+            mappedBy = "transfer",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<BankingTransaction> transactions = new ArrayList<>();
 
     @Column
     private Instant createdAt;
@@ -124,6 +135,15 @@ public class BankingTransfer {
     public BankingTransfer setFromAccount(BankingAccount fromAccount) {
         this.fromAccount = fromAccount;
         return this;
+    }
+
+    public void addTransaction(BankingTransaction tx) {
+        tx.setTransfer(this);
+        this.transactions.add(tx);
+    }
+
+    public List<BankingTransaction> getTransactions() {
+        return Collections.unmodifiableList(transactions);
     }
 
     public boolean isOwnedBy(Long customerId) {
