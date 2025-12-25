@@ -163,7 +163,7 @@ public class BankingTransfer {
      * Validate that current account and {@code toBankingAccount} have the same currency
      *
      * @return the current validator instance for chaining
-     * @throws BankingTransferCurrencyMismatchException if the account does not belong to the customer
+     * @throws BankingTransferCurrencyMismatchException if fromAccount and toAccount have different currencies
      */
     public BankingTransfer assertCurrenciesMatch() {
 
@@ -179,7 +179,7 @@ public class BankingTransfer {
      * Validate that current account and {@code toBankingAccount} are not the same
      *
      * @return the current validator instance for chaining
-     * @throws BankingTransferSameException if the account does not belong to the customer
+     * @throws BankingTransferSameException if fromAccount and toAccount are the same
      */
     public BankingTransfer assertDifferentAccounts() {
 
@@ -192,20 +192,20 @@ public class BankingTransfer {
     }
 
     /**
-     * Validate a transfer between current account and {@code toBankingAccount}.
+     * Assert a transfer between {@link #fromAccount} and {@link #toAccount} can be performed.
      *
-     * @return the current validator instance for chaining
-     * @throws BankingTransferCurrencyMismatchException if the account does not belong to the customer
-     * @throws BankingTransferSameException             if the account does not belong to the customer
-     */ // TODO assertCanCarryOperation? look for better naming
-    public BankingTransfer assertCanTransfer() {
-        // TODO check amount
-        //        this.fromAccount.assertSufficientFunds(amount);
+     * @return the current BankingTransfer
+     * @throws BankingTransferCurrencyMismatchException if fromAccount and toAccount have different currencies
+     * @throws BankingTransferSameException             if fromAccount and toAccount are the same
+     */
+    public BankingTransfer assertTransferPossible() {
+        // check fromAccount has funds
+        this.fromAccount.assertSufficientFunds(amount);
 
-        // check "account' and toBankingAccount are not the same
+        // check accounts are different
         this.assertDifferentAccounts();
 
-        // check currency are the same on both accounts
+        // check currencies are the same
         this.assertCurrenciesMatch();
 
         // check if the source account is active
