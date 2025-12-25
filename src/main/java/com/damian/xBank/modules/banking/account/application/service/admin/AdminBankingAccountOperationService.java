@@ -5,7 +5,7 @@ import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.transaction.application.dto.mapper.BankingTransactionDtoMapper;
-import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionAccountService;
+import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionService;
 import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
@@ -24,18 +24,18 @@ import java.util.Map;
 @Service
 public class AdminBankingAccountOperationService {
     private static final Logger log = LoggerFactory.getLogger(AdminBankingAccountOperationService.class);
-    private final BankingTransactionAccountService bankingTransactionAccountService;
+    private final BankingTransactionService bankingTransactionService;
     private final BankingAccountRepository bankingAccountRepository;
     private final NotificationService notificationService;
     private final AuthenticationContext authenticationContext;
 
     public AdminBankingAccountOperationService(
-            BankingTransactionAccountService bankingTransactionAccountService,
+            BankingTransactionService bankingTransactionService,
             BankingAccountRepository bankingAccountRepository,
             NotificationService notificationService,
             AuthenticationContext authenticationContext
     ) {
-        this.bankingTransactionAccountService = bankingTransactionAccountService;
+        this.bankingTransactionService = bankingTransactionService;
         this.bankingAccountRepository = bankingAccountRepository;
         this.notificationService = notificationService;
         this.authenticationContext = authenticationContext;
@@ -65,26 +65,23 @@ public class AdminBankingAccountOperationService {
         // Validate account is operable
         bankingAccount.assertActive();
 
-        BankingTransaction transaction = bankingTransactionAccountService.generateTransaction(
-                bankingAccount,
-                BankingTransactionType.DEPOSIT,
-                request.amount(),
-                "DEPOSIT by " + request.depositorName()
-        );
+        BankingTransaction transaction = BankingTransaction
+                .create()
+                .setBankingAccount(bankingAccount)
+                .setType(BankingTransactionType.DEPOSIT)
+                .setAmount(request.amount())
+                .setBalanceBefore(bankingAccount.getBalance())
+                .setBalanceAfter(bankingAccount.getBalance().add(request.amount()))
+                .setDescription("DEPOSIT by " + request.depositorName());
 
         // if the transaction is created, add the amount to balance
         bankingAccount.addBalance(request.amount());
-
-        // Set balance after with the new balance
-        transaction.setBalanceAfter(
-                bankingAccount.getBalance()
-        );
 
         // transaction is completed
         transaction.setStatus(BankingTransactionStatus.COMPLETED);
 
         // save the transaction
-        bankingTransactionAccountService.recordTransaction(transaction);
+        bankingTransactionService.record(transaction);
 
         // Notify receiver
         notificationService.publish(

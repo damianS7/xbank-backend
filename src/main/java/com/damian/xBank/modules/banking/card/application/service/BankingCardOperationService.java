@@ -6,8 +6,7 @@ import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoundException;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.banking.transaction.application.dto.mapper.BankingTransactionDtoMapper;
-import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionAccountService;
-import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionCardService;
+import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionService;
 import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
 import com.damian.xBank.modules.notification.application.service.NotificationService;
@@ -24,21 +23,18 @@ import java.util.Map;
 @Service
 public class BankingCardOperationService {
 
-    private final BankingTransactionAccountService bankingTransactionAccountService;
-    private final BankingTransactionCardService bankingTransactionCardService;
+    private final BankingTransactionService bankingTransactionService;
     private final BankingCardRepository bankingCardRepository;
     private final NotificationService notificationService;
     private final AuthenticationContext authenticationContext;
 
     public BankingCardOperationService(
-            BankingTransactionAccountService bankingTransactionAccountService,
-            BankingTransactionCardService bankingTransactionCardService,
+            BankingTransactionService bankingTransactionService,
             BankingCardRepository bankingCardRepository,
             NotificationService notificationService,
             AuthenticationContext authenticationContext
     ) {
-        this.bankingTransactionAccountService = bankingTransactionAccountService;
-        this.bankingTransactionCardService = bankingTransactionCardService;
+        this.bankingTransactionService = bankingTransactionService;
         this.bankingCardRepository = bankingCardRepository;
         this.notificationService = notificationService;
         this.authenticationContext = authenticationContext;
@@ -114,18 +110,18 @@ public class BankingCardOperationService {
             .assertCorrectPin(cardPin)
             .assertSufficientFunds(amount);
 
-        // store here the transaction as PENDING
-        BankingTransaction transaction = bankingTransactionCardService.generateTransaction(
-                card,
-                transactionType,
-                amount,
-                description
-        );
+        BankingTransaction transaction = BankingTransaction
+                .create()
+                .setBankingAccount(card.getBankingAccount())
+                .setBankingCard(card)
+                .setType(transactionType)
+                .setAmount(amount)
+                .setBalanceBefore(card.getBankingAccount().getBalance())
+                .setBalanceAfter(card.getBankingAccount().getBalance().subtract(amount))
+                .setDescription(description);
 
-        // set balance after the operation
-        transaction.setBalanceAfter(
-                card.getBankingAccount().getBalance().subtract(amount)
-        );
+        // store here the transaction as PENDING
+        bankingTransactionService.record(transaction);
 
         // Notify the user
         notificationService.publish(
