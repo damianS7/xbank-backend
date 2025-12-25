@@ -1,6 +1,8 @@
 package com.damian.xBank.modules.banking.transfer.infrastructure.controller;
 
+import com.damian.xBank.modules.banking.transfer.application.dto.mapper.BankingTransferDtoMapper;
 import com.damian.xBank.modules.banking.transfer.application.dto.request.BankingTransferRequest;
+import com.damian.xBank.modules.banking.transfer.application.dto.response.BankingTransferDto;
 import com.damian.xBank.modules.banking.transfer.application.service.BankingTransferService;
 import com.damian.xBank.modules.banking.transfer.domain.entity.BankingTransfer;
 import org.springframework.http.HttpStatus;
@@ -25,12 +27,12 @@ public class BankingTransferController {
             @RequestBody @Validated
             BankingTransferRequest request
     ) {
-        BankingTransfer transfer = bankingTransferService.initiate(request);
-        //        BankingTransferDto transferDto = BankingCardDtoMapper.toBankingCardSetDTO(bankingCards);
+        BankingTransfer transfer = bankingTransferService.createTransferFromRequest(request);
+        BankingTransferDto transferDto = BankingTransferDtoMapper.toBankingTransferDto(transfer);
 
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body("transferDto");
+                .status(HttpStatus.CREATED)
+                .body(transferDto);
     }
 
     @GetMapping("/banking/transfers/{id}/confirm")
