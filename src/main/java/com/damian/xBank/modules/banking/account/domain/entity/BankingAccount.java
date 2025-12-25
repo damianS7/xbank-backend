@@ -187,7 +187,7 @@ public class BankingAccount {
 
     public BankingAccount addBankingCard(BankingCard bankingCard) {
         if (bankingCard.getBankingAccount() != this) {
-            bankingCard.setAssociatedBankingAccount(this);
+            bankingCard.setBankingAccount(this);
         }
 
         this.bankingCards.add(bankingCard);

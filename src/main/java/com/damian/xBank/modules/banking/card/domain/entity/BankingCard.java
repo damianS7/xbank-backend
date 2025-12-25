@@ -120,7 +120,7 @@ public class BankingCard {
         return bankingAccount;
     }
 
-    public BankingCard setAssociatedBankingAccount(BankingAccount bankingAccount) {
+    public BankingCard setBankingAccount(BankingAccount bankingAccount) {
         this.bankingAccount = bankingAccount;
         return this;
     }

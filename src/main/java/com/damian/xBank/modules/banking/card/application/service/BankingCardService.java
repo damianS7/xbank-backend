@@ -57,7 +57,7 @@ public class BankingCardService {
         bankingCard.setCardType(cardType);
         bankingCard.setCreatedAt(Instant.now());
         bankingCard.setUpdatedAt(Instant.now());
-        bankingCard.setAssociatedBankingAccount(bankingAccount);
+        bankingCard.setBankingAccount(bankingAccount);
 
         // save the card
         return bankingCardRepository.save(bankingCard);
