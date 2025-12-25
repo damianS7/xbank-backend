@@ -5,6 +5,7 @@ import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotOwnerException;
+import com.damian.xBank.modules.banking.transfer.domain.entity.BankingTransfer;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -25,6 +26,10 @@ public class BankingTransaction {
     @ManyToOne
     @JoinColumn(name = "card_id", referencedColumnName = "id")
     private BankingCard bankingCard;
+
+    @ManyToOne
+    @JoinColumn(name = "transfer_id", referencedColumnName = "id")
+    private BankingTransfer transfer;
 
     @Column(precision = 15, scale = 2)
     private BigDecimal amount;
@@ -115,7 +120,6 @@ public class BankingTransaction {
         return this;
     }
 
-
     public BankingTransactionStatus getStatus() {
         return status;
     }
@@ -128,6 +132,15 @@ public class BankingTransaction {
     public BankingTransaction updateStatus(BankingTransactionStatus toStatus) {
         this.status.validateTransition(toStatus);
         this.status = toStatus;
+        return this;
+    }
+
+    public BankingTransfer getTransfer() {
+        return transfer;
+    }
+
+    public BankingTransaction setTransfer(BankingTransfer transfer) {
+        this.transfer = transfer;
         return this;
     }
 

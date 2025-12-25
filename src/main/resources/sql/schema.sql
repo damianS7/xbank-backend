@@ -192,6 +192,7 @@ CREATE CAST (varchar as banking_transaction_type) WITH INOUT AS IMPLICIT;
 CREATE TABLE public.banking_transactions (
 	id int4 GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	account_id int4 NOT NULL,
+	transfer_id int4 NULL,
 	card_id int4 NULL,
 	balance_before numeric(15, 2) NOT NULL,
 	balance_after numeric(15, 2) NOT NULL,
@@ -204,9 +205,12 @@ CREATE TABLE public.banking_transactions (
 	CONSTRAINT fk_transactions_account FOREIGN KEY (account_id)
             REFERENCES public.banking_accounts(id)
             ON DELETE CASCADE,
-        CONSTRAINT fk_transactions_card FOREIGN KEY (card_id)
-            REFERENCES public.banking_cards(id)
-            ON DELETE SET NULL
+    CONSTRAINT fk_transactions_card FOREIGN KEY (card_id)
+        REFERENCES public.banking_cards(id)
+        ON DELETE SET NULL,
+    CONSTRAINT fk_transactions_transfer FOREIGN KEY (transfer_id)
+        REFERENCES public.banking_transfers(id)
+        ON DELETE SET NULL
 );
 
 -- Banking Transfers
