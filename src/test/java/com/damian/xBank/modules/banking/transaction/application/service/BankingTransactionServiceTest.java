@@ -7,10 +7,13 @@ import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountR
 import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
+import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotFoundException;
+import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotOwnerException;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.AbstractServiceTest;
+import com.damian.xBank.shared.exception.ErrorCodes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,6 +24,7 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -85,8 +89,64 @@ public class BankingTransactionServiceTest extends AbstractServiceTest {
         assertThat(retrievedTransaction.getDescription()).isEqualTo(givenTransaction.getDescription());
     }
 
-    // TODO shouldNotGetTransactionByIdWhenIdNotExists
-    // TODO shouldNotGetTransactionByIdWhenUserIsNotOwner
+    @Test
+    @DisplayName("Should fail to get a transaction by id when not exists")
+    void shouldGetTransactionByIdWhenNotExists() {
+        // given
+        setUpContext(customer);
+
+        // when
+        when(bankingTransactionRepository.findById(anyLong()))
+                .thenReturn(Optional.empty());
+
+        BankingTransactionNotFoundException exception = assertThrows(
+                BankingTransactionNotFoundException.class,
+                () -> bankingTransactionService.getTransaction(1L)
+
+        );
+        // then
+        assertThat(exception)
+                .isNotNull()
+                .hasMessage(ErrorCodes.BANKING_TRANSACTION_NOT_FOUND);
+    }
+
+    @Test
+    @DisplayName("Should fail to get a transaction by id when not owner")
+    void shouldGetTransactionByIdWhenNotOwner() {
+        // given
+        setUpContext(customer);
+
+        Customer otherCustomer = Customer.create(
+                UserAccount.create()
+                           .setId(2L)
+                           .setEmail("otherCustomer@demo.com")
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+        ).setId(2L);
+
+        customerBankingAccount.setOwner(otherCustomer);
+
+        BankingTransaction givenTransaction = BankingTransaction
+                .create()
+                .setId(1L)
+                .setBankingAccount(customerBankingAccount)
+                .setAmount(BigDecimal.valueOf(100))
+                .setType(BankingTransactionType.DEPOSIT)
+                .setDescription("Deposit transaction");
+
+        // when
+        when(bankingTransactionRepository.findById(anyLong()))
+                .thenReturn(Optional.of(givenTransaction));
+
+        BankingTransactionNotOwnerException exception = assertThrows(
+                BankingTransactionNotOwnerException.class,
+                () -> bankingTransactionService.getTransaction(givenTransaction.getId())
+
+        );
+        // then
+        assertThat(exception)
+                .isNotNull()
+                .hasMessage(ErrorCodes.BANKING_TRANSACTION_NOT_OWNER);
+    }
 
     @Test
     @DisplayName("Should get account transactions by id")
@@ -177,7 +237,7 @@ public class BankingTransactionServiceTest extends AbstractServiceTest {
 
     @Test
     @DisplayName("Should confirm a transaction")
-    void shouldConfirmTransaction() {
+    void shouldCompleteTransaction() {
         // given
         BankingTransaction givenTransaction = BankingTransaction
                 .create()
