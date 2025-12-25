@@ -146,6 +146,18 @@ public class BankingTransfer {
         return Collections.unmodifiableList(transactions);
     }
 
+    public BankingTransaction getFromTransaction() {
+        return getTransactions().stream().filter(
+                tx -> tx.isOwnedBy(fromAccount.getOwner().getId())
+        ).findFirst().orElseThrow();
+    }
+
+    public BankingTransaction getToTransaction() {
+        return getTransactions().stream().filter(
+                tx -> tx.isOwnedBy(toAccount.getOwner().getId())
+        ).findFirst().orElseThrow();
+    }
+
     public boolean isOwnedBy(Long customerId) {
 
         // compare account owner id with given customer id
@@ -170,11 +182,13 @@ public class BankingTransfer {
     }
 
     public void confirm() {
+        this.status.validateTransition(BankingTransferStatus.CONFIRMED);
         this.status = BankingTransferStatus.CONFIRMED;
         this.updatedAt = Instant.now();
     }
 
     public void reject() {
+        this.status.validateTransition(BankingTransferStatus.REJECTED);
         this.status = BankingTransferStatus.REJECTED;
         this.updatedAt = Instant.now();
     }
