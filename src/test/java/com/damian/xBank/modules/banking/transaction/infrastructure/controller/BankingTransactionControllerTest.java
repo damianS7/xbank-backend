@@ -5,7 +5,6 @@ import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurre
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountType;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
-import com.damian.xBank.modules.banking.transaction.application.dto.request.BankingTransactionConfirmRequest;
 import com.damian.xBank.modules.banking.transaction.application.dto.response.BankingTransactionDto;
 import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
@@ -20,7 +19,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.math.BigDecimal;
@@ -28,7 +26,6 @@ import java.time.LocalDate;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -225,11 +222,10 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("Should confirm transaction")
-    void shouldConfirmTransaction() throws Exception {
+    @DisplayName("Should get paged card transactions")
+    void shouldGetCardTransactions() throws Exception {
         // given
         login(customer);
-
         BankingTransaction transaction = BankingTransaction
                 .create()
                 .setBankingAccount(customerBankingAccount)
@@ -237,68 +233,51 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
                 .setDescription("Amazon.com")
                 .setBalanceBefore(BigDecimal.valueOf(100))
                 .setBalanceAfter(BigDecimal.valueOf(0))
-                .setStatus(BankingTransactionStatus.PENDING)
+                .setStatus(BankingTransactionStatus.COMPLETED)
                 .setAmount(BigDecimal.valueOf(100))
                 .setType(BankingTransactionType.CARD_CHARGE);
 
         customerBankingAccount.addTransaction(transaction);
-        transactionRepository.save(transaction);
-
-        BankingTransactionConfirmRequest request = new BankingTransactionConfirmRequest(
-                RAW_PASSWORD
-        );
+        bankingAccountRepository.save(customerBankingAccount);
 
         // when
         // then
-        MvcResult result = mockMvc.perform(post("/api/v1/banking/transactions/{id}/confirm", transaction.getId())
-                                          .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                                          .contentType(MediaType.APPLICATION_JSON)
-                                          .content(objectMapper.writeValueAsString(request)))
+        MvcResult result = mockMvc.perform(get("/api/v1/banking/cards/{id}/transactions", customerBankingCard.getId())
+                                          .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
                                   .andDo(print())
                                   .andExpect(status().is(200))
                                   .andReturn();
 
-        BankingTransactionDto transactionResponseDto = objectMapper.readValue(
-                result.getResponse().getContentAsString(),
-                BankingTransactionDto.class
+        String json = result.getResponse().getContentAsString();
+        JsonNode root = objectMapper.readTree(json);
+        JsonNode contentNode = root.get("content");
+
+        BankingTransactionDto[] transactionResponseDto = objectMapper.readValue(
+                contentNode.toString(),
+                BankingTransactionDto[].class
         );
 
         assertThat(transactionResponseDto).isNotNull();
-        assertThat(transactionResponseDto.status()).isEqualTo(BankingTransactionStatus.COMPLETED);
+        assertThat(transactionResponseDto)
+                .allSatisfy(tx -> {
+                    assertThat(tx.accountId()).isEqualTo(customerBankingAccount.getId());
+                    assertThat(tx.cardId()).isEqualTo(customerBankingCard.getId());
+                });
+
     }
 
     @Test
-    @DisplayName("Should fail to confirm transaction when password is wrong")
-    void shouldFailToConfirmTransactionWhenPasswordIsWrong() throws Exception {
+    @DisplayName("Should get paged account transactions")
+    void shouldGetAccountTransactions() throws Exception {
         // given
         login(customer);
 
-        BankingTransaction transaction = BankingTransaction
-                .create()
-                .setBankingAccount(customerBankingAccount)
-                .setBankingCard(customerBankingCard)
-                .setDescription("Amazon.com")
-                .setBalanceBefore(BigDecimal.valueOf(100))
-                .setBalanceAfter(BigDecimal.valueOf(0))
-                .setStatus(BankingTransactionStatus.PENDING)
-                .setAmount(BigDecimal.valueOf(100))
-                .setType(BankingTransactionType.CARD_CHARGE);
-
-        customerBankingAccount.addTransaction(transaction);
-        transactionRepository.save(transaction);
-
-        BankingTransactionConfirmRequest request = new BankingTransactionConfirmRequest(
-                "BAD_PASSWORD"
-        );
-
         // when
         // then
-        mockMvc.perform(post("/api/v1/banking/transactions/{id}/confirm", transaction.getId())
-                       .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                       .contentType(MediaType.APPLICATION_JSON)
-                       .content(objectMapper.writeValueAsString(request)))
+        mockMvc.perform(get("/api/v1/banking/accounts/{id}/transactions", customerBankingAccount.getId())
+                       .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
                .andDo(print())
-               .andExpect(status().is(403))
-               .andReturn();
+               .andExpect(status().is(200));
+
     }
 }
