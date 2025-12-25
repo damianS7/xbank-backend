@@ -3,7 +3,7 @@ package com.damian.xBank.modules.banking.account.application.service.admin;
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountDepositRequest;
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
-import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionAccountService;
+import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionService;
 import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
@@ -34,7 +34,7 @@ public class AdminBankingAccountOperationServiceTest extends AbstractServiceTest
     private BankingAccountRepository bankingAccountRepository;
 
     @Mock
-    private BankingTransactionAccountService bankingTransactionAccountService;
+    private BankingTransactionService bankingTransactionService;
 
     @Mock
     private NotificationService notificationService;
@@ -71,14 +71,14 @@ public class AdminBankingAccountOperationServiceTest extends AbstractServiceTest
         when(bankingAccountRepository.findById(customerBankingAccount.getId())).thenReturn(Optional.of(
                 customerBankingAccount));
 
-        when(bankingTransactionAccountService.generateTransaction(
+        when(bankingTransactionService.record(
                 any(BankingAccount.class),
                 any(BankingTransactionType.class),
                 any(BigDecimal.class),
                 any(String.class)
         )).thenReturn(transaction);
 
-        when(bankingTransactionAccountService.recordTransaction(
+        when(bankingTransactionService.record(
                 any(BankingTransaction.class)
         )).thenReturn(transaction);
 

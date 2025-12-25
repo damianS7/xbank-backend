@@ -9,8 +9,7 @@ import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.domain.exception.*;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
-import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionAccountService;
-import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionCardService;
+import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionService;
 import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
@@ -40,10 +39,7 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
     private NotificationService notificationService;
 
     @Mock
-    private BankingTransactionAccountService bankingTransactionAccountService;
-
-    @Mock
-    private BankingTransactionCardService bankingTransactionCardService;
+    private BankingTransactionService bankingTransactionService;
 
     @Mock
     private BankingCardRepository bankingCardRepository;
@@ -76,7 +72,7 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
         customerBankingCard = BankingCard
                 .create()
                 .setId(11L)
-                .setAssociatedBankingAccount(customerBankingAccount)
+                .setBankingAccount(customerBankingAccount)
                 .setCardNumber("1234123412341234")
                 .setCardCvv("123")
                 .setCardPin("1234");
@@ -100,7 +96,7 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
         givenBankingTransaction.setDescription(spendRequest.description());
 
         when(bankingCardRepository.findById(anyLong())).thenReturn(Optional.of(customerBankingCard));
-        when(bankingTransactionCardService.generateTransaction(
+        when(bankingTransactionService.record(
                 any(BankingCard.class),
                 any(BankingTransactionType.class),
                 any(BigDecimal.class),
@@ -310,7 +306,7 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
         givenBankingTransaction.setDescription("WITHDRAWAL");
 
         when(bankingCardRepository.findById(anyLong())).thenReturn(Optional.of(customerBankingCard));
-        when(bankingTransactionCardService.generateTransaction(
+        when(bankingTransactionService.record(
                 any(BankingCard.class),
                 any(BankingTransactionType.class),
                 any(BigDecimal.class),

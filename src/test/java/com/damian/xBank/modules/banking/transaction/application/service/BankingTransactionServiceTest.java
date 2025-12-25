@@ -73,7 +73,7 @@ public class BankingTransactionServiceTest extends AbstractServiceTest {
 
         customerBankingCard = BankingCard
                 .create()
-                .setAssociatedBankingAccount(customerBankingAccount)
+                .setBankingAccount(customerBankingAccount)
                 .setId(1L);
     }
 
