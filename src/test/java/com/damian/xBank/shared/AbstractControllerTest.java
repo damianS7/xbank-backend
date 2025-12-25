@@ -6,6 +6,7 @@ import com.damian.xBank.modules.auth.application.dto.AuthenticationResponse;
 import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
+import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
 import com.damian.xBank.modules.notification.infra.repository.NotificationRepository;
 import com.damian.xBank.modules.setting.infrastructure.repository.SettingRepository;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
@@ -59,6 +60,9 @@ public abstract class AbstractControllerTest {
     protected CustomerRepository customerRepository;
 
     @Autowired
+    protected BankingTransferRepository transferRepository;
+
+    @Autowired
     protected BankingTransactionRepository transactionRepository;
 
     @Autowired
@@ -88,6 +92,7 @@ public abstract class AbstractControllerTest {
     void tearDown() {
         notificationRepository.deleteAll();
         settingRepository.deleteAll();
+        transferRepository.deleteAll();
         transactionRepository.deleteAll();
         bankingCardRepository.deleteAll();
         bankingAccountRepository.deleteAll();
