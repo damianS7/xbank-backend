@@ -68,18 +68,6 @@ public class BankingTransactionService {
     }
 
     /**
-     * Returns a paginated result containing the transactions from a customer.
-     *
-     * @param pageable
-     * @return
-     */
-    public Page<BankingTransaction> getCustomerTransactions(Pageable pageable) {
-        // Customer logged
-        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
-        return bankingTransactionRepository.findByBankingCustomerId(currentCustomer.getId(), pageable);
-    }
-
-    /**
      * Returns a paginated result containing the transactions from a banking account.
      *
      * @param accountId
@@ -133,17 +121,6 @@ public class BankingTransactionService {
         }
 
         return bankingTransactionRepository.findByBankingCardId(cardId, pageable);
-    }
-
-    /**
-     * TODO
-     *
-     * @param transferId
-     * @param pageable
-     * @return
-     */
-    public Page<BankingTransaction> getTransferTransactions(Long transferId, Pageable pageable) {
-        return bankingTransactionRepository.findByBankingTransferId(transferId, pageable);
     }
 
     /**
