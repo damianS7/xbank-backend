@@ -4,6 +4,8 @@ import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
+import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
+import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
@@ -19,8 +21,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,6 +41,9 @@ public class BankingTransactionServiceTest extends AbstractServiceTest {
     private BankingAccountRepository bankingAccountRepository;
 
     @Mock
+    private BankingCardRepository bankingCardRepository;
+
+    @Mock
     private BankingTransactionRepository bankingTransactionRepository;
 
     @InjectMocks
@@ -41,6 +51,7 @@ public class BankingTransactionServiceTest extends AbstractServiceTest {
 
     private Customer customer;
     private BankingAccount customerBankingAccount;
+    private BankingCard customerBankingCard;
 
     @BeforeEach
     void setUp() {
@@ -59,11 +70,16 @@ public class BankingTransactionServiceTest extends AbstractServiceTest {
                 .setAccountCurrency(BankingAccountCurrency.EUR)
                 .setAccountType(BankingAccountType.SAVINGS)
                 .setAccountNumber("US9900001111112233334444");
+
+        customerBankingCard = BankingCard
+                .create()
+                .setAssociatedBankingAccount(customerBankingAccount)
+                .setId(1L);
     }
 
     @Test
-    @DisplayName("Should get a transaction by id")
-    void shouldGetTransactionById() {
+    @DisplayName("Should get a transaction when exists and is owner")
+    void getTransaction_ExistsAndIsOwner_ReturnsTransaction() {
         // given
         setUpContext(customer);
 
@@ -90,8 +106,8 @@ public class BankingTransactionServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should fail to get a transaction by id when not exists")
-    void shouldGetTransactionByIdWhenNotExists() {
+    @DisplayName("Should fail to get a transaction when not exists")
+    void getTransaction_NotExists_ThrowNotFoundException() {
         // given
         setUpContext(customer);
 
@@ -111,8 +127,8 @@ public class BankingTransactionServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should fail to get a transaction by id when not owner")
-    void shouldGetTransactionByIdWhenNotOwner() {
+    @DisplayName("Should fail to get a transaction when exist but customer its not owner")
+    void getTransaction_NotOwner_ThrowNotOwnerException() {
         // given
         setUpContext(customer);
 
@@ -149,10 +165,12 @@ public class BankingTransactionServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should get account transactions by id")
-    void shouldGetAccountTransactionsById() {
+    @DisplayName("Should get all account transactions")
+    void getAccountTransactions_ValidAccountId_ReturnsAllTransactions() {
         // given
         setUpContext(customer);
+
+        Pageable pageable = PageRequest.of(0, 10);
 
         BankingTransaction givenTransaction = BankingTransaction
                 .create()
@@ -162,51 +180,77 @@ public class BankingTransactionServiceTest extends AbstractServiceTest {
                 .setType(BankingTransactionType.DEPOSIT)
                 .setDescription("Deposit transaction");
 
-        // when
-        when(bankingTransactionRepository.findById(givenTransaction.getId()))
-                .thenReturn(Optional.of(givenTransaction));
+        Page<BankingTransaction> page = new PageImpl<>(
+                List.of(givenTransaction),
+                pageable,
+                1
+        );
 
-        BankingTransaction retrievedTransaction = bankingTransactionService
-                .getTransaction(givenTransaction.getId());
+        // when
+        when(bankingAccountRepository.findById(customerBankingAccount.getId()))
+                .thenReturn(Optional.of(customerBankingAccount));
+
+        when(bankingTransactionRepository.findByBankingAccountId(
+                customerBankingAccount.getId(), pageable))
+                .thenReturn(page);
+
+        Page<BankingTransaction> paginatedTransactions = bankingTransactionService
+                .getAccountTransactions(
+                        customerBankingAccount.getId(),
+                        pageable
+                );
 
         // then
-        assertThat(retrievedTransaction).isNotNull();
-        assertThat(retrievedTransaction.getAmount()).isEqualTo(givenTransaction.getAmount());
-        assertThat(retrievedTransaction.getType()).isEqualTo(givenTransaction.getType());
-        assertThat(retrievedTransaction.getDescription()).isEqualTo(givenTransaction.getDescription());
+        assertThat(paginatedTransactions)
+                .isNotNull()
+                .hasSize(1);
     }
 
     @Test
-    @DisplayName("Should get account transactions by id")
-    void shouldGetCardTransactionsById() {
+    @DisplayName("Should get card transactions")
+    void getCardTransactions_ValidCardId_ReturnsAllTransactions() {
         // given
         setUpContext(customer);
+
+        Pageable pageable = PageRequest.of(0, 10);
 
         BankingTransaction givenTransaction = BankingTransaction
                 .create()
                 .setId(1L)
-                .setBankingAccount(customerBankingAccount)
+                .setBankingCard(customerBankingCard)
                 .setAmount(BigDecimal.valueOf(100))
-                .setType(BankingTransactionType.DEPOSIT)
+                .setType(BankingTransactionType.CARD_CHARGE)
                 .setDescription("Deposit transaction");
 
-        // when
-        when(bankingTransactionRepository.findById(givenTransaction.getId()))
-                .thenReturn(Optional.of(givenTransaction));
+        Page<BankingTransaction> page = new PageImpl<>(
+                List.of(givenTransaction),
+                pageable,
+                1
+        );
 
-        BankingTransaction retrievedTransaction = bankingTransactionService
-                .getTransaction(givenTransaction.getId());
+        // when
+        when(bankingCardRepository.findById(customerBankingCard.getId()))
+                .thenReturn(Optional.of(customerBankingCard));
+
+        when(bankingTransactionRepository.findByBankingCardId(
+                customerBankingCard.getId(), pageable))
+                .thenReturn(page);
+
+        Page<BankingTransaction> paginatedTransactions = bankingTransactionService
+                .getCardTransactions(
+                        customerBankingCard.getId(),
+                        pageable
+                );
 
         // then
-        assertThat(retrievedTransaction).isNotNull();
-        assertThat(retrievedTransaction.getAmount()).isEqualTo(givenTransaction.getAmount());
-        assertThat(retrievedTransaction.getType()).isEqualTo(givenTransaction.getType());
-        assertThat(retrievedTransaction.getDescription()).isEqualTo(givenTransaction.getDescription());
+        assertThat(paginatedTransactions)
+                .isNotNull()
+                .hasSize(1);
     }
 
     @Test
     @DisplayName("Should record a transaction")
-    void shouldRecordTransaction() {
+    void recordTransaction_ValidTransaction_SavesAndReturns() {
         // given
         BankingTransaction givenTransaction = BankingTransaction
                 .create()
@@ -237,7 +281,7 @@ public class BankingTransactionServiceTest extends AbstractServiceTest {
 
     @Test
     @DisplayName("Should confirm a transaction")
-    void shouldCompleteTransaction() {
+    void completeTransaction_PendingTransaction_ChangesStatusToCompleted() {
         // given
         BankingTransaction givenTransaction = BankingTransaction
                 .create()
@@ -264,7 +308,7 @@ public class BankingTransactionServiceTest extends AbstractServiceTest {
 
     @Test
     @DisplayName("Should reject a transaction")
-    void shouldRejectTransaction() {
+    void rejectTransaction_PendingTransaction_ChangesStatusToRejected() {
         // given
         BankingTransaction givenTransaction = BankingTransaction
                 .create()
