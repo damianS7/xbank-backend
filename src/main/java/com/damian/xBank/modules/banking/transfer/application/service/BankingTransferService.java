@@ -1,68 +1,134 @@
 package com.damian.xBank.modules.banking.transfer.application.service;
 
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
-import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
-import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionAccountService;
-import com.damian.xBank.modules.banking.transfer.application.dto.request.BankingTransferRequest;
+import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionService;
+import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
+import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
+import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
 import com.damian.xBank.modules.banking.transfer.domain.entity.BankingTransfer;
-import com.damian.xBank.modules.notification.application.service.NotificationService;
+import com.damian.xBank.modules.banking.transfer.domain.enums.BankingTransferStatus;
+import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferNotFoundException;
+import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.security.AuthenticationContext;
-import com.damian.xBank.shared.security.PasswordValidator;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 
 @Service
 public class BankingTransferService {
 
-    private final BankingTransactionAccountService bankingTransactionAccountService;
+    private final BankingTransactionService bankingTransactionService;
     private final BankingAccountRepository bankingAccountRepository;
-    private final NotificationService notificationService;
-    private final PasswordValidator passwordValidator;
+    private final BankingTransferRepository transferRepository;
     private final AuthenticationContext authenticationContext;
 
     public BankingTransferService(
-            BankingTransactionAccountService bankingTransactionAccountService,
+            BankingTransactionService bankingTransactionService,
             BankingAccountRepository bankingAccountRepository,
-            NotificationService notificationService,
-            PasswordValidator passwordValidator,
+            BankingTransferRepository transferRepository,
             AuthenticationContext authenticationContext
     ) {
-        this.bankingTransactionAccountService = bankingTransactionAccountService;
+        this.bankingTransactionService = bankingTransactionService;
         this.bankingAccountRepository = bankingAccountRepository;
-        this.notificationService = notificationService;
-        this.passwordValidator = passwordValidator;
+        this.transferRepository = transferRepository;
         this.authenticationContext = authenticationContext;
     }
 
     /**
-     * Initiate a transfer from one banking account to another.
-     * It generates the transaction but does not commit any funds yet.
+     * Create a new transfer and stores it as PENDING.
+     * It does not commit any funds until the transfer is confirmed.
      *
-     * @param request Transfer request containing the details
+     * @param fromAccount
+     * @param toAccount
+     * @param amount
+     * @param description
      * @return the created BankingTransfer
      */
-    public BankingTransfer initiate(BankingTransferRequest request) {
+    @Transactional
+    public BankingTransfer createTransfer(
+            BankingAccount fromAccount,
+            BankingAccount toAccount,
+            BigDecimal amount,
+            String description
+    ) {
 
         // Customer logged
-        final Customer customer = authenticationContext.getCurrentCustomer();
+        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
 
-        // Banking account from where funds will be transfered.
-        final BankingAccount fromAccount = bankingAccountRepository
-                .findById(request.fromAccountId())
-                .orElseThrow(
-                        () -> new BankingAccountNotFoundException(request.fromAccountId())
-                );
+        // assert currentCustomer is the owner of fromAccount
+        fromAccount.assertOwnedBy(currentCustomer.getId());
 
-        return null;
+        // Create the transfer
+        BankingTransfer transfer = BankingTransfer.create()
+                                                  .setFromAccount(fromAccount)
+                                                  .setStatus(BankingTransferStatus.PENDING)
+                                                  .setAmount(amount)
+                                                  .setDescription(description)
+                                                  .setToAccount(toAccount);
+
+        // validate transfer
+        transfer.assertTransferPossible();
+
+        // Generate transactions
+        BankingTransaction fromTransaction = BankingTransaction
+                .create()
+                .setBankingAccount(fromAccount)
+                .setType(BankingTransactionType.TRANSFER_TO)
+                .setStatus(BankingTransactionStatus.PENDING)
+                .setBalanceAfter(fromAccount.getBalance().subtract(amount))
+                .setAmount(amount)
+                .setDescription(description);
+
+        transfer.addTransaction(fromTransaction);
+
+        // create transfer transaction for the receiver of the funds
+        BankingTransaction toTransaction = BankingTransaction
+                .create()
+                .setBankingAccount(toAccount)
+                .setType(BankingTransactionType.TRANSFER_FROM)
+                .setStatus(BankingTransactionStatus.PENDING)
+                .setBalanceAfter(toAccount.getBalance().add(amount))
+                .setAmount(amount)
+                .setDescription("Transfer from " + fromAccount.getOwner().getFullName());
+
+        transfer.addTransaction(toTransaction);
+
+        return transferRepository.save(transfer);
     }
 
-    public void confirm(Long transferId) {
+    @Transactional
+    public BankingTransfer confirm(BankingTransfer transfer) {
+        // confirm transfer
+        transfer.confirm();
 
+        BankingAccount fromAccount = transfer.getFromAccount();
+        BankingAccount toAccount = transfer.getToAccount();
+
+        // update balances
+        fromAccount.subtractBalance(transfer.getAmount());
+        toAccount.addBalance(transfer.getAmount());
+
+        // Confirm transactions
+        transfer.getTransactions().forEach(bankingTransactionService::complete);
+
+        // Save
+        bankingAccountRepository.save(fromAccount);
+        bankingAccountRepository.save(toAccount);
+
+        return transferRepository.save(transfer);
     }
 
-    public void reject(Long transferId) {
+    public BankingTransfer reject(Long transferId) {
+        BankingTransfer transfer = transferRepository.findById(transferId).orElseThrow(
+                () -> new BankingTransferNotFoundException(transferId)
+        );
 
+        transfer.reject();
+
+        return transferRepository.save(transfer);
     }
 
 }
