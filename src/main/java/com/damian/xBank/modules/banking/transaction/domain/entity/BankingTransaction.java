@@ -198,6 +198,18 @@ public class BankingTransaction {
         return this;
     }
 
+    public void confirm() {
+        this.status.validateTransition(BankingTransactionStatus.COMPLETED);
+        this.status = BankingTransactionStatus.COMPLETED;
+        this.updatedAt = Instant.now();
+    }
+
+    public void reject() {
+        this.status.validateTransition(BankingTransactionStatus.REJECTED);
+        this.status = BankingTransactionStatus.REJECTED;
+        this.updatedAt = Instant.now();
+    }
+
     /**
      * Assert the ownership of the transaction.
      *
