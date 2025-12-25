@@ -68,6 +68,18 @@ public class BankingTransactionService {
     }
 
     /**
+     * Returns a paginated result containing the transactions from a customer.
+     *
+     * @param pageable
+     * @return
+     */
+    public Page<BankingTransaction> getCustomerTransactions(Pageable pageable) {
+        // Customer logged
+        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
+        return bankingTransactionRepository.findByBankingCustomerId(currentCustomer.getId(), pageable);
+    }
+
+    /**
      * Returns a paginated result containing the transactions from a banking account.
      *
      * @param accountId
@@ -151,9 +163,9 @@ public class BankingTransactionService {
         );
     }
 
-
     /**
-     * Stores a banking account transaction by adding it to the owner's account and persisting the account.
+     * Stores a banking account transaction by adding it to the owner's account
+     * and persisting the account.
      *
      * @param transaction the banking account transaction to store
      * @return the stored banking account transaction
@@ -170,7 +182,6 @@ public class BankingTransactionService {
         return bankingTransactionRepository.save(transaction);
     }
 
-    @Transactional
     public BankingTransaction record(
             BankingAccount account,
             BankingTransactionType transactionType,
@@ -189,7 +200,6 @@ public class BankingTransactionService {
         return this.record(transaction);
     }
 
-    @Transactional
     public BankingTransaction record(
             BankingCard card,
             BankingTransactionType transactionType,
@@ -208,13 +218,13 @@ public class BankingTransactionService {
         return this.record(transaction);
     }
 
-    public void complete(BankingTransaction transaction) {
+    public BankingTransaction complete(BankingTransaction transaction) {
         transaction.complete();
-        bankingTransactionRepository.save(transaction);
+        return bankingTransactionRepository.save(transaction);
     }
 
-    public void reject(BankingTransaction transaction) {
-        transaction.complete();
-        bankingTransactionRepository.save(transaction);
+    public BankingTransaction reject(BankingTransaction transaction) {
+        transaction.reject();
+        return bankingTransactionRepository.save(transaction);
     }
 }
