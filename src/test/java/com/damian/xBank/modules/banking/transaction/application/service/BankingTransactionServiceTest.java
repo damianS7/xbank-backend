@@ -71,8 +71,7 @@ public class BankingTransactionServiceTest extends AbstractServiceTest {
                 .setAccountNumber("US9900001111112233334444");
 
         customerBankingCard = BankingCard
-                .create()
-                .setBankingAccount(customerBankingAccount)
+                .create(customerBankingAccount)
                 .setId(1L);
     }
 

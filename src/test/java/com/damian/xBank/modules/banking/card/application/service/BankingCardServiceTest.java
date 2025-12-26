@@ -54,9 +54,8 @@ public class BankingCardServiceTest extends AbstractServiceTest {
 
 
         customerBankingCard = BankingCard
-                .create()
+                .create(customerBankingAccount)
                 .setId(11L)
-                .setBankingAccount(customerBankingAccount)
                 .setCardNumber("1234123412341234")
                 .setCardCvv("123")
                 .setCardPin("1234");

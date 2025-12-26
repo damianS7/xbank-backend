@@ -65,15 +65,8 @@ public class BankingCard {
         this.bankingAccount = bankingAccount;
     }
 
-    public BankingCard(BankingAccount bankingAccount, String cardNumber, BankingCardType cardType) {
-        this();
-        this.bankingAccount = bankingAccount;
-        this.cardNumber = cardNumber;
-        this.cardType = cardType;
-    }
-
-    public static BankingCard create() {
-        return new BankingCard();
+    public static BankingCard create(BankingAccount bankingAccount) {
+        return new BankingCard(bankingAccount);
     }
 
     public Long getId() {

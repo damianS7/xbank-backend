@@ -130,8 +130,7 @@ public class BankingTransactionTest {
         // given
         BankingAccount account = BankingAccount.create(customer);
 
-        BankingCard card = BankingCard.create()
-                                      .setBankingAccount(account);
+        BankingCard card = BankingCard.create(account);
 
         // when
         BankingTransaction result = transaction.setBankingCard(card);

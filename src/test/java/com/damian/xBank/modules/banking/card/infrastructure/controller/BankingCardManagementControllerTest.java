@@ -64,9 +64,8 @@ public class BankingCardManagementControllerTest extends AbstractControllerTest 
 
 
         customerBankingCard = BankingCard
-                .create()
+                .create(customerBankingAccount)
                 .setCardStatus(BankingCardStatus.ACTIVE)
-                .setBankingAccount(customerBankingAccount)
                 .setCardNumber("1234123412341234")
                 .setCardCvv("123")
                 .setCardPin("1234");

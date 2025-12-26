@@ -236,11 +236,11 @@ public class BankingAccountCardManagementServiceTest extends AbstractServiceTest
         BankingAccount givenBankAccount = new BankingAccount(customer);
         givenBankAccount.setId(1L);
         givenBankAccount.setAccountNumber("US9900001111112233334444");
-        givenBankAccount.addBankingCard(BankingCard.create().setCardStatus(BankingCardStatus.ACTIVE));
-        givenBankAccount.addBankingCard(BankingCard.create().setCardStatus(BankingCardStatus.ACTIVE));
-        givenBankAccount.addBankingCard(BankingCard.create().setCardStatus(BankingCardStatus.ACTIVE));
-        givenBankAccount.addBankingCard(BankingCard.create().setCardStatus(BankingCardStatus.ACTIVE));
-        givenBankAccount.addBankingCard(BankingCard.create().setCardStatus(BankingCardStatus.ACTIVE));
+        givenBankAccount.addBankingCard(BankingCard.create(givenBankAccount).setCardStatus(BankingCardStatus.ACTIVE));
+        givenBankAccount.addBankingCard(BankingCard.create(givenBankAccount).setCardStatus(BankingCardStatus.ACTIVE));
+        givenBankAccount.addBankingCard(BankingCard.create(givenBankAccount).setCardStatus(BankingCardStatus.ACTIVE));
+        givenBankAccount.addBankingCard(BankingCard.create(givenBankAccount).setCardStatus(BankingCardStatus.ACTIVE));
+        givenBankAccount.addBankingCard(BankingCard.create(givenBankAccount).setCardStatus(BankingCardStatus.ACTIVE));
 
         BankingAccountCardRequest request = new BankingAccountCardRequest(BankingCardType.CREDIT);
 
