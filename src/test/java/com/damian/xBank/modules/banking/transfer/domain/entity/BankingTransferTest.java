@@ -39,10 +39,8 @@ public class BankingTransferTest {
                                   .setId(1L)
                                   .setCurrency(BankingAccountCurrency.EUR);
 
-        transfer = BankingTransfer.create()
-                                  .setId(2L)
-                                  .setFromAccount(fromAccount)
-                                  .setToAccount(toAccount);
+        transfer = BankingTransfer.create(fromAccount, toAccount, BigDecimal.ZERO)
+                                  .setId(2L);
 
         BankingTransaction fromTx = BankingTransaction
                 .create()

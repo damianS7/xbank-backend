@@ -7,7 +7,6 @@ import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransac
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
 import com.damian.xBank.modules.banking.transfer.domain.entity.BankingTransfer;
-import com.damian.xBank.modules.banking.transfer.domain.enums.BankingTransferStatus;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferNotFoundException;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
@@ -61,12 +60,9 @@ public class BankingTransferService {
         fromAccount.assertOwnedBy(currentCustomer.getId());
 
         // Create the transfer
-        BankingTransfer transfer = BankingTransfer.create()
-                                                  .setFromAccount(fromAccount)
-                                                  .setStatus(BankingTransferStatus.PENDING)
-                                                  .setAmount(amount)
-                                                  .setDescription(description)
-                                                  .setToAccount(toAccount);
+        BankingTransfer transfer = BankingTransfer
+                .create(fromAccount, toAccount, amount)
+                .setDescription(description);
 
         // validate transfer
         transfer.assertTransferPossible();

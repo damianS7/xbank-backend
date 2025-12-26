@@ -62,8 +62,16 @@ public class BankingTransfer {
         this.description = "";
     }
 
-    public static BankingTransfer create() {
-        return new BankingTransfer();
+    public static BankingTransfer create(
+            BankingAccount fromAccount,
+            BankingAccount toAccount,
+            BigDecimal amount
+    ) {
+        BankingTransfer transfer = new BankingTransfer();
+        transfer.setFromAccount(fromAccount);
+        transfer.setToAccount(toAccount);
+        transfer.setAmount(amount);
+        return transfer;
     }
 
     public Long getId() {

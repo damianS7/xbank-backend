@@ -107,11 +107,8 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
         customerRepository.save(admin);
 
         transfer = BankingTransfer
-                .create()
-                .setFromAccount(fromBankingAccount)
-                .setAmount(BigDecimal.valueOf(100))
-                .setDescription("enjoy!")
-                .setToAccount(toBankingAccount);
+                .create(fromBankingAccount, toBankingAccount, BigDecimal.valueOf(100))
+                .setDescription("a gift!");
 
         transfer.addTransaction(
                 BankingTransaction

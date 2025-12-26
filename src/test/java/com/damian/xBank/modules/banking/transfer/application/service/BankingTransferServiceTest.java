@@ -316,11 +316,8 @@ public class BankingTransferServiceTest extends AbstractServiceTest {
         BigDecimal givenTransferAmount = BigDecimal.valueOf(100);
 
         BankingTransfer givenTransfer = BankingTransfer
-                .create()
+                .create(fromAccount, toAccount, givenTransferAmount)
                 .setId(1L)
-                .setFromAccount(fromAccount)
-                .setToAccount(toAccount)
-                .setAmount(givenTransferAmount)
                 .setDescription("a gift!");
 
         BankingTransaction fromTransaction = BankingTransaction
