@@ -73,8 +73,7 @@ public class BankingTransferServiceTest extends AbstractServiceTest {
         ).setId(1L);
 
         fromAccount = BankingAccount
-                .create()
-                .setOwner(fromCustomer)
+                .create(fromCustomer)
                 .setId(1L)
                 .setBalance(BigDecimal.valueOf(1000))
                 .setCurrency(BankingAccountCurrency.EUR)
@@ -89,8 +88,7 @@ public class BankingTransferServiceTest extends AbstractServiceTest {
         ).setId(2L);
 
         toAccount = BankingAccount
-                .create()
-                .setOwner(toCustomer)
+                .create(toCustomer)
                 .setId(2L)
                 .setBalance(BigDecimal.valueOf(1000))
                 .setCurrency(BankingAccountCurrency.EUR)

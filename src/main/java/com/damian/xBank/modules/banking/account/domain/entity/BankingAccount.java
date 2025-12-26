@@ -66,6 +66,7 @@ public class BankingAccount {
         this.accountCurrency = BankingAccountCurrency.EUR;
         this.accountType = BankingAccountType.SAVINGS;
         this.accountStatus = BankingAccountStatus.ACTIVE;
+        this.updatedAt = Instant.now();
         this.createdAt = Instant.now();
     }
 
@@ -75,19 +76,8 @@ public class BankingAccount {
         this.customer.addBankingAccount(this);
     }
 
-    public BankingAccount(
-            String accountNumber,
-            BankingAccountType accountType,
-            BankingAccountCurrency accountCurrency
-    ) {
-        this();
-        this.accountNumber = accountNumber;
-        this.accountType = accountType;
-        this.accountCurrency = accountCurrency;
-    }
-
-    public static BankingAccount create() {
-        return new BankingAccount();
+    public static BankingAccount create(Customer customer) {
+        return new BankingAccount(customer);
     }
 
     public Long getId() {

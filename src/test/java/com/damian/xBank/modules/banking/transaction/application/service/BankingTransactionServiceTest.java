@@ -63,8 +63,7 @@ public class BankingTransactionServiceTest extends AbstractServiceTest {
         ).setId(1L);
 
         customerBankingAccount = BankingAccount
-                .create()
-                .setOwner(customer)
+                .create(customer)
                 .setId(5L)
                 .setBalance(BigDecimal.valueOf(1000))
                 .setCurrency(BankingAccountCurrency.EUR)

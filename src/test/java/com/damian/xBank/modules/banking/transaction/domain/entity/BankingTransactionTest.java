@@ -23,7 +23,7 @@ public class BankingTransactionTest {
     @BeforeEach
     void setUp() {
         customer = Customer.create().setId(1L);
-        account = BankingAccount.create().setOwner(customer);
+        account = BankingAccount.create(customer);
         transaction = BankingTransaction.create().setBankingAccount(account);
     }
 
@@ -113,8 +113,7 @@ public class BankingTransactionTest {
     @DisplayName("setBankingAccount sets the account and assigns the customer from the account")
     void setBankingAccount_AssignsAccountAndCustomer_ReturnsTransaction() {
         // given
-        BankingAccount account = BankingAccount.create()
-                                               .setOwner(customer);
+        BankingAccount account = BankingAccount.create(customer);
 
         // when
         BankingTransaction result = transaction.setBankingAccount(account);
@@ -129,8 +128,7 @@ public class BankingTransactionTest {
     @DisplayName("setBankingCard sets the card and assigns the customer from the card")
     void setBankingCard_AssignsCardAndCustomer_ReturnsTransaction() {
         // given
-        BankingAccount account = BankingAccount.create()
-                                               .setOwner(customer);
+        BankingAccount account = BankingAccount.create(customer);
 
         BankingCard card = BankingCard.create()
                                       .setBankingAccount(account);

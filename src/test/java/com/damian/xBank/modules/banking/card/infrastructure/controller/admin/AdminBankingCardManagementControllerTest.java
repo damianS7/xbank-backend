@@ -52,8 +52,7 @@ public class AdminBankingCardManagementControllerTest extends AbstractController
         customerRepository.save(customer);
 
         customerBankingAccount = BankingAccount
-                .create()
-                .setOwner(customer)
+                .create(customer)
                 .setCurrency(BankingAccountCurrency.EUR)
                 .setAccountType(BankingAccountType.SAVINGS)
                 .setStatus(BankingAccountStatus.ACTIVE)

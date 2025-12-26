@@ -32,14 +32,12 @@ public class BankingTransferTest {
     void setUp() {
         fromCustomer = Customer.create().setId(1L);
         toCustomer = Customer.create().setId(2L);
-        fromAccount = BankingAccount.create()
-                                    .setCurrency(BankingAccountCurrency.EUR)
-                                    .setOwner(fromCustomer);
+        fromAccount = BankingAccount.create(fromCustomer)
+                                    .setCurrency(BankingAccountCurrency.EUR);
 
-        toAccount = BankingAccount.create()
+        toAccount = BankingAccount.create(toCustomer)
                                   .setId(1L)
-                                  .setCurrency(BankingAccountCurrency.EUR)
-                                  .setOwner(toCustomer);
+                                  .setCurrency(BankingAccountCurrency.EUR);
 
         transfer = BankingTransfer.create()
                                   .setId(2L)

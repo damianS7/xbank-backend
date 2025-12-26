@@ -53,8 +53,7 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
         customerRepository.save(customer);
 
         customerBankingAccount = BankingAccount
-                .create()
-                .setOwner(customer)
+                .create(customer)
                 .setCurrency(BankingAccountCurrency.EUR)
                 .setAccountType(BankingAccountType.SAVINGS)
                 .setStatus(BankingAccountStatus.ACTIVE)
@@ -162,8 +161,7 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
         customerRepository.save(anotherCustomer);
 
         BankingAccount anotherCustomerBankingAccount = BankingAccount
-                .create()
-                .setOwner(anotherCustomer)
+                .create(anotherCustomer)
                 .setCurrency(BankingAccountCurrency.EUR)
                 .setAccountType(BankingAccountType.SAVINGS)
                 .setStatus(BankingAccountStatus.ACTIVE)

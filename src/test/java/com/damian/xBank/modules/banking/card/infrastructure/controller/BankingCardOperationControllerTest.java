@@ -60,8 +60,7 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
         );
 
         customerBankingAccount = BankingAccount
-                .create()
-                .setOwner(customer)
+                .create(customer)
                 .setCurrency(BankingAccountCurrency.EUR)
                 .setAccountType(BankingAccountType.SAVINGS)
                 .setStatus(BankingAccountStatus.ACTIVE)

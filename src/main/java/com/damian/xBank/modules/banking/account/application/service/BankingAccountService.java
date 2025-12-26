@@ -100,9 +100,8 @@ public class BankingAccountService {
             BankingAccountType accountType,
             BankingAccountCurrency accountCurrency
     ) {
-        BankingAccount bankingAccount = BankingAccount.create()
+        BankingAccount bankingAccount = BankingAccount.create(customer)
                                                       .setStatus(BankingAccountStatus.CLOSED)
-                                                      .setOwner(customer)
                                                       .setAccountType(accountType)
                                                       .setCurrency(accountCurrency)
                                                       .setAccountNumber(this.generateAccountNumber());

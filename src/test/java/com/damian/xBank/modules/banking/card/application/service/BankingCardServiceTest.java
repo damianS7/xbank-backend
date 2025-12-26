@@ -46,8 +46,7 @@ public class BankingCardServiceTest extends AbstractServiceTest {
         ).setId(1L);
 
         customerBankingAccount = BankingAccount
-                .create()
-                .setOwner(customer)
+                .create(customer)
                 .setId(5L)
                 .setCurrency(BankingAccountCurrency.EUR)
                 .setAccountType(BankingAccountType.SAVINGS)
