@@ -69,26 +69,24 @@ public class BankingTransferService {
 
         // Generate transactions
         BankingTransaction fromTransaction = BankingTransaction
-                .create()
-                .setBankingAccount(fromAccount)
-                .setType(BankingTransactionType.TRANSFER_TO)
+                .create(
+                        BankingTransactionType.TRANSFER_TO,
+                        fromAccount,
+                        amount
+                )
                 .setStatus(BankingTransactionStatus.PENDING)
-                .setBalanceBefore(fromAccount.getBalance())
-                .setBalanceAfter(fromAccount.getBalance().subtract(amount))
-                .setAmount(amount)
                 .setDescription(description);
 
         transfer.addTransaction(fromTransaction);
 
         // create transfer transaction for the receiver of the funds
         BankingTransaction toTransaction = BankingTransaction
-                .create()
-                .setBankingAccount(toAccount)
-                .setType(BankingTransactionType.TRANSFER_FROM)
+                .create(
+                        BankingTransactionType.TRANSFER_FROM,
+                        toAccount,
+                        amount
+                )
                 .setStatus(BankingTransactionStatus.PENDING)
-                .setBalanceBefore(toAccount.getBalance())
-                .setBalanceAfter(toAccount.getBalance().add(amount))
-                .setAmount(amount)
                 .setDescription("Transfer from " + fromAccount.getOwner().getFullName());
 
         transfer.addTransaction(toTransaction);

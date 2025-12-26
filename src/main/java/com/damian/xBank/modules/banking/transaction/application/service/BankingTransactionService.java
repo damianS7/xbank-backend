@@ -167,11 +167,11 @@ public class BankingTransactionService {
     ) {
 
         BankingTransaction transaction = BankingTransaction
-                .create()
-                .setBankingAccount(account)
-                .setType(transactionType)
-                .setBalanceBefore(account.getBalance())
-                .setAmount(amount)
+                .create(
+                        transactionType,
+                        account,
+                        amount
+                )
                 .setDescription(description);
 
         return this.record(transaction);
@@ -185,11 +185,12 @@ public class BankingTransactionService {
     ) {
 
         BankingTransaction transaction = BankingTransaction
-                .create()
+                .create(
+                        transactionType,
+                        card.getBankingAccount(),
+                        amount
+                )
                 .setBankingCard(card)
-                .setType(transactionType)
-                .setBalanceBefore(card.getBankingAccount().getBalance())
-                .setAmount(amount)
                 .setDescription(description);
 
         return this.record(transaction);

@@ -43,16 +43,18 @@ public class BankingTransferTest {
                                   .setId(2L);
 
         BankingTransaction fromTx = BankingTransaction
-                .create()
-                .setType(BankingTransactionType.TRANSFER_TO)
-                .setBankingAccount(fromAccount)
-                .setAmount(BigDecimal.ZERO);
+                .create(
+                        BankingTransactionType.TRANSFER_TO,
+                        fromAccount,
+                        BigDecimal.ZERO
+                );
 
         BankingTransaction toTx = BankingTransaction
-                .create()
-                .setType(BankingTransactionType.TRANSFER_FROM)
-                .setBankingAccount(toAccount)
-                .setAmount(BigDecimal.ZERO);
+                .create(
+                        BankingTransactionType.TRANSFER_FROM,
+                        toAccount,
+                        BigDecimal.ZERO
+                );
 
         transfer.addTransaction(fromTx);
         transfer.addTransaction(toTx);
@@ -231,10 +233,11 @@ public class BankingTransferTest {
         // given
         // when
         BankingTransaction testTx = BankingTransaction
-                .create()
-                .setType(BankingTransactionType.TRANSFER_FROM)
-                .setBankingAccount(toAccount)
-                .setAmount(BigDecimal.ZERO);
+                .create(
+                        BankingTransactionType.TRANSFER_FROM,
+                        toAccount,
+                        BigDecimal.ZERO
+                );
 
         transfer.addTransaction(testTx);
 

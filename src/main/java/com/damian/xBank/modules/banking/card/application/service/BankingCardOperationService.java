@@ -111,13 +111,12 @@ public class BankingCardOperationService {
             .assertSufficientFunds(amount);
 
         BankingTransaction transaction = BankingTransaction
-                .create()
-                .setBankingAccount(card.getBankingAccount())
+                .create(
+                        transactionType,
+                        card.getBankingAccount(),
+                        amount
+                )
                 .setBankingCard(card)
-                .setType(transactionType)
-                .setAmount(amount)
-                .setBalanceBefore(card.getBankingAccount().getBalance())
-                .setBalanceAfter(card.getBankingAccount().getBalance().subtract(amount))
                 .setDescription(description);
 
         // store here the transaction as PENDING

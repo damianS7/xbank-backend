@@ -82,11 +82,12 @@ public class BankingTransactionServiceTest extends AbstractServiceTest {
         setUpContext(customer);
 
         BankingTransaction givenTransaction = BankingTransaction
-                .create()
+                .create(
+                        BankingTransactionType.DEPOSIT,
+                        customerBankingAccount,
+                        BigDecimal.valueOf(100)
+                )
                 .setId(1L)
-                .setBankingAccount(customerBankingAccount)
-                .setAmount(BigDecimal.valueOf(100))
-                .setType(BankingTransactionType.DEPOSIT)
                 .setDescription("Deposit transaction");
 
         // when
@@ -140,11 +141,12 @@ public class BankingTransactionServiceTest extends AbstractServiceTest {
         customerBankingAccount.setOwner(otherCustomer);
 
         BankingTransaction givenTransaction = BankingTransaction
-                .create()
+                .create(
+                        BankingTransactionType.DEPOSIT,
+                        customerBankingAccount,
+                        BigDecimal.valueOf(100)
+                )
                 .setId(1L)
-                .setBankingAccount(customerBankingAccount)
-                .setAmount(BigDecimal.valueOf(100))
-                .setType(BankingTransactionType.DEPOSIT)
                 .setDescription("Deposit transaction");
 
         // when
@@ -171,11 +173,12 @@ public class BankingTransactionServiceTest extends AbstractServiceTest {
         Pageable pageable = PageRequest.of(0, 10);
 
         BankingTransaction givenTransaction = BankingTransaction
-                .create()
+                .create(
+                        BankingTransactionType.DEPOSIT,
+                        customerBankingAccount,
+                        BigDecimal.valueOf(100)
+                )
                 .setId(1L)
-                .setBankingAccount(customerBankingAccount)
-                .setAmount(BigDecimal.valueOf(100))
-                .setType(BankingTransactionType.DEPOSIT)
                 .setDescription("Deposit transaction");
 
         Page<BankingTransaction> page = new PageImpl<>(
@@ -213,11 +216,12 @@ public class BankingTransactionServiceTest extends AbstractServiceTest {
         Pageable pageable = PageRequest.of(0, 10);
 
         BankingTransaction givenTransaction = BankingTransaction
-                .create()
+                .create(
+                        BankingTransactionType.CARD_CHARGE,
+                        customerBankingCard,
+                        BigDecimal.valueOf(100)
+                )
                 .setId(1L)
-                .setBankingCard(customerBankingCard)
-                .setAmount(BigDecimal.valueOf(100))
-                .setType(BankingTransactionType.CARD_CHARGE)
                 .setDescription("Deposit transaction");
 
         Page<BankingTransaction> page = new PageImpl<>(
@@ -251,11 +255,12 @@ public class BankingTransactionServiceTest extends AbstractServiceTest {
     void recordTransaction_ValidTransaction_SavesAndReturns() {
         // given
         BankingTransaction givenTransaction = BankingTransaction
-                .create()
+                .create(
+                        BankingTransactionType.DEPOSIT,
+                        customerBankingAccount,
+                        BigDecimal.valueOf(100)
+                )
                 .setId(1L)
-                .setBankingAccount(customerBankingAccount)
-                .setAmount(BigDecimal.valueOf(100))
-                .setType(BankingTransactionType.DEPOSIT)
                 .setDescription("Deposit transaction");
 
         // when
@@ -282,12 +287,13 @@ public class BankingTransactionServiceTest extends AbstractServiceTest {
     void completeTransaction_PendingTransaction_ChangesStatusToCompleted() {
         // given
         BankingTransaction givenTransaction = BankingTransaction
-                .create()
+                .create(
+                        BankingTransactionType.DEPOSIT,
+                        customerBankingAccount,
+                        BigDecimal.valueOf(100)
+                )
                 .setId(1L)
                 .setStatus(BankingTransactionStatus.PENDING)
-                .setBankingAccount(customerBankingAccount)
-                .setAmount(BigDecimal.valueOf(100))
-                .setType(BankingTransactionType.DEPOSIT)
                 .setDescription("Deposit transaction");
 
         // when
@@ -309,12 +315,13 @@ public class BankingTransactionServiceTest extends AbstractServiceTest {
     void rejectTransaction_PendingTransaction_ChangesStatusToRejected() {
         // given
         BankingTransaction givenTransaction = BankingTransaction
-                .create()
+                .create(
+                        BankingTransactionType.DEPOSIT,
+                        customerBankingAccount,
+                        BigDecimal.valueOf(100)
+                )
                 .setId(1L)
                 .setStatus(BankingTransactionStatus.PENDING)
-                .setBankingAccount(customerBankingAccount)
-                .setAmount(BigDecimal.valueOf(100))
-                .setType(BankingTransactionType.DEPOSIT)
                 .setDescription("Deposit transaction");
 
         // when

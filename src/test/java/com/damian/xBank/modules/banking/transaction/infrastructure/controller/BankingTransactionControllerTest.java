@@ -68,42 +68,33 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
                 .setCardPin("1234");
 
         customerBankingAccount.addTransaction(
-                BankingTransaction
-                        .create()
-                        .setBankingAccount(customerBankingAccount)
-                        .setBankingCard(customerBankingCard)
-                        .setDescription("Amazon.com")
-                        .setBalanceBefore(BigDecimal.valueOf(1000))
-                        .setBalanceAfter(BigDecimal.valueOf(900))
-                        .setStatus(BankingTransactionStatus.PENDING)
-                        .setAmount(BigDecimal.valueOf(100))
-                        .setType(BankingTransactionType.CARD_CHARGE)
+                BankingTransaction.create(
+                                          BankingTransactionType.CARD_CHARGE,
+                                          customerBankingCard,
+                                          BigDecimal.valueOf(100)
+                                  )
+                                  .setDescription("Amazon.com")
+                                  .setStatus(BankingTransactionStatus.PENDING)
         );
 
         customerBankingAccount.addTransaction(
-                BankingTransaction
-                        .create()
-                        .setBankingAccount(customerBankingAccount)
-                        .setBankingCard(customerBankingCard)
-                        .setDescription("Netflix.com")
-                        .setBalanceBefore(BigDecimal.valueOf(900))
-                        .setBalanceAfter(BigDecimal.valueOf(870))
-                        .setStatus(BankingTransactionStatus.COMPLETED)
-                        .setAmount(BigDecimal.valueOf(30))
-                        .setType(BankingTransactionType.CARD_CHARGE)
+                BankingTransaction.create(
+                                          BankingTransactionType.CARD_CHARGE,
+                                          customerBankingCard,
+                                          BigDecimal.valueOf(30)
+                                  )
+                                  .setDescription("Neyflix.com")
+                                  .setStatus(BankingTransactionStatus.COMPLETED)
         );
 
         customerBankingAccount.addTransaction(
-                BankingTransaction
-                        .create()
-                        .setBankingAccount(customerBankingAccount)
-                        .setBankingCard(customerBankingCard)
-                        .setDescription("HBO.com")
-                        .setBalanceBefore(BigDecimal.valueOf(870))
-                        .setBalanceAfter(BigDecimal.valueOf(850))
-                        .setStatus(BankingTransactionStatus.PENDING)
-                        .setAmount(BigDecimal.valueOf(20))
-                        .setType(BankingTransactionType.CARD_CHARGE)
+                BankingTransaction.create(
+                                          BankingTransactionType.CARD_CHARGE,
+                                          customerBankingCard,
+                                          BigDecimal.valueOf(20)
+                                  )
+                                  .setDescription("HBO.com")
+                                  .setStatus(BankingTransactionStatus.PENDING)
         );
 
         customerBankingAccount.addBankingCard(customerBankingCard);
@@ -116,16 +107,13 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
         // given
         login(customer);
 
-        BankingTransaction transaction = BankingTransaction
-                .create()
-                .setBankingAccount(customerBankingAccount)
-                .setBankingCard(customerBankingCard)
-                .setDescription("Amazon.com")
-                .setBalanceBefore(BigDecimal.valueOf(100))
-                .setBalanceAfter(BigDecimal.valueOf(0))
-                .setStatus(BankingTransactionStatus.COMPLETED)
-                .setAmount(BigDecimal.valueOf(100))
-                .setType(BankingTransactionType.CARD_CHARGE);
+        BankingTransaction transaction = BankingTransaction.create(
+                                                                   BankingTransactionType.CARD_CHARGE,
+                                                                   customerBankingCard,
+                                                                   BigDecimal.valueOf(100)
+                                                           )
+                                                           .setDescription("Amazon.com")
+                                                           .setStatus(BankingTransactionStatus.COMPLETED);
 
         customerBankingAccount.addTransaction(transaction);
         transactionRepository.save(transaction);
@@ -168,27 +156,23 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
                 .setAccountNumber("US9900001111112233334444");
 
         anotherCustomerBankingAccount.addTransaction(
-                BankingTransaction
-                        .create()
-                        .setBankingAccount(anotherCustomerBankingAccount)
-                        .setDescription("Amazon.us")
-                        .setBalanceBefore(BigDecimal.valueOf(1000))
-                        .setBalanceAfter(BigDecimal.valueOf(900))
-                        .setStatus(BankingTransactionStatus.PENDING)
-                        .setAmount(BigDecimal.valueOf(100))
-                        .setType(BankingTransactionType.TRANSFER_TO)
+                BankingTransaction.create(
+                                          BankingTransactionType.TRANSFER_TO,
+                                          anotherCustomerBankingAccount,
+                                          BigDecimal.valueOf(100)
+                                  )
+                                  .setDescription("Amazon.us")
+                                  .setStatus(BankingTransactionStatus.PENDING)
         );
 
         anotherCustomerBankingAccount.addTransaction(
-                BankingTransaction
-                        .create()
-                        .setBankingAccount(anotherCustomerBankingAccount)
-                        .setDescription("Netflix.us")
-                        .setBalanceBefore(BigDecimal.valueOf(900))
-                        .setBalanceAfter(BigDecimal.valueOf(870))
-                        .setStatus(BankingTransactionStatus.PENDING)
-                        .setAmount(BigDecimal.valueOf(30))
-                        .setType(BankingTransactionType.TRANSFER_TO)
+                BankingTransaction.create(
+                                          BankingTransactionType.TRANSFER_TO,
+                                          anotherCustomerBankingAccount,
+                                          BigDecimal.valueOf(30)
+                                  )
+                                  .setDescription("Netflix.us")
+                                  .setStatus(BankingTransactionStatus.PENDING)
         );
 
         bankingAccountRepository.save(anotherCustomerBankingAccount);
@@ -224,15 +208,13 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
         // given
         login(customer);
         BankingTransaction transaction = BankingTransaction
-                .create()
-                .setBankingAccount(customerBankingAccount)
-                .setBankingCard(customerBankingCard)
-                .setDescription("Amazon.com")
-                .setBalanceBefore(BigDecimal.valueOf(100))
-                .setBalanceAfter(BigDecimal.valueOf(0))
-                .setStatus(BankingTransactionStatus.COMPLETED)
-                .setAmount(BigDecimal.valueOf(100))
-                .setType(BankingTransactionType.CARD_CHARGE);
+                .create(
+                        BankingTransactionType.CARD_CHARGE,
+                        customerBankingCard,
+                        BigDecimal.valueOf(100)
+                )
+                .setDescription("Amazon.us")
+                .setStatus(BankingTransactionStatus.COMPLETED);
 
         customerBankingAccount.addTransaction(transaction);
         bankingAccountRepository.save(customerBankingAccount);

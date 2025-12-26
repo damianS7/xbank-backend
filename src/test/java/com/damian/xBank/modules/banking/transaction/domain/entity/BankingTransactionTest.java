@@ -3,6 +3,7 @@ package com.damian.xBank.modules.banking.transaction.domain.entity;
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
+import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotOwnerException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionStatusTransitionException;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
@@ -10,6 +11,8 @@ import com.damian.xBank.shared.exception.ErrorCodes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.math.BigDecimal;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.Assert.assertThrows;
@@ -24,7 +27,12 @@ public class BankingTransactionTest {
     void setUp() {
         customer = Customer.create().setId(1L);
         account = BankingAccount.create(customer);
-        transaction = BankingTransaction.create().setBankingAccount(account);
+        transaction = BankingTransaction
+                .create(
+                        BankingTransactionType.DEPOSIT,
+                        account,
+                        BigDecimal.valueOf(100)
+                );
     }
 
     @Test

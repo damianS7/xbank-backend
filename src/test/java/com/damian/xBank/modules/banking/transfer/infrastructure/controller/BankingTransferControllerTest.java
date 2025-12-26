@@ -111,23 +111,19 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
                 .setDescription("a gift!");
 
         transfer.addTransaction(
-                BankingTransaction
-                        .create()
-                        .setType(BankingTransactionType.TRANSFER_TO)
-                        .setAmount(transfer.getAmount())
-                        .setBankingAccount(fromBankingAccount)
-                        .setBalanceBefore(fromBankingAccount.getBalance())
-                        .setBalanceAfter(fromBankingAccount.getBalance().subtract(transfer.getAmount()))
+                BankingTransaction.create(
+                        BankingTransactionType.TRANSFER_TO,
+                        fromBankingAccount,
+                        transfer.getAmount()
+                )
         );
 
         transfer.addTransaction(
-                BankingTransaction
-                        .create()
-                        .setType(BankingTransactionType.TRANSFER_FROM)
-                        .setAmount(transfer.getAmount())
-                        .setBankingAccount(toBankingAccount)
-                        .setBalanceBefore(toBankingAccount.getBalance())
-                        .setBalanceAfter(toBankingAccount.getBalance().subtract(transfer.getAmount()))
+                BankingTransaction.create(
+                        BankingTransactionType.TRANSFER_FROM,
+                        toBankingAccount,
+                        transfer.getAmount()
+                )
         );
 
         transferRepository.save(transfer);

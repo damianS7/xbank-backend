@@ -66,12 +66,11 @@ public class AdminBankingAccountOperationService {
         bankingAccount.assertActive();
 
         BankingTransaction transaction = BankingTransaction
-                .create()
-                .setBankingAccount(bankingAccount)
-                .setType(BankingTransactionType.DEPOSIT)
-                .setAmount(request.amount())
-                .setBalanceBefore(bankingAccount.getBalance())
-                .setBalanceAfter(bankingAccount.getBalance().add(request.amount()))
+                .create(
+                        BankingTransactionType.DEPOSIT,
+                        bankingAccount,
+                        request.amount()
+                )
                 .setDescription("DEPOSIT by " + request.depositorName());
 
         // if the transaction is created, add the amount to balance

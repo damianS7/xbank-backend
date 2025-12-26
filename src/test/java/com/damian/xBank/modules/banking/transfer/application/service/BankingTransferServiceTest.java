@@ -321,21 +321,21 @@ public class BankingTransferServiceTest extends AbstractServiceTest {
                 .setDescription("a gift!");
 
         BankingTransaction fromTransaction = BankingTransaction
-                .create()
-                .setBankingAccount(fromAccount)
-                .setType(BankingTransactionType.TRANSFER_TO)
-                .setBalanceBefore(fromCustomerAccountInitialBalance)
-                .setAmount(givenTransferAmount)
-                .setBalanceAfter(fromCustomerAccountInitialBalance.subtract(givenTransferAmount))
+                .create(
+                        BankingTransactionType.TRANSFER_TO,
+                        fromAccount,
+                        givenTransferAmount
+                )
+                .setStatus(BankingTransactionStatus.PENDING)
                 .setDescription(givenTransfer.getDescription());
 
         BankingTransaction toTransaction = BankingTransaction
-                .create()
-                .setBankingAccount(toAccount)
-                .setType(BankingTransactionType.TRANSFER_FROM)
-                .setBalanceBefore(toCustomerAccountInitialBalance)
-                .setAmount(givenTransferAmount)
-                .setBalanceAfter(toCustomerAccountInitialBalance.add(givenTransferAmount))
+                .create(
+                        BankingTransactionType.TRANSFER_FROM,
+                        toAccount,
+                        givenTransferAmount
+                )
+                .setStatus(BankingTransactionStatus.PENDING)
                 .setDescription(givenTransfer.getDescription());
 
         givenTransfer.addTransaction(fromTransaction);
