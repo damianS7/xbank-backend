@@ -1,0 +1,389 @@
+package com.damian.xBank.modules.banking.transfer.infrastructure.controller;
+
+import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
+import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurrency;
+import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountStatus;
+import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountType;
+import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
+import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
+import com.damian.xBank.modules.banking.transfer.application.dto.request.BankingTransferConfirmRequest;
+import com.damian.xBank.modules.banking.transfer.application.dto.request.BankingTransferRequest;
+import com.damian.xBank.modules.banking.transfer.application.dto.response.BankingTransferDto;
+import com.damian.xBank.modules.banking.transfer.domain.entity.BankingTransfer;
+import com.damian.xBank.modules.banking.transfer.domain.enums.BankingTransferStatus;
+import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
+import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
+import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
+import com.damian.xBank.shared.AbstractControllerTest;
+import com.damian.xBank.shared.exception.ErrorCodes;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MvcResult;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+public class BankingTransferControllerTest extends AbstractControllerTest {
+
+    private Customer fromCustomer;
+    private BankingAccount fromBankingAccount;
+    private Customer toCustomer;
+    private BankingAccount toBankingAccount;
+    private Customer admin;
+    private BankingTransfer transfer;
+
+    @BeforeEach
+    void setUp() {
+        fromCustomer = Customer.create()
+                               .setEmail("customer@demo.com")
+                               .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                               .setFirstName("David")
+                               .setLastName("Brow")
+                               .setBirthdate(LocalDate.now())
+                               .setPhotoPath("avatar.jpg")
+                               .setPhone("123 123 123")
+                               .setPostalCode("01003")
+                               .setAddress("Fake ave")
+                               .setCountry("US")
+                               .setGender(CustomerGender.MALE);
+        fromCustomer.getAccount().setAccountStatus(UserAccountStatus.VERIFIED);
+        customerRepository.save(fromCustomer);
+
+        fromBankingAccount = new BankingAccount(fromCustomer);
+        fromBankingAccount.setAccountNumber("ES1234567890123456789012");
+        fromBankingAccount.setAccountType(BankingAccountType.SAVINGS);
+        fromBankingAccount.setCurrency(BankingAccountCurrency.EUR);
+        fromBankingAccount.setStatus(BankingAccountStatus.ACTIVE);
+        fromBankingAccount.setBalance(BigDecimal.valueOf(3200));
+        bankingAccountRepository.save(fromBankingAccount);
+
+        toCustomer = Customer.create()
+                             .setEmail("customerB@demo.com")
+                             .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                             .setFirstName("David")
+                             .setLastName("Brow")
+                             .setBirthdate(LocalDate.now())
+                             .setPhotoPath("avatar.jpg")
+                             .setPhone("123 123 123")
+                             .setPostalCode("01003")
+                             .setAddress("Fake ave")
+                             .setCountry("US")
+                             .setGender(CustomerGender.MALE);
+        toCustomer.getAccount().setAccountStatus(UserAccountStatus.VERIFIED);
+        customerRepository.save(toCustomer);
+
+        toBankingAccount = new BankingAccount(toCustomer);
+        toBankingAccount.setAccountNumber("DE1234567890123456789012");
+        toBankingAccount.setAccountType(BankingAccountType.SAVINGS);
+        toBankingAccount.setCurrency(BankingAccountCurrency.EUR);
+        toBankingAccount.setStatus(BankingAccountStatus.ACTIVE);
+        toBankingAccount.setBalance(BigDecimal.valueOf(200));
+        bankingAccountRepository.save(toBankingAccount);
+
+        admin = Customer.create()
+                        .setEmail("admin@demo.com")
+                        .setPassword(passwordEncoder.encode(RAW_PASSWORD))
+                        .setFirstName("David")
+                        .setLastName("Brow")
+                        .setBirthdate(LocalDate.now())
+                        .setPhotoPath("avatar.jpg")
+                        .setPhone("123 123 123")
+                        .setPostalCode("01003")
+                        .setAddress("Fake ave")
+                        .setCountry("US")
+                        .setRole(UserAccountRole.ADMIN)
+                        .setGender(CustomerGender.MALE);
+        admin.getAccount().setAccountStatus(UserAccountStatus.VERIFIED);
+        customerRepository.save(admin);
+
+        transfer = BankingTransfer
+                .create()
+                .setFromAccount(fromBankingAccount)
+                .setAmount(BigDecimal.valueOf(100))
+                .setDescription("enjoy!")
+                .setToAccount(toBankingAccount);
+
+        transfer.addTransaction(
+                BankingTransaction
+                        .create()
+                        .setType(BankingTransactionType.TRANSFER_TO)
+                        .setAmount(transfer.getAmount())
+                        .setBankingAccount(fromBankingAccount)
+                        .setBalanceBefore(fromBankingAccount.getBalance())
+                        .setBalanceAfter(fromBankingAccount.getBalance().subtract(transfer.getAmount()))
+        );
+
+        transfer.addTransaction(
+                BankingTransaction
+                        .create()
+                        .setType(BankingTransactionType.TRANSFER_FROM)
+                        .setAmount(transfer.getAmount())
+                        .setBankingAccount(toBankingAccount)
+                        .setBalanceBefore(toBankingAccount.getBalance())
+                        .setBalanceAfter(toBankingAccount.getBalance().subtract(transfer.getAmount()))
+        );
+
+        transferRepository.save(transfer);
+    }
+
+    @Test
+    @DisplayName("POST /transfers a valid request should create a transfer")
+    void postTransfers_ValidRequest_Returns201Created() throws Exception {
+        // given
+        login(fromCustomer);
+
+        BankingTransferRequest request = new BankingTransferRequest(
+                fromBankingAccount.getId(),
+                toBankingAccount.getAccountNumber(),
+                "Enjoy!",
+                BigDecimal.valueOf(100)
+        );
+
+        // when
+        MvcResult result = mockMvc
+                .perform(post(
+                        "/api/v1/banking/transfers")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().is(201))
+                .andReturn();
+
+        BankingTransferDto transferDto = objectMapper.readValue(
+                result.getResponse().getContentAsString(),
+                BankingTransferDto.class
+        );
+
+        // then
+        assertThat(transferDto)
+                .isNotNull()
+                .extracting(
+                        BankingTransferDto::id,
+                        BankingTransferDto::amount,
+                        BankingTransferDto::status,
+                        BankingTransferDto::description
+                ).containsExactly(
+                        transferDto.id(),
+                        request.amount(),
+                        BankingTransferStatus.PENDING,
+                        request.description()
+                );
+    }
+
+    @Test
+    @DisplayName("POST /transfers should return 409 Conflict when source and destination accounts are the same")
+    void postTransfers_SameAccount_Returns409Conflict() throws Exception {
+        // given
+        login(fromCustomer);
+
+        BankingTransferRequest request = new BankingTransferRequest(
+                fromBankingAccount.getId(),
+                fromBankingAccount.getAccountNumber(),
+                "Enjoy!",
+                BigDecimal.valueOf(100)
+        );
+
+        // when
+        mockMvc
+                .perform(post(
+                        "/api/v1/banking/transfers")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().is(409))
+                .andExpect(jsonPath("$.errorCode")
+                        .value(ErrorCodes.BANKING_TRANSFER_SAME_ACCOUNT));
+
+    }
+
+    @Test
+    @DisplayName("POST /transfers should return 409 Conflict when any account its closed")
+    void postTransfers_AccountClosed_Returns409Conflict() throws Exception {
+        // given
+        login(fromCustomer);
+
+        toBankingAccount.setStatus(BankingAccountStatus.CLOSED);
+        bankingAccountRepository.save(toBankingAccount);
+
+        BankingTransferRequest request = new BankingTransferRequest(
+                fromBankingAccount.getId(),
+                toBankingAccount.getAccountNumber(),
+                "Enjoy!",
+                BigDecimal.valueOf(100)
+        );
+
+        // when
+        mockMvc
+                .perform(post(
+                        "/api/v1/banking/transfers")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().is(409))
+                .andExpect(jsonPath("$.errorCode")
+                        .value(ErrorCodes.BANKING_ACCOUNT_CLOSED));
+
+    }
+
+    @Test
+    @DisplayName("POST /transfers should return 403 Unauthorized when any account its suspended")
+    void postTransfers_AccountSuspended_Returns403Unauthorized() throws Exception {
+        // given
+        login(fromCustomer);
+
+        toBankingAccount.setStatus(BankingAccountStatus.SUSPENDED);
+        bankingAccountRepository.save(toBankingAccount);
+
+        BankingTransferRequest request = new BankingTransferRequest(
+                fromBankingAccount.getId(),
+                toBankingAccount.getAccountNumber(),
+                "Enjoy!",
+                BigDecimal.valueOf(100)
+        );
+
+        // when
+        mockMvc
+                .perform(post(
+                        "/api/v1/banking/transfers")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().is(403))
+                .andExpect(jsonPath("$.errorCode")
+                        .value(ErrorCodes.BANKING_ACCOUNT_SUSPENDED));
+
+    }
+
+    @Test
+    @DisplayName("POST /transfers should return 404 Not found when any account not exists")
+    void postTransfers_AccountNotExists_Returns404NotFound() throws Exception {
+        // given
+        login(fromCustomer);
+
+        BankingTransferRequest request = new BankingTransferRequest(
+                fromBankingAccount.getId(),
+                "AA1111222233334444555500",
+                "Enjoy!",
+                BigDecimal.valueOf(100)
+        );
+
+        // when
+        mockMvc
+                .perform(post(
+                        "/api/v1/banking/transfers")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().is(404))
+                .andExpect(jsonPath("$.errorCode")
+                        .value(ErrorCodes.BANKING_ACCOUNT_NOT_FOUND));
+    }
+
+    @Test
+    @DisplayName("POST /transfers should return 409 Conflict when source account has no funds")
+    void postTransfers_InsufficientFunds_Returns409Conflict() throws Exception {
+        // given
+        login(fromCustomer);
+
+        BankingTransferRequest request = new BankingTransferRequest(
+                fromBankingAccount.getId(),
+                "AA1111222233334444555500",
+                "Enjoy!",
+                BigDecimal.valueOf(999999999)
+        );
+
+        // when
+        mockMvc
+                .perform(post(
+                        "/api/v1/banking/transfers")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().is(404))
+                .andExpect(jsonPath("$.errorCode")
+                        .value(ErrorCodes.BANKING_ACCOUNT_NOT_FOUND));
+    }
+
+    @Test
+    @DisplayName("POST /transfers/confirm a valid request should confirm a transfer")
+    void postTransfersConfirm_ValidRequest_Returns200OK() throws Exception {
+        // given
+        login(fromCustomer);
+
+        BankingTransferConfirmRequest request = new BankingTransferConfirmRequest(
+                RAW_PASSWORD
+        );
+
+        // when
+        MvcResult result = mockMvc
+                .perform(post(
+                        "/api/v1/banking/transfers/{id}/confirm", transfer.getId())
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().is(200))
+                .andReturn();
+
+        BankingTransferDto transferDto = objectMapper.readValue(
+                result.getResponse().getContentAsString(),
+                BankingTransferDto.class
+        );
+
+        // then
+        assertThat(transferDto)
+                .isNotNull()
+                .extracting(
+                        BankingTransferDto::id,
+                        BankingTransferDto::amount,
+                        BankingTransferDto::status,
+                        BankingTransferDto::description
+                ).containsExactly(
+                        transfer.getId(),
+                        transfer.getAmount().setScale(2),
+                        BankingTransferStatus.CONFIRMED,
+                        transfer.getDescription()
+                );
+    }
+
+    @Test
+    @DisplayName("POST /transfers/confirm with invalid password should returns 403 Unauthorized")
+    void postTransfersConfirm_InvalidPassword_Returns403Unauthorized() throws Exception {
+        // given
+        login(fromCustomer);
+
+        BankingTransferConfirmRequest request = new BankingTransferConfirmRequest(
+                "BAD_PASSWORD"
+        );
+
+        // when
+        mockMvc
+                .perform(post(
+                        "/api/v1/banking/transfers/{id}/confirm", transfer.getId())
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().is(403))
+                .andExpect(jsonPath("$.errorCode")
+                        .value(ErrorCodes.USER_ACCOUNT_INVALID_PASSWORD));
+
+    }
+
+}
