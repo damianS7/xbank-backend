@@ -77,6 +77,7 @@ public class BankingTransferService {
                 .setBankingAccount(fromAccount)
                 .setType(BankingTransactionType.TRANSFER_TO)
                 .setStatus(BankingTransactionStatus.PENDING)
+                .setBalanceBefore(fromAccount.getBalance())
                 .setBalanceAfter(fromAccount.getBalance().subtract(amount))
                 .setAmount(amount)
                 .setDescription(description);
@@ -89,6 +90,7 @@ public class BankingTransferService {
                 .setBankingAccount(toAccount)
                 .setType(BankingTransactionType.TRANSFER_FROM)
                 .setStatus(BankingTransactionStatus.PENDING)
+                .setBalanceBefore(toAccount.getBalance())
                 .setBalanceAfter(toAccount.getBalance().add(amount))
                 .setAmount(amount)
                 .setDescription("Transfer from " + fromAccount.getOwner().getFullName());

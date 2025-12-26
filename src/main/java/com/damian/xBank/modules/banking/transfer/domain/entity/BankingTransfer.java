@@ -5,7 +5,7 @@ import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransac
 import com.damian.xBank.modules.banking.transfer.domain.enums.BankingTransferStatus;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferCurrencyMismatchException;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferNotOwnerException;
-import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferSameException;
+import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferSameAccountException;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferStatusTransitionException;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import jakarta.persistence.*;
@@ -225,13 +225,13 @@ public class BankingTransfer {
      * Validate that current account and {@code toBankingAccount} are not the same
      *
      * @return the current validator instance for chaining
-     * @throws BankingTransferSameException if fromAccount and toAccount are the same
+     * @throws BankingTransferSameAccountException if fromAccount and toAccount are the same
      */
     public BankingTransfer assertDifferentAccounts() {
 
         // check bankingAccount and toBankingAccount are not the same
         if (Objects.equals(fromAccount.getId(), toAccount.getId())) {
-            throw new BankingTransferSameException(toAccount.getId());
+            throw new BankingTransferSameAccountException(toAccount.getId());
         }
 
         return this;
@@ -242,7 +242,7 @@ public class BankingTransfer {
      *
      * @return the current BankingTransfer
      * @throws BankingTransferCurrencyMismatchException if fromAccount and toAccount have different currencies
-     * @throws BankingTransferSameException             if fromAccount and toAccount are the same
+     * @throws BankingTransferSameAccountException      if fromAccount and toAccount are the same
      */
     public BankingTransfer assertTransferPossible() {
         // check fromAccount has funds

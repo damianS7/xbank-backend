@@ -62,7 +62,7 @@ public class ErrorCodes {
     public static final String
             BANKING_TRANSFER_INVALID_TRANSITION_STATUS
             = "banking.transfer.invalid_transition_status";
-    public static final String BANKING_TRANSFER_SAME_DESTINATION = "banking.transfer.same_destination";
+    public static final String BANKING_TRANSFER_SAME_ACCOUNT = "banking.transfer.same_destination";
     public static final String BANKING_TRANSFER_DIFFERENT_CURRENCY = "banking.transfer.different_currency";
 
     // Notification

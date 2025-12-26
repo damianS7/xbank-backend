@@ -2,7 +2,7 @@ package com.damian.xBank.modules.banking.transfer.infrastructure.exception;
 
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferCurrencyMismatchException;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferNotFoundException;
-import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferSameException;
+import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferSameAccountException;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferStatusTransitionException;
 import com.damian.xBank.shared.dto.ApiResponse;
 import org.slf4j.Logger;
@@ -47,8 +47,8 @@ public class BankingTransferExceptionHandler {
                              .body(ApiResponse.error(ex, HttpStatus.NOT_FOUND, messageSource));
     }
 
-    @ExceptionHandler(BankingTransferSameException.class)
-    public ResponseEntity<ApiResponse<String>> handleTransferSameAccount(BankingTransferSameException ex) {
+    @ExceptionHandler(BankingTransferSameAccountException.class)
+    public ResponseEntity<ApiResponse<String>> handleTransferSameAccount(BankingTransferSameAccountException ex) {
         log.warn("Banking transfer failed because both accounts are the same.");
 
         return ResponseEntity.status(HttpStatus.CONFLICT)

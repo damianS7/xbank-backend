@@ -4,6 +4,7 @@ import com.damian.xBank.modules.banking.account.application.service.BankingAccou
 import com.damian.xBank.modules.banking.transfer.application.dto.mapper.BankingTransferDtoMapper;
 import com.damian.xBank.modules.banking.transfer.application.dto.request.BankingTransferConfirmRequest;
 import com.damian.xBank.modules.banking.transfer.application.dto.request.BankingTransferRequest;
+import com.damian.xBank.modules.banking.transfer.application.dto.response.BankingTransferDetailDto;
 import com.damian.xBank.modules.banking.transfer.application.dto.response.BankingTransferDto;
 import com.damian.xBank.modules.banking.transfer.domain.entity.BankingTransfer;
 import jakarta.validation.constraints.Positive;
@@ -30,14 +31,14 @@ public class BankingTransferController {
             BankingTransferRequest request
     ) {
         BankingTransfer transfer = bankingAccountOperationService.transfer(request);
-        BankingTransferDto transferDto = BankingTransferDtoMapper.toBankingTransferDto(transfer);
+        BankingTransferDetailDto transferDto = BankingTransferDtoMapper.toBankingTransferDetailDto(transfer);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(transferDto);
     }
 
-    @GetMapping("/banking/transfers/{id}/confirm")
+    @PostMapping("/banking/transfers/{id}/confirm")
     public ResponseEntity<?> confirm(
             @Positive @PathVariable
             Long id,
@@ -46,14 +47,14 @@ public class BankingTransferController {
     ) {
 
         BankingTransfer transfer = bankingAccountOperationService.confirmTransfer(id, request);
-        BankingTransferDto transferDto = BankingTransferDtoMapper.toBankingTransferDto(transfer);
+        BankingTransferDetailDto transferDto = BankingTransferDtoMapper.toBankingTransferDetailDto(transfer);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(transferDto);
     }
 
-    @GetMapping("/banking/transfers/{id}/reject")
+    @PostMapping("/banking/transfers/{id}/reject")
     public ResponseEntity<?> reject(
             @Positive @PathVariable
             Long id,
