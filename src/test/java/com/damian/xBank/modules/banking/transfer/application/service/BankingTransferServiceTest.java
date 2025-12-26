@@ -17,7 +17,7 @@ import com.damian.xBank.modules.banking.transaction.infrastructure.repository.Ba
 import com.damian.xBank.modules.banking.transfer.domain.entity.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.domain.enums.BankingTransferStatus;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferCurrencyMismatchException;
-import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferSameException;
+import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferSameAccountException;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
 import com.damian.xBank.modules.notification.application.service.NotificationService;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
@@ -289,8 +289,8 @@ public class BankingTransferServiceTest extends AbstractServiceTest {
 
         // when
         // then
-        BankingTransferSameException exception = assertThrows(
-                BankingTransferSameException.class,
+        BankingTransferSameAccountException exception = assertThrows(
+                BankingTransferSameAccountException.class,
                 () -> bankingTransferService.createTransfer(
                         fromAccount,
                         fromAccount,
@@ -302,7 +302,7 @@ public class BankingTransferServiceTest extends AbstractServiceTest {
         // then
         assertThat(exception)
                 .isNotNull()
-                .hasMessage(ErrorCodes.BANKING_TRANSFER_SAME_DESTINATION);
+                .hasMessage(ErrorCodes.BANKING_TRANSFER_SAME_ACCOUNT);
     }
 
     @Test
