@@ -54,7 +54,6 @@ public class BankingTransferService {
             BigDecimal amount,
             String description
     ) {
-
         // Customer logged
         final Customer currentCustomer = authenticationContext.getCurrentCustomer();
 
@@ -99,17 +98,25 @@ public class BankingTransferService {
         return transferRepository.save(transfer);
     }
 
+    /**
+     * Confirms a pending transfer.
+     *
+     * @param transfer
+     * @return
+     */
     @Transactional
-    public BankingTransfer confirm(BankingTransfer transfer) {
+    public BankingTransfer confirmTransfer(BankingTransfer transfer) {
+
+        // deduct balance
+        BankingAccount fromAccount = transfer.getFromAccount();
+        fromAccount.subtractBalance(transfer.getAmount());
+
+        // add balance
+        BankingAccount toAccount = transfer.getToAccount();
+        toAccount.addBalance(transfer.getAmount());
+
         // confirm transfer
         transfer.confirm();
-
-        BankingAccount fromAccount = transfer.getFromAccount();
-        BankingAccount toAccount = transfer.getToAccount();
-
-        // update balances
-        fromAccount.subtractBalance(transfer.getAmount());
-        toAccount.addBalance(transfer.getAmount());
 
         // Confirm transactions
         transfer.getTransactions().forEach(bankingTransactionService::complete);
