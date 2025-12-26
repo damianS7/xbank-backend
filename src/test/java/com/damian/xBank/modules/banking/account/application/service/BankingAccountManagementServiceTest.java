@@ -60,7 +60,7 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
 
         BankingAccount givenBankingAccount = new BankingAccount(customer);
         givenBankingAccount.setId(5L);
-        givenBankingAccount.setAccountCurrency(BankingAccountCurrency.EUR);
+        givenBankingAccount.setCurrency(BankingAccountCurrency.EUR);
         givenBankingAccount.setAccountType(BankingAccountType.SAVINGS);
         givenBankingAccount.setAccountNumber("US9900001111112233334444");
 
@@ -98,8 +98,8 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
         BankingAccountOpenRequest request = new BankingAccountOpenRequest();
 
         BankingAccount givenBankingAccount = new BankingAccount(customer);
-        givenBankingAccount.setAccountStatus(BankingAccountStatus.CLOSED);
-        givenBankingAccount.setAccountCurrency(BankingAccountCurrency.EUR);
+        givenBankingAccount.setStatus(BankingAccountStatus.CLOSED);
+        givenBankingAccount.setCurrency(BankingAccountCurrency.EUR);
         givenBankingAccount.setAccountType(BankingAccountType.SAVINGS);
         givenBankingAccount.setAccountNumber(accountNumber);
 
@@ -132,8 +132,8 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
         BankingAccountOpenRequest request = new BankingAccountOpenRequest();
 
         BankingAccount givenBankingAccount = new BankingAccount(customer);
-        givenBankingAccount.setAccountStatus(BankingAccountStatus.SUSPENDED);
-        givenBankingAccount.setAccountCurrency(BankingAccountCurrency.EUR);
+        givenBankingAccount.setStatus(BankingAccountStatus.SUSPENDED);
+        givenBankingAccount.setCurrency(BankingAccountCurrency.EUR);
         givenBankingAccount.setAccountType(BankingAccountType.SAVINGS);
         givenBankingAccount.setAccountNumber(accountNumber);
 
@@ -168,8 +168,8 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
         );
 
         BankingAccount givenBankingAccount = new BankingAccount(customer);
-        givenBankingAccount.setAccountStatus(BankingAccountStatus.SUSPENDED);
-        givenBankingAccount.setAccountCurrency(BankingAccountCurrency.EUR);
+        givenBankingAccount.setStatus(BankingAccountStatus.SUSPENDED);
+        givenBankingAccount.setCurrency(BankingAccountCurrency.EUR);
         givenBankingAccount.setAccountType(BankingAccountType.SAVINGS);
         givenBankingAccount.setAccountNumber(accountNumber);
 
@@ -204,7 +204,7 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
         );
 
         BankingAccount givenBankingAccount = new BankingAccount(customer);
-        givenBankingAccount.setAccountCurrency(BankingAccountCurrency.EUR);
+        givenBankingAccount.setCurrency(BankingAccountCurrency.EUR);
         givenBankingAccount.setAccountType(BankingAccountType.SAVINGS);
         givenBankingAccount.setAccountNumber(accountNumber);
 
@@ -249,7 +249,7 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
 
         BankingAccount givenBankingAccount = new BankingAccount(customer2);
         givenBankingAccount.setId(5L);
-        givenBankingAccount.setAccountCurrency(BankingAccountCurrency.EUR);
+        givenBankingAccount.setCurrency(BankingAccountCurrency.EUR);
         givenBankingAccount.setAccountType(BankingAccountType.SAVINGS);
         givenBankingAccount.setAccountNumber(accountNumber);
 
@@ -295,7 +295,7 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
 
         BankingAccount givenBankingAccount = new BankingAccount(customer);
         givenBankingAccount.setId(5L);
-        givenBankingAccount.setAccountCurrency(BankingAccountCurrency.EUR);
+        givenBankingAccount.setCurrency(BankingAccountCurrency.EUR);
         givenBankingAccount.setAccountType(BankingAccountType.SAVINGS);
         givenBankingAccount.setAccountNumber(accountNumber);
 
@@ -331,7 +331,7 @@ public class BankingAccountManagementServiceTest extends AbstractServiceTest {
 
         BankingAccount givenBankingAccount = new BankingAccount(customer);
         givenBankingAccount.setId(5L);
-        givenBankingAccount.setAccountCurrency(BankingAccountCurrency.EUR);
+        givenBankingAccount.setCurrency(BankingAccountCurrency.EUR);
         givenBankingAccount.setAccountType(BankingAccountType.SAVINGS);
         givenBankingAccount.setAccountNumber("US9900001111112233334444");
 

@@ -67,7 +67,7 @@ public class BankingTransactionServiceTest extends AbstractServiceTest {
                 .setOwner(customer)
                 .setId(5L)
                 .setBalance(BigDecimal.valueOf(1000))
-                .setAccountCurrency(BankingAccountCurrency.EUR)
+                .setCurrency(BankingAccountCurrency.EUR)
                 .setAccountType(BankingAccountType.SAVINGS)
                 .setAccountNumber("US9900001111112233334444");
 

@@ -54,9 +54,9 @@ public class AdminBankingCardManagementControllerTest extends AbstractController
         customerBankingAccount = BankingAccount
                 .create()
                 .setOwner(customer)
-                .setAccountCurrency(BankingAccountCurrency.EUR)
+                .setCurrency(BankingAccountCurrency.EUR)
                 .setAccountType(BankingAccountType.SAVINGS)
-                .setAccountStatus(BankingAccountStatus.ACTIVE)
+                .setStatus(BankingAccountStatus.ACTIVE)
                 .setBalance(BigDecimal.valueOf(1000))
                 .setAccountNumber("US9900001111112233334444");
 

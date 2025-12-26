@@ -101,10 +101,10 @@ public class BankingAccountService {
             BankingAccountCurrency accountCurrency
     ) {
         BankingAccount bankingAccount = BankingAccount.create()
-                                                      .setAccountStatus(BankingAccountStatus.CLOSED)
+                                                      .setStatus(BankingAccountStatus.CLOSED)
                                                       .setOwner(customer)
                                                       .setAccountType(accountType)
-                                                      .setAccountCurrency(accountCurrency)
+                                                      .setCurrency(accountCurrency)
                                                       .setAccountNumber(this.generateAccountNumber());
 
         return bankingAccountRepository.save(bankingAccount);

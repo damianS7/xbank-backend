@@ -52,7 +52,7 @@ public class BankingAccountManagementService {
         }
 
         // we mark the account as closed
-        bankingAccount.setAccountStatus(accountStatus);
+        bankingAccount.setStatus(accountStatus);
 
         // we change the updateAt timestamp field
         bankingAccount.setUpdatedAt(Instant.now());

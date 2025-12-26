@@ -103,7 +103,7 @@ public class BankingAccountOperationService {
         // assert that the transfer owner is the current customer
         transfer.assertOwnedBy(currentCustomer.getId());
 
-        transfer = bankingTransferService.confirm(transfer);
+        transfer = bankingTransferService.confirmTransfer(transfer);
 
         // Notify receive
         notificationService.publish(

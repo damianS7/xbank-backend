@@ -139,7 +139,7 @@ public class BankingAccount {
         return accountCurrency;
     }
 
-    public BankingAccount setAccountCurrency(BankingAccountCurrency accountCurrency) {
+    public BankingAccount setCurrency(BankingAccountCurrency accountCurrency) {
         this.accountCurrency = accountCurrency;
         return this;
     }
@@ -148,7 +148,7 @@ public class BankingAccount {
         return accountStatus;
     }
 
-    public BankingAccount setAccountStatus(BankingAccountStatus accountStatus) {
+    public BankingAccount setStatus(BankingAccountStatus accountStatus) {
         this.accountStatus = accountStatus;
         return this;
     }

@@ -83,13 +83,13 @@ public class BankingAccountServiceTest extends AbstractServiceTest {
 
         Set<BankingAccount> bankingAccounts = new HashSet<>();
         BankingAccount bankingAccountA = new BankingAccount(customer);
-        bankingAccountA.setAccountCurrency(BankingAccountCurrency.EUR);
+        bankingAccountA.setCurrency(BankingAccountCurrency.EUR);
         bankingAccountA.setAccountType(BankingAccountType.SAVINGS);
         bankingAccountA.setAccountNumber("US99 0000 1111 1122 3333 4444");
         bankingAccounts.add(bankingAccountA);
 
         BankingAccount bankingAccountB = new BankingAccount(customer);
-        bankingAccountB.setAccountCurrency(BankingAccountCurrency.EUR);
+        bankingAccountB.setCurrency(BankingAccountCurrency.EUR);
         bankingAccountB.setAccountType(BankingAccountType.SAVINGS);
         bankingAccountB.setAccountNumber("US99 0000 1111 1122 3333 6666");
         bankingAccounts.add(bankingAccountB);
@@ -126,7 +126,7 @@ public class BankingAccountServiceTest extends AbstractServiceTest {
 
         BankingAccount givenBankingAccount = new BankingAccount(customer);
         givenBankingAccount.setAccountNumber("US9900001111112233334444");
-        givenBankingAccount.setAccountCurrency(request.currency());
+        givenBankingAccount.setCurrency(request.currency());
         givenBankingAccount.setAccountType(request.type());
 
         // when
@@ -167,7 +167,7 @@ public class BankingAccountServiceTest extends AbstractServiceTest {
         );
 
         BankingAccount givenBankingAccount = new BankingAccount(customer);
-        givenBankingAccount.setAccountCurrency(request.currency());
+        givenBankingAccount.setCurrency(request.currency());
         givenBankingAccount.setAccountType(request.type());
         givenBankingAccount.setAccountNumber("US9900001111112233334444");
 
