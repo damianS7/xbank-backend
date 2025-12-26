@@ -62,6 +62,13 @@ public class BankingTransaction {
     @Column
     private Instant updatedAt;
 
+    public BankingTransaction() {
+        this.amount = BigDecimal.valueOf(0);
+        this.status = BankingTransactionStatus.PENDING;
+        this.updatedAt = Instant.now();
+        this.createdAt = Instant.now();
+    }
+
     public BankingTransaction(BankingAccount bankingAccount) {
         this();
         this.bankingAccount = bankingAccount;
@@ -71,19 +78,26 @@ public class BankingTransaction {
         this(bankingCard.getBankingAccount());
     }
 
-    public BankingTransaction() {
-        this.amount = BigDecimal.valueOf(0);
-        this.status = BankingTransactionStatus.PENDING;
-        this.createdAt = Instant.now();
+    public static BankingTransaction create(
+            BankingTransactionType type,
+            BankingAccount account,
+            BigDecimal amount
+    ) {
+        BankingTransaction transaction = new BankingTransaction();
+        transaction.setBankingAccount(account);
+        transaction.setType(type);
+        transaction.setAmount(amount);
+        transaction.setBalanceBefore(account.getBalance());
+        transaction.setBalanceAfter(transaction.calcBalanceAfter());
+        return transaction;
     }
 
-    public BankingTransaction(BankingTransactionType type) {
-        this();
-        this.type = type;
-    }
-
-    public static BankingTransaction create() {
-        return new BankingTransaction();
+    public static BankingTransaction create(
+            BankingTransactionType type,
+            BankingCard card,
+            BigDecimal amount
+    ) {
+        return create(type, card.getBankingAccount(), amount);
     }
 
     public Customer getCustomer() {
@@ -220,6 +234,18 @@ public class BankingTransaction {
     public BankingTransaction setBalanceAfter(BigDecimal balanceAfter) {
         this.balanceAfter = balanceAfter;
         return this;
+    }
+
+    private BigDecimal calcBalanceAfter() {
+        if (type == BankingTransactionType.DEPOSIT || type == BankingTransactionType.TRANSFER_FROM) {
+            return balanceBefore.add(this.amount);
+        }
+
+        if (type == BankingTransactionType.TRANSFER_TO || type == BankingTransactionType.CARD_CHARGE) {
+            return balanceBefore.subtract(this.amount);
+        }
+
+        return balanceBefore.subtract(this.amount);
     }
 
     public void complete() {
