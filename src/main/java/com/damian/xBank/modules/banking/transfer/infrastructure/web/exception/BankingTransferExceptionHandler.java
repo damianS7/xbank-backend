@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.banking.transfer.infrastructure.exception;
+package com.damian.xBank.modules.banking.transfer.infrastructure.web.exception;
 
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferCurrencyMismatchException;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferNotFoundException;

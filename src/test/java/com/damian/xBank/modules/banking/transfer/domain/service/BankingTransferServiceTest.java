@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.banking.transfer.application.service;
+package com.damian.xBank.modules.banking.transfer.domain.service;
 
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurrency;
@@ -14,16 +14,17 @@ import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransac
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
-import com.damian.xBank.modules.banking.transfer.domain.entity.BankingTransfer;
-import com.damian.xBank.modules.banking.transfer.domain.enums.BankingTransferStatus;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferCurrencyMismatchException;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferSameAccountException;
+import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
+import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferStatus;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
 import com.damian.xBank.modules.notification.application.service.NotificationService;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.utils.CustomerTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -65,6 +66,10 @@ public class BankingTransferServiceTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
+
+        CustomerTestBuilder customerTestBuilder = CustomerTestBuilder.defaultAccount();
+        Customer customerX = customerTestBuilder.build();
+
         fromCustomer = Customer.create(
                 UserAccount.create()
                            .setId(1L)

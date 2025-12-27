@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.banking.transfer.application.service;
+package com.damian.xBank.modules.banking.transfer.domain.service;
 
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
@@ -6,10 +6,9 @@ import com.damian.xBank.modules.banking.transaction.application.service.BankingT
 import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
-import com.damian.xBank.modules.banking.transfer.domain.entity.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferNotFoundException;
+import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,16 +47,14 @@ public class BankingTransferService {
      */
     @Transactional
     public BankingTransfer createTransfer(
+            Long customerId,
             BankingAccount fromAccount,
             BankingAccount toAccount,
             BigDecimal amount,
             String description
     ) {
-        // Customer logged
-        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
-
-        // assert currentCustomer is the owner of fromAccount
-        fromAccount.assertOwnedBy(currentCustomer.getId());
+        // assert customerId is the owner of fromAccount
+        fromAccount.assertOwnedBy(customerId);
 
         // Create the transfer
         BankingTransfer transfer = BankingTransfer
@@ -91,7 +88,7 @@ public class BankingTransferService {
 
         transfer.addTransaction(toTransaction);
 
-        return transferRepository.save(transfer);
+        return transferRepository.save(transfer); // TODO move this to usecase
     }
 
     /**

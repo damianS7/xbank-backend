@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.banking.transfer.infrastructure.controller;
+package com.damian.xBank.modules.banking.transfer.infrastructure.web.controller;
 
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurrency;
@@ -9,8 +9,8 @@ import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransact
 import com.damian.xBank.modules.banking.transfer.application.dto.request.BankingTransferConfirmRequest;
 import com.damian.xBank.modules.banking.transfer.application.dto.request.BankingTransferRequest;
 import com.damian.xBank.modules.banking.transfer.application.dto.response.BankingTransferDto;
-import com.damian.xBank.modules.banking.transfer.domain.entity.BankingTransfer;
-import com.damian.xBank.modules.banking.transfer.domain.enums.BankingTransferStatus;
+import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
+import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferStatus;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;

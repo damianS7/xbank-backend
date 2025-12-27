@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.banking.transfer.application.dto.response;
 
-import com.damian.xBank.modules.banking.transfer.domain.enums.BankingTransferStatus;
+import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferStatus;
 
 import java.math.BigDecimal;
 import java.time.Instant;

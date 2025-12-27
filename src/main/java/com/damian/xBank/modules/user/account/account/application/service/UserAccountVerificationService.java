@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.user.account.account.application.service;
 
-import com.damian.xBank.infrastructure.mail.EmailSenderService;
+import com.damian.xBank.shared.infrastructure.mail.EmailSenderService;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
 import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountNotFoundException;

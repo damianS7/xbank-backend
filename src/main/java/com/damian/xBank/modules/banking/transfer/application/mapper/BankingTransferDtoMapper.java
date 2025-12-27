@@ -1,9 +1,9 @@
-package com.damian.xBank.modules.banking.transfer.application.dto.mapper;
+package com.damian.xBank.modules.banking.transfer.application.mapper;
 
 import com.damian.xBank.modules.banking.transaction.application.dto.mapper.BankingTransactionDtoMapper;
 import com.damian.xBank.modules.banking.transfer.application.dto.response.BankingTransferDetailDto;
 import com.damian.xBank.modules.banking.transfer.application.dto.response.BankingTransferDto;
-import com.damian.xBank.modules.banking.transfer.domain.entity.BankingTransfer;
+import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 
 public class BankingTransferDtoMapper {
     public static BankingTransferDto toBankingTransferDto(BankingTransfer bankingTransfer) {

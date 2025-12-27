@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.banking.transfer.domain.enums;
+package com.damian.xBank.modules.banking.transfer.domain.model;
 
 import com.damian.xBank.shared.AbstractServiceTest;
 import org.junit.jupiter.api.DisplayName;

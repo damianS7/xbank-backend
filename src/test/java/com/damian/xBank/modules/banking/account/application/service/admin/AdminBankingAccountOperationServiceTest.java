@@ -72,13 +72,6 @@ public class AdminBankingAccountOperationServiceTest extends AbstractServiceTest
                 customerBankingAccount));
 
         when(bankingTransactionService.record(
-                any(BankingAccount.class),
-                any(BankingTransactionType.class),
-                any(BigDecimal.class),
-                any(String.class)
-        )).thenReturn(transaction);
-
-        when(bankingTransactionService.record(
                 any(BankingTransaction.class)
         )).thenReturn(transaction);
 

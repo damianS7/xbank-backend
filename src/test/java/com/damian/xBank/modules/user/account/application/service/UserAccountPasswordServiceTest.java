@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.user.account.application.service;
 
-import com.damian.xBank.infrastructure.mail.EmailSenderService;
+import com.damian.xBank.shared.infrastructure.mail.EmailSenderService;
 import com.damian.xBank.modules.user.account.account.application.dto.request.UserAccountPasswordResetSetRequest;
 import com.damian.xBank.modules.user.account.account.application.dto.request.UserAccountPasswordUpdateRequest;
 import com.damian.xBank.modules.user.account.account.application.service.UserAccountPasswordService;

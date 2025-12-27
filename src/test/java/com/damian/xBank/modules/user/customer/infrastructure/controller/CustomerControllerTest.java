@@ -1,8 +1,8 @@
 package com.damian.xBank.modules.user.customer.infrastructure.controller;
 
-import com.damian.xBank.infrastructure.storage.FileStorageService;
-import com.damian.xBank.infrastructure.storage.ImageUploaderService;
-import com.damian.xBank.infrastructure.storage.exception.FileStorageNotFoundException;
+import com.damian.xBank.shared.infrastructure.storage.FileStorageService;
+import com.damian.xBank.shared.infrastructure.storage.ImageUploaderService;
+import com.damian.xBank.shared.infrastructure.storage.exception.FileStorageNotFoundException;
 import com.damian.xBank.modules.user.customer.application.dto.request.CustomerUpdateRequest;
 import com.damian.xBank.modules.user.customer.application.dto.response.CustomerDetailDto;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
