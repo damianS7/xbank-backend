@@ -1,6 +1,6 @@
 package com.damian.xBank.shared.utils;
 
-import com.damian.xBank.infrastructure.storage.exception.ImageTypeNotSupportedException;
+import com.damian.xBank.shared.infrastructure.storage.exception.ImageTypeNotSupportedException;
 import org.springframework.core.io.Resource;
 
 import java.io.File;

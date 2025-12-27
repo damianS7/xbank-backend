@@ -1,4 +1,4 @@
-package com.damian.xBank.infrastructure.storage;
+package com.damian.xBank.shared.infrastructure.storage;
 
 import com.damian.xBank.shared.security.AuthenticationContext;
 import com.damian.xBank.shared.security.User;

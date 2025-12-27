@@ -1,4 +1,4 @@
-package com.damian.xBank.infrastructure.storage;
+package com.damian.xBank.shared.infrastructure.storage;
 
 import com.damian.xBank.shared.utils.ImageHelper;
 import org.springframework.web.multipart.MultipartFile;

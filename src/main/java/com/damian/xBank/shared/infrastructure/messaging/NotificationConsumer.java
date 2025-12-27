@@ -1,4 +1,4 @@
-package com.damian.xBank.infrastructure.messaging;
+package com.damian.xBank.shared.infrastructure.messaging;
 
 import com.damian.xBank.config.RabbitConfig;
 import com.damian.xBank.modules.notification.application.service.NotificationService;

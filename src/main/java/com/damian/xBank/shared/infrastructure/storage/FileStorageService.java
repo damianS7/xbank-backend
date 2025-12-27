@@ -1,8 +1,8 @@
-package com.damian.xBank.infrastructure.storage;
+package com.damian.xBank.shared.infrastructure.storage;
 
-import com.damian.xBank.infrastructure.storage.exception.FileStorageDeleteException;
-import com.damian.xBank.infrastructure.storage.exception.FileStorageFailedException;
-import com.damian.xBank.infrastructure.storage.exception.FileStorageNotFoundException;
+import com.damian.xBank.shared.infrastructure.storage.exception.FileStorageDeleteException;
+import com.damian.xBank.shared.infrastructure.storage.exception.FileStorageFailedException;
+import com.damian.xBank.shared.infrastructure.storage.exception.FileStorageNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;

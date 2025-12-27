@@ -1,4 +1,4 @@
-package com.damian.xBank.infrastructure.mail;
+package com.damian.xBank.shared.infrastructure.mail;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
