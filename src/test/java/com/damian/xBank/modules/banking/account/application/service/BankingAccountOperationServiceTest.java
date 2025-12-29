@@ -5,7 +5,7 @@ import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurre
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.banking.transfer.application.dto.request.BankingTransferRequest;
-import com.damian.xBank.modules.notification.application.service.NotificationService;
+import com.damian.xBank.modules.notification.domain.service.NotificationService;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.AbstractServiceTest;

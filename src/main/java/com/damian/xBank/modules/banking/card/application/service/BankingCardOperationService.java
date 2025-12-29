@@ -9,9 +9,9 @@ import com.damian.xBank.modules.banking.transaction.application.dto.mapper.Banki
 import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionService;
 import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
-import com.damian.xBank.modules.notification.application.service.NotificationService;
-import com.damian.xBank.modules.notification.domain.enums.NotificationType;
-import com.damian.xBank.modules.notification.domain.event.NotificationEvent;
+import com.damian.xBank.modules.notification.domain.service.NotificationService;
+import com.damian.xBank.modules.notification.domain.model.NotificationType;
+import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.stereotype.Service;

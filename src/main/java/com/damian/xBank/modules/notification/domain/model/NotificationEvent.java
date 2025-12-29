@@ -1,6 +1,4 @@
-package com.damian.xBank.modules.notification.domain.event;
-
-import com.damian.xBank.modules.notification.domain.enums.NotificationType;
+package com.damian.xBank.modules.notification.domain.model;
 
 import java.util.Map;
 

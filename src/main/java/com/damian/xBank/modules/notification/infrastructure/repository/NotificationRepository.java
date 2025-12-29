@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.notification.infrastructure.repository;
 
-import com.damian.xBank.modules.notification.domain.entity.Notification;
+import com.damian.xBank.modules.notification.domain.model.Notification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

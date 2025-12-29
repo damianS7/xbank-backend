@@ -6,9 +6,9 @@ import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransfe
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.domain.service.BankingTransferService;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
-import com.damian.xBank.modules.notification.application.service.NotificationService;
-import com.damian.xBank.modules.notification.domain.enums.NotificationType;
-import com.damian.xBank.modules.notification.domain.event.NotificationEvent;
+import com.damian.xBank.modules.notification.domain.service.NotificationService;
+import com.damian.xBank.modules.notification.domain.model.NotificationType;
+import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import com.damian.xBank.shared.security.PasswordValidator;

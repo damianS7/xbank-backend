@@ -1,8 +1,9 @@
 package com.damian.xBank.modules.notification.application.service;
 
-import com.damian.xBank.modules.notification.domain.entity.Notification;
-import com.damian.xBank.modules.notification.domain.enums.NotificationType;
-import com.damian.xBank.modules.notification.domain.event.NotificationEvent;
+import com.damian.xBank.modules.notification.domain.model.Notification;
+import com.damian.xBank.modules.notification.domain.model.NotificationType;
+import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
+import com.damian.xBank.modules.notification.domain.service.NotificationService;
 import com.damian.xBank.modules.notification.infrastructure.repository.NotificationRepository;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountNotFoundException;

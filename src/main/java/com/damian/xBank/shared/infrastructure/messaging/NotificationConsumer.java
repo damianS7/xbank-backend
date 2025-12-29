@@ -1,8 +1,8 @@
 package com.damian.xBank.shared.infrastructure.messaging;
 
 import com.damian.xBank.config.RabbitConfig;
-import com.damian.xBank.modules.notification.application.service.NotificationService;
-import com.damian.xBank.modules.notification.domain.event.NotificationEvent;
+import com.damian.xBank.modules.notification.domain.service.NotificationService;
+import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 

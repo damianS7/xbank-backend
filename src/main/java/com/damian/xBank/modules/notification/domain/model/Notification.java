@@ -1,6 +1,5 @@
-package com.damian.xBank.modules.notification.domain.entity;
+package com.damian.xBank.modules.notification.domain.model;
 
-import com.damian.xBank.modules.notification.domain.enums.NotificationType;
 import com.damian.xBank.modules.notification.domain.exception.NotificationNotOwnerException;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;

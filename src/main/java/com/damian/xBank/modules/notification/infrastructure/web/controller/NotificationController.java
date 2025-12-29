@@ -1,11 +1,11 @@
 package com.damian.xBank.modules.notification.infrastructure.web.controller;
 
-import com.damian.xBank.modules.notification.application.dto.mapper.NotificationDtoMapper;
+import com.damian.xBank.modules.notification.application.mapper.NotificationDtoMapper;
 import com.damian.xBank.modules.notification.application.dto.request.NotificationDeleteRequest;
 import com.damian.xBank.modules.notification.application.dto.response.NotificationDto;
-import com.damian.xBank.modules.notification.application.service.NotificationService;
-import com.damian.xBank.modules.notification.domain.entity.Notification;
-import com.damian.xBank.modules.notification.domain.event.NotificationEvent;
+import com.damian.xBank.modules.notification.domain.service.NotificationService;
+import com.damian.xBank.modules.notification.domain.model.Notification;
+import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
 import jakarta.validation.constraints.Positive;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
