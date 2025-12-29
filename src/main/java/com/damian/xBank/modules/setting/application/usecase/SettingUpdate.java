@@ -1,0 +1,66 @@
+package com.damian.xBank.modules.setting.application.usecase;
+
+import com.damian.xBank.modules.setting.application.dto.request.SettingsUpdateRequest;
+import com.damian.xBank.modules.setting.domain.exception.SettingNotFoundException;
+import com.damian.xBank.modules.setting.domain.model.Setting;
+import com.damian.xBank.modules.setting.domain.service.SettingService;
+import com.damian.xBank.modules.setting.infrastructure.persistence.repository.SettingRepository;
+import com.damian.xBank.shared.security.AuthenticationContext;
+import com.damian.xBank.shared.security.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+public class SettingUpdate {
+    private static final Logger log = LoggerFactory.getLogger(SettingUpdate.class);
+    private final AuthenticationContext authenticationContext;
+    private final SettingRepository settingRepository;
+    private final SettingService settingService;
+
+    public SettingUpdate(
+            AuthenticationContext authenticationContext,
+            SettingRepository settingRepository,
+            SettingService settingService
+    ) {
+        this.settingService = settingService;
+        this.authenticationContext = authenticationContext;
+        this.settingRepository = settingRepository;
+    }
+
+    @Transactional
+    public Setting execute(
+            SettingsUpdateRequest request
+    ) {
+        // User logged
+        final User currentUser = authenticationContext.getCurrentUser();
+
+        // find the settings for the currentUser
+        Setting userSettings = settingRepository
+                .findByUser_Id(currentUser.getId())
+                .orElseThrow(
+                        () -> new SettingNotFoundException(currentUser.getId())
+                );
+
+        System.out.println("Asdasda");
+        System.out.println("Asdasda");
+        // update settings
+        System.out.println(userSettings.getSettings());
+        settingService.updateSettings(currentUser.getId(), userSettings, request.settings());
+        System.out.println(userSettings.getSettings());
+        System.out.println("Asdasda");
+        System.out.println("Asdasda");
+        // Save
+        settingRepository.save(userSettings);
+
+        log.debug(
+                "Updated settings: {} by user: {}",
+                userSettings.getSettings().toString(),
+                currentUser.getId()
+        );
+
+        return userSettings;
+    }
+
+}
