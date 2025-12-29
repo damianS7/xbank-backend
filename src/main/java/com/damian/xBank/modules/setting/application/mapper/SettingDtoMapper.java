@@ -1,7 +1,7 @@
-package com.damian.xBank.modules.setting.application.dto.mapper;
+package com.damian.xBank.modules.setting.application.mapper;
 
 import com.damian.xBank.modules.setting.application.dto.response.SettingDto;
-import com.damian.xBank.modules.setting.domain.entity.Setting;
+import com.damian.xBank.modules.setting.domain.model.Setting;
 
 import java.util.Set;
 import java.util.stream.Collectors;
