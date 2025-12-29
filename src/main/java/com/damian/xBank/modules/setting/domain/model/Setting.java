@@ -1,13 +1,15 @@
-package com.damian.xBank.modules.setting.domain.entity;
+package com.damian.xBank.modules.setting.domain.model;
 
-import com.damian.xBank.modules.setting.UserSettings;
-import com.damian.xBank.modules.setting.UserSettingsConverter;
+import com.damian.xBank.modules.setting.domain.exception.SettingNotOwnerException;
+import com.damian.xBank.modules.setting.infrastructure.persistence.converter.UserSettingsConverter;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.security.User;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+
+import java.util.Objects;
 
 @Entity
 @Table(name = "user_settings")
@@ -40,16 +42,16 @@ public class Setting {
         this(owner.getAccount());
     }
 
+    public static Setting create(UserAccount owner) {
+        return new Setting(owner);
+    }
+
     public static Setting create(User owner) {
         return new Setting(owner);
     }
 
     public static Setting create(Customer owner) {
         return new Setting(owner);
-    }
-
-    public static Setting create() {
-        return new Setting();
     }
 
     public Long getId() {
@@ -78,16 +80,27 @@ public class Setting {
         return this;
     }
 
-    public boolean isOwner(Customer customer) {
-        return this.isOwner(customer.getAccount());
+    public boolean isOwnedBy(Customer customer) {
+        return this.isOwnedBy(customer.getAccount().getId());
     }
 
-    public boolean isOwner(User user) {
-        return this.isOwner(user.getAccount());
+    public boolean isOwnedBy(User user) {
+        return this.isOwnedBy(user.getAccount().getId());
     }
 
-    public boolean isOwner(UserAccount user) {
-        return this.user.getId().equals(user.getId());
+    public boolean isOwnedBy(Long userId) {
+        // compare account owner id with given customer id
+        return Objects.equals(user.getId(), userId);
+    }
+
+    public Setting assertOwnedBy(Long userId) {
+
+        // compare card owner id with given customer id
+        if (!isOwnedBy(userId)) {
+            throw new SettingNotOwnerException(getId(), userId);
+        }
+
+        return this;
     }
 
     public UserSettings getSettings() {
