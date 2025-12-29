@@ -396,5 +396,46 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
 
     }
 
-    // tODO reject
+    @Test
+    @DisplayName("POST /transfers/reject a valid request should reject a transfer")
+    void postTransfersReject_ValidRequest_Returns200OK() throws Exception {
+        // given
+        login(fromCustomer);
+
+        BankingTransferConfirmRequest request = new BankingTransferConfirmRequest(
+                RAW_PASSWORD
+        );
+
+        // when
+        MvcResult result = mockMvc
+                .perform(post(
+                        "/api/v1/banking/transfers/{id}/reject", transfer.getId())
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().is(200))
+                .andReturn();
+
+        BankingTransferDto transferDto = objectMapper.readValue(
+                result.getResponse().getContentAsString(),
+                BankingTransferDto.class
+        );
+
+        // then
+        assertThat(transferDto)
+                .isNotNull()
+                .extracting(
+                        BankingTransferDto::id,
+                        BankingTransferDto::amount,
+                        BankingTransferDto::status,
+                        BankingTransferDto::description
+                ).containsExactly(
+                        transfer.getId(),
+                        transfer.getAmount().setScale(2),
+                        BankingTransferStatus.REJECTED,
+                        transfer.getDescription()
+                );
+
+    }
 }
