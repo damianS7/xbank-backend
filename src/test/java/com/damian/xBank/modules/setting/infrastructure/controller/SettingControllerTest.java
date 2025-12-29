@@ -51,8 +51,8 @@ public class SettingControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("Should get logged user settings")
-    void shouldGetSettings() throws Exception {
+    @DisplayName("GET /settings returns current user settings")
+    void getSettings_ValidRequest_ReturnsSettingsAnd200OK() throws Exception {
         // given
         login(customer);
 
@@ -84,8 +84,8 @@ public class SettingControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("Should update customer settings")
-    void shouldUpdateSettings() throws Exception {
+    @DisplayName("PATCH /settings updates current user settings")
+    void updateSettings_ValidRequest_ReturnsUpdatedSettingsAnd200OK() throws Exception {
         // given
         login(customer);
 
