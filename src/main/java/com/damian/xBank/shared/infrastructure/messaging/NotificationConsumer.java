@@ -1,8 +1,8 @@
 package com.damian.xBank.shared.infrastructure.messaging;
 
 import com.damian.xBank.config.RabbitConfig;
-import com.damian.xBank.modules.notification.domain.service.NotificationService;
 import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
+import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class NotificationConsumer {
-    private final NotificationService notificationService;
+    private final NotificationPublisher notificationPublisher;
 
-    public NotificationConsumer(NotificationService notificationService) {
-        this.notificationService = notificationService;
+    public NotificationConsumer(NotificationPublisher notificationPublisher) {
+        this.notificationPublisher = notificationPublisher;
     }
 
     /**
@@ -25,6 +25,6 @@ public class NotificationConsumer {
     @RabbitListener(queues = RabbitConfig.QUEUE)
     public void receiveMessage(NotificationEvent notification) {
         // Delegates the processing of the notification to the NotificationService
-        notificationService.publish(notification);
+        notificationPublisher.publish(notification);
     }
 }
