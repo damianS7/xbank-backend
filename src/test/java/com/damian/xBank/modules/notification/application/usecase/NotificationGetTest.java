@@ -76,7 +76,7 @@ public class NotificationGetTest extends AbstractServiceTest {
 
     @Test
     @DisplayName("getNotificationsForUser should create sink and remove it on cancel")
-    void getNotificationsForUser_CreatesAndRemovesSink() {
+    void getSinkNotifications_CreatesAndRemovesSink() {
         // given
         setUpContext(customer.getAccount()); // asegura que el contexto tiene el usuario actual
         Long userId = customer.getId();
@@ -85,7 +85,7 @@ public class NotificationGetTest extends AbstractServiceTest {
         assertThat(notificationSinkRegistry.getSinkForUser(userId)).isNull();
 
         // when
-        Flux<NotificationEvent> flux = notificationGet.getNotificationsForUser();
+        Flux<NotificationEvent> flux = notificationGet.getSinkNotifications();
 
         // then
         StepVerifier.create(flux)

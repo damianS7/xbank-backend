@@ -77,6 +77,6 @@ public class NotificationController {
 
     @GetMapping(value = "/notifications/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<NotificationEvent> streamNotifications() {
-        return notificationGet.getNotificationsForUser();
+        return notificationGet.getSinkNotifications();
     }
 }

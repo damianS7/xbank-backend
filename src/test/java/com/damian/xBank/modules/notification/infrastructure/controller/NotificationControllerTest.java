@@ -160,7 +160,7 @@ public class NotificationControllerTest extends AbstractControllerTest {
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(SecurityContextHolder.getContext().getAuthentication().getPrincipal()).thenReturn(user);
 
-        when(notificationGet.getNotificationsForUser())
+        when(notificationGet.getSinkNotifications())
                 .thenReturn(Flux.just(notificationEvent));
 
         MvcResult result = mockMvc.perform(get("/api/v1/notifications/stream")

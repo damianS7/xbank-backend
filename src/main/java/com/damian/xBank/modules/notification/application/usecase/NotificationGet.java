@@ -53,7 +53,7 @@ public class NotificationGet {
      *
      * @return Flux<NotificationEvent> a stream of notifications
      */
-    public Flux<NotificationEvent> getNotificationsForUser() {
+    public Flux<NotificationEvent> getSinkNotifications() {
         // Current user
         final User currentUser = authenticationContext.getCurrentUser();
 
