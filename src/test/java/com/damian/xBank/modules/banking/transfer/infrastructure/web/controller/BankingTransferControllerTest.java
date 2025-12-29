@@ -319,6 +319,9 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
         // given
         login(fromCustomer);
 
+        final BigDecimal fromAccountInitialBalance = fromBankingAccount.getBalance();
+        final BigDecimal toAccountInitialBalance = toBankingAccount.getBalance();
+
         BankingTransferConfirmRequest request = new BankingTransferConfirmRequest(
                 RAW_PASSWORD
         );
@@ -353,6 +356,20 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
                         BankingTransferStatus.CONFIRMED,
                         transfer.getDescription()
                 );
+
+
+        // check balances
+        BankingAccount updatedFromAccount =
+                bankingAccountRepository.findById(fromBankingAccount.getId()).orElseThrow();
+
+        BankingAccount updatedToAccount =
+                bankingAccountRepository.findById(toBankingAccount.getId()).orElseThrow();
+
+        assertThat(updatedFromAccount.getBalance())
+                .isEqualTo(fromAccountInitialBalance.subtract(transfer.getAmount().setScale(2)));
+
+        assertThat(updatedToAccount.getBalance())
+                .isEqualTo(toAccountInitialBalance.add(transfer.getAmount().setScale(2)));
     }
 
     @Test
@@ -379,4 +396,5 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
 
     }
 
+    // tODO reject
 }
