@@ -4,11 +4,11 @@ import com.damian.xBank.modules.banking.transaction.application.dto.mapper.Banki
 import com.damian.xBank.modules.banking.transfer.application.dto.request.BankingTransferRejectRequest;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferNotFoundException;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
-import com.damian.xBank.modules.banking.transfer.domain.service.BankingTransferService;
+import com.damian.xBank.modules.banking.transfer.domain.service.BankingTransferDomainService;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
-import com.damian.xBank.modules.notification.domain.service.NotificationService;
-import com.damian.xBank.modules.notification.domain.model.NotificationType;
 import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
+import com.damian.xBank.modules.notification.domain.model.NotificationType;
+import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import com.damian.xBank.shared.security.PasswordValidator;
@@ -21,21 +21,21 @@ import java.util.Map;
 @Service
 public class BankingTransferReject {
     private final BankingTransferRepository transferRepository;
-    private final NotificationService notificationService;
-    private final BankingTransferService bankingTransferService;
+    private final NotificationPublisher notificationPublisher;
+    private final BankingTransferDomainService bankingTransferDomainService;
     private final AuthenticationContext authenticationContext;
     private final PasswordValidator passwordValidator;
 
     public BankingTransferReject(
             BankingTransferRepository transferRepository,
-            NotificationService notificationService,
-            BankingTransferService bankingTransferService,
+            NotificationPublisher notificationPublisher,
+            BankingTransferDomainService bankingTransferDomainService,
             AuthenticationContext authenticationContext,
             PasswordValidator passwordValidator
     ) {
         this.transferRepository = transferRepository;
-        this.notificationService = notificationService;
-        this.bankingTransferService = bankingTransferService;
+        this.notificationPublisher = notificationPublisher;
+        this.bankingTransferDomainService = bankingTransferDomainService;
         this.authenticationContext = authenticationContext;
         this.passwordValidator = passwordValidator;
     }
@@ -57,13 +57,13 @@ public class BankingTransferReject {
         );
 
         // reject
-        bankingTransferService.reject(currentCustomer.getId(), transfer);
+        bankingTransferDomainService.reject(currentCustomer.getId(), transfer);
 
         // Save
         transferRepository.save(transfer);
 
         // Notify receive
-        notificationService.publish(
+        notificationPublisher.publish(
                 new NotificationEvent(
                         transfer.getToAccount().getOwner().getAccount().getId(),
                         NotificationType.TRANSACTION,

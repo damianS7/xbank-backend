@@ -6,8 +6,8 @@ import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SettingService {
-    public SettingService() {
+public class SettingDomainService {
+    public SettingDomainService() {
     }
 
     /**

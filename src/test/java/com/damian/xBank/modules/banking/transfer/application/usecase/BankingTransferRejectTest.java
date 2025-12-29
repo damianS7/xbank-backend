@@ -10,10 +10,10 @@ import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransact
 import com.damian.xBank.modules.banking.transfer.application.dto.request.BankingTransferRejectRequest;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferStatus;
-import com.damian.xBank.modules.banking.transfer.domain.service.BankingTransferService;
+import com.damian.xBank.modules.banking.transfer.domain.service.BankingTransferDomainService;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
-import com.damian.xBank.modules.notification.domain.service.NotificationService;
 import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
+import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.AbstractServiceTest;
@@ -36,10 +36,10 @@ public class BankingTransferRejectTest extends AbstractServiceTest {
     private BankingTransferReject bankingTransferReject;
 
     @Mock
-    private BankingTransferService bankingTransferService;
+    private BankingTransferDomainService bankingTransferDomainService;
 
     @Mock
-    private NotificationService notificationService;
+    private NotificationPublisher notificationPublisher;
 
     @Mock
     private BankingAccountRepository bankingAccountRepository;
@@ -125,12 +125,12 @@ public class BankingTransferRejectTest extends AbstractServiceTest {
         // when
         when(bankingTransferRepository.findById(anyLong())).thenReturn(Optional.of(givenTransfer));
 
-        when(bankingTransferService.reject(anyLong(), any())).thenReturn(givenTransfer);
+        when(bankingTransferDomainService.reject(anyLong(), any())).thenReturn(givenTransfer);
 
         //        when(bankingTransferRepository.save(any(BankingTransfer.class)))
         //                .thenAnswer(i -> i.getArgument(0));
 
-        doNothing().when(notificationService).publish(any(NotificationEvent.class));
+        doNothing().when(notificationPublisher).publish(any(NotificationEvent.class));
 
         // then
         bankingTransferReject

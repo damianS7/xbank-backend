@@ -9,9 +9,9 @@ import com.damian.xBank.modules.banking.transaction.application.dto.mapper.Banki
 import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionService;
 import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
-import com.damian.xBank.modules.notification.domain.service.NotificationService;
-import com.damian.xBank.modules.notification.domain.model.NotificationType;
 import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
+import com.damian.xBank.modules.notification.domain.model.NotificationType;
+import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.stereotype.Service;
@@ -25,18 +25,18 @@ public class BankingCardOperationService {
 
     private final BankingTransactionService bankingTransactionService;
     private final BankingCardRepository bankingCardRepository;
-    private final NotificationService notificationService;
+    private final NotificationPublisher notificationPublisher;
     private final AuthenticationContext authenticationContext;
 
     public BankingCardOperationService(
             BankingTransactionService bankingTransactionService,
             BankingCardRepository bankingCardRepository,
-            NotificationService notificationService,
+            NotificationPublisher notificationPublisher,
             AuthenticationContext authenticationContext
     ) {
         this.bankingTransactionService = bankingTransactionService;
         this.bankingCardRepository = bankingCardRepository;
-        this.notificationService = notificationService;
+        this.notificationPublisher = notificationPublisher;
         this.authenticationContext = authenticationContext;
     }
 
@@ -123,7 +123,7 @@ public class BankingCardOperationService {
         bankingTransactionService.record(transaction);
 
         // Notify the user
-        notificationService.publish(
+        notificationPublisher.publish(
                 new NotificationEvent(
                         customerLogged.getAccount().getId(),
                         NotificationType.TRANSACTION,

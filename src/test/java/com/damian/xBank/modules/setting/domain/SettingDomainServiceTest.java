@@ -2,7 +2,7 @@ package com.damian.xBank.modules.setting.domain;
 
 import com.damian.xBank.modules.setting.domain.exception.SettingNotOwnerException;
 import com.damian.xBank.modules.setting.domain.model.*;
-import com.damian.xBank.modules.setting.domain.service.SettingService;
+import com.damian.xBank.modules.setting.domain.service.SettingDomainService;
 import com.damian.xBank.modules.setting.infrastructure.persistence.repository.SettingRepository;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
@@ -17,13 +17,13 @@ import org.mockito.Mock;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
 
-public class SettingServiceTest extends AbstractServiceTest {
+public class SettingDomainServiceTest extends AbstractServiceTest {
 
     @Mock
     private SettingRepository settingRepository;
 
     @InjectMocks
-    private SettingService settingService;
+    private SettingDomainService settingDomainService;
 
     private Customer customerA;
     private Customer customerB;
@@ -77,7 +77,7 @@ public class SettingServiceTest extends AbstractServiceTest {
         );
 
         // when
-        settingService.updateSettings(
+        settingDomainService.updateSettings(
                 customerA.getId(),
                 customerSettings,
                 newSettings
@@ -131,7 +131,7 @@ public class SettingServiceTest extends AbstractServiceTest {
         SettingNotOwnerException exception =
                 assertThrows(
                         SettingNotOwnerException.class,
-                        () -> settingService.updateSettings(
+                        () -> settingDomainService.updateSettings(
                                 customerB.getId(),
                                 customerSettings,
                                 newSettings
@@ -149,7 +149,7 @@ public class SettingServiceTest extends AbstractServiceTest {
     void initializeDefaultSettingsFor_ValidUserAccount_ReturnsSettingWithDefaultValues() {
         // given
         // when
-        Setting result = settingService.initializeDefaultSettingsFor(customerA.getAccount());
+        Setting result = settingDomainService.initializeDefaultSettingsFor(customerA.getAccount());
 
         // then
         assertThat(result).isNotNull();

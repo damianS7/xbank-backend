@@ -3,7 +3,7 @@ package com.damian.xBank.modules.setting.application.usecase;
 import com.damian.xBank.modules.setting.application.dto.request.SettingsUpdateRequest;
 import com.damian.xBank.modules.setting.domain.exception.SettingNotFoundException;
 import com.damian.xBank.modules.setting.domain.model.Setting;
-import com.damian.xBank.modules.setting.domain.service.SettingService;
+import com.damian.xBank.modules.setting.domain.service.SettingDomainService;
 import com.damian.xBank.modules.setting.infrastructure.persistence.repository.SettingRepository;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import com.damian.xBank.shared.security.User;
@@ -17,14 +17,14 @@ public class SettingUpdate {
     private static final Logger log = LoggerFactory.getLogger(SettingUpdate.class);
     private final AuthenticationContext authenticationContext;
     private final SettingRepository settingRepository;
-    private final SettingService settingService;
+    private final SettingDomainService settingDomainService;
 
     public SettingUpdate(
             AuthenticationContext authenticationContext,
             SettingRepository settingRepository,
-            SettingService settingService
+            SettingDomainService settingDomainService
     ) {
-        this.settingService = settingService;
+        this.settingDomainService = settingDomainService;
         this.authenticationContext = authenticationContext;
         this.settingRepository = settingRepository;
     }
@@ -47,7 +47,7 @@ public class SettingUpdate {
         System.out.println("Asdasda");
         // update settings
         System.out.println(userSettings.getSettings());
-        settingService.updateSettings(currentUser.getId(), userSettings, request.settings());
+        settingDomainService.updateSettings(currentUser.getId(), userSettings, request.settings());
         System.out.println(userSettings.getSettings());
         System.out.println("Asdasda");
         System.out.println("Asdasda");

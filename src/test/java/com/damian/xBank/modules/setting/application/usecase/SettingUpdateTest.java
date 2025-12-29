@@ -2,7 +2,7 @@ package com.damian.xBank.modules.setting.application.usecase;
 
 import com.damian.xBank.modules.setting.application.dto.request.SettingsUpdateRequest;
 import com.damian.xBank.modules.setting.domain.model.*;
-import com.damian.xBank.modules.setting.domain.service.SettingService;
+import com.damian.xBank.modules.setting.domain.service.SettingDomainService;
 import com.damian.xBank.modules.setting.infrastructure.persistence.repository.SettingRepository;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
@@ -25,7 +25,7 @@ public class SettingUpdateTest extends AbstractServiceTest {
     private SettingRepository settingRepository;
 
     @Spy
-    private SettingService settingService;
+    private SettingDomainService settingDomainService;
 
     @InjectMocks
     private SettingUpdate settingUpdate;

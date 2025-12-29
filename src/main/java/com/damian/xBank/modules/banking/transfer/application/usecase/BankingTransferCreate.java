@@ -6,11 +6,11 @@ import com.damian.xBank.modules.banking.account.infrastructure.repository.Bankin
 import com.damian.xBank.modules.banking.transaction.application.dto.mapper.BankingTransactionDtoMapper;
 import com.damian.xBank.modules.banking.transfer.application.dto.request.BankingTransferRequest;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
-import com.damian.xBank.modules.banking.transfer.domain.service.BankingTransferService;
+import com.damian.xBank.modules.banking.transfer.domain.service.BankingTransferDomainService;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
-import com.damian.xBank.modules.notification.domain.service.NotificationService;
-import com.damian.xBank.modules.notification.domain.model.NotificationType;
 import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
+import com.damian.xBank.modules.notification.domain.model.NotificationType;
+import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.stereotype.Service;
@@ -22,21 +22,21 @@ import java.util.Map;
 @Service
 public class BankingTransferCreate {
     private final BankingAccountRepository bankingAccountRepository;
-    private final NotificationService notificationService;
-    private final BankingTransferService bankingTransferService;
+    private final NotificationPublisher notificationPublisher;
+    private final BankingTransferDomainService bankingTransferDomainService;
     private final AuthenticationContext authenticationContext;
     private final BankingTransferRepository bankingTransferRepository;
 
     public BankingTransferCreate(
             BankingAccountRepository bankingAccountRepository,
-            NotificationService notificationService,
-            BankingTransferService bankingTransferService,
+            NotificationPublisher notificationPublisher,
+            BankingTransferDomainService bankingTransferDomainService,
             AuthenticationContext authenticationContext,
             BankingTransferRepository bankingTransferRepository
     ) {
         this.bankingAccountRepository = bankingAccountRepository;
-        this.notificationService = notificationService;
-        this.bankingTransferService = bankingTransferService;
+        this.notificationPublisher = notificationPublisher;
+        this.bankingTransferDomainService = bankingTransferDomainService;
         this.authenticationContext = authenticationContext;
         this.bankingTransferRepository = bankingTransferRepository;
     }
@@ -60,7 +60,7 @@ public class BankingTransferCreate {
                         () -> new BankingAccountNotFoundException(request.toAccountNumber())
                 );
 
-        BankingTransfer transfer = bankingTransferService.createTransfer(
+        BankingTransfer transfer = bankingTransferDomainService.createTransfer(
                 currentCustomer.getId(),
                 fromAccount,
                 toAccount,
@@ -69,7 +69,7 @@ public class BankingTransferCreate {
         );
 
         // Notify fromAccount
-        notificationService.publish(
+        notificationPublisher.publish(
                 new NotificationEvent(
                         toAccount.getOwner().getAccount().getId(),
                         NotificationType.TRANSACTION,

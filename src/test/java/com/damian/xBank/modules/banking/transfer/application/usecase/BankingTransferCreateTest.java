@@ -10,10 +10,10 @@ import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransact
 import com.damian.xBank.modules.banking.transfer.application.dto.request.BankingTransferRequest;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferStatus;
-import com.damian.xBank.modules.banking.transfer.domain.service.BankingTransferService;
+import com.damian.xBank.modules.banking.transfer.domain.service.BankingTransferDomainService;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
-import com.damian.xBank.modules.notification.domain.service.NotificationService;
 import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
+import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.AbstractServiceTest;
@@ -34,13 +34,13 @@ import static org.mockito.Mockito.*;
 public class BankingTransferCreateTest extends AbstractServiceTest {
 
     @Mock
-    private BankingTransferService bankingTransferService;
+    private BankingTransferDomainService bankingTransferDomainService;
 
     @InjectMocks
     private BankingTransferCreate bankingTransferCreate;
 
     @Mock
-    private NotificationService notificationService;
+    private NotificationPublisher notificationPublisher;
 
     @Mock
     private BankingAccountRepository bankingAccountRepository;
@@ -123,9 +123,9 @@ public class BankingTransferCreateTest extends AbstractServiceTest {
         when(bankingAccountRepository.findByAccountNumber(toAccount.getAccountNumber())).thenReturn(
                 Optional.of(toAccount));
 
-        doNothing().when(notificationService).publish(any(NotificationEvent.class));
+        doNothing().when(notificationPublisher).publish(any(NotificationEvent.class));
 
-        when(bankingTransferService.createTransfer(
+        when(bankingTransferDomainService.createTransfer(
                 anyLong(),
                 any(BankingAccount.class),
                 any(BankingAccount.class),

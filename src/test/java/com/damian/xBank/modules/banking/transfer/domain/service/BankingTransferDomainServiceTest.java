@@ -34,10 +34,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-public class BankingTransferServiceTest extends AbstractServiceTest {
+public class BankingTransferDomainServiceTest extends AbstractServiceTest {
 
     @InjectMocks
-    private BankingTransferService bankingTransferService;
+    private BankingTransferDomainService bankingTransferDomainService;
 
     @Mock
     private BankingTransactionService bankingTransactionService;
@@ -93,7 +93,7 @@ public class BankingTransferServiceTest extends AbstractServiceTest {
         //        );
 
         // then
-        BankingTransfer resultTransfer = bankingTransferService.createTransfer(
+        BankingTransfer resultTransfer = bankingTransferDomainService.createTransfer(
                 fromCustomer.getId(),
                 fromAccount,
                 toAccount,
@@ -146,7 +146,7 @@ public class BankingTransferServiceTest extends AbstractServiceTest {
         // then
         BankingAccountNotOwnerException exception = assertThrows(
                 BankingAccountNotOwnerException.class,
-                () -> bankingTransferService.createTransfer(
+                () -> bankingTransferDomainService.createTransfer(
                         toCustomer.getId(),
                         fromAccount,
                         toAccount,
@@ -169,7 +169,7 @@ public class BankingTransferServiceTest extends AbstractServiceTest {
         // then
         BankingAccountInsufficientFundsException exception = assertThrows(
                 BankingAccountInsufficientFundsException.class,
-                () -> bankingTransferService.createTransfer(
+                () -> bankingTransferDomainService.createTransfer(
                         fromCustomer.getId(),
                         fromAccount,
                         toAccount,
@@ -194,7 +194,7 @@ public class BankingTransferServiceTest extends AbstractServiceTest {
         // then
         BankingTransferCurrencyMismatchException exception = assertThrows(
                 BankingTransferCurrencyMismatchException.class,
-                () -> bankingTransferService.createTransfer(
+                () -> bankingTransferDomainService.createTransfer(
                         fromCustomer.getId(),
                         fromAccount,
                         toAccount,
@@ -219,7 +219,7 @@ public class BankingTransferServiceTest extends AbstractServiceTest {
         // then
         BankingAccountClosedException exception = assertThrows(
                 BankingAccountClosedException.class,
-                () -> bankingTransferService.createTransfer(
+                () -> bankingTransferDomainService.createTransfer(
                         fromCustomer.getId(),
                         fromAccount,
                         toAccount,
@@ -244,7 +244,7 @@ public class BankingTransferServiceTest extends AbstractServiceTest {
         // then
         BankingAccountSuspendedException exception = assertThrows(
                 BankingAccountSuspendedException.class,
-                () -> bankingTransferService.createTransfer(
+                () -> bankingTransferDomainService.createTransfer(
                         fromCustomer.getId(),
                         fromAccount,
                         toAccount,
@@ -267,7 +267,7 @@ public class BankingTransferServiceTest extends AbstractServiceTest {
         // then
         BankingTransferSameAccountException exception = assertThrows(
                 BankingTransferSameAccountException.class,
-                () -> bankingTransferService.createTransfer(
+                () -> bankingTransferDomainService.createTransfer(
                         fromCustomer.getId(),
                         fromAccount,
                         fromAccount,
@@ -335,7 +335,10 @@ public class BankingTransferServiceTest extends AbstractServiceTest {
         //                .thenAnswer(i -> i.getArgument(0));
 
         // then
-        BankingTransfer resultTransfer = bankingTransferService.confirmTransfer(fromCustomer.getId(), givenTransfer);
+        BankingTransfer resultTransfer = bankingTransferDomainService.confirmTransfer(
+                fromCustomer.getId(),
+                givenTransfer
+        );
 
         assertThat(resultTransfer)
                 .isNotNull()

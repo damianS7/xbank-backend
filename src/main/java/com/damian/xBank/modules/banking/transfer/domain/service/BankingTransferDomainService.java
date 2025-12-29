@@ -11,11 +11,11 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 
 @Service
-public class BankingTransferService {
+public class BankingTransferDomainService {
 
     private final BankingTransactionService bankingTransactionService;
 
-    public BankingTransferService(
+    public BankingTransferDomainService(
             BankingTransactionService bankingTransactionService
     ) {
         this.bankingTransactionService = bankingTransactionService;

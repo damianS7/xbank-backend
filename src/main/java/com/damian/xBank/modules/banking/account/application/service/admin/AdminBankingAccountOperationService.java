@@ -9,9 +9,9 @@ import com.damian.xBank.modules.banking.transaction.application.service.BankingT
 import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
-import com.damian.xBank.modules.notification.domain.service.NotificationService;
-import com.damian.xBank.modules.notification.domain.model.NotificationType;
 import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
+import com.damian.xBank.modules.notification.domain.model.NotificationType;
+import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.slf4j.Logger;
@@ -26,18 +26,18 @@ public class AdminBankingAccountOperationService {
     private static final Logger log = LoggerFactory.getLogger(AdminBankingAccountOperationService.class);
     private final BankingTransactionService bankingTransactionService;
     private final BankingAccountRepository bankingAccountRepository;
-    private final NotificationService notificationService;
+    private final NotificationPublisher notificationPublisher;
     private final AuthenticationContext authenticationContext;
 
     public AdminBankingAccountOperationService(
             BankingTransactionService bankingTransactionService,
             BankingAccountRepository bankingAccountRepository,
-            NotificationService notificationService,
+            NotificationPublisher notificationPublisher,
             AuthenticationContext authenticationContext
     ) {
         this.bankingTransactionService = bankingTransactionService;
         this.bankingAccountRepository = bankingAccountRepository;
-        this.notificationService = notificationService;
+        this.notificationPublisher = notificationPublisher;
         this.authenticationContext = authenticationContext;
     }
 
@@ -83,7 +83,7 @@ public class AdminBankingAccountOperationService {
         bankingTransactionService.record(transaction);
 
         // Notify receiver
-        notificationService.publish(
+        notificationPublisher.publish(
                 new NotificationEvent(
                         bankingAccount.getOwner().getAccount().getId(),
                         NotificationType.TRANSACTION,
