@@ -1,8 +1,8 @@
-package com.damian.xBank.modules.notification.infrastructure.controller;
+package com.damian.xBank.modules.notification.infrastructure.web.controller;
 
 import com.damian.xBank.modules.notification.application.dto.request.NotificationDeleteRequest;
 import com.damian.xBank.modules.notification.application.dto.response.NotificationDto;
-import com.damian.xBank.modules.notification.application.usecase.NotificationGet;
+import com.damian.xBank.modules.notification.application.usecase.NotificationSinkGet;
 import com.damian.xBank.modules.notification.domain.model.Notification;
 import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
 import com.damian.xBank.modules.notification.domain.model.NotificationType;
@@ -49,7 +49,7 @@ public class NotificationControllerTest extends AbstractControllerTest {
     private JwtUtil jwtUtil;
 
     @SpyBean
-    private NotificationGet notificationGet;
+    private NotificationSinkGet notificationSinkGet;
 
     @BeforeEach
     void setUp() {
@@ -70,8 +70,8 @@ public class NotificationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("Should get notifications for the logged user")
-    void shouldGetNotifications() throws Exception {
+    @DisplayName("GET /notifications with valid request should get notifications for authenticated user")
+    void getNotifications_ValidRequest_Returns200OK() throws Exception {
         // given
         Notification notification = Notification
                 .create(customer)
@@ -108,8 +108,8 @@ public class NotificationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("Should delete notifications for the logged user")
-    void shouldDeleteNotifications() throws Exception {
+    @DisplayName("DELETE /notifications should delete notifications for authenticated user")
+    void deleteNotifications_ValidRequest_Returns204NoContent() throws Exception {
         // given
         Notification notification = Notification
                 .create(customer)
@@ -139,8 +139,8 @@ public class NotificationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("Should get real time notifications for the logged user")
-    void shouldGetRealTimeNotifications() throws Exception {
+    @DisplayName("GET /notifications/stream returns real-time notifications for authenticated user")
+    void getNotificationsStream_ValidRequest_ReturnsSseStreamAnd200OK() throws Exception {
         // given
         login(customer);
 
@@ -160,7 +160,7 @@ public class NotificationControllerTest extends AbstractControllerTest {
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(SecurityContextHolder.getContext().getAuthentication().getPrincipal()).thenReturn(user);
 
-        when(notificationGet.getSinkNotifications())
+        when(notificationSinkGet.execute())
                 .thenReturn(Flux.just(notificationEvent));
 
         MvcResult result = mockMvc.perform(get("/api/v1/notifications/stream")

@@ -51,10 +51,9 @@ public class NotificationPublisherTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("should publish notification")
-    void shouldPublishNotification() {
+    @DisplayName("publish saves notification when recipient exists")
+    void publish_ValidRecipient_SavesNotification() {
         // given
-
         Map<String, Object> metadata = Map.of(
                 "postId", 3L,
                 "userName", "userName"
@@ -78,8 +77,8 @@ public class NotificationPublisherTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("should not publish when recipient not found")
-    void shouldNotPublishNotificationWhenRecipientNotFound() {
+    @DisplayName("publish throws exception when recipient is not found")
+    void publish_RecipientNotFound_ThrowsException() {
         // given
 
         Map<String, Object> metadata = Map.of(
@@ -88,7 +87,7 @@ public class NotificationPublisherTest extends AbstractServiceTest {
         );
 
         NotificationEvent event = new NotificationEvent(
-                2L, // same as publisher
+                customer.getId(),
                 NotificationType.INFO,
                 metadata,
                 Instant.now().toString()

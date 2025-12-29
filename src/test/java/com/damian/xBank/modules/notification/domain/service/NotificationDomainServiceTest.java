@@ -9,7 +9,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
-// TODO review
 public class NotificationDomainServiceTest extends AbstractServiceTest {
 
     @InjectMocks
@@ -54,6 +53,4 @@ public class NotificationDomainServiceTest extends AbstractServiceTest {
         // then
 
     }
-
-    // TODO not delete if not owner
 }
