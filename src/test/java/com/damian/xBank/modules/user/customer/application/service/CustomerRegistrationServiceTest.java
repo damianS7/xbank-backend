@@ -7,7 +7,7 @@ import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRol
 import com.damian.xBank.modules.user.customer.application.dto.request.CustomerRegistrationRequest;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
-import com.damian.xBank.modules.user.customer.infra.repository.CustomerRepository;
+import com.damian.xBank.modules.user.customer.infrastructure.repository.CustomerRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

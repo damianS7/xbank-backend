@@ -7,7 +7,7 @@ import com.damian.xBank.modules.user.customer.domain.exception.CustomerException
 import com.damian.xBank.modules.user.customer.domain.exception.CustomerNotFoundException;
 import com.damian.xBank.modules.user.customer.domain.exception.CustomerUpdateAuthorizationException;
 import com.damian.xBank.modules.user.customer.domain.exception.CustomerUpdateException;
-import com.damian.xBank.modules.user.customer.infra.repository.CustomerRepository;
+import com.damian.xBank.modules.user.customer.infrastructure.repository.CustomerRepository;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import com.damian.xBank.shared.security.PasswordValidator;
 import org.slf4j.Logger;

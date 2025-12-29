@@ -11,11 +11,11 @@ import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountC
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotOwnerException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountSuspendedException;
-import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
+import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
-import com.damian.xBank.modules.user.customer.infra.repository.CustomerRepository;
+import com.damian.xBank.modules.user.customer.infrastructure.repository.CustomerRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import org.junit.jupiter.api.DisplayName;

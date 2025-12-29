@@ -3,7 +3,7 @@ package com.damian.xBank.modules.banking.account.application.service.admin;
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountDepositRequest;
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
-import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
+import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.transaction.application.dto.mapper.BankingTransactionDtoMapper;
 import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionService;
 import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;

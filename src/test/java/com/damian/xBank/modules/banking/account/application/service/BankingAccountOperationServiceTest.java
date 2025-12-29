@@ -2,7 +2,7 @@ package com.damian.xBank.modules.banking.account.application.service;
 
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurrency;
-import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
+import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.banking.transfer.application.dto.request.BankingTransferRequest;
 import com.damian.xBank.modules.notification.application.service.NotificationService;

@@ -4,7 +4,7 @@ import com.damian.xBank.modules.banking.account.application.dto.request.BankingA
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotOwnerException;
-import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
+import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.card.application.service.BankingCardService;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;

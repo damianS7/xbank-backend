@@ -1,17 +1,17 @@
 package com.damian.xBank.modules.user.customer.application.service;
 
-import com.damian.xBank.shared.infrastructure.storage.FileStorageService;
-import com.damian.xBank.shared.infrastructure.storage.ImageProcessingService;
-import com.damian.xBank.shared.infrastructure.storage.ImageUploaderService;
-import com.damian.xBank.shared.infrastructure.storage.ImageValidationService;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountNotFoundException;
-import com.damian.xBank.modules.user.account.account.infra.repository.UserAccountRepository;
+import com.damian.xBank.modules.user.account.account.infrastructure.repository.UserAccountRepository;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.modules.user.customer.domain.exception.CustomerImageNotFoundException;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.infrastructure.storage.FileStorageService;
+import com.damian.xBank.shared.infrastructure.storage.ImageProcessingService;
+import com.damian.xBank.shared.infrastructure.storage.ImageUploaderService;
+import com.damian.xBank.shared.infrastructure.storage.ImageValidationService;
 import com.damian.xBank.shared.utils.ImageTestHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

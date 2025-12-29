@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.banking.account.application.service;
 
-import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
+import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.transfer.domain.service.BankingTransferService;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
 import com.damian.xBank.modules.notification.application.service.NotificationService;

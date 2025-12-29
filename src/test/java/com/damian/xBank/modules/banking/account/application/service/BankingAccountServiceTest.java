@@ -4,11 +4,11 @@ import com.damian.xBank.modules.banking.account.application.dto.request.BankingA
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountType;
-import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
+import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.modules.user.customer.domain.exception.CustomerNotFoundException;
-import com.damian.xBank.modules.user.customer.infra.repository.CustomerRepository;
+import com.damian.xBank.modules.user.customer.infrastructure.repository.CustomerRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import net.datafaker.Faker;

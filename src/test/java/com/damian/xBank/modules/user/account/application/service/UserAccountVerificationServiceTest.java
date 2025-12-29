@@ -4,11 +4,11 @@ import com.damian.xBank.modules.user.account.account.application.service.UserAcc
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
 import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountVerificationNotPendingException;
-import com.damian.xBank.modules.user.account.account.infra.repository.UserAccountRepository;
+import com.damian.xBank.modules.user.account.account.infrastructure.repository.UserAccountRepository;
 import com.damian.xBank.modules.user.account.token.application.service.UserAccountTokenService;
 import com.damian.xBank.modules.user.account.token.domain.entity.UserAccountToken;
 import com.damian.xBank.modules.user.account.token.domain.enums.UserAccountTokenType;
-import com.damian.xBank.modules.user.account.token.infra.repository.UserAccountTokenRepository;
+import com.damian.xBank.modules.user.account.token.infrastructure.repository.UserAccountTokenRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

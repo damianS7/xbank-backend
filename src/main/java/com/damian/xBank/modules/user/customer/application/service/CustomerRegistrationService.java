@@ -7,7 +7,7 @@ import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRol
 import com.damian.xBank.modules.user.customer.application.dto.request.CustomerRegistrationRequest;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.modules.user.customer.domain.exception.CustomerException;
-import com.damian.xBank.modules.user.customer.infra.repository.CustomerRepository;
+import com.damian.xBank.modules.user.customer.infrastructure.repository.CustomerRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

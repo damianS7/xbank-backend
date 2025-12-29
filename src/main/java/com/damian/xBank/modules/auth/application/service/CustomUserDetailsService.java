@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.auth.application.service;
 
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
-import com.damian.xBank.modules.user.account.account.infra.repository.UserAccountRepository;
+import com.damian.xBank.modules.user.account.account.infrastructure.repository.UserAccountRepository;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.security.User;
 import org.slf4j.Logger;

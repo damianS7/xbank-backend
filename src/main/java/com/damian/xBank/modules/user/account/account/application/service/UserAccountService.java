@@ -6,7 +6,7 @@ import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRol
 import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountEmailTakenException;
 import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountNotFoundException;
-import com.damian.xBank.modules.user.account.account.infra.repository.UserAccountRepository;
+import com.damian.xBank.modules.user.account.account.infrastructure.repository.UserAccountRepository;
 import com.damian.xBank.modules.user.account.token.application.service.UserAccountTokenService;
 import com.damian.xBank.modules.user.account.token.domain.entity.UserAccountToken;
 import com.damian.xBank.shared.security.AuthenticationContext;
