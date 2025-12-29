@@ -1,5 +1,6 @@
-package com.damian.xBank.modules.setting;
+package com.damian.xBank.modules.setting.infrastructure.persistence.converter;
 
+import com.damian.xBank.modules.setting.domain.model.UserSettings;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.AttributeConverter;

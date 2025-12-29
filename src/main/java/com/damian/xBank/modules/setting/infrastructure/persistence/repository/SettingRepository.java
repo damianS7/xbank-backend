@@ -1,6 +1,6 @@
-package com.damian.xBank.modules.setting.infrastructure.repository;
+package com.damian.xBank.modules.setting.infrastructure.persistence.repository;
 
-import com.damian.xBank.modules.setting.domain.entity.Setting;
+import com.damian.xBank.modules.setting.domain.model.Setting;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
