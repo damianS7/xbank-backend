@@ -59,7 +59,8 @@ public class BankingTransferConfirm {
                 () -> new BankingTransferNotFoundException(transferId)
         );
 
-        transfer = bankingTransferService.confirmTransfer(currentCustomer.getId(), transfer);
+        // confirm transfer
+        bankingTransferService.confirmTransfer(currentCustomer.getId(), transfer);
 
         // Save accounts (.save is optional because of transactional)
         bankingAccountRepository.save(transfer.getFromAccount());
