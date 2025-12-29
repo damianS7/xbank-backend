@@ -6,9 +6,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class NotificationDomainService {
 
-    public NotificationDomainService(
-    ) {
+    public NotificationDomainService() {
     }
+
+    // TODO review this ... maybe unnecesary, move to usecase?
 
     /**
      * Delete a notification.
