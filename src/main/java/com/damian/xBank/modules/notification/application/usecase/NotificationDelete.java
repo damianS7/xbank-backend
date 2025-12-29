@@ -2,22 +2,16 @@ package com.damian.xBank.modules.notification.application.usecase;
 
 import com.damian.xBank.modules.notification.domain.exception.NotificationNotFoundException;
 import com.damian.xBank.modules.notification.domain.model.Notification;
-import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
 import com.damian.xBank.modules.notification.domain.service.NotificationDomainService;
 import com.damian.xBank.modules.notification.infrastructure.repository.NotificationRepository;
-import com.damian.xBank.modules.user.account.account.infrastructure.repository.UserAccountRepository;
-import com.damian.xBank.modules.user.customer.infrastructure.repository.CustomerRepository;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import com.damian.xBank.shared.security.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Sinks;
 
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class NotificationDelete {
@@ -25,22 +19,15 @@ public class NotificationDelete {
     private final AuthenticationContext authenticationContext;
     private final NotificationRepository notificationRepository;
     private final NotificationDomainService notificationDomainService;
-    private final UserAccountRepository userAccountRepository;
-    private final CustomerRepository customerRepository;
-    private final Map<Long, Sinks.Many<NotificationEvent>> userSinks = new ConcurrentHashMap<>();
 
     public NotificationDelete(
             AuthenticationContext authenticationContext,
             NotificationRepository notificationRepository,
-            NotificationDomainService notificationDomainService,
-            UserAccountRepository userAccountRepository,
-            CustomerRepository customerRepository
+            NotificationDomainService notificationDomainService
     ) {
         this.authenticationContext = authenticationContext;
         this.notificationRepository = notificationRepository;
         this.notificationDomainService = notificationDomainService;
-        this.userAccountRepository = userAccountRepository;
-        this.customerRepository = customerRepository;
     }
 
     /**
