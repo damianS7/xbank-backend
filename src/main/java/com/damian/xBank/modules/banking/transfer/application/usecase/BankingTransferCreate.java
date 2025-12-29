@@ -13,39 +13,36 @@ import com.damian.xBank.modules.notification.domain.enums.NotificationType;
 import com.damian.xBank.modules.notification.domain.event.NotificationEvent;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.security.AuthenticationContext;
-import com.damian.xBank.shared.security.PasswordValidator;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.Map;
 
-// TODO review this ... maybe we should move it back to BankingTransferService where it has more sense?
 @Service
-public class BankingTransferCreateUseCase {
+public class BankingTransferCreate {
     private final BankingAccountRepository bankingAccountRepository;
     private final NotificationService notificationService;
     private final BankingTransferService bankingTransferService;
     private final AuthenticationContext authenticationContext;
-    private final PasswordValidator passwordValidator;
     private final BankingTransferRepository bankingTransferRepository;
 
-    public BankingTransferCreateUseCase(
+    public BankingTransferCreate(
             BankingAccountRepository bankingAccountRepository,
             NotificationService notificationService,
             BankingTransferService bankingTransferService,
             AuthenticationContext authenticationContext,
-            PasswordValidator passwordValidator,
             BankingTransferRepository bankingTransferRepository
     ) {
         this.bankingAccountRepository = bankingAccountRepository;
         this.notificationService = notificationService;
         this.bankingTransferService = bankingTransferService;
         this.authenticationContext = authenticationContext;
-        this.passwordValidator = passwordValidator;
         this.bankingTransferRepository = bankingTransferRepository;
     }
 
-    public BankingTransfer transfer(BankingTransferRequest request) {
+    @Transactional
+    public BankingTransfer createTransfer(BankingTransferRequest request) {
         // Customer logged
         final Customer currentCustomer = authenticationContext.getCurrentCustomer();
 
@@ -85,7 +82,7 @@ public class BankingTransferCreateUseCase {
                 )
         );
 
-        return transfer;
+        return bankingTransferRepository.save(transfer);
     }
 
 }
