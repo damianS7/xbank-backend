@@ -8,23 +8,18 @@ import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountC
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountInsufficientFundsException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotOwnerException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountSuspendedException;
-import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionService;
 import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
-import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferCurrencyMismatchException;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferSameAccountException;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferStatus;
-import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
-import com.damian.xBank.modules.notification.application.service.NotificationService;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
-import com.damian.xBank.shared.utils.CustomerTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,24 +32,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 public class BankingTransferServiceTest extends AbstractServiceTest {
 
     @InjectMocks
     private BankingTransferService bankingTransferService;
-
-    @Mock
-    private NotificationService notificationService;
-
-    @Mock
-    private BankingAccountRepository bankingAccountRepository;
-
-    @Mock
-    private BankingTransferRepository bankingTransferRepository;
-
-    @Mock
-    private BankingTransactionRepository bankingTransactionRepository;
 
     @Mock
     private BankingTransactionService bankingTransactionService;
@@ -66,10 +49,6 @@ public class BankingTransferServiceTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-
-        CustomerTestBuilder customerTestBuilder = CustomerTestBuilder.defaultAccount();
-        Customer customerX = customerTestBuilder.build();
-
         fromCustomer = Customer.create(
                 UserAccount.create()
                            .setId(1L)
@@ -105,18 +84,17 @@ public class BankingTransferServiceTest extends AbstractServiceTest {
     @DisplayName("createTransfer should successfully create a transfer when all inputs are valid")
     void createTransfer_Valid_ReturnsTransfer() {
         // given
-        setUpContext(fromCustomer);
-
         BigDecimal givenAmount = BigDecimal.valueOf(100);
         String givenDescription = "a gift!";
 
         // when
-        when(bankingTransferRepository.save(any(BankingTransfer.class))).thenAnswer(
-                i -> i.getArguments()[0]
-        );
+        //        when(bankingTransferRepository.save(any(BankingTransfer.class))).thenAnswer(
+        //                i -> i.getArguments()[0]
+        //        );
 
         // then
         BankingTransfer resultTransfer = bankingTransferService.createTransfer(
+                fromCustomer.getId(),
                 fromAccount,
                 toAccount,
                 givenAmount,
@@ -158,20 +136,18 @@ public class BankingTransferServiceTest extends AbstractServiceTest {
         assertEquals(toAccount.getBalance().add(givenAmount), toTx.getBalanceAfter());
 
         assertEquals(2, resultTransfer.getTransactions().size());
-        verify(bankingTransferRepository, times(1)).save(any(BankingTransfer.class));
     }
 
     @Test
     @DisplayName("createTransfer should throw exception when the customer is not the owner of the account")
     void createTransfer_BankingAccountNotOwner_ThrowsException() {
         // given
-        setUpContext(toCustomer);
-
         // when
         // then
         BankingAccountNotOwnerException exception = assertThrows(
                 BankingAccountNotOwnerException.class,
                 () -> bankingTransferService.createTransfer(
+                        toCustomer.getId(),
                         fromAccount,
                         toAccount,
                         BigDecimal.valueOf(100),
@@ -189,13 +165,12 @@ public class BankingTransferServiceTest extends AbstractServiceTest {
     @DisplayName("createTransfer should throw exception when insufficient funds")
     void createTransfer_InsufficientFunds_ThrowsException() {
         // given
-        setUpContext(fromCustomer);
-
         // when
         // then
         BankingAccountInsufficientFundsException exception = assertThrows(
                 BankingAccountInsufficientFundsException.class,
                 () -> bankingTransferService.createTransfer(
+                        fromCustomer.getId(),
                         fromAccount,
                         toAccount,
                         BigDecimal.valueOf(1000000),
@@ -213,7 +188,6 @@ public class BankingTransferServiceTest extends AbstractServiceTest {
     @DisplayName("createTransfer should throw exception when accounts have different currencies")
     void createTransfer_DifferentCurrencies_ThrowsException() {
         // given
-        setUpContext(fromCustomer);
         toAccount.setCurrency(BankingAccountCurrency.USD);
 
         // when
@@ -221,6 +195,7 @@ public class BankingTransferServiceTest extends AbstractServiceTest {
         BankingTransferCurrencyMismatchException exception = assertThrows(
                 BankingTransferCurrencyMismatchException.class,
                 () -> bankingTransferService.createTransfer(
+                        fromCustomer.getId(),
                         fromAccount,
                         toAccount,
                         BigDecimal.valueOf(1),
@@ -238,7 +213,6 @@ public class BankingTransferServiceTest extends AbstractServiceTest {
     @DisplayName("createTransfer should throw exception when account is closed")
     void createTransfer_AccountClosed_ThrowsException() {
         // given
-        setUpContext(fromCustomer);
         toAccount.setStatus(BankingAccountStatus.CLOSED);
 
         // when
@@ -246,6 +220,7 @@ public class BankingTransferServiceTest extends AbstractServiceTest {
         BankingAccountClosedException exception = assertThrows(
                 BankingAccountClosedException.class,
                 () -> bankingTransferService.createTransfer(
+                        fromCustomer.getId(),
                         fromAccount,
                         toAccount,
                         BigDecimal.valueOf(1),
@@ -263,7 +238,6 @@ public class BankingTransferServiceTest extends AbstractServiceTest {
     @DisplayName("createTransfer should throw exception when account is suspended")
     void createTransfer_AccountSuspended_ThrowsException() {
         // given
-        setUpContext(fromCustomer);
         toAccount.setStatus(BankingAccountStatus.SUSPENDED);
 
         // when
@@ -271,6 +245,7 @@ public class BankingTransferServiceTest extends AbstractServiceTest {
         BankingAccountSuspendedException exception = assertThrows(
                 BankingAccountSuspendedException.class,
                 () -> bankingTransferService.createTransfer(
+                        fromCustomer.getId(),
                         fromAccount,
                         toAccount,
                         BigDecimal.valueOf(1),
@@ -288,13 +263,12 @@ public class BankingTransferServiceTest extends AbstractServiceTest {
     @DisplayName("createTransfer should throw exception when both accounts are the same")
     void createTransfer_SameAccount_ThrowsException() {
         // given
-        setUpContext(fromCustomer);
-
         // when
         // then
         BankingTransferSameAccountException exception = assertThrows(
                 BankingTransferSameAccountException.class,
                 () -> bankingTransferService.createTransfer(
+                        fromCustomer.getId(),
                         fromAccount,
                         fromAccount,
                         BigDecimal.valueOf(1),
@@ -354,14 +328,14 @@ public class BankingTransferServiceTest extends AbstractServiceTest {
                     return tx;
                 });
 
-        when(bankingAccountRepository.save(any(BankingAccount.class)))
-                .thenAnswer(i -> i.getArgument(0));
-
-        when(bankingTransferRepository.save(any(BankingTransfer.class)))
-                .thenAnswer(i -> i.getArgument(0));
+        //        when(bankingAccountRepository.save(any(BankingAccount.class)))
+        //                .thenAnswer(i -> i.getArgument(0));
+        //
+        //        when(bankingTransferRepository.save(any(BankingTransfer.class)))
+        //                .thenAnswer(i -> i.getArgument(0));
 
         // then
-        BankingTransfer resultTransfer = bankingTransferService.confirmTransfer(givenTransfer);
+        BankingTransfer resultTransfer = bankingTransferService.confirmTransfer(fromCustomer.getId(), givenTransfer);
 
         assertThat(resultTransfer)
                 .isNotNull()
@@ -429,7 +403,7 @@ public class BankingTransferServiceTest extends AbstractServiceTest {
                         toTransaction.getBalanceAfter()
                 );
 
-        verify(bankingAccountRepository, times(2)).save(any(BankingAccount.class));
-        verify(bankingTransferRepository, times(1)).save(any(BankingTransfer.class));
+        //        verify(bankingAccountRepository, times(2)).save(any(BankingAccount.class));
+        //        verify(bankingTransferRepository, times(1)).save(any(BankingTransfer.class));
     }
 }

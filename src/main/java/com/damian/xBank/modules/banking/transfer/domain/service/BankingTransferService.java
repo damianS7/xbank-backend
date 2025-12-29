@@ -1,17 +1,12 @@
 package com.damian.xBank.modules.banking.transfer.domain.service;
 
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
-import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionService;
 import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
-import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferNotFoundException;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
-import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
-import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
@@ -19,20 +14,11 @@ import java.math.BigDecimal;
 public class BankingTransferService {
 
     private final BankingTransactionService bankingTransactionService;
-    private final BankingAccountRepository bankingAccountRepository;
-    private final BankingTransferRepository transferRepository;
-    private final AuthenticationContext authenticationContext;
 
     public BankingTransferService(
-            BankingTransactionService bankingTransactionService,
-            BankingAccountRepository bankingAccountRepository,
-            BankingTransferRepository transferRepository,
-            AuthenticationContext authenticationContext
+            BankingTransactionService bankingTransactionService
     ) {
         this.bankingTransactionService = bankingTransactionService;
-        this.bankingAccountRepository = bankingAccountRepository;
-        this.transferRepository = transferRepository;
-        this.authenticationContext = authenticationContext;
     }
 
     /**
@@ -45,7 +31,6 @@ public class BankingTransferService {
      * @param description
      * @return the created BankingTransfer
      */
-    @Transactional
     public BankingTransfer createTransfer(
             Long customerId,
             BankingAccount fromAccount,
@@ -88,7 +73,7 @@ public class BankingTransferService {
 
         transfer.addTransaction(toTransaction);
 
-        return transferRepository.save(transfer); // TODO move this to usecase
+        return transfer;
     }
 
     /**
@@ -97,8 +82,9 @@ public class BankingTransferService {
      * @param transfer
      * @return
      */
-    @Transactional
-    public BankingTransfer confirmTransfer(BankingTransfer transfer) {
+    public BankingTransfer confirmTransfer(Long customerId, BankingTransfer transfer) {
+        // assert that the transfer owner is the current customer
+        transfer.assertOwnedBy(customerId);
 
         // deduct balance
         BankingAccount fromAccount = transfer.getFromAccount();
@@ -114,21 +100,15 @@ public class BankingTransferService {
         // Confirm transactions
         transfer.getTransactions().forEach(bankingTransactionService::complete);
 
-        // Save
-        bankingAccountRepository.save(fromAccount);
-        bankingAccountRepository.save(toAccount);
-
-        return transferRepository.save(transfer);
+        return transfer;
     }
 
-    public BankingTransfer reject(Long transferId) {
-        BankingTransfer transfer = transferRepository.findById(transferId).orElseThrow(
-                () -> new BankingTransferNotFoundException(transferId)
-        );
+    public BankingTransfer reject(BankingTransfer transfer) {
+
 
         transfer.reject();
 
-        return transferRepository.save(transfer);
+        return transfer;
     }
 
 }
