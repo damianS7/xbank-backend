@@ -14,36 +14,37 @@ import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import com.damian.xBank.shared.security.PasswordValidator;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.Map;
 
-// TODO review this ... maybe we should move it back to BankingTransferService where it has more sense?
 @Service
-public class BankingTransferConfirmUseCase {
-    private final BankingAccountRepository bankingAccountRepository;
+public class BankingTransferConfirm {
     private final NotificationService notificationService;
+    private final BankingAccountRepository bankingAccountRepository;
     private final BankingTransferService bankingTransferService;
     private final AuthenticationContext authenticationContext;
     private final PasswordValidator passwordValidator;
     private final BankingTransferRepository bankingTransferRepository;
 
-    public BankingTransferConfirmUseCase(
-            BankingAccountRepository bankingAccountRepository,
+    public BankingTransferConfirm(
             NotificationService notificationService,
+            BankingAccountRepository bankingAccountRepository,
             BankingTransferService bankingTransferService,
             AuthenticationContext authenticationContext,
             PasswordValidator passwordValidator,
             BankingTransferRepository bankingTransferRepository
     ) {
-        this.bankingAccountRepository = bankingAccountRepository;
         this.notificationService = notificationService;
+        this.bankingAccountRepository = bankingAccountRepository;
         this.bankingTransferService = bankingTransferService;
         this.authenticationContext = authenticationContext;
         this.passwordValidator = passwordValidator;
         this.bankingTransferRepository = bankingTransferRepository;
     }
 
+    @Transactional
     public BankingTransfer confirmTransfer(
             Long transferId,
             BankingTransferConfirmRequest request
@@ -58,10 +59,14 @@ public class BankingTransferConfirmUseCase {
                 () -> new BankingTransferNotFoundException(transferId)
         );
 
-        // assert that the transfer owner is the current customer
-        transfer.assertOwnedBy(currentCustomer.getId());
+        transfer = bankingTransferService.confirmTransfer(currentCustomer.getId(), transfer);
 
-        transfer = bankingTransferService.confirmTransfer(transfer);
+        // Save accounts (.save is optional because of transactional)
+        bankingAccountRepository.save(transfer.getFromAccount());
+        bankingAccountRepository.save(transfer.getToAccount());
+
+        // Save transfer
+        bankingTransferRepository.save(transfer);
 
         // Notify receive
         notificationService.publish(
