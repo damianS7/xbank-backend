@@ -1,9 +1,12 @@
 package com.damian.xBank.modules.banking.transaction.infrastructure.web.controller;
 
-import com.damian.xBank.modules.banking.transaction.application.dto.mapper.BankingTransactionDtoMapper;
 import com.damian.xBank.modules.banking.transaction.application.dto.response.BankingTransactionDto;
-import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionService;
-import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
+import com.damian.xBank.modules.banking.transaction.application.mapper.BankingTransactionDtoMapper;
+import com.damian.xBank.modules.banking.transaction.application.usecase.BankingTransactionAccountGet;
+import com.damian.xBank.modules.banking.transaction.application.usecase.BankingTransactionCardGet;
+import com.damian.xBank.modules.banking.transaction.application.usecase.BankingTransactionGet;
+import com.damian.xBank.modules.banking.transaction.application.usecase.BankingTransactionGetPending;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +24,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1")
 @RestController
 public class BankingTransactionController {
-    private final BankingTransactionService bankingTransactionService;
+    private final BankingTransactionGet bankingTransactionGet;
+    private final BankingTransactionCardGet bankingTransactionCardGet;
+    private final BankingTransactionAccountGet bankingTransactionAccountGet;
+    private final BankingTransactionGetPending bankingTransactionGetPending;
 
     @Autowired
     public BankingTransactionController(
-            BankingTransactionService bankingTransactionService
+            BankingTransactionGet bankingTransactionGet,
+            BankingTransactionCardGet bankingTransactionCardGet,
+            BankingTransactionAccountGet bankingTransactionAccountGet,
+            BankingTransactionGetPending bankingTransactionGetPending
     ) {
-        this.bankingTransactionService = bankingTransactionService;
+        this.bankingTransactionGet = bankingTransactionGet;
+        this.bankingTransactionCardGet = bankingTransactionCardGet;
+        this.bankingTransactionAccountGet = bankingTransactionAccountGet;
+        this.bankingTransactionGetPending = bankingTransactionGetPending;
     }
 
     // endpoint for logged customer to get a single BankingTransaction by id
@@ -36,7 +48,7 @@ public class BankingTransactionController {
             @PathVariable @NotNull @Positive
             Long id
     ) {
-        BankingTransaction transaction = bankingTransactionService.getTransaction(id);
+        BankingTransaction transaction = bankingTransactionGet.execute(id);
         BankingTransactionDto transactionDto = BankingTransactionDtoMapper
                 .toBankingTransactionDto(transaction);
 
@@ -51,7 +63,7 @@ public class BankingTransactionController {
             @PageableDefault(size = 2, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
-        Page<BankingTransaction> transactions = bankingTransactionService.getAccountPendingTransactions(pageable);
+        Page<BankingTransaction> transactions = bankingTransactionGetPending.execute(pageable);
         Page<BankingTransactionDto> transactionDtoList = BankingTransactionDtoMapper
                 .toBankingTransactionPageDto(transactions);
 
@@ -68,8 +80,8 @@ public class BankingTransactionController {
             @PageableDefault(size = 2, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
-        Page<BankingTransaction> transactions = bankingTransactionService
-                .getCardTransactions(id, pageable);
+        Page<BankingTransaction> transactions = bankingTransactionCardGet
+                .execute(id, pageable);
 
         Page<BankingTransactionDto> pagedTransactionsDto = BankingTransactionDtoMapper
                 .toBankingTransactionPageDto(transactions);
@@ -87,7 +99,7 @@ public class BankingTransactionController {
             @PageableDefault(size = 2, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
-        Page<BankingTransaction> transactions = bankingTransactionService.getAccountTransactions(id, pageable);
+        Page<BankingTransaction> transactions = bankingTransactionAccountGet.execute(id, pageable);
         Page<BankingTransactionDto> transactionDTOS = BankingTransactionDtoMapper
                 .toBankingTransactionPageDto(transactions);
 
