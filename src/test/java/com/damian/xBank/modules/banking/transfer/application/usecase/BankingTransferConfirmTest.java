@@ -4,10 +4,10 @@ import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
-import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionService;
-import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
-import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
-import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
+import com.damian.xBank.modules.banking.transaction.domain.service.BankingTransactionDomainService;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.banking.transfer.application.dto.request.BankingTransferConfirmRequest;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
@@ -52,7 +52,7 @@ public class BankingTransferConfirmTest extends AbstractServiceTest {
     private BankingTransactionRepository bankingTransactionRepository;
 
     @Mock
-    private BankingTransactionService bankingTransactionService;
+    private BankingTransactionDomainService bankingTransactionDomainService;
 
     private Customer fromCustomer;
     private Customer toCustomer;

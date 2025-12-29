@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.banking.card.infrastructure.web.controller.admin;
 
-import com.damian.xBank.modules.banking.card.application.dto.mapper.BankingCardDtoMapper;
+import com.damian.xBank.modules.banking.card.application.mapper.BankingCardDtoMapper;
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdateStatusRequest;
 import com.damian.xBank.modules.banking.card.application.dto.response.BankingCardDto;
 import com.damian.xBank.modules.banking.card.application.service.admin.AdminBankingCardManagementService;

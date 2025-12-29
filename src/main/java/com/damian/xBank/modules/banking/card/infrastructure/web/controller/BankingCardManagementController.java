@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.banking.card.infrastructure.web.controller;
 
-import com.damian.xBank.modules.banking.card.application.dto.mapper.BankingCardDtoMapper;
+import com.damian.xBank.modules.banking.card.application.mapper.BankingCardDtoMapper;
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdateDailyLimitRequest;
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdateLockRequest;
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdatePinRequest;

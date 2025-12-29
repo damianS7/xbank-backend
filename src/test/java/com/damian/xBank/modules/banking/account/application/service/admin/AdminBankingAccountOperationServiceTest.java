@@ -3,10 +3,10 @@ package com.damian.xBank.modules.banking.account.application.service.admin;
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountDepositRequest;
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
-import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionService;
-import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
-import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
-import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
+import com.damian.xBank.modules.banking.transaction.domain.service.BankingTransactionDomainService;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
@@ -34,7 +34,7 @@ public class AdminBankingAccountOperationServiceTest extends AbstractServiceTest
     private BankingAccountRepository bankingAccountRepository;
 
     @Mock
-    private BankingTransactionService bankingTransactionService;
+    private BankingTransactionDomainService bankingTransactionDomainService;
 
     @Mock
     private NotificationPublisher notificationPublisher;
@@ -71,7 +71,7 @@ public class AdminBankingAccountOperationServiceTest extends AbstractServiceTest
         when(bankingAccountRepository.findById(customerBankingAccount.getId())).thenReturn(Optional.of(
                 customerBankingAccount));
 
-        when(bankingTransactionService.record(
+        when(bankingTransactionDomainService.record(
                 any(BankingTransaction.class)
         )).thenReturn(transaction);
 

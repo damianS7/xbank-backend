@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.banking.transfer.application.usecase;
 
-import com.damian.xBank.modules.banking.transaction.application.dto.mapper.BankingTransactionDtoMapper;
+import com.damian.xBank.modules.banking.transaction.application.mapper.BankingTransactionDtoMapper;
 import com.damian.xBank.modules.banking.transfer.application.dto.request.BankingTransferRejectRequest;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferNotFoundException;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;

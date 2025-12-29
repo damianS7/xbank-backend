@@ -8,7 +8,7 @@ import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountI
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotOwnerException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountSuspendedException;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
-import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import jakarta.persistence.*;
 

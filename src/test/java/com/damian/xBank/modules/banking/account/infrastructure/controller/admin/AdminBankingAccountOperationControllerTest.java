@@ -6,7 +6,7 @@ import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurre
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountType;
 import com.damian.xBank.modules.banking.transaction.application.dto.response.BankingTransactionDto;
-import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;

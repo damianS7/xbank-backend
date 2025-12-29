@@ -8,7 +8,7 @@ import com.damian.xBank.modules.banking.card.application.dto.request.BankingCard
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardWithdrawRequest;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.transaction.application.dto.response.BankingTransactionDto;
-import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;

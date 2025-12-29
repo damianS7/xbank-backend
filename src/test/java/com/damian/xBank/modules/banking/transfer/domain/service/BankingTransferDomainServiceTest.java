@@ -8,10 +8,10 @@ import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountC
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountInsufficientFundsException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotOwnerException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountSuspendedException;
-import com.damian.xBank.modules.banking.transaction.application.service.BankingTransactionService;
-import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
-import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
-import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
+import com.damian.xBank.modules.banking.transaction.domain.service.BankingTransactionDomainService;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferCurrencyMismatchException;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferSameAccountException;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
@@ -40,7 +40,7 @@ public class BankingTransferDomainServiceTest extends AbstractServiceTest {
     private BankingTransferDomainService bankingTransferDomainService;
 
     @Mock
-    private BankingTransactionService bankingTransactionService;
+    private BankingTransactionDomainService bankingTransactionDomainService;
 
     private Customer fromCustomer;
     private Customer toCustomer;
@@ -321,7 +321,7 @@ public class BankingTransferDomainServiceTest extends AbstractServiceTest {
         givenTransfer.addTransaction(toTransaction);
 
         // when
-        when(bankingTransactionService.complete(any(BankingTransaction.class)))
+        when(bankingTransactionDomainService.complete(any(BankingTransaction.class)))
                 .thenAnswer(i -> {
                     BankingTransaction tx = i.getArgument(0);
                     tx.complete();

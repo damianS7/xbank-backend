@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.banking.transaction.domain.enums;
+package com.damian.xBank.modules.banking.transaction.domain.model;
 
 import java.util.Set;
 

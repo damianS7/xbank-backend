@@ -2,9 +2,9 @@ package com.damian.xBank.modules.banking.account.infrastructure.web.controller.a
 
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountDepositRequest;
 import com.damian.xBank.modules.banking.account.application.service.admin.AdminBankingAccountOperationService;
-import com.damian.xBank.modules.banking.transaction.application.dto.mapper.BankingTransactionDtoMapper;
+import com.damian.xBank.modules.banking.transaction.application.mapper.BankingTransactionDtoMapper;
 import com.damian.xBank.modules.banking.transaction.application.dto.response.BankingTransactionDto;
-import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;

@@ -1,9 +1,7 @@
-package com.damian.xBank.modules.banking.transaction.domain.entity;
+package com.damian.xBank.modules.banking.transaction.domain.model;
 
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
-import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
-import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotOwnerException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionStatusTransitionException;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;

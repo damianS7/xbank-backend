@@ -8,7 +8,7 @@ import com.damian.xBank.modules.banking.account.application.dto.response.Banking
 import com.damian.xBank.modules.banking.account.application.service.BankingAccountCardManagementService;
 import com.damian.xBank.modules.banking.account.application.service.BankingAccountManagementService;
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
-import com.damian.xBank.modules.banking.card.application.dto.mapper.BankingCardDtoMapper;
+import com.damian.xBank.modules.banking.card.application.mapper.BankingCardDtoMapper;
 import com.damian.xBank.modules.banking.card.application.dto.response.BankingCardDto;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import jakarta.validation.constraints.NotNull;
