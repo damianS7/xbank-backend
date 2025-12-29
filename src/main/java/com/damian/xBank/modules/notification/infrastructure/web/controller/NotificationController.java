@@ -5,6 +5,7 @@ import com.damian.xBank.modules.notification.application.dto.response.Notificati
 import com.damian.xBank.modules.notification.application.mapper.NotificationDtoMapper;
 import com.damian.xBank.modules.notification.application.usecase.NotificationDelete;
 import com.damian.xBank.modules.notification.application.usecase.NotificationGet;
+import com.damian.xBank.modules.notification.application.usecase.NotificationSinkGet;
 import com.damian.xBank.modules.notification.domain.model.Notification;
 import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
 import jakarta.validation.constraints.Positive;
@@ -24,13 +25,16 @@ import reactor.core.publisher.Flux;
 public class NotificationController {
     private final NotificationDelete notificationDelete;
     private final NotificationGet notificationGet;
+    private final NotificationSinkGet notificationSinkGet;
 
     public NotificationController(
             NotificationDelete notificationDelete,
-            NotificationGet notificationGet
+            NotificationGet notificationGet,
+            NotificationSinkGet notificationSinkGet
     ) {
         this.notificationDelete = notificationDelete;
         this.notificationGet = notificationGet;
+        this.notificationSinkGet = notificationSinkGet;
     }
 
     // endpoint to fetch (paginated) notifications from current user
@@ -39,7 +43,7 @@ public class NotificationController {
             @PageableDefault(size = 8, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
-        Page<Notification> notifications = notificationGet.getNotifications(pageable);
+        Page<Notification> notifications = notificationGet.execute(pageable);
         Page<NotificationDto> notificationsDto = NotificationDtoMapper.map(notifications);
 
         return ResponseEntity
@@ -77,6 +81,6 @@ public class NotificationController {
 
     @GetMapping(value = "/notifications/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<NotificationEvent> streamNotifications() {
-        return notificationGet.getSinkNotifications();
+        return notificationSinkGet.execute();
     }
 }
