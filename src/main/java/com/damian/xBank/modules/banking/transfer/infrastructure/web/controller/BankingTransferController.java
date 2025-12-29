@@ -1,6 +1,7 @@
 package com.damian.xBank.modules.banking.transfer.infrastructure.web.controller;
 
 import com.damian.xBank.modules.banking.transfer.application.dto.request.BankingTransferConfirmRequest;
+import com.damian.xBank.modules.banking.transfer.application.dto.request.BankingTransferRejectRequest;
 import com.damian.xBank.modules.banking.transfer.application.dto.request.BankingTransferRequest;
 import com.damian.xBank.modules.banking.transfer.application.dto.response.BankingTransferDetailDto;
 import com.damian.xBank.modules.banking.transfer.application.dto.response.BankingTransferDto;
@@ -67,7 +68,7 @@ public class BankingTransferController {
             @Positive @PathVariable
             Long id,
             @RequestBody @Validated
-            BankingTransferConfirmRequest request
+            BankingTransferRejectRequest request
     ) {
 
         BankingTransfer transfer = bankingTransferReject.rejectTransfer(id, request);

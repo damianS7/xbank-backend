@@ -79,11 +79,12 @@ public class BankingTransferService {
     /**
      * Confirms a pending transfer.
      *
+     * @param customerId
      * @param transfer
-     * @return
+     * @return the confirmed transfer
      */
     public BankingTransfer confirmTransfer(Long customerId, BankingTransfer transfer) {
-        // assert that the transfer owner is the current customer
+        // assert that the transfer belongs to customerId
         transfer.assertOwnedBy(customerId);
 
         // deduct balance
@@ -103,10 +104,22 @@ public class BankingTransferService {
         return transfer;
     }
 
-    public BankingTransfer reject(BankingTransfer transfer) {
+    /**
+     * Rejects a pending transfer
+     *
+     * @param customerId
+     * @param transfer
+     * @return the rejected transfer
+     */
+    public BankingTransfer reject(Long customerId, BankingTransfer transfer) {
+        // assert that the transfer belongs to customerId
+        transfer.assertOwnedBy(customerId);
 
-
+        // reject transfer
         transfer.reject();
+
+        // reject transactions
+        transfer.getTransactions().forEach(bankingTransactionService::reject);
 
         return transfer;
     }
