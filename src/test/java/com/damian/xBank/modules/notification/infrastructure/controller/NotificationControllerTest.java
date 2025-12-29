@@ -2,10 +2,10 @@ package com.damian.xBank.modules.notification.infrastructure.controller;
 
 import com.damian.xBank.modules.notification.application.dto.request.NotificationDeleteRequest;
 import com.damian.xBank.modules.notification.application.dto.response.NotificationDto;
-import com.damian.xBank.modules.notification.domain.service.NotificationService;
+import com.damian.xBank.modules.notification.application.usecase.NotificationGet;
 import com.damian.xBank.modules.notification.domain.model.Notification;
-import com.damian.xBank.modules.notification.domain.model.NotificationType;
 import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
+import com.damian.xBank.modules.notification.domain.model.NotificationType;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
@@ -49,7 +49,7 @@ public class NotificationControllerTest extends AbstractControllerTest {
     private JwtUtil jwtUtil;
 
     @SpyBean
-    private NotificationService notificationService;
+    private NotificationGet notificationGet;
 
     @BeforeEach
     void setUp() {
@@ -160,7 +160,7 @@ public class NotificationControllerTest extends AbstractControllerTest {
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(SecurityContextHolder.getContext().getAuthentication().getPrincipal()).thenReturn(user);
 
-        when(notificationService.getNotificationsForUser())
+        when(notificationGet.getNotificationsForUser())
                 .thenReturn(Flux.just(notificationEvent));
 
         MvcResult result = mockMvc.perform(get("/api/v1/notifications/stream")
