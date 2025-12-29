@@ -1,13 +1,13 @@
-package com.damian.xBank.modules.banking.transaction.application.service;
+package com.damian.xBank.modules.banking.transaction.domain.service;
 
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
-import com.damian.xBank.modules.banking.transaction.domain.entity.BankingTransaction;
-import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
-import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotFoundException;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
@@ -22,13 +22,13 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 @Service
-public class BankingTransactionService {
+public class BankingTransactionDomainService {
     private final BankingAccountRepository bankingAccountRepository;
     private final BankingCardRepository bankingCardRepository;
     private final BankingTransactionRepository bankingTransactionRepository;
     private final AuthenticationContext authenticationContext;
 
-    public BankingTransactionService(
+    public BankingTransactionDomainService(
             BankingAccountRepository bankingAccountRepository,
             BankingCardRepository bankingCardRepository,
             BankingTransactionRepository bankingTransactionRepository,
