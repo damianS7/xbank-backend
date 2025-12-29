@@ -1,12 +1,8 @@
 package com.damian.xBank.modules.setting.infrastructure.controller;
 
-import com.damian.xBank.modules.setting.UserSettings;
 import com.damian.xBank.modules.setting.application.dto.request.SettingsUpdateRequest;
 import com.damian.xBank.modules.setting.application.dto.response.SettingDto;
-import com.damian.xBank.modules.setting.domain.entity.Setting;
-import com.damian.xBank.modules.setting.domain.enums.SettingLanguage;
-import com.damian.xBank.modules.setting.domain.enums.SettingMultifactor;
-import com.damian.xBank.modules.setting.domain.enums.SettingTheme;
+import com.damian.xBank.modules.setting.domain.model.*;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
