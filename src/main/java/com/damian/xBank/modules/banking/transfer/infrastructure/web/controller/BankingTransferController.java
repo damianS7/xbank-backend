@@ -5,9 +5,9 @@ import com.damian.xBank.modules.banking.transfer.application.dto.request.Banking
 import com.damian.xBank.modules.banking.transfer.application.dto.response.BankingTransferDetailDto;
 import com.damian.xBank.modules.banking.transfer.application.dto.response.BankingTransferDto;
 import com.damian.xBank.modules.banking.transfer.application.mapper.BankingTransferDtoMapper;
-import com.damian.xBank.modules.banking.transfer.application.usecase.BankingTransferConfirmUseCase;
-import com.damian.xBank.modules.banking.transfer.application.usecase.BankingTransferCreateUseCase;
-import com.damian.xBank.modules.banking.transfer.application.usecase.BankingTransferRejectUseCase;
+import com.damian.xBank.modules.banking.transfer.application.usecase.BankingTransferConfirm;
+import com.damian.xBank.modules.banking.transfer.application.usecase.BankingTransferCreate;
+import com.damian.xBank.modules.banking.transfer.application.usecase.BankingTransferReject;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;
@@ -18,18 +18,18 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1")
 @RestController
 public class BankingTransferController {
-    private final BankingTransferCreateUseCase bankingTransferCreateUseCase;
-    private final BankingTransferConfirmUseCase bankingTransferConfirmUseCase;
-    private final BankingTransferRejectUseCase bankingTransferRejectUseCase;
+    private final BankingTransferCreate bankingTransferCreate;
+    private final BankingTransferConfirm bankingTransferConfirm;
+    private final BankingTransferReject bankingTransferReject;
 
     public BankingTransferController(
-            BankingTransferCreateUseCase bankingTransferCreateUseCase,
-            BankingTransferConfirmUseCase bankingTransferConfirmUseCase,
-            BankingTransferRejectUseCase bankingTransferRejectUseCase
+            BankingTransferCreate bankingTransferCreate,
+            BankingTransferConfirm bankingTransferConfirm,
+            BankingTransferReject bankingTransferReject
     ) {
-        this.bankingTransferCreateUseCase = bankingTransferCreateUseCase;
-        this.bankingTransferConfirmUseCase = bankingTransferConfirmUseCase;
-        this.bankingTransferRejectUseCase = bankingTransferRejectUseCase;
+        this.bankingTransferCreate = bankingTransferCreate;
+        this.bankingTransferConfirm = bankingTransferConfirm;
+        this.bankingTransferReject = bankingTransferReject;
     }
 
     // endpoint to submit a transfer request
@@ -38,7 +38,7 @@ public class BankingTransferController {
             @RequestBody @Validated
             BankingTransferRequest request
     ) {
-        BankingTransfer transfer = bankingTransferCreateUseCase.transfer(request);
+        BankingTransfer transfer = bankingTransferCreate.createTransfer(request);
         BankingTransferDetailDto transferDto = BankingTransferDtoMapper.toBankingTransferDetailDto(transfer);
 
         return ResponseEntity
@@ -54,7 +54,7 @@ public class BankingTransferController {
             BankingTransferConfirmRequest request
     ) {
 
-        BankingTransfer transfer = bankingTransferConfirmUseCase.confirmTransfer(id, request);
+        BankingTransfer transfer = bankingTransferConfirm.confirmTransfer(id, request);
         BankingTransferDetailDto transferDto = BankingTransferDtoMapper.toBankingTransferDetailDto(transfer);
 
         return ResponseEntity
@@ -70,7 +70,7 @@ public class BankingTransferController {
             BankingTransferConfirmRequest request
     ) {
 
-        BankingTransfer transfer = bankingTransferRejectUseCase.rejectTransfer(id, request);
+        BankingTransfer transfer = bankingTransferReject.rejectTransfer(id, request);
         BankingTransferDto transferDto = BankingTransferDtoMapper.toBankingTransferDto(transfer);
 
         return ResponseEntity
