@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.banking.card.application.service;
 
-import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.enums.BankingCardType;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;

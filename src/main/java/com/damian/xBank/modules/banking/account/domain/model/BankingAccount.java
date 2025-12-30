@@ -1,14 +1,11 @@
-package com.damian.xBank.modules.banking.account.domain.entity;
+package com.damian.xBank.modules.banking.account.domain.model;
 
-import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurrency;
-import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountStatus;
-import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountType;
-import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountClosedException;
-import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountInsufficientFundsException;
-import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotOwnerException;
-import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountSuspendedException;
+import com.damian.xBank.modules.banking.account.domain.exception.*;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
+import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingAccountCardsLimitException;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
+import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import jakarta.persistence.*;
 
@@ -58,6 +55,8 @@ public class BankingAccount {
 
     @Column
     private Instant updatedAt;
+
+    private final int MAX_CARDS_PER_ACCOUNT = 5;
 
     public BankingAccount() {
         this.accountTransactions = new HashSet<>();
@@ -138,8 +137,22 @@ public class BankingAccount {
         return accountStatus;
     }
 
-    public BankingAccount setStatus(BankingAccountStatus accountStatus) {
-        this.accountStatus = accountStatus;
+    public BankingAccount setStatus(BankingAccountStatus newStatus) {
+        // if the actual status is the same as the new ... do nothing
+        if (this.accountStatus == newStatus) {
+            return this;
+        }
+
+        if (!this.accountStatus.canTransitionTo(newStatus)) {
+            throw new BankingAccountStatusTransitionException(
+                    this.id,
+                    this.accountStatus.name(),
+                    newStatus.name()
+            );
+        }
+
+        this.updatedAt = Instant.now();
+        this.accountStatus = newStatus;
         return this;
     }
 
@@ -309,5 +322,41 @@ public class BankingAccount {
         this.assertNotSuspended();
         this.assertNotClosed();
         return this;
+    }
+
+    public void activateBy(Customer actor) {
+        if (!actor.hasRole(UserAccountRole.ADMIN)) {
+            assertOwnedBy(actor.getId());
+        }
+
+        setStatus(BankingAccountStatus.ACTIVE);
+    }
+
+    public void closeBy(Customer actor) {
+        if (!actor.hasRole(UserAccountRole.ADMIN)) {
+            assertOwnedBy(actor.getId());
+        }
+
+        assertActive();
+        setStatus(BankingAccountStatus.CLOSED);
+    }
+
+    public void assertCanAddCard() {
+        if (countActiveCards() >= MAX_CARDS_PER_ACCOUNT) {
+            throw new BankingAccountCardsLimitException(getId());
+        }
+    }
+
+    /**
+     * Counts how many active (ENABLED) cards are associated with the given banking account.
+     *
+     * @return the number of active cards
+     */
+    public int countActiveCards() {
+        return (int) this
+                .getBankingCards()
+                .stream()
+                .filter(bankingCard -> bankingCard.getStatus().equals(BankingCardStatus.ACTIVE))
+                .count();
     }
 }

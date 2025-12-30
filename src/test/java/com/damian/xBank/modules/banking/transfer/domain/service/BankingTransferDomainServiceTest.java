@@ -1,13 +1,13 @@
 package com.damian.xBank.modules.banking.transfer.domain.service;
 
-import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
-import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurrency;
-import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountStatus;
-import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountType;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountClosedException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountInsufficientFundsException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotOwnerException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountSuspendedException;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
@@ -317,7 +317,7 @@ public class BankingTransferDomainServiceTest extends AbstractServiceTest {
 
         givenTransfer.addTransaction(fromTransaction);
         givenTransfer.addTransaction(toTransaction);
-        
+
         // then
         BankingTransfer resultTransfer = bankingTransferDomainService.confirmTransfer(
                 fromCustomer.getId(),

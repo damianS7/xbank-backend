@@ -1,9 +1,9 @@
 package com.damian.xBank.modules.banking.card.infrastructure.controller;
 
-import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
-import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurrency;
-import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountStatus;
-import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountType;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardSpendRequest;
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardWithdrawRequest;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;

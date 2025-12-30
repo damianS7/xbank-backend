@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.banking.transfer.domain.model;
 
-import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferCurrencyMismatchException;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferNotOwnerException;

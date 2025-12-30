@@ -1,9 +1,9 @@
 package com.damian.xBank.modules.banking.transaction.infrastructure.web.controller;
 
-import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
-import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurrency;
-import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountStatus;
-import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountType;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.transaction.application.dto.response.BankingTransactionDto;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;

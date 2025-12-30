@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.banking.transaction.application.dto.response;
 
-import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurrency;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 
