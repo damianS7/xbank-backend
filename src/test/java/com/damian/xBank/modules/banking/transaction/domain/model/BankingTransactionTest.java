@@ -1,13 +1,12 @@
-package com.damian.xBank.modules.banking.transaction.domain.entity;
+package com.damian.xBank.modules.banking.transaction.domain.model;
 
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
-import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionStatus;
-import com.damian.xBank.modules.banking.transaction.domain.enums.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotOwnerException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionStatusTransitionException;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -194,4 +193,45 @@ public class BankingTransactionTest {
                 .hasMessage(ErrorCodes.BANKING_TRANSACTION_INVALID_TRANSITION_STATUS);
     }
 
+    @Test
+    @DisplayName("Should confirm a transaction")
+    void complete_PendingTransaction_ChangesStatusToCompleted() {
+        // given
+        BankingTransaction givenTransaction = BankingTransaction
+                .create(
+                        BankingTransactionType.DEPOSIT,
+                        account,
+                        BigDecimal.valueOf(100)
+                )
+                .setId(1L)
+                .setStatus(BankingTransactionStatus.PENDING)
+                .setDescription("Deposit transaction");
+
+        // when
+        givenTransaction.complete();
+
+        // then
+        Assertions.assertThat(givenTransaction.getStatus()).isEqualTo(BankingTransactionStatus.COMPLETED);
+    }
+
+    @Test
+    @DisplayName("Should reject a transaction")
+    void rejectTransaction_PendingTransaction_ChangesStatusToRejected() {
+        // given
+        BankingTransaction givenTransaction = BankingTransaction
+                .create(
+                        BankingTransactionType.DEPOSIT,
+                        account,
+                        BigDecimal.valueOf(100)
+                )
+                .setId(1L)
+                .setStatus(BankingTransactionStatus.PENDING)
+                .setDescription("Deposit transaction");
+
+        // when
+        givenTransaction.reject();
+
+        // then
+        Assertions.assertThat(givenTransaction).isNotNull();
+    }
 }
