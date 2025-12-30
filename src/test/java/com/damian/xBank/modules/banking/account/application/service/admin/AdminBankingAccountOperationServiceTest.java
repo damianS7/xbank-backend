@@ -3,10 +3,10 @@ package com.damian.xBank.modules.banking.account.application.service.admin;
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountDepositRequest;
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
-import com.damian.xBank.modules.banking.transaction.domain.service.BankingTransactionDomainService;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
+import com.damian.xBank.modules.banking.transaction.infrastructure.service.BankingTransactionPersistenceService;
 import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
@@ -34,7 +34,7 @@ public class AdminBankingAccountOperationServiceTest extends AbstractServiceTest
     private BankingAccountRepository bankingAccountRepository;
 
     @Mock
-    private BankingTransactionDomainService bankingTransactionDomainService;
+    private BankingTransactionPersistenceService bankingTransactionPersistenceService;
 
     @Mock
     private NotificationPublisher notificationPublisher;
@@ -71,7 +71,7 @@ public class AdminBankingAccountOperationServiceTest extends AbstractServiceTest
         when(bankingAccountRepository.findById(customerBankingAccount.getId())).thenReturn(Optional.of(
                 customerBankingAccount));
 
-        when(bankingTransactionDomainService.record(
+        when(bankingTransactionPersistenceService.record(
                 any(BankingTransaction.class)
         )).thenReturn(transaction);
 

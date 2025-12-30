@@ -1,10 +1,10 @@
 package com.damian.xBank.modules.banking.transfer.domain.service;
 
 import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
-import com.damian.xBank.modules.banking.transaction.domain.service.BankingTransactionDomainService;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
+import com.damian.xBank.modules.banking.transaction.infrastructure.service.BankingTransactionPersistenceService;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import org.springframework.stereotype.Service;
 
@@ -13,12 +13,12 @@ import java.math.BigDecimal;
 @Service
 public class BankingTransferDomainService {
 
-    private final BankingTransactionDomainService bankingTransactionDomainService;
+    private final BankingTransactionPersistenceService bankingTransactionPersistenceService;
 
     public BankingTransferDomainService(
-            BankingTransactionDomainService bankingTransactionDomainService
+            BankingTransactionPersistenceService bankingTransactionPersistenceService
     ) {
-        this.bankingTransactionDomainService = bankingTransactionDomainService;
+        this.bankingTransactionPersistenceService = bankingTransactionPersistenceService;
     }
 
     /**
@@ -99,7 +99,7 @@ public class BankingTransferDomainService {
         transfer.confirm();
 
         // Confirm transactions
-        transfer.getTransactions().forEach(bankingTransactionDomainService::complete);
+        transfer.getTransactions().forEach(BankingTransaction::complete);
 
         return transfer;
     }
@@ -119,7 +119,7 @@ public class BankingTransferDomainService {
         transfer.reject();
 
         // reject transactions
-        transfer.getTransactions().forEach(bankingTransactionDomainService::reject);
+        transfer.getTransactions().forEach(BankingTransaction::reject);
 
         return transfer;
     }

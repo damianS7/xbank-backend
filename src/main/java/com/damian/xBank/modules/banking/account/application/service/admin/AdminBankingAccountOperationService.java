@@ -5,10 +5,10 @@ import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.transaction.application.mapper.BankingTransactionDtoMapper;
-import com.damian.xBank.modules.banking.transaction.domain.service.BankingTransactionDomainService;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
+import com.damian.xBank.modules.banking.transaction.infrastructure.service.BankingTransactionPersistenceService;
 import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
 import com.damian.xBank.modules.notification.domain.model.NotificationType;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
@@ -24,18 +24,18 @@ import java.util.Map;
 @Service
 public class AdminBankingAccountOperationService {
     private static final Logger log = LoggerFactory.getLogger(AdminBankingAccountOperationService.class);
-    private final BankingTransactionDomainService bankingTransactionDomainService;
+    private final BankingTransactionPersistenceService bankingTransactionPersistenceService;
     private final BankingAccountRepository bankingAccountRepository;
     private final NotificationPublisher notificationPublisher;
     private final AuthenticationContext authenticationContext;
 
     public AdminBankingAccountOperationService(
-            BankingTransactionDomainService bankingTransactionDomainService,
+            BankingTransactionPersistenceService bankingTransactionPersistenceService,
             BankingAccountRepository bankingAccountRepository,
             NotificationPublisher notificationPublisher,
             AuthenticationContext authenticationContext
     ) {
-        this.bankingTransactionDomainService = bankingTransactionDomainService;
+        this.bankingTransactionPersistenceService = bankingTransactionPersistenceService;
         this.bankingAccountRepository = bankingAccountRepository;
         this.notificationPublisher = notificationPublisher;
         this.authenticationContext = authenticationContext;
@@ -80,7 +80,7 @@ public class AdminBankingAccountOperationService {
         transaction.setStatus(BankingTransactionStatus.COMPLETED);
 
         // save the transaction
-        bankingTransactionDomainService.record(transaction);
+        bankingTransactionPersistenceService.record(transaction);
 
         // Notify receiver
         notificationPublisher.publish(
