@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.auth.infrastructure.controller;
+package com.damian.xBank.modules.auth.infrastructure.web.controller;
 
 import com.damian.xBank.modules.user.account.account.application.dto.request.UserAccountUpdateRequest;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;

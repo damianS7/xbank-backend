@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.auth.application.service;
+package com.damian.xBank.modules.auth.infrastructure.service;
 
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.infrastructure.repository.UserAccountRepository;
