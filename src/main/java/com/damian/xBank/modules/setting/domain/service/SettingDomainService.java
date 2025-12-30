@@ -9,21 +9,7 @@ import org.springframework.stereotype.Service;
 public class SettingDomainService {
     public SettingDomainService() {
     }
-
-    /**
-     * Update settings for the given user
-     *
-     * @param userId
-     * @param settings
-     * @param newSettings
-     */
-    public void updateSettings(Long userId, Setting settings, UserSettings newSettings) {
-        // check if the logged user is the owner of the setting.
-        settings.assertOwnedBy(userId);
-
-        settings.setSettings(newSettings);
-    }
-
+    
     /**
      * Create default settings for the user
      *

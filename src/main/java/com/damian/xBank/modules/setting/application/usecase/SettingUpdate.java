@@ -43,14 +43,12 @@ public class SettingUpdate {
                         () -> new SettingNotFoundException(currentUser.getId())
                 );
 
-        System.out.println("Asdasda");
-        System.out.println("Asdasda");
+        // check if the logged user is the owner of the setting.
+        userSettings.assertOwnedBy(currentUser.getId());
+
         // update settings
-        System.out.println(userSettings.getSettings());
-        settingDomainService.updateSettings(currentUser.getId(), userSettings, request.settings());
-        System.out.println(userSettings.getSettings());
-        System.out.println("Asdasda");
-        System.out.println("Asdasda");
+        userSettings.setSettings(request.settings());
+
         // Save
         settingRepository.save(userSettings);
 
