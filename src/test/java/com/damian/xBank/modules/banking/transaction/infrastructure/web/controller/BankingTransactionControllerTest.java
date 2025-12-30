@@ -29,7 +29,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-// TODO rename methods and display
 public class BankingTransactionControllerTest extends AbstractControllerTest {
     private Customer customer;
     private BankingAccount customerBankingAccount;
@@ -103,8 +102,8 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("Should get transaction")
-    void shouldGetTransaction() throws Exception {
+    @DisplayName("GET /banking/transactions/{id} - should return the transaction for the logged user")
+    void getTransaction_ValidId_ReturnsTransaction() throws Exception {
         // given
         login(customer);
 
@@ -128,8 +127,8 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("Should get pending transactions")
-    void shouldGetPendingTransactions() throws Exception {
+    @DisplayName("GET /banking/transactions/pending - should return only pending transactions for logged user")
+    void getPendingTransactions_LoggedUser_ReturnsOnlyPendingTransactions() throws Exception {
         // given
         login(customer);
         Customer anotherCustomer = Customer.create()
@@ -204,8 +203,8 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("Should get paged card transactions")
-    void shouldGetCardTransactions() throws Exception {
+    @DisplayName("GET /banking/cards/{id}/transactions - should return all transactions for the specified card")
+    void getCardTransactions_ValidCardId_ReturnsPagedTransactions() throws Exception {
         // given
         login(customer);
         BankingTransaction transaction = BankingTransaction
@@ -247,8 +246,8 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("Should get paged account transactions")
-    void shouldGetAccountTransactions() throws Exception {
+    @DisplayName("GET /banking/accounts/{id}/transactions - should return all transactions for the specified account")
+    void getAccountTransactions_ValidAccountId_ReturnsPagedTransactions() throws Exception {
         // given
         login(customer);
 
