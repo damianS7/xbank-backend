@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.banking.account.application.dto.request;
 
-import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurrency;
-import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountType;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import jakarta.validation.constraints.NotNull;
 
 public record BankingAccountCreateRequest(
