@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.auth.application.service;
+package com.damian.xBank.modules.auth.application.usecase;
 
 import com.damian.xBank.modules.auth.application.dto.AuthenticationRequest;
 import com.damian.xBank.modules.auth.application.dto.AuthenticationResponse;
@@ -19,12 +19,12 @@ import java.util.HashMap;
  * Performs account status checks and enforces security policies.
  */
 @Service
-public class AuthenticationService {
-    private static final Logger log = LoggerFactory.getLogger(AuthenticationService.class);
+public class AuthenticationLogin {
+    private static final Logger log = LoggerFactory.getLogger(AuthenticationLogin.class);
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationService(
+    public AuthenticationLogin(
             JwtUtil jwtUtil,
             AuthenticationManager authenticationManager
     ) {

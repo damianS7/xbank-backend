@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.auth.application.service;
+package com.damian.xBank.modules.auth.application.usecase;
 
 import com.damian.xBank.modules.auth.application.dto.AuthenticationRequest;
 import com.damian.xBank.modules.auth.application.dto.AuthenticationResponse;
@@ -25,10 +25,10 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class AuthenticationServiceTest extends AbstractServiceTest {
+public class AuthenticationLoginTest extends AbstractServiceTest {
 
     @InjectMocks
-    private AuthenticationService authenticationService;
+    private AuthenticationLogin authenticationLogin;
 
     @Mock
     private AuthenticationManager authenticationManager;
@@ -37,8 +37,8 @@ public class AuthenticationServiceTest extends AbstractServiceTest {
     private JwtUtil jwtUtil;
 
     @Test
-    @DisplayName("should login when valid credentials")
-    void shouldLoginWhenValidCredentials() {
+    @DisplayName("Login succeeds when credentials are valid")
+    void login_WithValidCredentials_ReturnsAuthenticationResponse() {
         // given
         Authentication authentication = mock(Authentication.class);
         String givenToken = "jwt-token";
@@ -61,7 +61,7 @@ public class AuthenticationServiceTest extends AbstractServiceTest {
         when(jwtUtil.generateToken(anyMap(), anyString())).thenReturn(givenToken);
         when(authentication.getPrincipal()).thenReturn(user);
 
-        AuthenticationResponse response = authenticationService.login(request);
+        AuthenticationResponse response = authenticationLogin.login(request);
 
         // then
         assertThat(response)
@@ -72,8 +72,8 @@ public class AuthenticationServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("should not login when invalid credentials")
-    void shouldNotLoginWhenInvalidCredentials() {
+    @DisplayName("Login fails when credentials are invalid")
+    void login_WithInvalidCredentials_ThrowsException() {
         // given
         UserAccount userAccount = UserAccount.create()
                                              .setId(1L)
@@ -92,7 +92,7 @@ public class AuthenticationServiceTest extends AbstractServiceTest {
 
         BadCredentialsException exception = assertThrows(
                 BadCredentialsException.class,
-                () -> authenticationService.login(request)
+                () -> authenticationLogin.login(request)
         );
 
         // Then
@@ -100,8 +100,8 @@ public class AuthenticationServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("should not login when account is locked or suspended")
-    void shouldNotLoginWhenAccountIsLockedOrSuspended() {
+    @DisplayName("Login fails when account is locked or suspended")
+    void login_WhenAccountSuspended_ThrowsException() {
         // given
         UserAccount userAccount = UserAccount.create()
                                              .setId(1L)
@@ -121,7 +121,7 @@ public class AuthenticationServiceTest extends AbstractServiceTest {
 
         UserAccountSuspendedException exception = assertThrows(
                 UserAccountSuspendedException.class,
-                () -> authenticationService.login(request)
+                () -> authenticationLogin.login(request)
         );
 
         // Then
@@ -129,8 +129,8 @@ public class AuthenticationServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("should not login when account is disabled or not verified")
-    void shouldNotLoginWhenAccountIsDisabledOrNotVerified() {
+    @DisplayName("Login fails when account is disabled or not verified")
+    void login_WhenAccountNotVerified_ThrowsUserAccountNotVerifiedException() {
         // given
         UserAccount userAccount = UserAccount.create()
                                              .setId(1L)
@@ -150,7 +150,7 @@ public class AuthenticationServiceTest extends AbstractServiceTest {
 
         UserAccountNotVerifiedException exception = assertThrows(
                 UserAccountNotVerifiedException.class,
-                () -> authenticationService.login(request)
+                () -> authenticationLogin.login(request)
         );
 
         // Then
