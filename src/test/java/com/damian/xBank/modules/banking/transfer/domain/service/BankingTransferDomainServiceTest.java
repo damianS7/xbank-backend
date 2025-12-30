@@ -8,10 +8,10 @@ import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountC
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountInsufficientFundsException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotOwnerException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountSuspendedException;
-import com.damian.xBank.modules.banking.transaction.domain.service.BankingTransactionDomainService;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
+import com.damian.xBank.modules.banking.transaction.infrastructure.service.BankingTransactionPersistenceService;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferCurrencyMismatchException;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferSameAccountException;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
@@ -31,8 +31,6 @@ import java.math.BigDecimal;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 public class BankingTransferDomainServiceTest extends AbstractServiceTest {
 
@@ -40,7 +38,7 @@ public class BankingTransferDomainServiceTest extends AbstractServiceTest {
     private BankingTransferDomainService bankingTransferDomainService;
 
     @Mock
-    private BankingTransactionDomainService bankingTransactionDomainService;
+    private BankingTransactionPersistenceService bankingTransactionPersistenceService;
 
     private Customer fromCustomer;
     private Customer toCustomer;
@@ -283,7 +281,7 @@ public class BankingTransferDomainServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("confirmTransfer")
+    @DisplayName("confirmTransfer should successfully confirm a transfer")
     void confirmTransfer_Valid_ReturnsConfirmedTransfer() {
         // given
         BigDecimal fromCustomerAccountInitialBalance = BigDecimal.valueOf(1000);
@@ -319,21 +317,7 @@ public class BankingTransferDomainServiceTest extends AbstractServiceTest {
 
         givenTransfer.addTransaction(fromTransaction);
         givenTransfer.addTransaction(toTransaction);
-
-        // when
-        when(bankingTransactionDomainService.complete(any(BankingTransaction.class)))
-                .thenAnswer(i -> {
-                    BankingTransaction tx = i.getArgument(0);
-                    tx.complete();
-                    return tx;
-                });
-
-        //        when(bankingAccountRepository.save(any(BankingAccount.class)))
-        //                .thenAnswer(i -> i.getArgument(0));
-        //
-        //        when(bankingTransferRepository.save(any(BankingTransfer.class)))
-        //                .thenAnswer(i -> i.getArgument(0));
-
+        
         // then
         BankingTransfer resultTransfer = bankingTransferDomainService.confirmTransfer(
                 fromCustomer.getId(),
