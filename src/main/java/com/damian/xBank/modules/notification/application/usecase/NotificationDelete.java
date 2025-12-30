@@ -64,7 +64,7 @@ public class NotificationDelete {
                 );
 
         // Assert notification is owned by currentUser or throw
-        notificationDomainService.deleteNotification(currentUser.getId(), notification);
+        notification.assertOwnedBy(currentUser.getId());
 
         // delete notification
         notificationRepository.delete(notification);
