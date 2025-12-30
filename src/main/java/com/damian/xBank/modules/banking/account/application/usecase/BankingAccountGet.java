@@ -1,0 +1,35 @@
+package com.damian.xBank.modules.banking.account.application.usecase;
+
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
+import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
+import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.shared.security.AuthenticationContext;
+import org.springframework.stereotype.Service;
+
+import java.util.Set;
+
+@Service
+public class BankingAccountGet {
+    private final BankingAccountRepository bankingAccountRepository;
+    private final AuthenticationContext authenticationContext;
+
+    public BankingAccountGet(
+            BankingAccountRepository bankingAccountRepository,
+            AuthenticationContext authenticationContext
+    ) {
+        this.bankingAccountRepository = bankingAccountRepository;
+        this.authenticationContext = authenticationContext;
+    }
+
+    /**
+     * Get a set of BankingAccount with all the accounts from the logged customer
+     *
+     * @return a Set with all the BankingAccounts from the logged customer
+     */
+    public Set<BankingAccount> execute() {
+        // we extract the customer logged from the SecurityContext
+        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
+
+        return bankingAccountRepository.findByCustomer_Id(currentCustomer.getId());
+    }
+}

@@ -1,27 +1,32 @@
-package com.damian.xBank.modules.banking.account.application.service;
+package com.damian.xBank.modules.banking.account.application.usecase;
 
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCardRequest;
-import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotOwnerException;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.card.application.service.BankingCardService;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.domain.enums.BankingCardType;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingAccountCardsLimitException;
-import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.customer.infrastructure.repository.CustomerRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import java.math.BigDecimal;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,19 +35,44 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
-public class BankingAccountCardManagementServiceTest extends AbstractServiceTest {
+public class BankingAccountCardCreateTest extends AbstractServiceTest {
 
     @Mock
     private BankingAccountRepository bankingAccountRepository;
 
     @Mock
-    private BankingCardRepository bankingCardRepository;
+    private CustomerRepository customerRepository;
 
     @Mock
     private BankingCardService bankingCardService;
 
     @InjectMocks
-    private BankingAccountCardManagementService bankingAccountCardManagementService;
+    private BankingAccountCardCreate bankingAccountCardCreate;
+
+    private Customer customer;
+    private BankingAccount bankingAccount;
+
+    @BeforeEach
+    void setUp() {
+        customer = Customer.create(
+                UserAccount.create()
+                           .setId(1L)
+                           .setEmail("fromCustomer@demo.com")
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+        ).setId(1L);
+
+        bankingAccount = BankingAccount
+                .create(customer)
+                .setId(1L)
+                .setBalance(BigDecimal.valueOf(1000))
+                .setCurrency(BankingAccountCurrency.EUR)
+                .setAccountType(BankingAccountType.SAVINGS)
+                .setAccountNumber("US9900001111112233334444");
+
+        customer.setBankingAccounts(Set.of(bankingAccount));
+    }
+
+    // TODO
 
     @Test
     @DisplayName("Should create a BankingCard for the BankingAccount")
@@ -74,7 +104,7 @@ public class BankingAccountCardManagementServiceTest extends AbstractServiceTest
         when(bankingCardService.createBankingCard(any(BankingAccount.class), any(BankingCardType.class)))
                 .thenReturn(givenBankingCard);
 
-        BankingCard requestedBankingCard = bankingAccountCardManagementService.requestCard(
+        BankingCard requestedBankingCard = bankingAccountCardCreate.execute(
                 givenBankAccount.getId(),
                 request
         );
@@ -111,7 +141,7 @@ public class BankingAccountCardManagementServiceTest extends AbstractServiceTest
 
         BankingAccountNotFoundException exception = assertThrows(
                 BankingAccountNotFoundException.class,
-                () -> bankingAccountCardManagementService.requestCard(
+                () -> bankingAccountCardCreate.execute(
                         givenBankAccount.getId(),
                         request
                 )
@@ -156,7 +186,7 @@ public class BankingAccountCardManagementServiceTest extends AbstractServiceTest
 
         BankingAccountNotOwnerException exception = assertThrows(
                 BankingAccountNotOwnerException.class,
-                () -> bankingAccountCardManagementService.requestCard(
+                () -> bankingAccountCardCreate.execute(
                         givenBankAccount.getId(),
                         request
                 )
@@ -207,7 +237,7 @@ public class BankingAccountCardManagementServiceTest extends AbstractServiceTest
         when(bankingCardService.createBankingCard(any(BankingAccount.class), any(BankingCardType.class)))
                 .thenReturn(givenBankingCard);
 
-        BankingCard requestedBankingCard = bankingAccountCardManagementService.requestCard(
+        BankingCard requestedBankingCard = bankingAccountCardCreate.execute(
                 givenBankAccount.getId(),
                 request
         );
@@ -249,7 +279,7 @@ public class BankingAccountCardManagementServiceTest extends AbstractServiceTest
 
         BankingAccountCardsLimitException exception = assertThrows(
                 BankingAccountCardsLimitException.class,
-                () -> bankingAccountCardManagementService.requestCard(
+                () -> bankingAccountCardCreate.execute(
                         givenBankAccount.getId(),
                         request
                 )
@@ -258,4 +288,5 @@ public class BankingAccountCardManagementServiceTest extends AbstractServiceTest
         // then
         assertEquals(ErrorCodes.BANKING_ACCOUNT_CARD_LIMIT, exception.getMessage());
     }
+
 }

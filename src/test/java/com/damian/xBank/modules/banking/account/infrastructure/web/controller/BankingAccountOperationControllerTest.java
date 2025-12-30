@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.banking.account.infrastructure.controller;
+package com.damian.xBank.modules.banking.account.infrastructure.web.controller;
 
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;

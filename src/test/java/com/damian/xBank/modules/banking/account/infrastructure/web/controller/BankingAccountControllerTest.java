@@ -1,9 +1,9 @@
-package com.damian.xBank.modules.banking.account.infrastructure.controller;
+package com.damian.xBank.modules.banking.account.infrastructure.web.controller;
 
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCreateRequest;
 import com.damian.xBank.modules.banking.account.application.dto.response.BankingAccountDto;
-import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurrency;
-import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountType;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;

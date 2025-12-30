@@ -1,32 +1,29 @@
-package com.damian.xBank.modules.banking.account.application.service;
+package com.damian.xBank.modules.banking.account.application.usecase;
 
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCardRequest;
-import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.card.application.service.BankingCardService;
 import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
-import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
-import com.damian.xBank.modules.banking.card.domain.exception.BankingAccountCardsLimitException;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.stereotype.Service;
 
 @Service
-public class BankingAccountCardManagementService {
-    private final int MAX_CARDS_PER_ACCOUNT = 5;
-    private final BankingCardService bankingCardService;
+public class BankingAccountCardCreate {
     private final BankingAccountRepository bankingAccountRepository;
     private final AuthenticationContext authenticationContext;
+    private final BankingCardService bankingCardService;
 
-    public BankingAccountCardManagementService(
+    public BankingAccountCardCreate(
             BankingAccountRepository bankingAccountRepository,
-            BankingCardService bankingCardService,
-            AuthenticationContext authenticationContext
+            AuthenticationContext authenticationContext,
+            BankingCardService bankingCardService
     ) {
         this.bankingAccountRepository = bankingAccountRepository;
-        this.bankingCardService = bankingCardService;
         this.authenticationContext = authenticationContext;
+        this.bankingCardService = bankingCardService;
     }
 
     /**
@@ -36,7 +33,7 @@ public class BankingAccountCardManagementService {
      * @param request
      * @return the created BankingCard
      */
-    public BankingCard requestCard(Long bankingAccountId, BankingAccountCardRequest request) {
+    public BankingCard execute(Long bankingAccountId, BankingAccountCardRequest request) {
         // Customer logged
         final Customer currentCustomer = authenticationContext.getCurrentCustomer();
 
@@ -54,25 +51,9 @@ public class BankingAccountCardManagementService {
         }
 
         // if customer has reached the maximum amount of cards per account.
-        if (countActiveCards(bankingAccount) >= MAX_CARDS_PER_ACCOUNT) {
-            throw new BankingAccountCardsLimitException(bankingAccountId);
-        }
+        bankingAccount.assertCanAddCard();
 
         // create the card and associate to the account and return it.
         return bankingCardService.createBankingCard(bankingAccount, request.type());
-    }
-
-    /**
-     * Counts how many active (ENABLED) cards are associated with the given banking account.
-     *
-     * @param bankingAccount
-     * @return the number of active cards
-     */
-    private int countActiveCards(BankingAccount bankingAccount) {
-        return (int) bankingAccount
-                .getBankingCards()
-                .stream()
-                .filter(bankingCard -> bankingCard.getStatus().equals(BankingCardStatus.ACTIVE))
-                .count();
     }
 }

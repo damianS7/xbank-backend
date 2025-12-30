@@ -1,7 +1,7 @@
-package com.damian.xBank.modules.banking.account.application.service.admin;
+package com.damian.xBank.modules.banking.account.application.usecase;
 
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountDepositRequest;
-import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
@@ -25,10 +25,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
-public class AdminBankingAccountOperationServiceTest extends AbstractServiceTest {
+public class BankingAccountDepositTest extends AbstractServiceTest {
 
     @InjectMocks
-    private AdminBankingAccountOperationService adminBankingAccountOperationService;
+    private BankingAccountDeposit bankingAccountDeposit;
 
     @Mock
     private BankingAccountRepository bankingAccountRepository;
@@ -78,7 +78,7 @@ public class AdminBankingAccountOperationServiceTest extends AbstractServiceTest
         doNothing().when(notificationPublisher).publish(any(NotificationEvent.class));
 
         // then
-        transaction = adminBankingAccountOperationService.deposit(
+        transaction = bankingAccountDeposit.execute(
                 customerBankingAccount.getId(),
                 depositRequest
         );

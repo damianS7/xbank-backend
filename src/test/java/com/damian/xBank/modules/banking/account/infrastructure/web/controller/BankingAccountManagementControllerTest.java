@@ -1,13 +1,13 @@
-package com.damian.xBank.modules.banking.account.infrastructure.controller;
+package com.damian.xBank.modules.banking.account.infrastructure.web.controller;
 
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountAliasUpdateRequest;
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCardRequest;
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCloseRequest;
 import com.damian.xBank.modules.banking.account.application.dto.response.BankingAccountDto;
-import com.damian.xBank.modules.banking.account.domain.entity.BankingAccount;
-import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurrency;
-import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountStatus;
-import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountType;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.card.application.dto.response.BankingCardDto;
 import com.damian.xBank.modules.banking.card.domain.enums.BankingCardType;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;

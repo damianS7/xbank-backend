@@ -1,9 +1,9 @@
 package com.damian.xBank.modules.banking.account.infrastructure.web.controller.admin;
 
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountDepositRequest;
-import com.damian.xBank.modules.banking.account.application.service.admin.AdminBankingAccountOperationService;
-import com.damian.xBank.modules.banking.transaction.application.mapper.BankingTransactionDtoMapper;
+import com.damian.xBank.modules.banking.account.application.usecase.BankingAccountDeposit;
 import com.damian.xBank.modules.banking.transaction.application.dto.response.BankingTransactionDto;
+import com.damian.xBank.modules.banking.transaction.application.mapper.BankingTransactionDtoMapper;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -15,12 +15,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1")
 public class AdminBankingAccountOperationController {
-    private final AdminBankingAccountOperationService adminBankingAccountOperationService;
+    private final BankingAccountDeposit bankingAccountDeposit;
 
     public AdminBankingAccountOperationController(
-            AdminBankingAccountOperationService adminBankingAccountOperationService
+            BankingAccountDeposit bankingAccountDeposit
     ) {
-        this.adminBankingAccountOperationService = adminBankingAccountOperationService;
+        this.bankingAccountDeposit = bankingAccountDeposit;
     }
 
     // endpoint for logged customer to deposit into given account
@@ -32,7 +32,7 @@ public class AdminBankingAccountOperationController {
             BankingAccountDepositRequest request
     ) {
 
-        BankingTransaction transaction = adminBankingAccountOperationService.deposit(id, request);
+        BankingTransaction transaction = bankingAccountDeposit.execute(id, request);
         BankingTransactionDto transactionDto = BankingTransactionDtoMapper
                 .toBankingTransactionDto(transaction);
 
