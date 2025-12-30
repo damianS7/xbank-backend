@@ -39,8 +39,8 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("Should login when valid credentials")
-    void shouldLoginWhenValidCredentials() throws Exception {
+    @DisplayName("POST /auth/login returns 200 OK when credentials are valid")
+    void login_WithValidCredentials_Returns200OK() throws Exception {
         // given
         AuthenticationRequest request = new AuthenticationRequest(
                 userAccount.getEmail(),
@@ -71,8 +71,8 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("Should not login when invalid credentials")
-    void shouldNotLoginWhenInvalidCredentials() throws Exception {
+    @DisplayName("POST /auth/login returns 401 Unauthorized when credentials are invalid")
+    void login_WithInvalidCredentials_Returns401Unauthorized() throws Exception {
         // given
         AuthenticationRequest request = new AuthenticationRequest(
                 userAccount.getEmail(),
@@ -90,8 +90,8 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("Should not login when email not exist")
-    void shouldNotLoginWhenEmailNotExist() throws Exception {
+    @DisplayName("POST /auth/login returns 401 Unauthorized when email does not exist")
+    void login_WithNonExistingEmail_Returns401Unauthorized() throws Exception {
         // given
         AuthenticationRequest request = new AuthenticationRequest(
                 "nonemail@demo.com",
@@ -126,8 +126,8 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("Should not login when account is locked or suspended")
-    void shouldNotLoginWhenAccountIsLockedOrSuspended() throws Exception {
+    @DisplayName("POST /auth/login returns 403 Forbidden when account is suspended")
+    void login_WhenAccountSuspended_Returns403Forbidden() throws Exception {
         // given
         userAccount.setAccountStatus(UserAccountStatus.SUSPENDED);
         userAccountRepository.save(userAccount);
@@ -169,8 +169,49 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("Should not login when invalid email format")
-    void shouldNotLoginWhenInvalidEmailFormat() throws Exception {
+    @DisplayName("POST /auth/login returns 403 Forbidden when account is disabled")
+    void login_WhenAccountDisabled_Returns403Forbidden() throws Exception {
+        // given
+        userAccount.setAccountStatus(UserAccountStatus.PENDING_VERIFICATION);
+        userAccountRepository.save(userAccount);
+
+        AuthenticationRequest request = new AuthenticationRequest(
+                userAccount.getEmail(),
+                RAW_PASSWORD
+        );
+
+        // when
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                                          .post("/api/v1/auth/login")
+                                          .contentType(MediaType.APPLICATION_JSON)
+                                          .content(JsonHelper.toJson(request)))
+                                  .andDo(print())
+                                  .andExpect(MockMvcResultMatchers.status().is(HttpStatus.FORBIDDEN.value()))
+                                  .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                                  .andReturn();
+
+        // json to ApiResponse
+        ApiResponse<?> response = JsonHelper.fromJson(
+                result.getResponse().getContentAsString(),
+                new TypeReference<ApiResponse<?>>() {
+                }
+        );
+
+        assertThat(response)
+                .isNotNull()
+                .extracting(ApiResponse::getErrorCode)
+                .isEqualTo(
+                        ErrorCodes.USER_ACCOUNT_NOT_VERIFIED
+                );
+
+        // undo changes to customer
+        userAccount.setAccountStatus(UserAccountStatus.VERIFIED);
+        userAccountRepository.save(userAccount);
+    }
+
+    @Test
+    @DisplayName("POST /auth/login returns 400 Bad Request when email format is invalid")
+    void login_WithInvalidEmailFormat_Returns400BadRequest() throws Exception {
         // given
         AuthenticationRequest request = new AuthenticationRequest(
                 "thisIsNotAnEmail",
@@ -209,8 +250,8 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("Should not login when null fields")
-    void shouldNotLoginWhenNullFields() throws Exception {
+    @DisplayName("POST /auth/login returns 400 Bad Request when required fields are null")
+    void login_WithNullFields_Returns400BadRequest() throws Exception {
         // Given
         AuthenticationRequest request = new AuthenticationRequest(
                 null,
@@ -250,46 +291,5 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
         assertThat(response.getErrors().get("email"))
                 .asString()
                 .contains("must not be blank");
-    }
-
-    @Test
-    @DisplayName("Should not login when account is disabled or not verified")
-    void shouldNotLoginWhenAccountIsDisabledOrNotVerified() throws Exception {
-        // given
-        userAccount.setAccountStatus(UserAccountStatus.PENDING_VERIFICATION);
-        userAccountRepository.save(userAccount);
-
-        AuthenticationRequest request = new AuthenticationRequest(
-                userAccount.getEmail(),
-                RAW_PASSWORD
-        );
-
-        // when
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
-                                          .post("/api/v1/auth/login")
-                                          .contentType(MediaType.APPLICATION_JSON)
-                                          .content(JsonHelper.toJson(request)))
-                                  .andDo(print())
-                                  .andExpect(MockMvcResultMatchers.status().is(HttpStatus.FORBIDDEN.value()))
-                                  .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                                  .andReturn();
-
-        // json to ApiResponse
-        ApiResponse<?> response = JsonHelper.fromJson(
-                result.getResponse().getContentAsString(),
-                new TypeReference<ApiResponse<?>>() {
-                }
-        );
-
-        assertThat(response)
-                .isNotNull()
-                .extracting(ApiResponse::getErrorCode)
-                .isEqualTo(
-                        ErrorCodes.USER_ACCOUNT_NOT_VERIFIED
-                );
-
-        // undo changes to customer
-        userAccount.setAccountStatus(UserAccountStatus.VERIFIED);
-        userAccountRepository.save(userAccount);
     }
 }

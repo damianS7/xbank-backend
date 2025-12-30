@@ -53,8 +53,8 @@ public class AuthorizationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("Should have access when token is valid")
-    void shouldHaveAccessWhenTokenIsValid() throws Exception {
+    @DisplayName("GET /customers returns 200 OK when JWT token is valid")
+    void getCustomers_WithValidToken_Returns200OK() throws Exception {
         // given
         final String givenToken = jwtUtil.generateToken(
                 customer.getAccount().getEmail(),
@@ -71,8 +71,8 @@ public class AuthorizationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("Should not have access when not authenticated")
-    void shouldNotHaveAccessWhenNotAuthenticated() throws Exception {
+    @DisplayName("GET /customers returns 401 Unauthorized when request is not authenticated")
+    void getCustomers_WithoutAuthentication_Returns401Unauthorized() throws Exception {
         // when
         mockMvc.perform(MockMvcRequestBuilders
                        .get("/api/v1/customers"))
@@ -82,8 +82,8 @@ public class AuthorizationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("Should not have access when token has expired")
-    void shouldNotHaveAccessWhenTokenHasExpired() throws Exception {
+    @DisplayName("GET /customers returns 401 Unauthorized when JWT token is expired")
+    void getCustomers_WithExpiredToken_Returns401Unauthorized() throws Exception {
         // given
         final String expiredToken = jwtUtil.generateToken(
                 customer.getEmail(),
@@ -114,8 +114,8 @@ public class AuthorizationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("Should not have access when token is invalid")
-    void shouldNotHaveAccessWhenTokenIsInvalid() throws Exception {
+    @DisplayName("GET /customers returns 401 Unauthorized when JWT token is invalid")
+    void getCustomers_WithInvalidToken_Returns401Unauthorized() throws Exception {
         // given
         final String invalidToken = "bad-token";
 
@@ -143,8 +143,8 @@ public class AuthorizationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("Should not have access when token email not exists")
-    void shouldNotHaveAccessWhenTokenEmailNotExists() throws Exception {
+    @DisplayName("GET /customers returns 401 Unauthorized when JWT token email does not exist")
+    void getCustomers_WithNonExistingEmailInToken_Returns401Unauthorized() throws Exception {
         // given
         final String token = jwtUtil.generateToken(
                 "fake-email@demo.com",
