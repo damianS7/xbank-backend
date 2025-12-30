@@ -59,8 +59,14 @@ public class BankingTransferReject {
         // reject
         bankingTransferDomainService.reject(currentCustomer.getId(), transfer);
 
+        // No need for .save
+        // Save accounts (.save is optional because of transactional)
+        // Saving the accounts also updates the transactions since we are using CASCADE.ALL
+        // bankingAccountRepository.save(transfer.getFromAccount());
+        // bankingAccountRepository.save(transfer.getToAccount());
+
         // Save
-        transferRepository.save(transfer);
+        // transferRepository.save(transfer);
 
         // Notify receive
         notificationPublisher.publish(

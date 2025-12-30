@@ -63,6 +63,7 @@ public class BankingTransferConfirm {
         bankingTransferDomainService.confirmTransfer(currentCustomer.getId(), transfer);
 
         // Save accounts (.save is optional because of transactional)
+        // Saving the accounts also updates the transactions since we are using CASCADE.ALL
         bankingAccountRepository.save(transfer.getFromAccount());
         bankingAccountRepository.save(transfer.getToAccount());
 
