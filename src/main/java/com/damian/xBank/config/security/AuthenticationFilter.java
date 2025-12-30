@@ -1,6 +1,6 @@
 package com.damian.xBank.config.security;
 
-import com.damian.xBank.modules.auth.application.service.CustomUserDetailsService;
+import com.damian.xBank.modules.auth.infrastructure.service.CustomUserDetailsService;
 import com.damian.xBank.shared.exception.JwtTokenExpiredException;
 import com.damian.xBank.shared.exception.JwtTokenInvalidException;
 import com.damian.xBank.shared.utils.JwtUtil;
