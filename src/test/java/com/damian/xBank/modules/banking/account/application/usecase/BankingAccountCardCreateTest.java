@@ -66,7 +66,7 @@ public class BankingAccountCardCreateTest extends AbstractServiceTest {
                 .setId(1L)
                 .setBalance(BigDecimal.valueOf(1000))
                 .setCurrency(BankingAccountCurrency.EUR)
-                .setAccountType(BankingAccountType.SAVINGS)
+                .setType(BankingAccountType.SAVINGS)
                 .setAccountNumber("US9900001111112233334444");
 
         customer.setBankingAccounts(Set.of(bankingAccount));

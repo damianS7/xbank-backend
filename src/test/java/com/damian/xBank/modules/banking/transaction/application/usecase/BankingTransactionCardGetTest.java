@@ -61,7 +61,7 @@ public class BankingTransactionCardGetTest extends AbstractServiceTest {
                 .setId(5L)
                 .setBalance(BigDecimal.valueOf(1000))
                 .setCurrency(BankingAccountCurrency.EUR)
-                .setAccountType(BankingAccountType.SAVINGS)
+                .setType(BankingAccountType.SAVINGS)
                 .setAccountNumber("US9900001111112233334444");
 
         customerBankingCard = BankingCard

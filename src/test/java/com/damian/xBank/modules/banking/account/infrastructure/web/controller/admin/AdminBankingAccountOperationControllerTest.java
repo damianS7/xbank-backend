@@ -76,7 +76,7 @@ public class AdminBankingAccountOperationControllerTest extends AbstractControll
 
         BankingAccount bankingAccount = new BankingAccount(customer);
         bankingAccount.setAccountNumber("ES1234567890123456789012");
-        bankingAccount.setAccountType(BankingAccountType.SAVINGS);
+        bankingAccount.setType(BankingAccountType.SAVINGS);
         bankingAccount.setCurrency(BankingAccountCurrency.EUR);
         bankingAccount.setStatus(BankingAccountStatus.ACTIVE);
         bankingAccount.setBalance(BigDecimal.valueOf(1000));
@@ -123,7 +123,7 @@ public class AdminBankingAccountOperationControllerTest extends AbstractControll
 
         BankingAccount bankingAccount = new BankingAccount(customer);
         bankingAccount.setAccountNumber("ES1234567890123456789012");
-        bankingAccount.setAccountType(BankingAccountType.SAVINGS);
+        bankingAccount.setType(BankingAccountType.SAVINGS);
         bankingAccount.setCurrency(BankingAccountCurrency.EUR);
         bankingAccount.setStatus(BankingAccountStatus.ACTIVE);
         bankingAccount.setBalance(BigDecimal.valueOf(1000));

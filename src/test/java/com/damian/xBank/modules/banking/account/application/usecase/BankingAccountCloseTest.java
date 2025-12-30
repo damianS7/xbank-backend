@@ -59,7 +59,7 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
                 .setId(1L)
                 .setBalance(BigDecimal.valueOf(1000))
                 .setCurrency(BankingAccountCurrency.EUR)
-                .setAccountType(BankingAccountType.SAVINGS)
+                .setType(BankingAccountType.SAVINGS)
                 .setAccountNumber("US9900001111112233334444");
 
         customer.setBankingAccounts(Set.of(bankingAccount));
@@ -88,7 +88,7 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
         );
 
         // then
-        Assertions.assertThat(bankingAccount.getAccountStatus()).isEqualTo(BankingAccountStatus.CLOSED);
+        Assertions.assertThat(bankingAccount.getStatus()).isEqualTo(BankingAccountStatus.CLOSED);
         verify(bankingAccountRepository).findById(bankingAccount.getId());
         verify(bankingAccountRepository, times(1)).save(any(BankingAccount.class));
     }
@@ -115,7 +115,7 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
         );
 
         // then
-        assertThat(bankingAccount.getAccountStatus()).isEqualTo(BankingAccountStatus.CLOSED);
+        assertThat(bankingAccount.getStatus()).isEqualTo(BankingAccountStatus.CLOSED);
         verify(bankingAccountRepository).findById(bankingAccount.getId());
         verify(bankingAccountRepository, times(1)).save(any(BankingAccount.class));
     }
@@ -164,7 +164,7 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
 
         BankingAccount givenBankingAccount = new BankingAccount(customer);
         givenBankingAccount.setCurrency(BankingAccountCurrency.EUR);
-        givenBankingAccount.setAccountType(BankingAccountType.SAVINGS);
+        givenBankingAccount.setType(BankingAccountType.SAVINGS);
         givenBankingAccount.setAccountNumber(accountNumber);
 
         // when
@@ -209,7 +209,7 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
         BankingAccount givenBankingAccount = new BankingAccount(customer2);
         givenBankingAccount.setId(5L);
         givenBankingAccount.setCurrency(BankingAccountCurrency.EUR);
-        givenBankingAccount.setAccountType(BankingAccountType.SAVINGS);
+        givenBankingAccount.setType(BankingAccountType.SAVINGS);
         givenBankingAccount.setAccountNumber(accountNumber);
 
         // when
@@ -255,7 +255,7 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
         BankingAccount givenBankingAccount = new BankingAccount(customer);
         givenBankingAccount.setId(5L);
         givenBankingAccount.setCurrency(BankingAccountCurrency.EUR);
-        givenBankingAccount.setAccountType(BankingAccountType.SAVINGS);
+        givenBankingAccount.setType(BankingAccountType.SAVINGS);
         givenBankingAccount.setAccountNumber(accountNumber);
 
         // when
@@ -267,7 +267,7 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
         );
 
         // then
-        assertThat(savedAccount.getAccountStatus()).isEqualTo(BankingAccountStatus.CLOSED);
+        assertThat(savedAccount.getStatus()).isEqualTo(BankingAccountStatus.CLOSED);
         verify(bankingAccountRepository, times(1)).save(any(BankingAccount.class));
     }
 

@@ -41,14 +41,17 @@ public class BankingAccount {
     @Column(precision = 15, scale = 2)
     private BigDecimal balance;
 
+    @Column(name = "account_type")
     @Enumerated(EnumType.STRING)
-    private BankingAccountType accountType;
+    private BankingAccountType type;
 
+    @Column(name = "account_currency")
     @Enumerated(EnumType.STRING)
-    private BankingAccountCurrency accountCurrency;
+    private BankingAccountCurrency currency;
 
+    @Column(name = "account_status")
     @Enumerated(EnumType.STRING)
-    private BankingAccountStatus accountStatus;
+    private BankingAccountStatus status;
 
     @Column
     private Instant createdAt;
@@ -62,9 +65,9 @@ public class BankingAccount {
         this.accountTransactions = new HashSet<>();
         this.bankingCards = new HashSet<>();
         this.balance = BigDecimal.valueOf(0);
-        this.accountCurrency = BankingAccountCurrency.EUR;
-        this.accountType = BankingAccountType.SAVINGS;
-        this.accountStatus = BankingAccountStatus.ACTIVE;
+        this.currency = BankingAccountCurrency.EUR;
+        this.type = BankingAccountType.SAVINGS;
+        this.status = BankingAccountStatus.ACTIVE;
         this.updatedAt = Instant.now();
         this.createdAt = Instant.now();
     }
@@ -115,44 +118,44 @@ public class BankingAccount {
         return this;
     }
 
-    public BankingAccountType getAccountType() {
-        return accountType;
+    public BankingAccountType getType() {
+        return type;
     }
 
-    public BankingAccount setAccountType(BankingAccountType accountType) {
-        this.accountType = accountType;
+    public BankingAccount setType(BankingAccountType type) {
+        this.type = type;
         return this;
     }
 
-    public BankingAccountCurrency getAccountCurrency() {
-        return accountCurrency;
+    public BankingAccountCurrency getCurrency() {
+        return currency;
     }
 
     public BankingAccount setCurrency(BankingAccountCurrency accountCurrency) {
-        this.accountCurrency = accountCurrency;
+        this.currency = accountCurrency;
         return this;
     }
 
-    public BankingAccountStatus getAccountStatus() {
-        return accountStatus;
+    public BankingAccountStatus getStatus() {
+        return status;
     }
 
     public BankingAccount setStatus(BankingAccountStatus newStatus) {
         // if the actual status is the same as the new ... do nothing
-        if (this.accountStatus == newStatus) {
+        if (this.status == newStatus) {
             return this;
         }
 
-        if (!this.accountStatus.canTransitionTo(newStatus)) {
+        if (!this.status.canTransitionTo(newStatus)) {
             throw new BankingAccountStatusTransitionException(
                     this.id,
-                    this.accountStatus.name(),
+                    this.status.name(),
                     newStatus.name()
             );
         }
 
         this.updatedAt = Instant.now();
-        this.accountStatus = newStatus;
+        this.status = newStatus;
         return this;
     }
 
@@ -189,6 +192,9 @@ public class BankingAccount {
     }
 
     public BankingAccount addBankingCard(BankingCard bankingCard) {
+        // check that the card can be added
+        assertCanAddCard();
+
         if (bankingCard.getBankingAccount() != this) {
             bankingCard.setBankingAccount(this);
         }
@@ -273,7 +279,7 @@ public class BankingAccount {
     }
 
     public boolean isSuspended() {
-        return getAccountStatus() == BankingAccountStatus.SUSPENDED;
+        return getStatus() == BankingAccountStatus.SUSPENDED;
     }
 
     /**
@@ -293,7 +299,7 @@ public class BankingAccount {
     }
 
     public boolean isClosed() {
-        return getAccountStatus() == BankingAccountStatus.CLOSED;
+        return getStatus() == BankingAccountStatus.CLOSED;
     }
 
     /**

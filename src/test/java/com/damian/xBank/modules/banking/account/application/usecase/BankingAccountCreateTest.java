@@ -68,7 +68,7 @@ public class BankingAccountCreateTest extends AbstractServiceTest {
                 .setId(1L)
                 .setBalance(BigDecimal.valueOf(1000))
                 .setCurrency(BankingAccountCurrency.EUR)
-                .setAccountType(BankingAccountType.SAVINGS)
+                .setType(BankingAccountType.SAVINGS)
                 .setAccountNumber("US9900001111112233334444");
     }
 
@@ -96,8 +96,8 @@ public class BankingAccountCreateTest extends AbstractServiceTest {
 
         // then
         assertThat(result).isNotNull();
-        assertThat(result.getAccountCurrency()).isEqualTo(request.currency());
-        assertThat(result.getAccountType()).isEqualTo(request.type());
+        assertThat(result.getCurrency()).isEqualTo(request.currency());
+        assertThat(result.getType()).isEqualTo(request.type());
         assertThat(result.getAccountNumber().length()).isEqualTo(24);
         assertThat(result.getBalance()).isEqualTo(BigDecimal.valueOf(0));
         verify(bankingAccountRepository, times(1)).save(any(BankingAccount.class));

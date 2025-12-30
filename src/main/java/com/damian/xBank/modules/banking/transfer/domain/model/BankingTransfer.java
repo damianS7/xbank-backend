@@ -221,7 +221,7 @@ public class BankingTransfer {
     public BankingTransfer assertCurrenciesMatch() {
 
         // if currencies are different, throw exception
-        if (!Objects.equals(fromAccount.getAccountCurrency(), toAccount.getAccountCurrency())) {
+        if (!Objects.equals(fromAccount.getCurrency(), toAccount.getCurrency())) {
             throw new BankingTransferCurrencyMismatchException(toAccount.getId());
         }
 

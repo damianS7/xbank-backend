@@ -87,7 +87,7 @@ public class BankingAccountDomainServiceTest extends AbstractServiceTest {
         BankingAccount givenBankingAccount = new BankingAccount(customer);
         givenBankingAccount.setAccountNumber("US9900001111112233334444");
         givenBankingAccount.setCurrency(request.currency());
-        givenBankingAccount.setAccountType(request.type());
+        givenBankingAccount.setType(request.type());
 
         // when
         when(faker.country()).thenReturn(country);
@@ -101,8 +101,8 @@ public class BankingAccountDomainServiceTest extends AbstractServiceTest {
 
         // then
         assertThat(givenBankingAccount).isNotNull();
-        assertThat(givenBankingAccount.getAccountCurrency()).isEqualTo(request.currency());
-        assertThat(givenBankingAccount.getAccountType()).isEqualTo(request.type());
+        assertThat(givenBankingAccount.getCurrency()).isEqualTo(request.currency());
+        assertThat(givenBankingAccount.getType()).isEqualTo(request.type());
         assertThat(givenBankingAccount.getAccountNumber().length()).isEqualTo(24);
         assertThat(givenBankingAccount.getBalance()).isEqualTo(BigDecimal.valueOf(0));
         verify(bankingAccountRepository, times(1)).save(any(BankingAccount.class));

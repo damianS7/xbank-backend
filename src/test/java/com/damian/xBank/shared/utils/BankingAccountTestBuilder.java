@@ -66,7 +66,7 @@ public class BankingAccountTestBuilder {
                              .setId(id)
                              .setBalance(balance)
                              .setCurrency(currency)
-                             .setAccountType(accountType)
+                             .setType(accountType)
                              .setAccountNumber(accountNumber)
                              .setStatus(status);
     }

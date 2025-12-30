@@ -61,7 +61,7 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
 
         fromBankingAccount = new BankingAccount(fromCustomer);
         fromBankingAccount.setAccountNumber("ES1234567890123456789012");
-        fromBankingAccount.setAccountType(BankingAccountType.SAVINGS);
+        fromBankingAccount.setType(BankingAccountType.SAVINGS);
         fromBankingAccount.setCurrency(BankingAccountCurrency.EUR);
         fromBankingAccount.setStatus(BankingAccountStatus.ACTIVE);
         fromBankingAccount.setBalance(BigDecimal.valueOf(3200));
@@ -84,7 +84,7 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
 
         toBankingAccount = new BankingAccount(toCustomer);
         toBankingAccount.setAccountNumber("DE1234567890123456789012");
-        toBankingAccount.setAccountType(BankingAccountType.SAVINGS);
+        toBankingAccount.setType(BankingAccountType.SAVINGS);
         toBankingAccount.setCurrency(BankingAccountCurrency.EUR);
         toBankingAccount.setStatus(BankingAccountStatus.ACTIVE);
         toBankingAccount.setBalance(BigDecimal.valueOf(200));

@@ -82,7 +82,7 @@ public class BankingAccountManagementControllerTest extends AbstractControllerTe
 
         BankingAccount givenBankingAccount = new BankingAccount(customer);
         givenBankingAccount.setAccountNumber("US0011111111222222223333");
-        givenBankingAccount.setAccountType(BankingAccountType.SAVINGS);
+        givenBankingAccount.setType(BankingAccountType.SAVINGS);
         givenBankingAccount.setCurrency(BankingAccountCurrency.EUR);
         bankingAccountRepository.save(givenBankingAccount);
 
@@ -118,7 +118,7 @@ public class BankingAccountManagementControllerTest extends AbstractControllerTe
 
         BankingAccount givenBankingAccount = new BankingAccount(customer);
         givenBankingAccount.setAccountNumber("US0011111111222222223333");
-        givenBankingAccount.setAccountType(BankingAccountType.SAVINGS);
+        givenBankingAccount.setType(BankingAccountType.SAVINGS);
         givenBankingAccount.setCurrency(BankingAccountCurrency.EUR);
         bankingAccountRepository.save(givenBankingAccount);
 
@@ -150,7 +150,7 @@ public class BankingAccountManagementControllerTest extends AbstractControllerTe
 
         BankingAccount bankingAccount = new BankingAccount(customer);
         bankingAccount.setAccountNumber("ES1234567890123456789012");
-        bankingAccount.setAccountType(BankingAccountType.SAVINGS);
+        bankingAccount.setType(BankingAccountType.SAVINGS);
         bankingAccount.setCurrency(BankingAccountCurrency.EUR);
         bankingAccount.setStatus(BankingAccountStatus.ACTIVE);
         bankingAccount.setBalance(BigDecimal.valueOf(1000));

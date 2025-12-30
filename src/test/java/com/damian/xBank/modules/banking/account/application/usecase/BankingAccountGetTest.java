@@ -47,7 +47,7 @@ public class BankingAccountGetTest extends AbstractServiceTest {
                 .setId(1L)
                 .setBalance(BigDecimal.valueOf(1000))
                 .setCurrency(BankingAccountCurrency.EUR)
-                .setAccountType(BankingAccountType.SAVINGS)
+                .setType(BankingAccountType.SAVINGS)
                 .setAccountNumber("US9900001111112233334444");
 
         BankingAccount account2 = BankingAccount
@@ -55,7 +55,7 @@ public class BankingAccountGetTest extends AbstractServiceTest {
                 .setId(2L)
                 .setBalance(BigDecimal.valueOf(1000))
                 .setCurrency(BankingAccountCurrency.EUR)
-                .setAccountType(BankingAccountType.SAVINGS)
+                .setType(BankingAccountType.SAVINGS)
                 .setAccountNumber("US9900001111112233334411");
 
         BankingAccount account3 = BankingAccount
@@ -63,7 +63,7 @@ public class BankingAccountGetTest extends AbstractServiceTest {
                 .setId(3L)
                 .setBalance(BigDecimal.valueOf(1000))
                 .setCurrency(BankingAccountCurrency.EUR)
-                .setAccountType(BankingAccountType.SAVINGS)
+                .setType(BankingAccountType.SAVINGS)
                 .setAccountNumber("US9900001111112233334412");
 
         customer.setBankingAccounts(Set.of(account1, account2, account3));

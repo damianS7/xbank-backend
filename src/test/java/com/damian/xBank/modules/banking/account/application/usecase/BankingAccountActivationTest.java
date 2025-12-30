@@ -55,14 +55,14 @@ public class BankingAccountActivationTest extends AbstractServiceTest {
                 .setId(1L)
                 .setBalance(BigDecimal.valueOf(1000))
                 .setCurrency(BankingAccountCurrency.EUR)
-                .setAccountType(BankingAccountType.SAVINGS)
+                .setType(BankingAccountType.SAVINGS)
                 .setAccountNumber("US9900001111112233334444");
 
         customer.setBankingAccounts(Set.of(bankingAccount));
     }
 
     // TODO should close
-    
+
     @Test
     @DisplayName("Should not open BankingAccount When its closed")
     void shouldFailToOpenAccountWhenClosed() {
@@ -82,7 +82,7 @@ public class BankingAccountActivationTest extends AbstractServiceTest {
         BankingAccount givenBankingAccount = new BankingAccount(customer);
         givenBankingAccount.setStatus(BankingAccountStatus.CLOSED);
         givenBankingAccount.setCurrency(BankingAccountCurrency.EUR);
-        givenBankingAccount.setAccountType(BankingAccountType.SAVINGS);
+        givenBankingAccount.setType(BankingAccountType.SAVINGS);
         givenBankingAccount.setAccountNumber(accountNumber);
 
         // when
@@ -116,7 +116,7 @@ public class BankingAccountActivationTest extends AbstractServiceTest {
         BankingAccount givenBankingAccount = new BankingAccount(customer);
         givenBankingAccount.setStatus(BankingAccountStatus.SUSPENDED);
         givenBankingAccount.setCurrency(BankingAccountCurrency.EUR);
-        givenBankingAccount.setAccountType(BankingAccountType.SAVINGS);
+        givenBankingAccount.setType(BankingAccountType.SAVINGS);
         givenBankingAccount.setAccountNumber(accountNumber);
 
         // when

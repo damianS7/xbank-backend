@@ -48,7 +48,7 @@ public class BankingCardControllerTest extends AbstractControllerTest {
         customerBankingAccount = BankingAccount
                 .create(customer)
                 .setCurrency(BankingAccountCurrency.EUR)
-                .setAccountType(BankingAccountType.SAVINGS)
+                .setType(BankingAccountType.SAVINGS)
                 .setStatus(BankingAccountStatus.ACTIVE)
                 .setBalance(BigDecimal.valueOf(1000))
                 .setAccountNumber("US9900001111112233334444");
