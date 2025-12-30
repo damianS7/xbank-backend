@@ -1,6 +1,5 @@
 package com.damian.xBank.modules.banking.transaction.infrastructure.web.exception;
 
-import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionAuthorizationException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotFoundException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotOwnerException;
@@ -50,13 +49,5 @@ public class BankingTransactionExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                              .body(ApiResponse.error(ex, HttpStatus.INTERNAL_SERVER_ERROR, messageSource));
-    }
-
-    @ExceptionHandler(BankingTransactionAuthorizationException.class)
-    public ResponseEntity<ApiResponse<String>> handleAuthorizationException(BankingTransactionAuthorizationException ex) {
-        log.warn("Transaction: {} authorization exception.", ex.getResourceId());
-
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                             .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
     }
 }
