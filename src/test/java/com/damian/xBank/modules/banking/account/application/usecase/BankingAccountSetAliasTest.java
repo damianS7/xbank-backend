@@ -16,7 +16,6 @@ import org.mockito.Mock;
 
 import java.math.BigDecimal;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -50,12 +49,12 @@ public class BankingAccountSetAliasTest extends AbstractServiceTest {
                 .setType(BankingAccountType.SAVINGS)
                 .setAccountNumber("US9900001111112233334444");
 
-        customer.setBankingAccounts(Set.of(bankingAccount));
+        customer.addBankingAccount(bankingAccount);
     }
 
     @Test
-    @DisplayName("Should set alias to a logged customer BankingAccount")
-    void shouldSetAliasToAccount() {
+    @DisplayName("Should returns a BankingAccount with updated alias when valid request")
+    void execute_WhenValidRequest_ReturnsBankingAccountWithUpdatedAlias() {
         // given
         setUpContext(customer);
 
@@ -65,6 +64,7 @@ public class BankingAccountSetAliasTest extends AbstractServiceTest {
 
         // when
         when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.of(bankingAccount));
+
         when(bankingAccountRepository.save(any(BankingAccount.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 

@@ -73,8 +73,8 @@ public class BankingAccountCreateTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("execute with valid request should return account")
-    void execute_ValidRequest_ReturnsAccount() {
+    @DisplayName("should returns a newly created BankingAccount when valid request")
+    void execute_WhenValidRequest_ReturnsCreatedAccount() {
         // given
         setUpContext(customer);
 
@@ -104,8 +104,8 @@ public class BankingAccountCreateTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("execute should Not create account and throw exception when customer not found")
-    void execute_CustomerNotFound_ThrowsException() {
+    @DisplayName("should throws exception when customer not found")
+    void execute_WhenCustomerNotFound_ThrowsException() {
         // given
         setUpContext(customer);
 

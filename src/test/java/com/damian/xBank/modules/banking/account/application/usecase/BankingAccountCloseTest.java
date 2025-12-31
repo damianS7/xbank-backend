@@ -12,7 +12,6 @@ import com.damian.xBank.modules.banking.account.infrastructure.repository.Bankin
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
-import com.damian.xBank.modules.user.customer.infrastructure.repository.CustomerRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import org.assertj.core.api.Assertions;
@@ -24,7 +23,6 @@ import org.mockito.Mock;
 
 import java.math.BigDecimal;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -35,9 +33,6 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
 
     @Mock
     private BankingAccountRepository bankingAccountRepository;
-
-    @Mock
-    private CustomerRepository customerRepository;
 
     @InjectMocks
     private BankingAccountClose bankingAccountClose;
@@ -62,12 +57,12 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
                 .setType(BankingAccountType.SAVINGS)
                 .setAccountNumber("US9900001111112233334444");
 
-        customer.setBankingAccounts(Set.of(bankingAccount));
+        customer.addBankingAccount(bankingAccount);
     }
 
     @Test
-    @DisplayName("Should close a customer BankingAccount")
-    void execute_Valid_ReturnsClosedBankingAccount() {
+    @DisplayName("Should returns a closed a BankingAccount")
+    void execute_WhenValidRequest_ReturnsClosedBankingAccount() {
         // given
         setUpContext(customer);
 
@@ -94,8 +89,8 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should close a customer BankingAccount")
-    void shouldCloseAccount() {
+    @DisplayName("Should throws when BankingAccount when is suspended")
+    void execute_WhenAccountSuspended_ThrowsException() {
         // given
         setUpContext(customer);
 
@@ -103,33 +98,7 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
                 RAW_PASSWORD
         );
 
-        // when
-        when(bankingAccountRepository.findById(bankingAccount.getId())).thenReturn(Optional.of(bankingAccount));
-
-        when(bankingAccountRepository.save(any(BankingAccount.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
-
-        bankingAccountClose.execute(
-                bankingAccount.getId(),
-                request
-        );
-
-        // then
-        assertThat(bankingAccount.getStatus()).isEqualTo(BankingAccountStatus.CLOSED);
-        verify(bankingAccountRepository).findById(bankingAccount.getId());
-        verify(bankingAccountRepository, times(1)).save(any(BankingAccount.class));
-    }
-
-    @Test
-    @DisplayName("Should not close BankingAccount when is suspended")
-    void shouldFailToCloseAccountWhenSuspended() {
-        // given
-        setUpContext(customer);
-
-        BankingAccountCloseRequest request = new BankingAccountCloseRequest(
-                RAW_PASSWORD
-        );
-
+        bankingAccount.setStatus(BankingAccountStatus.ACTIVE);
         bankingAccount.setStatus(BankingAccountStatus.SUSPENDED);
 
         // when
@@ -145,34 +114,21 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should not close BankingAccount when none is found")
-    void shouldFailToCloseAccountWhenNotFound() {
+    @DisplayName("Should throws when BankingAccount is not found")
+    void execute_WhenAccountNotFound_ThrowsException() {
         // given
-        Customer customer = Customer.create(
-                UserAccount.create()
-                           .setId(1L)
-                           .setEmail("customer@demo.com")
-                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-        ).setId(1L);
-
         setUpContext(customer);
 
-        final String accountNumber = "US99 0000 1111 1122 3333 4444";
         BankingAccountCloseRequest request = new BankingAccountCloseRequest(
                 RAW_PASSWORD
         );
 
-        BankingAccount givenBankingAccount = new BankingAccount(customer);
-        givenBankingAccount.setCurrency(BankingAccountCurrency.EUR);
-        givenBankingAccount.setType(BankingAccountType.SAVINGS);
-        givenBankingAccount.setAccountNumber(accountNumber);
-
         // when
-        when(bankingAccountRepository.findById(givenBankingAccount.getId())).thenReturn(Optional.empty());
+        when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         BankingAccountNotFoundException exception = assertThrows(
                 BankingAccountNotFoundException.class,
-                () -> bankingAccountClose.execute(givenBankingAccount.getId(), request)
+                () -> bankingAccountClose.execute(bankingAccount.getId(), request)
         );
 
         // then
@@ -180,16 +136,8 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should not close account if you are not the owner and you are not admin either")
-    void shouldFailToCloseAccountWhenItsNotYoursAndYouAreNotAdmin() {
-        // given
-        Customer customer = Customer.create(
-                UserAccount.create()
-                           .setId(1L)
-                           .setEmail("customer@demo.com")
-                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-        ).setId(1L);
-
+    @DisplayName("Should throws exception when authenticated customer is not the owner of the account")
+    void execute_WhenAccountNotOwnedByCustomer_ThrowsException() {
         // given
         Customer customer2 = Customer.create(
                 UserAccount.create()
@@ -198,26 +146,18 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
                            .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(2L);
 
-        setUpContext(customer);
+        setUpContext(customer2);
 
         BankingAccountCloseRequest request = new BankingAccountCloseRequest(
                 RAW_PASSWORD
         );
 
-        final String accountNumber = "US99 0000 1111 1122 3333 4444";
-
-        BankingAccount givenBankingAccount = new BankingAccount(customer2);
-        givenBankingAccount.setId(5L);
-        givenBankingAccount.setCurrency(BankingAccountCurrency.EUR);
-        givenBankingAccount.setType(BankingAccountType.SAVINGS);
-        givenBankingAccount.setAccountNumber(accountNumber);
-
         // when
-        when(bankingAccountRepository.findById(givenBankingAccount.getId())).thenReturn(Optional.of(givenBankingAccount));
+        when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.of(bankingAccount));
 
         BankingAccountNotOwnerException exception = assertThrows(
                 BankingAccountNotOwnerException.class,
-                () -> bankingAccountClose.execute(givenBankingAccount.getId(), request)
+                () -> bankingAccountClose.execute(bankingAccount.getId(), request)
         );
 
         // then
@@ -225,8 +165,8 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should close an account even if its not yours when you are ADMIN")
-    void shouldCloseBankingAccountWhenYouAreAdmin() {
+    @DisplayName("Should returns a closed BankingAccount when not owner but it is admin")
+    void execute_WhenAccountNotOwnedByCustomerButItIsAdmin_ThrowsException() {
         // given
         Customer customerAdmin = Customer.create(
                 UserAccount.create()
@@ -236,38 +176,23 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
                            .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(1L);
 
-        // given
-        Customer customer = Customer.create(
-                UserAccount.create()
-                           .setId(2L)
-                           .setEmail("customer@demo.com")
-                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-        ).setId(2L);
-
         setUpContext(customerAdmin);
 
         BankingAccountCloseRequest request = new BankingAccountCloseRequest(
                 RAW_PASSWORD
         );
 
-        final String accountNumber = "US99 0000 1111 1122 3333 4444";
-
-        BankingAccount givenBankingAccount = new BankingAccount(customer);
-        givenBankingAccount.setId(5L);
-        givenBankingAccount.setCurrency(BankingAccountCurrency.EUR);
-        givenBankingAccount.setType(BankingAccountType.SAVINGS);
-        givenBankingAccount.setAccountNumber(accountNumber);
-
         // when
-        when(bankingAccountRepository.findById(givenBankingAccount.getId())).thenReturn(Optional.of(givenBankingAccount));
-        when(bankingAccountRepository.save(any(BankingAccount.class))).thenReturn(givenBankingAccount);
+        when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.of(bankingAccount));
 
-        BankingAccount savedAccount = bankingAccountClose.execute(
-                givenBankingAccount.getId(), request
+        when(bankingAccountRepository.save(any(BankingAccount.class))).thenReturn(bankingAccount);
+
+        BankingAccount result = bankingAccountClose.execute(
+                bankingAccount.getId(), request
         );
 
         // then
-        assertThat(savedAccount.getStatus()).isEqualTo(BankingAccountStatus.CLOSED);
+        assertThat(result.getStatus()).isEqualTo(BankingAccountStatus.CLOSED);
         verify(bankingAccountRepository, times(1)).save(any(BankingAccount.class));
     }
 

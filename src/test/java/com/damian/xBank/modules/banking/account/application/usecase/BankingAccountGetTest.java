@@ -6,7 +6,6 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
-import com.damian.xBank.modules.user.customer.infrastructure.repository.CustomerRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,9 +23,6 @@ public class BankingAccountGetTest extends AbstractServiceTest {
 
     @Mock
     private BankingAccountRepository bankingAccountRepository;
-
-    @Mock
-    private CustomerRepository customerRepository;
 
     @InjectMocks
     private BankingAccountGet bankingAccountGet;
@@ -66,12 +62,14 @@ public class BankingAccountGetTest extends AbstractServiceTest {
                 .setType(BankingAccountType.SAVINGS)
                 .setAccountNumber("US9900001111112233334412");
 
-        customer.setBankingAccounts(Set.of(account1, account2, account3));
+        customer.addBankingAccount(account1);
+        customer.addBankingAccount(account2);
+        customer.addBankingAccount(account3);
     }
 
     @Test
-    @DisplayName("execute should return banking accounts for a specific customer")
-    void execute_Valid_ReturnsCustomerBankingAccounts() {
+    @DisplayName("Should returns a set of banking accounts from the authenticated customer")
+    void execute_WhenValidRequest_ReturnsCustomerBankingAccounts() {
         // given
         setUpContext(customer);
 
