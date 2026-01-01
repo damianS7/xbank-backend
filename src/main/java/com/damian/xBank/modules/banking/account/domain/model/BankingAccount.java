@@ -177,6 +177,10 @@ public class BankingAccount {
         return this;
     }
 
+    public int getCardLimit() {
+        return MAX_CARDS_PER_ACCOUNT;
+    }
+
     public BankingAccount addTransaction(BankingTransaction transaction) {
         if (transaction.getBankingAccount() != this) {
             transaction.setBankingAccount(this);
@@ -331,19 +335,22 @@ public class BankingAccount {
     }
 
     public void activateBy(Customer actor) {
-        if (!actor.hasRole(UserAccountRole.ADMIN)) {
-            assertOwnedBy(actor.getId());
+        if (actor.hasRole(UserAccountRole.ADMIN)) {
+            //            assertOwnedBy(actor.getId());
+            setStatus(BankingAccountStatus.ACTIVE);
         }
 
-        setStatus(BankingAccountStatus.ACTIVE);
     }
 
     public void closeBy(Customer actor) {
+        // assert account is not Suspended or Closed already
+        assertActive();
+
+        // if not admin check ownership
         if (!actor.hasRole(UserAccountRole.ADMIN)) {
             assertOwnedBy(actor.getId());
         }
 
-        assertActive();
         setStatus(BankingAccountStatus.CLOSED);
     }
 
