@@ -103,5 +103,4 @@ public class NotificationPublisherTest extends AbstractServiceTest {
         assertEquals(ErrorCodes.USER_ACCOUNT_NOT_FOUND, exception.getMessage());
         verify(notificationRepository, never()).save(any());
     }
-
 }

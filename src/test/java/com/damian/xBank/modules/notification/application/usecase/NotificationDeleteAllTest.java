@@ -1,7 +1,6 @@
 package com.damian.xBank.modules.notification.application.usecase;
 
 import com.damian.xBank.modules.notification.domain.model.Notification;
-import com.damian.xBank.modules.notification.domain.service.NotificationDomainService;
 import com.damian.xBank.modules.notification.infrastructure.repository.NotificationRepository;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
@@ -11,7 +10,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 
 import java.util.List;
 
@@ -21,9 +19,6 @@ public class NotificationDeleteAllTest extends AbstractServiceTest {
 
     @Mock
     private NotificationRepository notificationRepository;
-
-    @Spy
-    private NotificationDomainService notificationDomainService;
 
     @InjectMocks
     private NotificationDeleteAll notificationDeleteAll;
