@@ -22,29 +22,17 @@ public enum BankingAccountStatus {
      * <p>
      * From this state transitions to CLOSE or SUSPENDED are allowed.
      */
-    ACTIVE,
-
-    /**
-     * Created but not activated by user.
-     * <p>
-     * From this state transitions to ACTIVE, CLOSED are allowed.
-     */
-    PENDING_ACTIVATION;
+    ACTIVE;
 
     private Set<BankingAccountStatus> allowedTransitions;
 
     static {
         CLOSED.allowedTransitions = Set.of();
-        SUSPENDED.allowedTransitions = Set.of();
+        SUSPENDED.allowedTransitions = Set.of(ACTIVE);
 
         ACTIVE.allowedTransitions = Set.of(
                 CLOSED,
                 SUSPENDED
-        );
-
-        PENDING_ACTIVATION.allowedTransitions = Set.of(
-                ACTIVE,
-                CLOSED
         );
     }
 
