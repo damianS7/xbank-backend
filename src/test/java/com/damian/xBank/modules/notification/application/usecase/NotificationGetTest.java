@@ -42,8 +42,8 @@ public class NotificationGetTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("execute should return notifications for the current user")
-    void execute() {
+    @DisplayName("should return notifications for the current user")
+    void getAllNotifications_WhenValid_ReturnsCustomerNotifications() {
         // given
         setUpContext(customer.getAccount());
 

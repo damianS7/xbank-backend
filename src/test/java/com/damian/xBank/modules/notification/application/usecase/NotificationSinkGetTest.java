@@ -1,7 +1,6 @@
 package com.damian.xBank.modules.notification.application.usecase;
 
 import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
-import com.damian.xBank.modules.notification.infrastructure.repository.NotificationRepository;
 import com.damian.xBank.modules.notification.infrastructure.sink.NotificationSinkRegistry;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
@@ -10,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Spy;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
@@ -19,9 +17,6 @@ import reactor.test.StepVerifier;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class NotificationSinkGetTest extends AbstractServiceTest {
-
-    @Mock
-    private NotificationRepository notificationRepository;
 
     @Spy
     private NotificationSinkRegistry notificationSinkRegistry;
@@ -42,8 +37,8 @@ public class NotificationSinkGetTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("execute should create sink and remove it on cancel")
-    void execute_CreatesAndRemovesSink() {
+    @DisplayName("should return a flux of notifications for the current user")
+    void sinkGet_WhenValid_CreatesAndRemovesSink() {
         // given
         setUpContext(customer.getAccount());
         Long userId = customer.getId();
