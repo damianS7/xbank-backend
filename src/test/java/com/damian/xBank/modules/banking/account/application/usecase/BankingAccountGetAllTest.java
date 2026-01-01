@@ -19,13 +19,13 @@ import java.util.Set;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.*;
 
-public class BankingAccountGetTest extends AbstractServiceTest {
+public class BankingAccountGetAllTest extends AbstractServiceTest {
 
     @Mock
     private BankingAccountRepository bankingAccountRepository;
 
     @InjectMocks
-    private BankingAccountGet bankingAccountGet;
+    private BankingAccountGetAll bankingAccountGetAll;
 
     private Customer customer;
 
@@ -78,7 +78,7 @@ public class BankingAccountGetTest extends AbstractServiceTest {
                 customer.getBankingAccounts()
         );
 
-        Set<BankingAccount> result = bankingAccountGet.execute();
+        Set<BankingAccount> result = bankingAccountGetAll.execute();
 
         // then
         assertThat(result.size()).isEqualTo(customer.getBankingAccounts().size());
