@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.user.customer.application.service;
 
-import com.damian.xBank.modules.setting.application.service.SettingService;
+import com.damian.xBank.modules.setting.domain.service.SettingDomainService;
 import com.damian.xBank.modules.user.account.account.application.service.UserAccountService;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
@@ -18,16 +18,16 @@ public class CustomerRegistrationService {
     private static final Logger log = LoggerFactory.getLogger(CustomerRegistrationService.class);
     private final CustomerRepository customerRepository;
     private final UserAccountService userAccountService;
-    private final SettingService settingService;
+    private final SettingDomainService settingDomainService;
 
     public CustomerRegistrationService(
             CustomerRepository customerRepository,
             UserAccountService userAccountService,
-            SettingService settingService
+            SettingDomainService settingDomainService
     ) {
         this.customerRepository = customerRepository;
         this.userAccountService = userAccountService;
-        this.settingService = settingService;
+        this.settingDomainService = settingDomainService;
     }
 
     /**
@@ -61,7 +61,10 @@ public class CustomerRegistrationService {
                                     .setPhotoPath("avatar.jpg");
 
         // Create default settings for the new customer
-        settingService.initializeDefaultSettingsFor(customer.getAccount());
+        settingDomainService.initializeDefaultSettingsFor(customer.getAccount());
+
+        // TODO usecase
+        // settingRepository.save(setting);
 
         return customerRepository.save(customer);
     }

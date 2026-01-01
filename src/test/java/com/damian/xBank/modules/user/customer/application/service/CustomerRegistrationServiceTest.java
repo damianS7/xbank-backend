@@ -1,6 +1,7 @@
 package com.damian.xBank.modules.user.customer.application.service;
 
-import com.damian.xBank.modules.setting.application.service.SettingService;
+import com.damian.xBank.modules.setting.domain.model.Setting;
+import com.damian.xBank.modules.setting.domain.service.SettingDomainService;
 import com.damian.xBank.modules.user.account.account.application.service.UserAccountService;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
@@ -30,7 +31,7 @@ public class CustomerRegistrationServiceTest extends AbstractServiceTest {
     private CustomerRepository customerRepository;
 
     @Mock
-    private SettingService settingService;
+    private SettingDomainService settingDomainService;
 
     @Mock
     private UserAccountService userAccountService;
@@ -76,7 +77,9 @@ public class CustomerRegistrationServiceTest extends AbstractServiceTest {
                                                   .setEmail(request.email());
 
         // when
-        doNothing().when(settingService).initializeDefaultSettingsFor(any(UserAccount.class));
+        when(settingDomainService.initializeDefaultSettingsFor(any(UserAccount.class)))
+                .thenReturn(Setting.create(givenUserAccount));
+
         when(userAccountService.createUserAccount(anyString(), anyString(), any()))
                 .thenReturn(givenUserAccount);
 
