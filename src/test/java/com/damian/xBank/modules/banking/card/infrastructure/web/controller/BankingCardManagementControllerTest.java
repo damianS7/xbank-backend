@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.banking.card.infrastructure.controller;
+package com.damian.xBank.modules.banking.card.infrastructure.web.controller;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
@@ -8,8 +8,8 @@ import com.damian.xBank.modules.banking.card.application.dto.request.BankingCard
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdateLockRequest;
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdatePinRequest;
 import com.damian.xBank.modules.banking.card.application.dto.response.BankingCardDto;
-import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
-import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
@@ -65,7 +65,7 @@ public class BankingCardManagementControllerTest extends AbstractControllerTest 
 
         customerBankingCard = BankingCard
                 .create(customerBankingAccount)
-                .setCardStatus(BankingCardStatus.ACTIVE)
+                .setStatus(BankingCardStatus.ACTIVE)
                 .setCardNumber("1234123412341234")
                 .setCardCvv("123")
                 .setCardPin("1234");
@@ -171,7 +171,7 @@ public class BankingCardManagementControllerTest extends AbstractControllerTest 
         // given
         login(customer);
 
-        customerBankingCard.setCardStatus(BankingCardStatus.LOCKED);
+        customerBankingCard.setStatus(BankingCardStatus.LOCKED);
         bankingCardRepository.save(customerBankingCard);
 
         BankingCardUpdateLockRequest request = new BankingCardUpdateLockRequest(
