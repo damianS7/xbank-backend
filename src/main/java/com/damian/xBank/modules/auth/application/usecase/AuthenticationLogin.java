@@ -40,7 +40,7 @@ public class AuthenticationLogin {
      * @throws BadCredentialsException         if credentials are invalid
      * @throws UserAccountNotVerifiedException if the account is not verified
      */
-    public AuthenticationResponse login(AuthenticationRequest request) {
+    public AuthenticationResponse execute(AuthenticationRequest request) {
         final String email = request.email();
         final String password = request.password();
 

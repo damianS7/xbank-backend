@@ -26,7 +26,7 @@ public class AuthenticationController {
             @Validated @RequestBody
             AuthenticationRequest request
     ) {
-        AuthenticationResponse authResponse = authenticationLogin.login(request);
+        AuthenticationResponse authResponse = authenticationLogin.execute(request);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
