@@ -4,6 +4,7 @@ import com.damian.xBank.modules.notification.application.dto.request.Notificatio
 import com.damian.xBank.modules.notification.application.dto.response.NotificationDto;
 import com.damian.xBank.modules.notification.application.mapper.NotificationDtoMapper;
 import com.damian.xBank.modules.notification.application.usecase.NotificationDelete;
+import com.damian.xBank.modules.notification.application.usecase.NotificationDeleteAll;
 import com.damian.xBank.modules.notification.application.usecase.NotificationGet;
 import com.damian.xBank.modules.notification.application.usecase.NotificationSinkGet;
 import com.damian.xBank.modules.notification.domain.model.Notification;
@@ -24,15 +25,18 @@ import reactor.core.publisher.Flux;
 @RequestMapping("/api/v1")
 public class NotificationController {
     private final NotificationDelete notificationDelete;
+    private final NotificationDeleteAll notificationDeleteAll;
     private final NotificationGet notificationGet;
     private final NotificationSinkGet notificationSinkGet;
 
     public NotificationController(
             NotificationDelete notificationDelete,
+            NotificationDeleteAll notificationDeleteAll,
             NotificationGet notificationGet,
             NotificationSinkGet notificationSinkGet
     ) {
         this.notificationDelete = notificationDelete;
+        this.notificationDeleteAll = notificationDeleteAll;
         this.notificationGet = notificationGet;
         this.notificationSinkGet = notificationSinkGet;
     }
@@ -57,7 +61,7 @@ public class NotificationController {
             @Validated @RequestBody
             NotificationDeleteRequest request
     ) {
-        notificationDelete.deleteNotifications(
+        notificationDeleteAll.execute(
                 request.notificationIds()
         );
 
@@ -72,7 +76,7 @@ public class NotificationController {
             @PathVariable @Positive
             Long id
     ) {
-        notificationDelete.deleteNotification(id);
+        notificationDelete.execute(id);
 
         return ResponseEntity
                 .noContent()

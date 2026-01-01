@@ -1,7 +1,5 @@
 package com.damian.xBank.modules.notification.application.usecase;
 
-import com.damian.xBank.modules.notification.domain.exception.NotificationNotFoundException;
-import com.damian.xBank.modules.notification.domain.model.Notification;
 import com.damian.xBank.modules.notification.infrastructure.repository.NotificationRepository;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import com.damian.xBank.shared.security.User;
@@ -10,13 +8,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
-public class NotificationDelete {
-    private static final Logger log = LoggerFactory.getLogger(NotificationDelete.class);
+public class NotificationDeleteAll {
+    private static final Logger log = LoggerFactory.getLogger(NotificationDeleteAll.class);
     private final AuthenticationContext authenticationContext;
     private final NotificationRepository notificationRepository;
 
-    public NotificationDelete(
+    public NotificationDeleteAll(
             AuthenticationContext authenticationContext,
             NotificationRepository notificationRepository
     ) {
@@ -25,26 +25,20 @@ public class NotificationDelete {
     }
 
     /**
-     * Delete notification for the current user.
+     * Delete all notifications for the current user.
      *
-     * @param id Notification id
+     * @param notificationIds List of notification ids to delete
      */
     @Transactional
-    public void execute(Long id) {
+    public void execute(List<Long> notificationIds) {
         final User currentUser = authenticationContext.getCurrentUser();
 
-        Notification notification = notificationRepository
-                .findById(id)
-                .orElseThrow(
-                        () -> new NotificationNotFoundException(id)
-                );
+        // delete selected notifications
+        notificationRepository.deleteAllByIdInAndUser_Id(
+                notificationIds,
+                currentUser.getAccount().getId()
+        );
 
-        // Assert notification is owned by currentUser or throw
-        notification.assertOwnedBy(currentUser.getId());
-
-        // delete notification
-        notificationRepository.delete(notification);
-
-        log.debug("Deleted notification: {}", notification.getId());
+        log.debug("Deleted {} notifications from user: {}", notificationIds.size(), currentUser.getId());
     }
 }
