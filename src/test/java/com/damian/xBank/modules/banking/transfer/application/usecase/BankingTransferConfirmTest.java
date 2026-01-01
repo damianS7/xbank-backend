@@ -10,7 +10,6 @@ import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransact
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.banking.transaction.infrastructure.service.BankingTransactionPersistenceService;
 import com.damian.xBank.modules.banking.transfer.application.dto.request.BankingTransferConfirmRequest;
-import com.damian.xBank.modules.banking.transfer.application.dto.request.BankingTransferRequest;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferStatus;
 import com.damian.xBank.modules.banking.transfer.domain.service.BankingTransferDomainService;
@@ -95,7 +94,7 @@ public class BankingTransferConfirmTest extends AbstractServiceTest {
 
     @Test
     @DisplayName("confirmTransfer a valid request should confirm a transfer")
-    void confirmTransfer_ValidRequest_ReturnsConfirmedTransfer() {
+    void execute() {
         // given
         setUpContext(fromCustomer);
 
@@ -145,7 +144,7 @@ public class BankingTransferConfirmTest extends AbstractServiceTest {
 
         // then
         bankingTransferConfirm
-                .confirmTransfer(givenTransfer.getId(), request);
+                .execute(givenTransfer.getId(), request);
 
         verify(bankingAccountRepository, times(2)).save(any(BankingAccount.class));
         verify(bankingTransferRepository, times(1)).save(any(BankingTransfer.class));
@@ -204,65 +203,5 @@ public class BankingTransferConfirmTest extends AbstractServiceTest {
     //    }
 
     // TODO
-
-    @Test
-    @DisplayName("Should fail to transfer when account is not found")
-    void shouldFailToTransferWhenAccountIsNotFound() {
-        // given
-        Customer fromCustomer = Customer.create(
-                UserAccount.create()
-                           .setId(1L)
-                           .setEmail("fromCustomer@demo.com")
-                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-        ).setId(1L);
-
-        setUpContext(fromCustomer);
-
-        BankingAccount fromCustomerBankingAccount = new BankingAccount(fromCustomer);
-        fromCustomerBankingAccount.setId(2L);
-        fromCustomerBankingAccount.setCurrency(BankingAccountCurrency.USD);
-        fromCustomerBankingAccount.setBalance(BigDecimal.valueOf(1000));
-        fromCustomerBankingAccount.setAccountNumber("US9900001111112233334444");
-
-        Customer toCustomer = Customer.create(
-                UserAccount.create()
-                           .setId(2L)
-                           .setEmail("toCustomer@demo.com")
-                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-        ).setId(2L);
-
-        BankingAccount toCustomerBankingAccount = new BankingAccount(toCustomer);
-        toCustomerBankingAccount.setId(5L);
-        toCustomerBankingAccount.setCurrency(BankingAccountCurrency.EUR);
-        toCustomerBankingAccount.setBalance(BigDecimal.valueOf(0));
-        toCustomerBankingAccount.setAccountNumber("ES0400003110112293532124");
-
-        BankingTransferRequest transferRequest = new BankingTransferRequest(
-                fromCustomerBankingAccount.getId(),
-                toCustomerBankingAccount.getAccountNumber(),
-                "a gift!",
-                BigDecimal.valueOf(1)
-        );
-
-        when(bankingAccountRepository.findById(fromCustomerBankingAccount.getId())).thenReturn(Optional.of(
-                fromCustomerBankingAccount));
-
-        when(bankingAccountRepository.findByAccountNumber(toCustomerBankingAccount.getAccountNumber()))
-                .thenReturn(Optional.empty());
-
-        // then
-        //        BankingAccountNotFoundException exception = assertThrows(
-        //                BankingAccountNotFoundException.class,
-        //                () -> bankingAccountOperationService.transfer(
-        //                        fromCustomerBankingAccount,
-        //                        toCustomerBankingAccount,
-        //                        transferRequest.amount(),
-        //                        transferRequest.description()
-        //                )
-        //        );
-
-        // then
-        //        assertEquals(ErrorCodes.BANKING_ACCOUNT_NOT_FOUND, exception.getMessage());
-    }
 
 }
