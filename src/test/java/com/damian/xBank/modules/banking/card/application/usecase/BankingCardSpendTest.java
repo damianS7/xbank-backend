@@ -1,13 +1,12 @@
-package com.damian.xBank.modules.banking.card.application.service;
+package com.damian.xBank.modules.banking.card.application.usecase;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardSpendRequest;
-import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardWithdrawRequest;
-import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
-import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.domain.exception.*;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
@@ -30,10 +29,14 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 
-public class BankingCardOperationServiceTest extends AbstractServiceTest {
+public class BankingCardSpendTest extends AbstractServiceTest {
+    @Mock
+    private BankingCardRepository bankingCardRepository;
 
     @Mock
     private NotificationPublisher notificationPublisher;
@@ -41,15 +44,12 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
     @Mock
     private BankingTransactionPersistenceService bankingTransactionPersistenceService;
 
-    @Mock
-    private BankingCardRepository bankingCardRepository;
-
     @InjectMocks
-    private BankingCardOperationService bankingCardOperationService;
+    private BankingCardSpend bankingCardSpend;
 
     private Customer customer;
-    private BankingAccount customerBankingAccount;
-    private BankingCard customerBankingCard;
+    private BankingAccount bankingAccount;
+    private BankingCard bankingCard;
 
     @BeforeEach
     void setUp() {
@@ -60,7 +60,7 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
                            .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(1L);
 
-        customerBankingAccount = BankingAccount
+        bankingAccount = BankingAccount
                 .create(customer)
                 .setId(5L)
                 .setCurrency(BankingAccountCurrency.EUR)
@@ -68,13 +68,14 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
                 .setAccountNumber("US9900001111112233334444");
 
 
-        customerBankingCard = BankingCard
-                .create(customerBankingAccount)
+        bankingCard = BankingCard
+                .create(bankingAccount)
                 .setId(11L)
                 .setCardNumber("1234123412341234")
                 .setCardCvv("123")
                 .setCardPin("1234");
     }
+
 
     @Test
     @DisplayName("Should spend")
@@ -83,17 +84,17 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
         setUpContext(customer);
 
         BankingCardSpendRequest spendRequest = new BankingCardSpendRequest(
-                customerBankingAccount.getBalance(),
-                customerBankingCard.getCardPin(),
+                bankingAccount.getBalance(),
+                bankingCard.getCardPin(),
                 "Amazon.com"
         );
 
-        BankingTransaction givenBankingTransaction = new BankingTransaction(customerBankingAccount);
+        BankingTransaction givenBankingTransaction = new BankingTransaction(bankingAccount);
         givenBankingTransaction.setType(BankingTransactionType.CARD_CHARGE);
         givenBankingTransaction.setAmount(spendRequest.amount());
         givenBankingTransaction.setDescription(spendRequest.description());
 
-        when(bankingCardRepository.findById(anyLong())).thenReturn(Optional.of(customerBankingCard));
+        when(bankingCardRepository.findById(anyLong())).thenReturn(Optional.of(bankingCard));
         when(bankingTransactionPersistenceService.record(
                 any(BankingCard.class),
                 any(BankingTransactionType.class),
@@ -104,8 +105,8 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
         doNothing().when(notificationPublisher).publish(any(NotificationEvent.class));
 
         // then
-        BankingTransaction transaction = bankingCardOperationService.spend(
-                customerBankingCard.getId(),
+        BankingTransaction transaction = bankingCardSpend.execute(
+                bankingCard.getId(),
                 spendRequest
         );
 
@@ -114,7 +115,7 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
         assertThat(transaction.getType()).isEqualTo(givenBankingTransaction.getType());
         assertThat(transaction.getDescription()).isEqualTo(givenBankingTransaction.getDescription());
         assertThat(transaction.getStatus()).isEqualTo(BankingTransactionStatus.PENDING);
-        assertThat(customerBankingAccount.getBalance()).isEqualTo(BigDecimal.ZERO);
+        assertThat(bankingAccount.getBalance()).isEqualTo(BigDecimal.ZERO);
     }
 
     @Test
@@ -132,7 +133,7 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
         // then
         BankingCardNotFoundException exception = assertThrows(
                 BankingCardNotFoundException.class,
-                () -> bankingCardOperationService.spend(
+                () -> bankingCardSpend.execute(
                         1L,
                         spendRequest
                 )
@@ -156,23 +157,23 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
         setUpContext(customerNotOwner);
 
         BankingCardSpendRequest spendRequest = new BankingCardSpendRequest(
-                customerBankingAccount.getBalance(),
-                customerBankingCard.getCardPin(),
+                bankingAccount.getBalance(),
+                bankingCard.getCardPin(),
                 "Amazon.com"
         );
 
-        BankingTransaction givenBankingTransaction = new BankingTransaction(customerBankingAccount);
+        BankingTransaction givenBankingTransaction = new BankingTransaction(bankingAccount);
         givenBankingTransaction.setType(BankingTransactionType.CARD_CHARGE);
         givenBankingTransaction.setAmount(spendRequest.amount());
         givenBankingTransaction.setDescription(spendRequest.description());
 
-        when(bankingCardRepository.findById(anyLong())).thenReturn(Optional.of(customerBankingCard));
+        when(bankingCardRepository.findById(anyLong())).thenReturn(Optional.of(bankingCard));
 
         // then
         BankingCardNotOwnerException exception = assertThrows(
                 BankingCardNotOwnerException.class,
-                () -> bankingCardOperationService.spend(
-                        customerBankingCard.getId(),
+                () -> bankingCardSpend.execute(
+                        bankingCard.getId(),
                         spendRequest
                 )
         );
@@ -188,27 +189,27 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
 
         setUpContext(customer);
 
-        customerBankingCard.setCardStatus(BankingCardStatus.DISABLED);
+        bankingCard.setStatus(BankingCardStatus.DISABLED);
 
         BankingCardSpendRequest spendRequest = new BankingCardSpendRequest(
-                customerBankingAccount.getBalance(),
-                customerBankingCard.getCardPin(),
+                bankingAccount.getBalance(),
+                bankingCard.getCardPin(),
                 "Amazon.com"
         );
 
-        BankingTransaction givenBankingTransaction = new BankingTransaction(customerBankingAccount);
+        BankingTransaction givenBankingTransaction = new BankingTransaction(bankingAccount);
         givenBankingTransaction.setType(BankingTransactionType.CARD_CHARGE);
         givenBankingTransaction.setAmount(BigDecimal.valueOf(100));
         givenBankingTransaction.setDescription("Amazon.com");
 
 
-        when(bankingCardRepository.findById(anyLong())).thenReturn(Optional.of(customerBankingCard));
+        when(bankingCardRepository.findById(anyLong())).thenReturn(Optional.of(bankingCard));
 
         // then
         BankingCardDisabledException exception = assertThrows(
                 BankingCardDisabledException.class,
-                () -> bankingCardOperationService.spend(
-                        customerBankingCard.getId(),
+                () -> bankingCardSpend.execute(
+                        bankingCard.getId(),
                         spendRequest
                 )
         );
@@ -223,27 +224,27 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
         // given
 
         setUpContext(customer);
-        customerBankingCard.setCardStatus(BankingCardStatus.LOCKED);
+        bankingCard.setStatus(BankingCardStatus.LOCKED);
 
         BankingCardSpendRequest spendRequest = new BankingCardSpendRequest(
-                customerBankingAccount.getBalance(),
-                customerBankingCard.getCardPin(),
+                bankingAccount.getBalance(),
+                bankingCard.getCardPin(),
                 "Amazon.com"
         );
 
-        BankingTransaction givenBankingTransaction = new BankingTransaction(customerBankingAccount);
+        BankingTransaction givenBankingTransaction = new BankingTransaction(bankingAccount);
         givenBankingTransaction.setType(BankingTransactionType.CARD_CHARGE);
         givenBankingTransaction.setAmount(BigDecimal.valueOf(100));
         givenBankingTransaction.setDescription("Amazon.com");
 
 
-        when(bankingCardRepository.findById(anyLong())).thenReturn(Optional.of(customerBankingCard));
+        when(bankingCardRepository.findById(anyLong())).thenReturn(Optional.of(bankingCard));
 
         // then
         BankingCardLockedException exception = assertThrows(
                 BankingCardLockedException.class,
-                () -> bankingCardOperationService.spend(
-                        customerBankingCard.getId(),
+                () -> bankingCardSpend.execute(
+                        bankingCard.getId(),
                         spendRequest
                 )
         );
@@ -258,27 +259,27 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
         // given
         setUpContext(customer);
 
-        customerBankingAccount.setBalance(BigDecimal.valueOf(0));
+        bankingAccount.setBalance(BigDecimal.valueOf(0));
 
         BankingCardSpendRequest spendRequest = new BankingCardSpendRequest(
                 BigDecimal.valueOf(1000),
-                customerBankingCard.getCardPin(),
+                bankingCard.getCardPin(),
                 "Amazon.com"
         );
 
-        BankingTransaction givenBankingTransaction = new BankingTransaction(customerBankingAccount);
+        BankingTransaction givenBankingTransaction = new BankingTransaction(bankingAccount);
         givenBankingTransaction.setType(BankingTransactionType.CARD_CHARGE);
         givenBankingTransaction.setAmount(BigDecimal.valueOf(100));
         givenBankingTransaction.setDescription("Amazon.com");
 
 
-        when(bankingCardRepository.findById(anyLong())).thenReturn(Optional.of(customerBankingCard));
+        when(bankingCardRepository.findById(anyLong())).thenReturn(Optional.of(bankingCard));
 
         // then
         BankingCardInsufficientFundsException exception = assertThrows(
                 BankingCardInsufficientFundsException.class,
-                () -> bankingCardOperationService.spend(
-                        customerBankingCard.getId(),
+                () -> bankingCardSpend.execute(
+                        bankingCard.getId(),
                         spendRequest
                 )
         );
@@ -286,77 +287,4 @@ public class BankingCardOperationServiceTest extends AbstractServiceTest {
         // then
         assertThat(exception.getMessage()).isEqualTo(ErrorCodes.BANKING_CARD_INSUFFICIENT_FUNDS);
     }
-
-    @Test
-    @DisplayName("Should withdraw")
-    void shouldWithdraw() {
-        // given
-        setUpContext(customer);
-
-        BankingCardWithdrawRequest spendRequest = new BankingCardWithdrawRequest(
-                customerBankingAccount.getBalance(),
-                customerBankingCard.getCardPin()
-        );
-
-        BankingTransaction givenBankingTransaction = new BankingTransaction(customerBankingAccount);
-        givenBankingTransaction.setType(BankingTransactionType.WITHDRAWAL);
-        givenBankingTransaction.setAmount(spendRequest.amount());
-        givenBankingTransaction.setDescription("WITHDRAWAL");
-
-        when(bankingCardRepository.findById(anyLong())).thenReturn(Optional.of(customerBankingCard));
-        when(bankingTransactionPersistenceService.record(
-                any(BankingCard.class),
-                any(BankingTransactionType.class),
-                any(BigDecimal.class),
-                any(String.class)
-        )).thenReturn(givenBankingTransaction);
-
-        // then
-        BankingTransaction transaction = bankingCardOperationService.withdraw(
-                customerBankingCard.getId(),
-                spendRequest
-        );
-
-        // then
-        assertThat(transaction).isNotNull();
-        assertThat(transaction.getType()).isEqualTo(givenBankingTransaction.getType());
-        assertThat(transaction.getDescription()).isEqualTo(givenBankingTransaction.getDescription());
-        assertThat(transaction.getStatus()).isEqualTo(BankingTransactionStatus.PENDING);
-        assertThat(customerBankingAccount.getBalance()).isEqualTo(BigDecimal.ZERO);
-    }
-
-    @Test
-    @DisplayName("Should fail to withdraw when insufficient funds")
-    void shouldFailToWithdrawWhenInsufficientFunds() {
-        // given
-        setUpContext(customer);
-
-        BankingCardWithdrawRequest withdrawRequest = new BankingCardWithdrawRequest(
-                customerBankingAccount.getBalance().add(BigDecimal.ONE),
-                customerBankingCard.getCardPin()
-        );
-
-        BankingTransaction givenBankingTransaction = new BankingTransaction(customerBankingAccount);
-        givenBankingTransaction.setType(BankingTransactionType.WITHDRAWAL);
-        givenBankingTransaction.setAmount(withdrawRequest.amount());
-        givenBankingTransaction.setDescription("WITHDRAWAL");
-
-        when(bankingCardRepository.findById(anyLong())).thenReturn(Optional.of(customerBankingCard));
-
-        // then
-        BankingCardInsufficientFundsException exception = assertThrows(
-                BankingCardInsufficientFundsException.class,
-                () -> bankingCardOperationService.withdraw(
-                        customerBankingCard.getId(),
-                        withdrawRequest
-                )
-        );
-
-        // then
-        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.BANKING_CARD_INSUFFICIENT_FUNDS);
-
-        // then
-        assertThat(customerBankingAccount.getBalance()).isEqualTo(BigDecimal.ZERO);
-    }
-
 }
