@@ -1,9 +1,9 @@
 package com.damian.xBank.modules.banking.card.infrastructure.web.controller;
 
-import com.damian.xBank.modules.banking.card.application.mapper.BankingCardDtoMapper;
 import com.damian.xBank.modules.banking.card.application.dto.response.BankingCardDto;
-import com.damian.xBank.modules.banking.card.application.service.BankingCardService;
-import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
+import com.damian.xBank.modules.banking.card.application.mapper.BankingCardDtoMapper;
+import com.damian.xBank.modules.banking.card.application.usecase.BankingCardGetAll;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,18 +15,18 @@ import java.util.Set;
 @RequestMapping("/api/v1")
 @RestController
 public class BankingCardController {
-    private final BankingCardService bankingCardService;
+    private final BankingCardGetAll bankingCardGetAll;
 
     public BankingCardController(
-            BankingCardService bankingCardService
+            BankingCardGetAll bankingCardGetAll
     ) {
-        this.bankingCardService = bankingCardService;
+        this.bankingCardGetAll = bankingCardGetAll;
     }
 
     // endpoint to fetch all cards of logged customer
     @GetMapping("/banking/cards")
     public ResponseEntity<?> getCustomerBankingCards() {
-        Set<BankingCard> bankingCards = bankingCardService.getCustomerBankingCards();
+        Set<BankingCard> bankingCards = bankingCardGetAll.execute();
         Set<BankingCardDto> bankingCardsDto = BankingCardDtoMapper.toBankingCardSetDTO(bankingCards);
 
         return ResponseEntity

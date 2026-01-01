@@ -2,9 +2,10 @@ package com.damian.xBank.modules.banking.card.infrastructure.web.controller;
 
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardSpendRequest;
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardWithdrawRequest;
-import com.damian.xBank.modules.banking.card.application.service.BankingCardOperationService;
-import com.damian.xBank.modules.banking.transaction.application.mapper.BankingTransactionDtoMapper;
+import com.damian.xBank.modules.banking.card.application.usecase.BankingCardSpend;
+import com.damian.xBank.modules.banking.card.application.usecase.BankingCardWithdraw;
 import com.damian.xBank.modules.banking.transaction.application.dto.response.BankingTransactionDto;
+import com.damian.xBank.modules.banking.transaction.application.mapper.BankingTransactionDtoMapper;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -16,12 +17,15 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1")
 @RestController
 public class BankingCardOperationController {
-    private final BankingCardOperationService bankingCardOperationService;
+    private final BankingCardSpend bankingCardSpend;
+    private final BankingCardWithdraw bankingCardWithdraw;
 
     public BankingCardOperationController(
-            BankingCardOperationService bankingCardOperationService
+            BankingCardSpend bankingCardSpend,
+            BankingCardWithdraw bankingCardWithdraw
     ) {
-        this.bankingCardOperationService = bankingCardOperationService;
+        this.bankingCardSpend = bankingCardSpend;
+        this.bankingCardWithdraw = bankingCardWithdraw;
     }
 
     // endpoint for logged customer to withdraw from card
@@ -33,7 +37,7 @@ public class BankingCardOperationController {
             BankingCardWithdrawRequest request
     ) {
 
-        BankingTransaction transaction = bankingCardOperationService.withdraw(id, request);
+        BankingTransaction transaction = bankingCardWithdraw.execute(id, request);
         BankingTransactionDto transactionDto = BankingTransactionDtoMapper
                 .toBankingTransactionDto(transaction);
 
@@ -51,7 +55,7 @@ public class BankingCardOperationController {
             BankingCardSpendRequest request
     ) {
 
-        BankingTransaction transaction = bankingCardOperationService.spend(id, request);
+        BankingTransaction transaction = bankingCardSpend.execute(id, request);
         BankingTransactionDto transactionDto = BankingTransactionDtoMapper
                 .toBankingTransactionDto(transaction);
 
