@@ -33,7 +33,7 @@ public class BankingAccountDomainService {
     ) {
         return BankingAccount
                 .create(customer)
-                .setStatus(BankingAccountStatus.PENDING_ACTIVATION)
+                .setStatus(BankingAccountStatus.ACTIVE)
                 .setType(accountType)
                 .setCurrency(accountCurrency)
                 .setAccountNumber(bankingAccountNumberGenerator.generate());
