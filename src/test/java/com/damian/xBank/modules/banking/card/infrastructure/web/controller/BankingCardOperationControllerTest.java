@@ -108,7 +108,7 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
         // then
         assertThat(transactionResponseDto).isNotNull();
         assertThat(transactionResponseDto.amount()).isEqualTo(request.amount());
-        assertThat(transactionResponseDto.status()).isEqualTo(BankingTransactionStatus.PENDING);
+        assertThat(transactionResponseDto.status()).isEqualTo(BankingTransactionStatus.COMPLETED);
         assertThat(transactionResponseDto.balanceBefore())
                 .isEqualByComparingTo(customerBankingAccount.getBalance());
         assertThat(transactionResponseDto.balanceAfter())
@@ -144,7 +144,7 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
         // then
         assertThat(transactionResponseDto).isNotNull();
         assertThat(transactionResponseDto.amount()).isEqualTo(request.amount());
-        assertThat(transactionResponseDto.status()).isEqualTo(BankingTransactionStatus.PENDING);
+        assertThat(transactionResponseDto.status()).isEqualTo(BankingTransactionStatus.COMPLETED);
         assertThat(transactionResponseDto.balanceBefore())
                 .isEqualByComparingTo(customerBankingAccount.getBalance());
         assertThat(transactionResponseDto.balanceAfter())

@@ -147,7 +147,7 @@ public class BankingCardManagementControllerTest extends AbstractControllerTest 
         // when
         MvcResult result = mockMvc
                 .perform(
-                        patch("/api/v1/banking/cards/{id}/lock-status", customerBankingCard.getId())
+                        patch("/api/v1/banking/cards/{id}/lock", customerBankingCard.getId())
                                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
@@ -181,7 +181,7 @@ public class BankingCardManagementControllerTest extends AbstractControllerTest 
         // when
         MvcResult result = mockMvc
                 .perform(
-                        patch("/api/v1/banking/cards/{id}/lock-status", customerBankingCard.getId())
+                        patch("/api/v1/banking/cards/{id}/unlock", customerBankingCard.getId())
                                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request)))
