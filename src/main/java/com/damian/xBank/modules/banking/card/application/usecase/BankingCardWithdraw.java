@@ -6,6 +6,7 @@ import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.banking.transaction.application.mapper.BankingTransactionDtoMapper;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.infrastructure.service.BankingTransactionPersistenceService;
 import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
@@ -65,6 +66,7 @@ public class BankingCardWithdraw {
                         request.amount()
                 )
                 .setBankingCard(bankingCard)
+                .setStatus(BankingTransactionStatus.COMPLETED)
                 .setDescription("ATM Withdrawal.");
 
         // store here the transaction as PENDING

@@ -65,7 +65,7 @@ public class BankingCardLockTest extends AbstractServiceTest {
 
     @Test
     @DisplayName("should return a locked BankingCard")
-    void execute_WhenValidRequest_ReturnsBankingCardLocked() {
+    void lock_WhenValidRequest_ReturnsBankingCardLocked() {
         // given
         bankingCard.setStatus(BankingCardStatus.ACTIVE);
         setUpContext(customer);
@@ -88,8 +88,8 @@ public class BankingCardLockTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should fail to update card lock status when card not found")
-    void shouldFailToUpdateCardLockStatusWhenCardNotFound() {
+    @DisplayName("should throw exception when card not found")
+    void lock_WhenCardNotFound_ThrowsException() {
         // given
         setUpContext(customer);
 
@@ -108,8 +108,8 @@ public class BankingCardLockTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should fail to update card lock status when not owner")
-    void shouldFailToUpdateUpdateCardLockStatusWhenNotOwner() {
+    @DisplayName("should throw exception when customer not the owner of the card")
+    void lock_WhenNotOwner_ThrowsException() {
         // given
         Customer customerNotOwner = Customer.create(
                 UserAccount.create()
@@ -135,8 +135,8 @@ public class BankingCardLockTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should fail to update card lock status when password is invalid")
-    void shouldFailToUpdateUpdateCardLockStatusWhenPasswordIsInvalid() {
+    @DisplayName("should throw exception when password is invalid")
+    void lock_WhenPasswordIsInvalid_ThrowsException() {
         // given
         setUpContext(customer);
 
@@ -153,5 +153,4 @@ public class BankingCardLockTest extends AbstractServiceTest {
         // then
         assertThat(exception.getMessage()).isEqualTo(ErrorCodes.USER_ACCOUNT_INVALID_PASSWORD);
     }
-
 }

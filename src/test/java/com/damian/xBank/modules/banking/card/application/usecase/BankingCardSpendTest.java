@@ -78,8 +78,8 @@ public class BankingCardSpendTest extends AbstractServiceTest {
 
 
     @Test
-    @DisplayName("Should spend")
-    void shouldSpend() {
+    @DisplayName("should return transaction resulted from spend")
+    void spend_WhenValidRequest_ReturnsTransaction() {
         // given
         setUpContext(customer);
 
@@ -95,11 +95,9 @@ public class BankingCardSpendTest extends AbstractServiceTest {
         givenBankingTransaction.setDescription(spendRequest.description());
 
         when(bankingCardRepository.findById(anyLong())).thenReturn(Optional.of(bankingCard));
+
         when(bankingTransactionPersistenceService.record(
-                any(BankingCard.class),
-                any(BankingTransactionType.class),
-                any(BigDecimal.class),
-                any(String.class)
+                any(BankingTransaction.class)
         )).thenReturn(givenBankingTransaction);
 
         doNothing().when(notificationPublisher).publish(any(NotificationEvent.class));
@@ -114,13 +112,13 @@ public class BankingCardSpendTest extends AbstractServiceTest {
         assertThat(transaction).isNotNull();
         assertThat(transaction.getType()).isEqualTo(givenBankingTransaction.getType());
         assertThat(transaction.getDescription()).isEqualTo(givenBankingTransaction.getDescription());
-        assertThat(transaction.getStatus()).isEqualTo(BankingTransactionStatus.PENDING);
+        assertThat(transaction.getStatus()).isEqualTo(BankingTransactionStatus.COMPLETED);
         assertThat(bankingAccount.getBalance()).isEqualTo(BigDecimal.ZERO);
     }
 
     @Test
-    @DisplayName("Should fail to spend when card not found")
-    void shouldFailToSpendWhenCardNotFound() {
+    @DisplayName("should throw exception when card not found")
+    void spend_WhenCardNotFound_ThrowsException() {
         // given
         BankingCardSpendRequest spendRequest = new BankingCardSpendRequest(
                 BigDecimal.valueOf(100),
@@ -144,8 +142,8 @@ public class BankingCardSpendTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should fail to spend when card does not belong to customer")
-    void shouldFailToSpendWhenCardNotBelongToCustomer() {
+    @DisplayName("should throw exception when customer is not the card owner")
+    void spend_WhenNotOwnerCard_ThrowsException() {
         // given
         Customer customerNotOwner = Customer.create(
                 UserAccount.create()
@@ -183,8 +181,8 @@ public class BankingCardSpendTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should fail to spend when card is not active")
-    void shouldFailToSpendWhenCardIsNotActive() {
+    @DisplayName("should throw exception when card is not active")
+    void spend_WhenCardNotActive_ThrowsException() {
         // given
 
         setUpContext(customer);
@@ -219,11 +217,11 @@ public class BankingCardSpendTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should fail to spend when card is locked")
-    void shouldFailToSpendWhenCardIsLocked() {
+    @DisplayName("should throw exception when card is locked")
+    void spend_WhenCardLocked_ThrowsException() {
         // given
-
         setUpContext(customer);
+        bankingCard.setStatus(BankingCardStatus.ACTIVE);
         bankingCard.setStatus(BankingCardStatus.LOCKED);
 
         BankingCardSpendRequest spendRequest = new BankingCardSpendRequest(
@@ -254,8 +252,8 @@ public class BankingCardSpendTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should fail to spend when card insufficient funds")
-    void shouldFailToSpendWhenInsufficientFunds() {
+    @DisplayName("should throw exception when insufficient funds")
+    void spend_WhenInsufficientFunds_ThrowsException() {
         // given
         setUpContext(customer);
 

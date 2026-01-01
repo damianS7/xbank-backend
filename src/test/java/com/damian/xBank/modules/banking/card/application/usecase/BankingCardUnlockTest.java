@@ -64,10 +64,11 @@ public class BankingCardUnlockTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should lock card")
-    void shouldLockCard() {
+    @DisplayName("should return card unlocked")
+    void unlockCard_WhenValid_ReturnsUnlockedCard() {
         // given
         bankingCard.setStatus(BankingCardStatus.ACTIVE);
+        bankingCard.setStatus(BankingCardStatus.LOCKED);
         setUpContext(customer);
 
         BankingCardUnlockRequest givenRequest = new BankingCardUnlockRequest(
@@ -86,13 +87,13 @@ public class BankingCardUnlockTest extends AbstractServiceTest {
 
         // then
         assertThat(bankingCard).isNotNull();
-        assertThat(bankingCard.getStatus()).isEqualTo(BankingCardStatus.LOCKED);
+        assertThat(bankingCard.getStatus()).isEqualTo(BankingCardStatus.ACTIVE);
         verify(bankingCardRepository, times(1)).save(any(BankingCard.class));
     }
 
     @Test
-    @DisplayName("Should fail to update card lock status when card not found")
-    void shouldFailToUpdateCardLockStatusWhenCardNotFound() {
+    @DisplayName("should throw exception when card not found")
+    void unlockCard_WhenCardNotFound_ThrowsException() {
         // given
         setUpContext(customer);
 
@@ -111,8 +112,8 @@ public class BankingCardUnlockTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should fail to update card lock status when not owner")
-    void shouldFailToUpdateUpdateCardLockStatusWhenNotOwner() {
+    @DisplayName("should throw exception when card not owner")
+    void unlockCard_WhenNotOwnerCard_ThrowsException() {
         // given
         Customer customerNotOwner = Customer.create(
                 UserAccount.create()
@@ -138,8 +139,8 @@ public class BankingCardUnlockTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should fail to update card lock status when password is invalid")
-    void shouldFailToUpdateUpdateCardLockStatusWhenPasswordIsInvalid() {
+    @DisplayName("should throw exception when password is invalid")
+    void unlockCard_WhenPasswordIsInvalid_ThrowsException() {
         // given
         setUpContext(customer);
 
@@ -156,6 +157,4 @@ public class BankingCardUnlockTest extends AbstractServiceTest {
         // then
         assertThat(exception.getMessage()).isEqualTo(ErrorCodes.USER_ACCOUNT_INVALID_PASSWORD);
     }
-
-
 }

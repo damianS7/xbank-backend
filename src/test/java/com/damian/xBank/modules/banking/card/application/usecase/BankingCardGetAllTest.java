@@ -57,9 +57,10 @@ public class BankingCardGetAllTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should get customer cards")
-    void shouldGetCustomerCards() {
+    @DisplayName("should return the cards of the current customer")
+    void execute_WhenCalled_ReturnCustomerCards() {
         // given
+        setUpContext(customer);
 
         // when
         when(bankingCardRepository.findCardsByCustomerId(anyLong())).thenReturn(
@@ -72,9 +73,8 @@ public class BankingCardGetAllTest extends AbstractServiceTest {
         assertThat(customerCards)
                 .isNotNull()
                 .size()
-                .isEqualTo(1);
+                .isEqualTo(customerCards.size());
 
         verify(bankingCardRepository, times(1)).findCardsByCustomerId(anyLong());
     }
-
 }

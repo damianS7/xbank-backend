@@ -63,8 +63,8 @@ public class BankingCardSetPinTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should update card pin")
-    void shouldUpdateCardPin() {
+    @DisplayName("should return card with updated pin")
+    void setPin_WhenValidRequest_ReturnsCardUpdated() {
         // given
         setUpContext(customer);
 
@@ -84,8 +84,8 @@ public class BankingCardSetPinTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should fail to update card pin when card not found")
-    void shouldFailToUpdateCardPinWhenCardNotFound() {
+    @DisplayName("should throw exception when card not found")
+    void setPin_WhenCardNotFound_ThrowsException() {
         // given
         setUpContext(customer);
 
@@ -104,8 +104,8 @@ public class BankingCardSetPinTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should fail to update card pin when card not owner")
-    void shouldFailToUpdateCardPinWhenNotOwner() {
+    @DisplayName("should throw exception when customer not owner of the card")
+    void setPin_WhenNotOwnerCard_ThrowsException() {
         // given
         Customer customerNotOwner = Customer.create(
                 UserAccount.create()
@@ -131,8 +131,8 @@ public class BankingCardSetPinTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should fail to update card pin when password is invalid")
-    void shouldFailToUpdateCardPinWhenPasswordIsInvalid() {
+    @DisplayName("should throw exception when password is invalid")
+    void setPin_WhenPasswordIsInvalid_ThrowsException() {
         // given
         setUpContext(customer);
 
@@ -149,6 +149,4 @@ public class BankingCardSetPinTest extends AbstractServiceTest {
         // then
         assertThat(exception.getMessage()).isEqualTo(ErrorCodes.USER_ACCOUNT_INVALID_PASSWORD);
     }
-
-
 }

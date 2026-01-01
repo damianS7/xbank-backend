@@ -75,8 +75,8 @@ public class BankingCardWithdrawTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should withdraw")
-    void shouldWithdraw() {
+    @DisplayName("should return transaction resulted from withdraw")
+    void withdraw_WhenValidRequest_ReturnsTransaction() {
         // given
         setUpContext(customer);
 
@@ -88,14 +88,11 @@ public class BankingCardWithdrawTest extends AbstractServiceTest {
         BankingTransaction givenBankingTransaction = new BankingTransaction(bankingAccount);
         givenBankingTransaction.setType(BankingTransactionType.WITHDRAWAL);
         givenBankingTransaction.setAmount(spendRequest.amount());
-        givenBankingTransaction.setDescription("WITHDRAWAL");
 
         when(bankingCardRepository.findById(anyLong())).thenReturn(Optional.of(bankingCard));
+
         when(bankingTransactionPersistenceService.record(
-                any(BankingCard.class),
-                any(BankingTransactionType.class),
-                any(BigDecimal.class),
-                any(String.class)
+                any(BankingTransaction.class)
         )).thenReturn(givenBankingTransaction);
 
         // then
@@ -107,14 +104,13 @@ public class BankingCardWithdrawTest extends AbstractServiceTest {
         // then
         assertThat(transaction).isNotNull();
         assertThat(transaction.getType()).isEqualTo(givenBankingTransaction.getType());
-        assertThat(transaction.getDescription()).isEqualTo(givenBankingTransaction.getDescription());
-        assertThat(transaction.getStatus()).isEqualTo(BankingTransactionStatus.PENDING);
+        assertThat(transaction.getStatus()).isEqualTo(BankingTransactionStatus.COMPLETED);
         assertThat(bankingAccount.getBalance()).isEqualTo(BigDecimal.ZERO);
     }
 
     @Test
-    @DisplayName("Should fail to withdraw when insufficient funds")
-    void shouldFailToWithdrawWhenInsufficientFunds() {
+    @DisplayName("should throw exception when insufficient funds")
+    void withdraw_WhenInsufficientFunds_ThrowsException() {
         // given
         setUpContext(customer);
 

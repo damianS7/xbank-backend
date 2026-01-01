@@ -63,10 +63,9 @@ public class BankingCardSetDailyLimitTest extends AbstractServiceTest {
                 .setCardPin("1234");
     }
 
-
     @Test
-    @DisplayName("Should update card daily limit")
-    void shouldUpdateCardDailyLimit() {
+    @DisplayName("should return card with the updated daily limit")
+    void setDailyLimit_WhenValidRequest_ReturnsUpdatedCard() {
         // given
         setUpContext(customer);
 
@@ -89,8 +88,8 @@ public class BankingCardSetDailyLimitTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should fail to update card daily limit when card not found")
-    void shouldFailToUpdateCardDailyLimitWhenCardNotFound() {
+    @DisplayName("should throw exception when card not found")
+    void setDailyLimit_WhenCardNotFound_ThrowsException() {
         // given
         setUpContext(customer);
 
@@ -112,8 +111,8 @@ public class BankingCardSetDailyLimitTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should fail to update card daily limit when not owner")
-    void shouldFailToUpdateCardDailyLimitWhenNotOwner() {
+    @DisplayName("should throw exception when customer not owner")
+    void setDailyLimit_WhenNotOwner_ThrowsException() {
         // given
         Customer customerNotOwner = Customer.create(
                 UserAccount.create()
@@ -142,8 +141,8 @@ public class BankingCardSetDailyLimitTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should fail to update card daily limit when password is invalid")
-    void shouldFailToUpdateCardDailyLimitWhenPasswordIsInvalid() {
+    @DisplayName("should throw exception when password is invalid")
+    void setDailyLimit_WhenPasswordIsInvalid_ThrowsException() {
         // given
         setUpContext(customer);
 
@@ -163,5 +162,4 @@ public class BankingCardSetDailyLimitTest extends AbstractServiceTest {
         // then
         assertThat(exception.getMessage()).isEqualTo(ErrorCodes.USER_ACCOUNT_INVALID_PASSWORD);
     }
-
 }
