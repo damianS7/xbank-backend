@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1")
-public class AdminBankingAccountOperationController {
+public class AdminBankingAccountController {
     private final BankingAccountDeposit bankingAccountDeposit;
 
-    public AdminBankingAccountOperationController(
+    public AdminBankingAccountController(
             BankingAccountDeposit bankingAccountDeposit
     ) {
         this.bankingAccountDeposit = bankingAccountDeposit;

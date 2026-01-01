@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class AdminBankingAccountOperationControllerTest extends AbstractControllerTest {
+public class AdminBankingAccountControllerTest extends AbstractControllerTest {
     private Customer customer;
     private Customer admin;
 
@@ -67,8 +67,8 @@ public class AdminBankingAccountOperationControllerTest extends AbstractControll
     }
 
     @Test
-    @DisplayName("Should deposit into banking account")
-    void shouldDeposit() throws Exception {
+    @DisplayName("should return a deposit transaction when request is valid")
+    void postDeposit_WhenValidRequest_Returns201Created() throws Exception {
         // given
         login(admin);
 
@@ -116,8 +116,8 @@ public class AdminBankingAccountOperationControllerTest extends AbstractControll
     }
 
     @Test
-    @DisplayName("Should fail to deposit into banking account when not admin")
-    void shouldNotDepositWhenNotAdmin() throws Exception {
+    @DisplayName("should return a 403 when user is not admin")
+    void postDeposit_WhenUserNotAdmin_Returns403Forbidden() throws Exception {
         // given
         login(customer);
 
