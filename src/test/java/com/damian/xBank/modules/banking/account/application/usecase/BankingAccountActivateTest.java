@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.banking.account.application.usecase;
 
-import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountOpenRequest;
+import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountActivateRequest;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountStatusTransitionException;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
@@ -8,6 +8,7 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatu
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
+import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
@@ -20,7 +21,7 @@ import org.mockito.Mock;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -59,22 +60,22 @@ public class BankingAccountActivateTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should returns ACTIVE account when status is PENDING_ACTIVATION")
-    void execute_WhenPendingActivationAccount_ReturnsActiveAccount() {
+    @DisplayName("should return active account when admin tries to activate suspended account")
+    void execute_WhenSuspendedAccountActiveByAdmin_ReturnActiveAccount() {
         // given
+        customer.setRole(UserAccountRole.ADMIN);
         setUpContext(customer);
 
-        bankingAccount.setStatus(BankingAccountStatus.PENDING_ACTIVATION);
+        bankingAccount.setStatus(BankingAccountStatus.SUSPENDED);
 
-        BankingAccountOpenRequest request = new BankingAccountOpenRequest();
+        BankingAccountActivateRequest request = new BankingAccountActivateRequest();
 
         // when
         when(bankingAccountRepository.findById(anyLong()))
                 .thenReturn(Optional.of(bankingAccount));
 
-        when(bankingAccountRepository.save(any(BankingAccount.class))).thenAnswer(
-                i -> i.getArgument(0)
-        );
+        when(bankingAccountRepository.save(any(BankingAccount.class)))
+                .thenAnswer(i -> i.getArgument(0));
 
         BankingAccount result = bankingAccountActivate.execute(bankingAccount.getId(), request);
 
@@ -86,38 +87,41 @@ public class BankingAccountActivateTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should throws exception when trying to activate closed account")
-    void execute_WhenClosedAccount_ThrowsException() {
+    @DisplayName("Should throws exception when customer tries to activate suspended account")
+    void execute_WhenSuspendedAccountActiveByCustomer_ReturnSuspendedAccount() {
         // given
         setUpContext(customer);
 
-        bankingAccount.setStatus(BankingAccountStatus.CLOSED);
+        bankingAccount.setStatus(BankingAccountStatus.SUSPENDED);
 
-        BankingAccountOpenRequest request = new BankingAccountOpenRequest();
+        BankingAccountActivateRequest request = new BankingAccountActivateRequest();
 
         // when
         when(bankingAccountRepository.findById(anyLong()))
                 .thenReturn(Optional.of(bankingAccount));
 
-        BankingAccountStatusTransitionException exception = assertThrows(
-                BankingAccountStatusTransitionException.class,
-                () -> bankingAccountActivate.execute(bankingAccount.getId(), request)
-        );
+        when(bankingAccountRepository.save(any(BankingAccount.class)))
+                .thenAnswer(i -> i.getArgument(0));
+
+        BankingAccount result = bankingAccountActivate.execute(bankingAccount.getId(), request);
 
         // then
-        assertEquals(ErrorCodes.BANKING_ACCOUNT_INVALID_TRANSITION_STATUS, exception.getMessage());
+        assertThat(result)
+                .isNotNull()
+                .extracting(BankingAccount::getStatus)
+                .isEqualTo(BankingAccountStatus.SUSPENDED);
     }
 
     @Test
-    @DisplayName("Should throws exception when trying to activate suspended account")
-    void execute_WhenSuspendedAccount_ThrowsException() {
+    @DisplayName("Should throws exception when trying to activate closed account")
+    void execute_WhenClosedAccount_ThrowsException() {
         // given
+        customer.setRole(UserAccountRole.ADMIN);
         setUpContext(customer);
 
-        bankingAccount.setStatus(BankingAccountStatus.ACTIVE);
-        bankingAccount.setStatus(BankingAccountStatus.SUSPENDED);
+        bankingAccount.setStatus(BankingAccountStatus.CLOSED);
 
-        BankingAccountOpenRequest request = new BankingAccountOpenRequest();
+        BankingAccountActivateRequest request = new BankingAccountActivateRequest();
 
         // when
         when(bankingAccountRepository.findById(anyLong()))
