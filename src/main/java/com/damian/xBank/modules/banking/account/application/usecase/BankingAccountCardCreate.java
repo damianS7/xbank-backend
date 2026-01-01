@@ -4,8 +4,8 @@ import com.damian.xBank.modules.banking.account.application.dto.request.BankingA
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
-import com.damian.xBank.modules.banking.card.application.service.BankingCardService;
-import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
+import com.damian.xBank.modules.banking.card.domain.service.BankingCardDomainService;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.stereotype.Service;
@@ -15,16 +15,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class BankingAccountCardCreate {
     private final BankingAccountRepository bankingAccountRepository;
     private final AuthenticationContext authenticationContext;
-    private final BankingCardService bankingCardService;
+    private final BankingCardDomainService bankingCardDomainService;
 
     public BankingAccountCardCreate(
             BankingAccountRepository bankingAccountRepository,
             AuthenticationContext authenticationContext,
-            BankingCardService bankingCardService
+            BankingCardDomainService bankingCardDomainService
     ) {
         this.bankingAccountRepository = bankingAccountRepository;
         this.authenticationContext = authenticationContext;
-        this.bankingCardService = bankingCardService;
+        this.bankingCardDomainService = bankingCardDomainService;
     }
 
     /**
@@ -56,7 +56,7 @@ public class BankingAccountCardCreate {
         bankingAccount.assertCanAddCard();
 
         // create the card and associate to the account and return it.
-        BankingCard card = bankingCardService.createBankingCard(bankingAccount, request.type());
+        BankingCard card = bankingCardDomainService.createBankingCard(bankingAccount, request.type());
 
         bankingAccount.addBankingCard(card);
 

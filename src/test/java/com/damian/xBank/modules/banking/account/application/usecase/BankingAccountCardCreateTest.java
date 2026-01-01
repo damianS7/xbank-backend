@@ -7,11 +7,11 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
-import com.damian.xBank.modules.banking.card.application.service.BankingCardService;
-import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
-import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
-import com.damian.xBank.modules.banking.card.domain.enums.BankingCardType;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingAccountCardsLimitException;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardType;
+import com.damian.xBank.modules.banking.card.domain.service.BankingCardDomainService;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
@@ -39,7 +39,7 @@ public class BankingAccountCardCreateTest extends AbstractServiceTest {
     private BankingAccountRepository bankingAccountRepository;
 
     @Mock
-    private BankingCardService bankingCardService;
+    private BankingCardDomainService bankingCardDomainService;
 
     @InjectMocks
     private BankingAccountCardCreate bankingAccountCardCreate;
@@ -83,7 +83,7 @@ public class BankingAccountCardCreateTest extends AbstractServiceTest {
         // when
         when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.of(bankingAccount));
 
-        when(bankingCardService
+        when(bankingCardDomainService
                 .createBankingCard(any(BankingAccount.class), any(BankingCardType.class)))
                 .thenReturn(givenBankingCard);
 
@@ -179,7 +179,7 @@ public class BankingAccountCardCreateTest extends AbstractServiceTest {
         // when
         when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.of(bankingAccount));
 
-        when(bankingCardService.createBankingCard(any(BankingAccount.class), any(BankingCardType.class)))
+        when(bankingCardDomainService.createBankingCard(any(BankingAccount.class), any(BankingCardType.class)))
                 .thenReturn(givenBankingCard);
 
         BankingCard result = bankingAccountCardCreate.execute(
@@ -201,7 +201,7 @@ public class BankingAccountCardCreateTest extends AbstractServiceTest {
 
         for (int i = 0; i < bankingAccount.getCardLimit(); i++) {
             bankingAccount.addBankingCard(
-                    BankingCard.create(bankingAccount).setCardStatus(BankingCardStatus.ACTIVE)
+                    BankingCard.create(bankingAccount).setStatus(BankingCardStatus.ACTIVE)
             );
         }
 

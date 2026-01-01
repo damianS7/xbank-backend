@@ -10,7 +10,7 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurre
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.card.application.dto.response.BankingCardDto;
-import com.damian.xBank.modules.banking.card.domain.enums.BankingCardType;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardType;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;

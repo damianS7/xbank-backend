@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.banking.card.application.dto.request;
 
-import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
 import jakarta.validation.constraints.NotNull;
 
 public record BankingCardUpdateStatusRequest(

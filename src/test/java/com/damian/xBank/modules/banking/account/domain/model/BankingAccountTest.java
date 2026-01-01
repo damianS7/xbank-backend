@@ -4,9 +4,9 @@ import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountC
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountInsufficientFundsException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotOwnerException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountSuspendedException;
-import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
-import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingAccountCardsLimitException;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
@@ -290,7 +290,7 @@ public class BankingAccountTest extends AbstractServiceTest {
 
         for (int i = 0; i < bankingAccount.getCardLimit() - 1; i++) {
             BankingCard card = BankingCard.create(bankingAccount);
-            card.setCardStatus(BankingCardStatus.ACTIVE);
+            card.setStatus(BankingCardStatus.ACTIVE);
             bankingAccount.getBankingCards().add(card);
         }
 
@@ -306,7 +306,7 @@ public class BankingAccountTest extends AbstractServiceTest {
 
         for (int i = 0; i < bankingAccount.getCardLimit(); i++) {
             BankingCard card = BankingCard.create(bankingAccount);
-            card.setCardStatus(BankingCardStatus.ACTIVE);
+            card.setStatus(BankingCardStatus.ACTIVE);
             bankingAccount.getBankingCards().add(card);
         }
 

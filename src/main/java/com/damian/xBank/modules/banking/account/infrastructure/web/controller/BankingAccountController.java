@@ -11,7 +11,7 @@ import com.damian.xBank.modules.banking.account.application.usecase.*;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.card.application.dto.response.BankingCardDto;
 import com.damian.xBank.modules.banking.card.application.mapper.BankingCardDtoMapper;
-import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;

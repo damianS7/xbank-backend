@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.banking.transaction.application.usecase;
 
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
-import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;

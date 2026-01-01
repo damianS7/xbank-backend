@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.banking.card.application.mapper;
 
 import com.damian.xBank.modules.banking.card.application.dto.response.BankingCardDto;
-import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 
 import java.util.Set;
 import java.util.stream.Collectors;
