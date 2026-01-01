@@ -6,10 +6,12 @@ import com.damian.xBank.modules.auth.domain.exception.UserAccountNotVerifiedExce
 import com.damian.xBank.modules.auth.domain.exception.UserAccountSuspendedException;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
+import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.security.User;
 import com.damian.xBank.shared.utils.JwtUtil;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -27,33 +29,41 @@ import static org.mockito.Mockito.when;
 
 public class AuthenticationLoginTest extends AbstractServiceTest {
 
-    @InjectMocks
-    private AuthenticationLogin authenticationLogin;
-
     @Mock
     private AuthenticationManager authenticationManager;
 
     @Mock
     private JwtUtil jwtUtil;
 
+    @InjectMocks
+    private AuthenticationLogin authenticationLogin;
+
+    private Customer customer;
+
+    @BeforeEach
+    void setUp() {
+        customer = Customer.create(
+                UserAccount.create()
+                           .setId(1L)
+                           .setEmail("customer@demo.com")
+                           .setAccountStatus(UserAccountStatus.VERIFIED)
+                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+        ).setId(1L);
+    }
+
+
     @Test
-    @DisplayName("Login succeeds when credentials are valid")
-    void login_WithValidCredentials_ReturnsAuthenticationResponse() {
+    @DisplayName("should return token when credentials are valid")
+    void login_WithValidCredentials_ReturnsToken() {
         // given
         Authentication authentication = mock(Authentication.class);
         String givenToken = "jwt-token";
 
-        UserAccount userAccount = UserAccount.create()
-                                             .setId(1L)
-                                             .setEmail("user@demo.com")
-                                             .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                             .setAccountStatus(UserAccountStatus.VERIFIED);
-
-        User user = new User(userAccount);
+        User user = new User(customer.getAccount());
 
         AuthenticationRequest request = new AuthenticationRequest(
-                userAccount.getEmail(),
-                userAccount.getPassword()
+                customer.getEmail(),
+                customer.getAccount().getPassword()
         );
 
         // when
@@ -61,7 +71,7 @@ public class AuthenticationLoginTest extends AbstractServiceTest {
         when(jwtUtil.generateToken(anyMap(), anyString())).thenReturn(givenToken);
         when(authentication.getPrincipal()).thenReturn(user);
 
-        AuthenticationResponse response = authenticationLogin.login(request);
+        AuthenticationResponse response = authenticationLogin.execute(request);
 
         // then
         assertThat(response)
@@ -72,18 +82,12 @@ public class AuthenticationLoginTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Login fails when credentials are invalid")
+    @DisplayName("should throw exception when credentials are invalid")
     void login_WithInvalidCredentials_ThrowsException() {
         // given
-        UserAccount userAccount = UserAccount.create()
-                                             .setId(1L)
-                                             .setEmail("user@demo.com")
-                                             .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                             .setAccountStatus(UserAccountStatus.VERIFIED);
-
         AuthenticationRequest request = new AuthenticationRequest(
-                userAccount.getEmail(),
-                userAccount.getPassword()
+                customer.getEmail(),
+                customer.getAccount().getPassword()
         );
 
         // when
@@ -92,7 +96,7 @@ public class AuthenticationLoginTest extends AbstractServiceTest {
 
         BadCredentialsException exception = assertThrows(
                 BadCredentialsException.class,
-                () -> authenticationLogin.login(request)
+                () -> authenticationLogin.execute(request)
         );
 
         // Then
@@ -100,7 +104,7 @@ public class AuthenticationLoginTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Login fails when account is locked or suspended")
+    @DisplayName("should throw exception when account is suspended")
     void login_WhenAccountSuspended_ThrowsException() {
         // given
         UserAccount userAccount = UserAccount.create()
@@ -121,7 +125,7 @@ public class AuthenticationLoginTest extends AbstractServiceTest {
 
         UserAccountSuspendedException exception = assertThrows(
                 UserAccountSuspendedException.class,
-                () -> authenticationLogin.login(request)
+                () -> authenticationLogin.execute(request)
         );
 
         // Then
@@ -129,28 +133,22 @@ public class AuthenticationLoginTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Login fails when account is disabled or not verified")
-    void login_WhenAccountNotVerified_ThrowsUserAccountNotVerifiedException() {
+    @DisplayName("should throw exception when account is disabled or not verified")
+    void login_WhenAccountNotVerified_ThrowsException() {
         // given
-        UserAccount userAccount = UserAccount.create()
-                                             .setId(1L)
-                                             .setEmail("user@demo.com")
-                                             .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                             .setAccountStatus(UserAccountStatus.PENDING_VERIFICATION);
-
         AuthenticationRequest request = new AuthenticationRequest(
-                userAccount.getEmail(),
-                userAccount.getPassword()
+                customer.getEmail(),
+                customer.getAccount().getPassword()
         );
 
         // when
         when(authenticationManager.authenticate(any())).thenThrow(
-                new UserAccountNotVerifiedException(userAccount.getEmail())
+                new UserAccountNotVerifiedException(request.email())
         );
 
         UserAccountNotVerifiedException exception = assertThrows(
                 UserAccountNotVerifiedException.class,
-                () -> authenticationLogin.login(request)
+                () -> authenticationLogin.execute(request)
         );
 
         // Then
