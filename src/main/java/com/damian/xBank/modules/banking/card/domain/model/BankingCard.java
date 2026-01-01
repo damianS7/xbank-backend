@@ -1,8 +1,6 @@
-package com.damian.xBank.modules.banking.card.domain.entity;
+package com.damian.xBank.modules.banking.card.domain.model;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
-import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
-import com.damian.xBank.modules.banking.card.domain.enums.BankingCardType;
 import com.damian.xBank.modules.banking.card.domain.exception.*;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import jakarta.persistence.*;
@@ -46,7 +44,7 @@ public class BankingCard {
     @Enumerated(EnumType.STRING)
     @JdbcType(PostgreSQLEnumJdbcType.class)
     @Column(name = "card_status", columnDefinition = "banking_card_status_type")
-    private BankingCardStatus cardStatus;
+    private BankingCardStatus status;
 
     @Column
     private Instant createdAt;
@@ -55,7 +53,7 @@ public class BankingCard {
     private Instant updatedAt;
 
     public BankingCard() {
-        this.cardStatus = BankingCardStatus.PENDING_ACTIVATION;
+        this.status = BankingCardStatus.PENDING_ACTIVATION;
         this.cardType = BankingCardType.DEBIT;
         this.dailyLimit = BigDecimal.valueOf(3000);
     }
@@ -101,11 +99,25 @@ public class BankingCard {
     }
 
     public BankingCardStatus getStatus() {
-        return cardStatus;
+        return status;
     }
 
-    public BankingCard setCardStatus(BankingCardStatus cardStatus) {
-        this.cardStatus = cardStatus;
+    public BankingCard setStatus(BankingCardStatus newStatus) {
+        // if the actual status is the same as the new ... do nothing
+        if (this.status == newStatus) {
+            return this;
+        }
+
+        if (!this.status.canTransitionTo(newStatus)) {
+            throw new BankingCardStatusTransitionException(
+                    this.id,
+                    this.status.name(),
+                    newStatus.name()
+            );
+        }
+
+        this.updatedAt = Instant.now();
+        this.status = newStatus;
         return this;
     }
 
@@ -215,7 +227,7 @@ public class BankingCard {
     }
 
     public boolean isDisabled() {
-        return this.cardStatus == BankingCardStatus.DISABLED;
+        return this.status == BankingCardStatus.DISABLED;
     }
 
     public boolean isOwnedBy(Long customerId) {
@@ -312,13 +324,14 @@ public class BankingCard {
      * @return the current validator instance for chaining
      */
     public BankingCard assertCanSpend(
+            Customer actor,
             BigDecimal amount,
             String cardPin
     ) {
-
         // check the account status and see if can be used to operate
         // run validations for the card and throw exception
-        this.assertUsable()
+        this.assertOwnedBy(actor.getId())
+            .assertUsable()
             .assertCorrectPin(cardPin)
             .assertSufficientFunds(amount);
 
