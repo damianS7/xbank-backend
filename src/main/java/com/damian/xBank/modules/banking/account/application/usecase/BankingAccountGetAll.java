@@ -9,11 +9,11 @@ import org.springframework.stereotype.Service;
 import java.util.Set;
 
 @Service
-public class BankingAccountGet {
+public class BankingAccountGetAll {
     private final BankingAccountRepository bankingAccountRepository;
     private final AuthenticationContext authenticationContext;
 
-    public BankingAccountGet(
+    public BankingAccountGetAll(
             BankingAccountRepository bankingAccountRepository,
             AuthenticationContext authenticationContext
     ) {
