@@ -37,7 +37,7 @@ public class BankingCardExpirationJob {
     public void disableExpiredCards() {
         log.info("Checking for expired cards...");
         Set<BankingCard> expiredCards =
-                bankingCardRepository.findByCardStatusNotAndExpiredDateLessThanEqual(
+                bankingCardRepository.findByStatusNotAndExpiredDateLessThanEqual(
                         BankingCardStatus.EXPIRED,
                         LocalDate.now()
                 );

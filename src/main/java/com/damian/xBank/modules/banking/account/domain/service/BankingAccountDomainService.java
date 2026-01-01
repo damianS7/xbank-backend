@@ -8,7 +8,7 @@ import com.damian.xBank.modules.banking.account.infrastructure.service.BankingAc
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import org.springframework.stereotype.Service;
 
-@Service // TODO check if this annotation make sense to be here since its a spring annotation
+@Service
 public class BankingAccountDomainService {
     private final BankingAccountNumberGenerator bankingAccountNumberGenerator;
 

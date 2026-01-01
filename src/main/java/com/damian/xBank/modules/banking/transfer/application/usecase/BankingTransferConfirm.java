@@ -45,7 +45,7 @@ public class BankingTransferConfirm {
     }
 
     @Transactional
-    public BankingTransfer confirmTransfer(
+    public BankingTransfer execute(
             Long transferId,
             BankingTransferConfirmRequest request
     ) {

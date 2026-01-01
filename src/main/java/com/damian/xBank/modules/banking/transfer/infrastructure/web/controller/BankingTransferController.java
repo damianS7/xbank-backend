@@ -55,7 +55,7 @@ public class BankingTransferController {
             BankingTransferConfirmRequest request
     ) {
 
-        BankingTransfer transfer = bankingTransferConfirm.confirmTransfer(id, request);
+        BankingTransfer transfer = bankingTransferConfirm.execute(id, request);
         BankingTransferDetailDto transferDto = BankingTransferDtoMapper.toBankingTransferDetailDto(transfer);
 
         return ResponseEntity
