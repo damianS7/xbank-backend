@@ -9,6 +9,7 @@ import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class BankingAccountCardCreate {
@@ -33,6 +34,7 @@ public class BankingAccountCardCreate {
      * @param request
      * @return the created BankingCard
      */
+    @Transactional
     public BankingCard execute(Long bankingAccountId, BankingAccountCardRequest request) {
         // Customer logged
         final Customer currentCustomer = authenticationContext.getCurrentCustomer();
@@ -54,6 +56,10 @@ public class BankingAccountCardCreate {
         bankingAccount.assertCanAddCard();
 
         // create the card and associate to the account and return it.
-        return bankingCardService.createBankingCard(bankingAccount, request.type());
+        BankingCard card = bankingCardService.createBankingCard(bankingAccount, request.type());
+
+        bankingAccount.addBankingCard(card);
+
+        return card;
     }
 }

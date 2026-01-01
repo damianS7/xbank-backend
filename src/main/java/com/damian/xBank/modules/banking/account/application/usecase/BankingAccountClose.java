@@ -26,11 +26,11 @@ public class BankingAccountClose {
     }
 
     /**
-     * Create a BankingAccount for the logged customer.
+     * Closes a BankingAccount from the logged customer.
      *
-     * @param request BankingAccountCreateRequest the request containing the data needed
-     *                to create the BankingAccount
-     * @return a newly created BankingAccount
+     * @param request BankingAccountCloseRequest the request containing the data needed
+     *                to closes the BankingAccount
+     * @return the banking account with the CLOSED status.
      */
     public BankingAccount execute(Long accountId, BankingAccountCloseRequest request) {
         // we extract the customer logged from the SecurityContext

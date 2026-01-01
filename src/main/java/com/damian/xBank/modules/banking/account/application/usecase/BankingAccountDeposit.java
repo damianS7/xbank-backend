@@ -56,9 +56,14 @@ public class BankingAccountDeposit {
             Long bankingAccountId,
             BankingAccountDepositRequest request
     ) {
-        final Customer customer = authenticationContext.getCurrentCustomer();
+        // Current customer
+        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
 
-        // TODO CHECK ADMIN HERE???
+        // if the logged customer is not admin or bank manager
+        if (!currentCustomer.isAdmin()) {
+            // TODO throws
+        }
+
         // The account to deposit into
         final BankingAccount bankingAccount = bankingAccountRepository
                 .findById(bankingAccountId).orElseThrow(
@@ -101,7 +106,7 @@ public class BankingAccountDeposit {
 
         log.debug(
                 "Admin {} processed deposit with transaction id {}",
-                customer.getId(),
+                currentCustomer.getId(),
                 transaction.getId()
         );
 
