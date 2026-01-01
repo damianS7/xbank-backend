@@ -62,7 +62,6 @@ public class BankingCardSpend {
 
         // run validations for the card and throw exception
         bankingCard.assertCanSpend(currentCustomer, request.amount(), request.cardPIN());
-        bankingCard.chargeAmount(request.amount());
 
         BankingTransaction transaction = BankingTransaction
                 .create(
@@ -73,6 +72,8 @@ public class BankingCardSpend {
                 .setBankingCard(bankingCard)
                 .setStatus(BankingTransactionStatus.COMPLETED)
                 .setDescription(request.description());
+
+        bankingCard.chargeAmount(request.amount());
 
         // store here the transaction as PENDING
         bankingTransactionPersistenceService.record(transaction);

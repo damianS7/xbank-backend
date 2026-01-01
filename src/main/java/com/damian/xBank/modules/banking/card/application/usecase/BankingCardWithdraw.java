@@ -57,7 +57,6 @@ public class BankingCardWithdraw {
 
         // run validations for the card and throw exception
         bankingCard.assertCanSpend(currentCustomer, request.amount(), request.cardPIN());
-        bankingCard.chargeAmount(request.amount());
 
         BankingTransaction transaction = BankingTransaction
                 .create(
@@ -68,6 +67,8 @@ public class BankingCardWithdraw {
                 .setBankingCard(bankingCard)
                 .setStatus(BankingTransactionStatus.COMPLETED)
                 .setDescription("ATM Withdrawal.");
+
+        bankingCard.chargeAmount(request.amount());
 
         // store here the transaction as PENDING
         bankingTransactionPersistenceService.record(transaction);
