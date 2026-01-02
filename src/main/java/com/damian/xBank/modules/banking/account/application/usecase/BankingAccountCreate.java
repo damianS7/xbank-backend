@@ -32,8 +32,7 @@ public class BankingAccountCreate {
     /**
      * Create a BankingAccount for the logged customer.
      *
-     * @param request BankingAccountCreateRequest the request containing the data needed
-     *                to create the BankingAccount
+     * @param request BankingAccountCreateRequest
      * @return a newly created BankingAccount
      */
     public BankingAccount execute(BankingAccountCreateRequest request) {

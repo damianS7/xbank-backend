@@ -16,6 +16,7 @@ import com.damian.xBank.shared.exception.ErrorCodes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import java.math.BigDecimal;
@@ -27,6 +28,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 public class BankingAccountCreateTest extends AbstractServiceTest {
+
     @Mock
     private BankingAccountRepository bankingAccountRepository;
 
@@ -38,10 +40,10 @@ public class BankingAccountCreateTest extends AbstractServiceTest {
 
     private BankingAccountDomainService bankingAccountDomainService;
 
+    @InjectMocks
     private BankingAccountCreate bankingAccountCreate;
 
     private Customer customer;
-    private BankingAccount customerAccount;
 
     @BeforeEach
     void setUp() {
@@ -59,22 +61,14 @@ public class BankingAccountCreateTest extends AbstractServiceTest {
         customer = Customer.create(
                 UserAccount.create()
                            .setId(1L)
-                           .setEmail("fromCustomer@demo.com")
+                           .setEmail("customer@demo.com")
                            .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(1L);
-
-        customerAccount = BankingAccount
-                .create(customer)
-                .setId(1L)
-                .setBalance(BigDecimal.valueOf(1000))
-                .setCurrency(BankingAccountCurrency.EUR)
-                .setType(BankingAccountType.SAVINGS)
-                .setAccountNumber("US9900001111112233334444");
     }
 
     @Test
     @DisplayName("should returns a newly created BankingAccount when valid request")
-    void execute_WhenValidRequest_ReturnsCreatedAccount() {
+    void accountCreate_WhenValidRequest_ReturnsCreatedAccount() {
         // given
         setUpContext(customer);
 
@@ -105,7 +99,7 @@ public class BankingAccountCreateTest extends AbstractServiceTest {
 
     @Test
     @DisplayName("should throws exception when customer not found")
-    void execute_WhenCustomerNotFound_ThrowsException() {
+    void accountCreate_WhenCustomerNotFound_ThrowsException() {
         // given
         setUpContext(customer);
 

@@ -1,9 +1,9 @@
 package com.damian.xBank.modules.banking.account.infrastructure.web.controller;
 
-import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountAliasUpdateRequest;
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCardRequest;
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCloseRequest;
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCreateRequest;
+import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountSetAliasRequest;
 import com.damian.xBank.modules.banking.account.application.dto.response.BankingAccountDto;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
@@ -244,7 +244,7 @@ public class BankingAccountControllerTest extends AbstractControllerTest {
         // given
         login(customer);
 
-        BankingAccountAliasUpdateRequest request = new BankingAccountAliasUpdateRequest(
+        BankingAccountSetAliasRequest request = new BankingAccountSetAliasRequest(
                 "account for savings"
         );
 

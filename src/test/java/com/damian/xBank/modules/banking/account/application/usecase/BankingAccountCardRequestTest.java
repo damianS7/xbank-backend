@@ -41,7 +41,7 @@ public class BankingAccountCardRequestTest extends AbstractServiceTest {
     private BankingCardDomainService bankingCardDomainService;
 
     @InjectMocks
-    private BankingAccountCardRequest bankingAccountCardRequest;
+    private BankingAccountCardCreate bankingAccountCardCreate;
 
     private Customer customer;
     private BankingAccount bankingAccount;
@@ -89,7 +89,7 @@ public class BankingAccountCardRequestTest extends AbstractServiceTest {
                 .createBankingCard(any(BankingAccount.class), any(BankingCardType.class)))
                 .thenReturn(givenBankingCard);
 
-        BankingCard result = bankingAccountCardRequest.execute(
+        BankingCard result = bankingAccountCardCreate.execute(
                 bankingAccount.getId(),
                 request
         );
@@ -116,7 +116,7 @@ public class BankingAccountCardRequestTest extends AbstractServiceTest {
 
         BankingAccountNotFoundException exception = assertThrows(
                 BankingAccountNotFoundException.class,
-                () -> bankingAccountCardRequest.execute(
+                () -> bankingAccountCardCreate.execute(
                         bankingAccount.getId(),
                         request
                 )
@@ -151,7 +151,7 @@ public class BankingAccountCardRequestTest extends AbstractServiceTest {
 
         BankingAccountNotOwnerException exception = assertThrows(
                 BankingAccountNotOwnerException.class,
-                () -> bankingAccountCardRequest.execute(
+                () -> bankingAccountCardCreate.execute(
                         99L,
                         request
                 )
@@ -193,7 +193,7 @@ public class BankingAccountCardRequestTest extends AbstractServiceTest {
         when(bankingCardDomainService.createBankingCard(any(BankingAccount.class), any(BankingCardType.class)))
                 .thenReturn(givenBankingCard);
 
-        BankingCard result = bankingAccountCardRequest.execute(
+        BankingCard result = bankingAccountCardCreate.execute(
                 bankingAccount.getId(),
                 request
         );
@@ -226,7 +226,7 @@ public class BankingAccountCardRequestTest extends AbstractServiceTest {
 
         BankingAccountCardsLimitException exception = assertThrows(
                 BankingAccountCardsLimitException.class,
-                () -> bankingAccountCardRequest.execute(
+                () -> bankingAccountCardCreate.execute(
                         bankingAccount.getId(),
                         request
                 )

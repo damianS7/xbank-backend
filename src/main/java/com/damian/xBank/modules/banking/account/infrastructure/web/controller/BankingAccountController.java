@@ -1,9 +1,9 @@
 package com.damian.xBank.modules.banking.account.infrastructure.web.controller;
 
-import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountAliasUpdateRequest;
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCardRequest;
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCloseRequest;
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCreateRequest;
+import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountSetAliasRequest;
 import com.damian.xBank.modules.banking.account.application.dto.response.BankingAccountDto;
 import com.damian.xBank.modules.banking.account.application.dto.response.BankingAccountSummaryDto;
 import com.damian.xBank.modules.banking.account.application.mapper.BankingAccountDtoMapper;
@@ -26,20 +26,20 @@ import java.util.Set;
 public class BankingAccountController {
     private final BankingAccountGetAll bankingAccountGetAll;
     private final BankingAccountCreate bankingAccountCreate;
-    private final BankingAccountCardCreate bankingAccountCardCreate;
+    private final BankingAccountCardCreate bankingAccountCardRequest;
     private final BankingAccountClose bankingAccountClose;
     private final BankingAccountSetAlias bankingAccountSetAlias;
 
     public BankingAccountController(
             BankingAccountGetAll bankingAccountGetAll,
             BankingAccountCreate bankingAccountCreate,
-            BankingAccountCardCreate bankingAccountCardCreate,
+            BankingAccountCardCreate bankingAccountCardRequest,
             BankingAccountClose bankingAccountClose,
             BankingAccountSetAlias bankingAccountSetAlias
     ) {
         this.bankingAccountGetAll = bankingAccountGetAll;
         this.bankingAccountCreate = bankingAccountCreate;
-        this.bankingAccountCardCreate = bankingAccountCardCreate;
+        this.bankingAccountCardRequest = bankingAccountCardRequest;
         this.bankingAccountClose = bankingAccountClose;
         this.bankingAccountSetAlias = bankingAccountSetAlias;
     }
@@ -93,7 +93,7 @@ public class BankingAccountController {
             @PathVariable @Positive
             Long id,
             @Validated @RequestBody
-            BankingAccountAliasUpdateRequest request
+            BankingAccountSetAliasRequest request
     ) {
         BankingAccount bankingAccount = bankingAccountSetAlias.execute(id, request);
         BankingAccountDto bankingAccountDTO = BankingAccountDtoMapper.toBankingAccountDto(bankingAccount);
@@ -111,7 +111,7 @@ public class BankingAccountController {
             @Validated @RequestBody
             BankingAccountCardRequest request
     ) {
-        BankingCard bankingCard = bankingAccountCardCreate.execute(id, request);
+        BankingCard bankingCard = bankingAccountCardRequest.execute(id, request);
         BankingCardDto bankingCardDTO = BankingCardDtoMapper.toBankingCardDto(bankingCard);
 
         return ResponseEntity
