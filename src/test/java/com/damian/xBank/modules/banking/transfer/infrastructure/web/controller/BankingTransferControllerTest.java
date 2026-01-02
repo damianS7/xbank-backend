@@ -131,7 +131,7 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
 
     @Test
     @DisplayName("POST /transfers a valid request should create a transfer")
-    void postTransfers_ValidRequest_Returns201Created() throws Exception {
+    void postTransfers_WhenValidRequest_Returns201Created() throws Exception {
         // given
         login(fromCustomer);
 
@@ -176,7 +176,7 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
 
     @Test
     @DisplayName("POST /transfers should return 409 Conflict when source and destination accounts are the same")
-    void postTransfers_SameAccount_Returns409Conflict() throws Exception {
+    void postTransfers_WhenSameAccount_Returns409Conflict() throws Exception {
         // given
         login(fromCustomer);
 
@@ -203,7 +203,7 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
 
     @Test
     @DisplayName("POST /transfers should return 409 Conflict when any account its closed")
-    void postTransfers_AccountClosed_Returns409Conflict() throws Exception {
+    void postTransfers_WhenAccountClosed_Returns409Conflict() throws Exception {
         // given
         login(fromCustomer);
 
@@ -233,7 +233,7 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
 
     @Test
     @DisplayName("POST /transfers should return 403 Unauthorized when any account its suspended")
-    void postTransfers_AccountSuspended_Returns403Unauthorized() throws Exception {
+    void postTransfers_WhenAccountSuspended_Returns403Unauthorized() throws Exception {
         // given
         login(fromCustomer);
 
@@ -263,7 +263,7 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
 
     @Test
     @DisplayName("POST /transfers should return 404 Not found when any account not exists")
-    void postTransfers_AccountNotExists_Returns404NotFound() throws Exception {
+    void postTransfers_WhenAccountNotExists_Returns404NotFound() throws Exception {
         // given
         login(fromCustomer);
 
@@ -289,7 +289,7 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
 
     @Test
     @DisplayName("POST /transfers should return 409 Conflict when source account has no funds")
-    void postTransfers_InsufficientFunds_Returns409Conflict() throws Exception {
+    void postTransfers_WhenInsufficientFunds_Returns409Conflict() throws Exception {
         // given
         login(fromCustomer);
 
