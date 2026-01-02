@@ -239,7 +239,6 @@ public class BankingAccountTest extends AbstractServiceTest {
                 .isEqualTo(BankingAccountStatus.ACTIVE);
     }
 
-
     @Test
     @DisplayName("activateBy: should throws exception when actor is not admin")
     void activateBy_WhenActorIsNotAdmin_AccountNotActivated() {
@@ -267,7 +266,6 @@ public class BankingAccountTest extends AbstractServiceTest {
         assertThat(bankingAccount.getStatus())
                 .isEqualTo(BankingAccountStatus.CLOSED);
     }
-
 
     @Test
     @DisplayName("closeBy: should throws exception when actor is not admin")

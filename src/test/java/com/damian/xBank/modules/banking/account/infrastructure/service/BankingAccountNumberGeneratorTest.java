@@ -18,7 +18,7 @@ public class BankingAccountNumberGeneratorTest extends AbstractServiceTest {
 
     @Test
     @DisplayName("should return a valid banking account number")
-    void generate_When_ReturnValidAccountNumber() {
+    void generate_ReturnsValidAccountNumber() {
         // when
         String accountNumber = generator.generate();
 

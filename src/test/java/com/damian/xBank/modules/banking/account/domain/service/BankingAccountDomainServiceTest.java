@@ -52,7 +52,7 @@ public class BankingAccountDomainServiceTest extends AbstractServiceTest {
 
     @Test
     @DisplayName("Should create a BankingAccount for logged customer")
-    void createAccount_WhenValidRequest_ReturnBankingAccount() {
+    void createAccount_WhenValidRequest_ReturnsBankingAccount() {
         // given
         BankingAccountCreateRequest request = new BankingAccountCreateRequest(
                 BankingAccountType.SAVINGS,
