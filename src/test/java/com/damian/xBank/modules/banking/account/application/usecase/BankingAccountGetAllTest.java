@@ -68,8 +68,8 @@ public class BankingAccountGetAllTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should returns a set of banking accounts from the authenticated customer")
-    void execute_WhenValidRequest_ReturnsCustomerBankingAccounts() {
+    @DisplayName("should return a set containing all banking accounts from authenticated user")
+    void getCustomerBankingAccounts_WhenValidRequest_ReturnsCustomerBankingAccounts() {
         // given
         setUpContext(customer);
 

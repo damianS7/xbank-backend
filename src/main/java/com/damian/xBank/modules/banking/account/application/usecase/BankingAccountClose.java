@@ -28,8 +28,7 @@ public class BankingAccountClose {
     /**
      * Closes a BankingAccount from the logged customer.
      *
-     * @param request BankingAccountCloseRequest the request containing the data needed
-     *                to closes the BankingAccount
+     * @param request BankingAccountCloseRequest the request
      * @return the banking account with the CLOSED status.
      */
     public BankingAccount execute(Long accountId, BankingAccountCloseRequest request) {

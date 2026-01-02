@@ -62,7 +62,7 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
 
     @Test
     @DisplayName("Should returns a closed a BankingAccount")
-    void execute_WhenValidRequest_ReturnsClosedBankingAccount() {
+    void closeAccount_WhenValidRequest_ReturnsClosedBankingAccount() {
         // given
         setUpContext(customer);
 
@@ -90,7 +90,7 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
 
     @Test
     @DisplayName("Should throws when BankingAccount when is suspended")
-    void execute_WhenAccountSuspended_ThrowsException() {
+    void closeAccount_WhenAccountSuspended_ThrowsException() {
         // given
         setUpContext(customer);
 
@@ -115,7 +115,7 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
 
     @Test
     @DisplayName("Should throws when BankingAccount is not found")
-    void execute_WhenAccountNotFound_ThrowsException() {
+    void closeAccount_WhenAccountNotFound_ThrowsException() {
         // given
         setUpContext(customer);
 
@@ -137,7 +137,7 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
 
     @Test
     @DisplayName("Should throws exception when authenticated customer is not the owner of the account")
-    void execute_WhenAccountNotOwnedByCustomer_ThrowsException() {
+    void closeAccount_WhenAccountNotOwnedByCustomer_ThrowsException() {
         // given
         Customer customer2 = Customer.create(
                 UserAccount.create()
@@ -166,7 +166,7 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
 
     @Test
     @DisplayName("Should returns a closed BankingAccount when not owner but it is admin")
-    void execute_WhenAccountNotOwnedByCustomerButItIsAdmin_ThrowsException() {
+    void closeAccount_WhenAccountNotOwnedByCustomerButItIsAdmin_ThrowsException() {
         // given
         Customer customerAdmin = Customer.create(
                 UserAccount.create()
