@@ -40,6 +40,13 @@ public class BankingTransferReject {
         this.passwordValidator = passwordValidator;
     }
 
+    /**
+     * Reject a transfer
+     *
+     * @param transferId the id of the transfer
+     * @param request    the request
+     * @return the rejected transfer
+     */
     @Transactional
     public BankingTransfer rejectTransfer(
             Long transferId,

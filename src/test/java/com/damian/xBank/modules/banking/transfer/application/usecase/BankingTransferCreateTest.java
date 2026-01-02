@@ -87,8 +87,8 @@ public class BankingTransferCreateTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("createTransfer should successfully create a transfer when request is valid")
-    void createTransfer_ValidRequest_ReturnsTransfer() {
+    @DisplayName("should return created transfer when request is valid")
+    void createTransfer_WhenValidRequest_ReturnsTransfer() {
         // given
         setUpContext(fromCustomer);
 

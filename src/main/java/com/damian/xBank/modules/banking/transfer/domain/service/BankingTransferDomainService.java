@@ -4,7 +4,6 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
-import com.damian.xBank.modules.banking.transaction.infrastructure.service.BankingTransactionPersistenceService;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import org.springframework.stereotype.Service;
 
@@ -13,12 +12,7 @@ import java.math.BigDecimal;
 @Service
 public class BankingTransferDomainService {
 
-    private final BankingTransactionPersistenceService bankingTransactionPersistenceService;
-
-    public BankingTransferDomainService(
-            BankingTransactionPersistenceService bankingTransactionPersistenceService
-    ) {
-        this.bankingTransactionPersistenceService = bankingTransactionPersistenceService;
+    public BankingTransferDomainService() {
     }
 
     /**

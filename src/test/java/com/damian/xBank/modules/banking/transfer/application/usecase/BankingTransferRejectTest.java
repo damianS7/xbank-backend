@@ -87,8 +87,8 @@ public class BankingTransferRejectTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("rejectTransfer with a valid request should reject a transfer")
-    void rejectTransfer_ValidRequest_ReturnsRejectedTransfer() {
+    @DisplayName("should return rejected transfer")
+    void rejectTransfer_WhenValidRequest_ReturnsRejectedTransfer() {
         // given
         setUpContext(fromCustomer);
 

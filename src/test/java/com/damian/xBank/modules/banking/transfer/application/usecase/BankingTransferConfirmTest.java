@@ -17,8 +17,10 @@ import com.damian.xBank.modules.banking.transfer.infrastructure.repository.Banki
 import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
+import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.AbstractServiceTest;
+import com.damian.xBank.shared.exception.ErrorCodes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,6 +30,8 @@ import org.mockito.Mock;
 import java.math.BigDecimal;
 import java.util.Optional;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -93,8 +97,8 @@ public class BankingTransferConfirmTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("confirmTransfer a valid request should confirm a transfer")
-    void execute() {
+    @DisplayName("should return confirmed transfer when request is valid")
+    void confirmTransfer_WhenValidRequest_ReturnsConfirmedTransfer() {
         // given
         setUpContext(fromCustomer);
 
@@ -150,58 +154,51 @@ public class BankingTransferConfirmTest extends AbstractServiceTest {
         verify(bankingTransferRepository, times(1)).save(any(BankingTransfer.class));
     }
 
-    // TODO move to BankingAccountOperationServiceTest
-    //    @Test
-    //    @DisplayName("Should fail to confirm transfer when password is wrong")
-    //    void shouldFailToConfirmTransferWhenPasswordIsWrong() {
-    //        // given
-    //        Customer fromCustomer = Customer.create(
-    //                UserAccount.create()
-    //                           .setId(1L)
-    //                           .setEmail("fromCustomer@demo.com")
-    //                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-    //        ).setId(1L);
-    //
-    //        setUpContext(fromCustomer);
-    //
-    //        BankingAccount fromCustomerBankingAccount = new BankingAccount(fromCustomer);
-    //        fromCustomerBankingAccount.setId(2L);
-    //        fromCustomerBankingAccount.setBalance(BigDecimal.valueOf(1000));
-    //        fromCustomerBankingAccount.setAccountNumber("US9900001111112233334444");
-    //
-    //        Customer toCustomer = Customer.create(
-    //                UserAccount.create()
-    //                           .setId(2L)
-    //                           .setEmail("customerB@demo.com")
-    //                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-    //        ).setId(2L);
-    //
-    //        BankingAccount toCustomerBankingAccount = new BankingAccount(toCustomer);
-    //        toCustomerBankingAccount.setId(5L);
-    //        toCustomerBankingAccount.setBalance(BigDecimal.valueOf(100));
-    //        toCustomerBankingAccount.setAccountNumber("ES0400003110112293532124");
-    //
-    //        BankingTransferConfirmRequest transferRequest = new BankingTransferConfirmRequest(
-    //                "WRONG_PASSWORD"
-    //        );
-    //
-    //        when(bankingAccountRepository.findById(fromCustomerBankingAccount.getId())).thenReturn(Optional.of(
-    //                fromCustomerBankingAccount));
-    //
-    //        //        when(bankingAccountRepository.findByAccountNumber(toCustomerBankingAccount.getAccountNumber()))
-    //        //                .thenReturn(Optional.of(toCustomerBankingAccount));
-    //
-    //        // then
-    //        UserAccountInvalidPasswordConfirmationException exception = assertThrows(
-    //                UserAccountInvalidPasswordConfirmationException.class,
-    //                //                () -> bankingTransferService.confirm(transfer.getId(), transferRequest)
-    //                () -> bankingTransferService.confirm(transfer)
-    //        );
-    //
-    //        // then
-    //        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.USER_ACCOUNT_INVALID_PASSWORD);
-    //    }
+    @Test
+    @DisplayName("should throw exception when invalid password")
+    void confirmTransfer_WhenInvalidPassword_ThrowsException() {
+        // given
+        setUpContext(fromCustomer);
 
-    // TODO
+        BankingTransfer givenTransfer = BankingTransfer
+                .create(fromAccount, toAccount, BigDecimal.valueOf(100))
+                .setId(1L)
+                .setStatus(BankingTransferStatus.CONFIRMED)
+                .setDescription("a gift!");
 
+        BankingTransaction fromTransaction = BankingTransaction
+                .create(
+                        BankingTransactionType.TRANSFER_TO,
+                        fromAccount,
+                        givenTransfer.getAmount()
+                )
+                .setStatus(BankingTransactionStatus.PENDING)
+                .setDescription(givenTransfer.getDescription());
+
+        BankingTransaction toTransaction = BankingTransaction
+                .create(
+                        BankingTransactionType.TRANSFER_FROM,
+                        toAccount,
+                        givenTransfer.getAmount()
+                )
+                .setStatus(BankingTransactionStatus.PENDING)
+                .setDescription(givenTransfer.getDescription());
+
+        givenTransfer.addTransaction(fromTransaction);
+        givenTransfer.addTransaction(toTransaction);
+
+        BankingTransferConfirmRequest request = new BankingTransferConfirmRequest(
+                "WRONG PASSWORD"
+        );
+
+        // when
+        // then
+        UserAccountInvalidPasswordConfirmationException exception = assertThrows(
+                UserAccountInvalidPasswordConfirmationException.class,
+                () -> bankingTransferConfirm.execute(givenTransfer.getId(), request)
+        );
+
+        // then
+        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.USER_ACCOUNT_INVALID_PASSWORD);
+    }
 }

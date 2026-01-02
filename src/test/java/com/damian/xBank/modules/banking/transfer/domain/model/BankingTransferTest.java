@@ -61,7 +61,7 @@ public class BankingTransferTest {
 
     @Test
     @DisplayName("isOwnedBy returns false when the transaction does not belong to the given customer")
-    void isOwnedBy_ValidCustomerId_ReturnsTrue() {
+    void isOwnedBy_WhenValidCustomerId_ReturnsTrue() {
         // given
         Long customerId = fromCustomer.getId();
 
@@ -74,7 +74,7 @@ public class BankingTransferTest {
 
     @Test
     @DisplayName("isOwnedBy returns false when the transaction does not belong to the given customer")
-    void isOwnedBy_InvalidCustomerId_ReturnsFalse() {
+    void isOwnedBy_WhenInvalidCustomerId_ReturnsFalse() {
         // given
         Long otherCustomerId = 999L;
 
@@ -87,7 +87,7 @@ public class BankingTransferTest {
 
     @Test
     @DisplayName("isOwnedBy returns false when the given customer ID is null")
-    void isOwnedBy_NullCustomerId_ReturnsFalse() {
+    void isOwnedBy_WhenNullCustomerId_ReturnsFalse() {
         // when
         boolean result = transfer.isOwnedBy(null);
 
@@ -97,7 +97,7 @@ public class BankingTransferTest {
 
     @Test
     @DisplayName("assertOwnedBy returns the transaction when the customer owns it")
-    void assertOwnedBy_ValidCustomerId_ReturnsTransfer() {
+    void assertOwnedBy_WhenValidCustomerId_ReturnsTransfer() {
         // given
         Long customerId = fromCustomer.getId();
 
@@ -112,7 +112,7 @@ public class BankingTransferTest {
     @DisplayName(
             "assertOwnedBy throws BankingTransferNotOwnerException when the customer does not own the transaction"
     )
-    void assertOwnedBy_InvalidCustomerId_ThrowsException() {
+    void assertOwnedBy_WhenInvalidCustomerId_ThrowsException() {
         // given
         Long otherCustomerId = 999L;
 
@@ -129,7 +129,7 @@ public class BankingTransferTest {
 
     @Test
     @DisplayName("assertOwnedBy throws BankingTransferNotOwnerException when the given customer ID is null")
-    void assertOwnedBy_NullCustomerId_ThrowsException() {
+    void assertOwnedBy_WhenNullCustomerId_ThrowsException() {
         // when / then
         BankingTransferNotOwnerException exception = assertThrows(
                 BankingTransferNotOwnerException.class,
@@ -143,7 +143,7 @@ public class BankingTransferTest {
 
     @Test
     @DisplayName("setStatus set status COMPLETED")
-    void setStatus_ValidTransition_UpdatesStatus() {
+    void setStatus_WhenValidTransition_UpdatesStatus() {
         // given
         transfer.setStatus(BankingTransferStatus.PENDING);
 
@@ -157,7 +157,7 @@ public class BankingTransferTest {
 
     @Test
     @DisplayName("setStatus same status does nothing")
-    void setStatus_SameStatus_DoesNothing() {
+    void setStatus_WhenSameStatus_DoesNothing() {
         // given
         transfer.setStatus(BankingTransferStatus.PENDING);
 
@@ -171,7 +171,7 @@ public class BankingTransferTest {
 
     @Test
     @DisplayName("setStatus invalid transition throws BankingTransferStatusTransitionException")
-    void setStatus_InvalidTransition_ThrowsException() {
+    void setStatus_WhenInvalidTransition_ThrowsException() {
         // given
         transfer.setStatus(BankingTransferStatus.CONFIRMED);
 
@@ -188,7 +188,7 @@ public class BankingTransferTest {
 
     @Test
     @DisplayName("getFromTransaction should returns sender transaction")
-    void getFromTransaction_Valid_ReturnsTransaction() {
+    void getFromTransaction_WhenValid_ReturnsTransaction() {
         // given
         // when
         BankingTransaction tx = transfer.getFromTransaction();
@@ -208,7 +208,7 @@ public class BankingTransferTest {
 
     @Test
     @DisplayName("getToTransaction should returns receiver transaction")
-    void getToTransaction_Valid_ReturnsTransaction() {
+    void getToTransaction_WhenValid_ReturnsTransaction() {
         // given
         // when
         BankingTransaction tx = transfer.getToTransaction();
@@ -228,7 +228,7 @@ public class BankingTransferTest {
 
     @Test
     @DisplayName("addTransaction should set transfer on transaction")
-    void addTransaction_Valid_SetTransferOnTransaction() {
+    void addTransaction_WhenValid_SetTransferOnTransaction() {
         // given
         // when
         BankingTransaction testTx = BankingTransaction
@@ -253,7 +253,7 @@ public class BankingTransferTest {
 
     @Test
     @DisplayName("should confirms transfer and set CONFIRMED status")
-    void confirm_Valid_ConfirmsTransfer() {
+    void confirm_WhenValid_ConfirmsTransfer() {
         // given
         // when
         transfer.confirm();
@@ -265,7 +265,7 @@ public class BankingTransferTest {
 
     @Test
     @DisplayName("should reject transfer and set REJECTED status")
-    void reject_Valid_RejectsTransfer() {
+    void reject_WhenValid_RejectsTransfer() {
         // given
         // when
         transfer.reject();

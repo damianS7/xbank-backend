@@ -15,14 +15,14 @@ public class BankingTransferStatusTest extends AbstractServiceTest {
             names = {"REJECTED", "CONFIRMED"}
     )
     @DisplayName("Should validate transitions from PENDING")
-    void canTransitionTo_AllowedStatus_ReturnsTrue(BankingTransferStatus toStatus) {
+    void canTransitionTo_WhenAllowedStatus_ReturnsTrue(BankingTransferStatus toStatus) {
         assertThat(BankingTransferStatus.PENDING.canTransitionTo(toStatus)).isTrue();
     }
 
     @ParameterizedTest
     @EnumSource(value = BankingTransferStatus.class, names = {"REJECTED", "CONFIRMED"})
     @DisplayName("Should not allow any transitions from terminal states")
-    void canTransitionTo_NotAllowedStatus_ReturnsFalse(BankingTransferStatus fromStatus) {
+    void canTransitionTo_WhenNotAllowedStatus_ReturnsFalse(BankingTransferStatus fromStatus) {
         for (BankingTransferStatus targetStatus : BankingTransferStatus.values()) {
             assertThat(fromStatus.canTransitionTo(targetStatus)).isFalse();
         }
