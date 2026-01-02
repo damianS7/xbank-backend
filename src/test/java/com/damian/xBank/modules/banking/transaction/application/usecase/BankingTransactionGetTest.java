@@ -64,8 +64,8 @@ public class BankingTransactionGetTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should get a transaction when exists and is owner")
-    void execute_ExistsAndIsOwner_ReturnsTransaction() {
+    @DisplayName("should return a transaction when exists and is owner")
+    void getTransaction_WhenExistsAndIsOwner_ReturnsTransaction() {
         // given
         setUpContext(customer);
 
@@ -93,8 +93,8 @@ public class BankingTransactionGetTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should fail to get a transaction when not exists")
-    void execute_NotExists_ThrowNotFoundException() {
+    @DisplayName("should throw exception when transaction not exists")
+    void getTransaction_WhenNotExists_ThrowsException() {
         // given
         setUpContext(customer);
 
@@ -114,8 +114,8 @@ public class BankingTransactionGetTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should fail to get a transaction when exist but customer its not owner")
-    void execute_NotOwner_ThrowNotOwnerException() {
+    @DisplayName("should throw exception when not owner of transaction")
+    void getTransaction_WhenNotOwner_ThrowsException() {
         // given
         setUpContext(customer);
 
@@ -151,5 +151,4 @@ public class BankingTransactionGetTest extends AbstractServiceTest {
                 .isNotNull()
                 .hasMessage(ErrorCodes.BANKING_TRANSACTION_NOT_OWNER);
     }
-
 }

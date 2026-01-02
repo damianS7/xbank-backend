@@ -1,15 +1,13 @@
-package com.damian.xBank.modules.banking.transaction.domain.service;
+package com.damian.xBank.modules.banking.transaction.infrastructure.service;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
-import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
-import com.damian.xBank.modules.banking.transaction.infrastructure.service.BankingTransactionPersistenceService;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.AbstractServiceTest;
@@ -41,7 +39,6 @@ public class BankingTransactionPersistenceServiceTest extends AbstractServiceTes
 
     private Customer customer;
     private BankingAccount customerBankingAccount;
-    private BankingCard customerBankingCard;
 
     @BeforeEach
     void setUp() {
@@ -59,15 +56,11 @@ public class BankingTransactionPersistenceServiceTest extends AbstractServiceTes
                 .setCurrency(BankingAccountCurrency.EUR)
                 .setType(BankingAccountType.SAVINGS)
                 .setAccountNumber("US9900001111112233334444");
-
-        customerBankingCard = BankingCard
-                .create(customerBankingAccount)
-                .setId(1L);
     }
 
     @Test
-    @DisplayName("Should record a transaction")
-    void recordTransaction_ValidTransaction_SavesAndReturns() {
+    @DisplayName("should return a saved transaction when valid transaction is provided")
+    void recordTransaction_WhenValidTransaction_ReturnsSavedTransaction() {
         // given
         BankingTransaction givenTransaction = BankingTransaction
                 .create(
@@ -96,6 +89,4 @@ public class BankingTransactionPersistenceServiceTest extends AbstractServiceTes
         assertThat(customerBankingAccount.getAccountTransactions().size()).isEqualTo(1);
         verify(bankingTransactionRepository, times(1)).save(any(BankingTransaction.class));
     }
-
-
 }

@@ -69,10 +69,9 @@ public class BankingTransactionCardGetTest extends AbstractServiceTest {
                 .setId(1L);
     }
 
-
     @Test
-    @DisplayName("Should get card transactions")
-    void getCardTransactions_ValidCardId_ReturnsAllTransactions() {
+    @DisplayName("should return all transactions from a card")
+    void getCardTransactions_WhenValidCardId_ReturnsAllTransactions() {
         // given
         setUpContext(customer);
 
@@ -112,6 +111,4 @@ public class BankingTransactionCardGetTest extends AbstractServiceTest {
                 .isNotNull()
                 .hasSize(1);
     }
-
-
 }

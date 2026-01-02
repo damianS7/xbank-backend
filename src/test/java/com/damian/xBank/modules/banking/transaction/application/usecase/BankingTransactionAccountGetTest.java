@@ -4,7 +4,6 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
-import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
@@ -34,9 +33,6 @@ public class BankingTransactionAccountGetTest extends AbstractServiceTest {
     private BankingAccountRepository bankingAccountRepository;
 
     @Mock
-    private BankingCardRepository bankingCardRepository;
-
-    @Mock
     private BankingTransactionRepository bankingTransactionRepository;
 
     @InjectMocks
@@ -64,8 +60,8 @@ public class BankingTransactionAccountGetTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should get all account transactions")
-    void getAccountTransactions_ValidAccountId_ReturnsAllTransactions() {
+    @DisplayName("should return all account transactions")
+    void getAccountTransactions_WhenValidAccountId_ReturnsAllTransactions() {
         // given
         setUpContext(customer);
 

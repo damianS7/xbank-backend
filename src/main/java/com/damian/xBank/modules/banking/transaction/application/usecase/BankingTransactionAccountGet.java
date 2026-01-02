@@ -31,9 +31,9 @@ public class BankingTransactionAccountGet {
     /**
      * Returns a paginated result containing the transactions from a banking account.
      *
-     * @param accountId
+     * @param accountId the id of the banking account
      * @param pageable
-     * @return
+     * @return a paginated result containing the transactions from a banking account.
      */
     public Page<BankingTransaction> execute(Long accountId, Pageable pageable) {
         // Customer logged
@@ -50,7 +50,6 @@ public class BankingTransactionAccountGet {
 
             // assert account belongs to him
             account.assertOwnedBy(currentCustomer.getId());
-
         }
 
         return bankingTransactionRepository.findByBankingAccountId(accountId, pageable);

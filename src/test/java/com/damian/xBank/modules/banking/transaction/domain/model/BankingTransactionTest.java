@@ -36,7 +36,7 @@ public class BankingTransactionTest {
 
     @Test
     @DisplayName("isOwnedBy returns false when the transaction does not belong to the given customer")
-    void isOwnedBy_ValidCustomerId_ReturnsTrue() {
+    void isOwnedBy_WhenValidCustomerId_ReturnsTrue() {
         // given
         Long customerId = customer.getId();
 
@@ -49,7 +49,7 @@ public class BankingTransactionTest {
 
     @Test
     @DisplayName("isOwnedBy returns false when the transaction does not belong to the given customer")
-    void isOwnedBy_InvalidCustomerId_ReturnsFalse() {
+    void isOwnedBy_WhenInvalidCustomerId_ReturnsFalse() {
         // given
         Long otherCustomerId = 999L;
 
@@ -62,7 +62,7 @@ public class BankingTransactionTest {
 
     @Test
     @DisplayName("isOwnedBy returns false when the given customer ID is null")
-    void isOwnedBy_NullCustomerId_ReturnsFalse() {
+    void isOwnedBy_WhenNullCustomerId_ReturnsFalse() {
         // when
         boolean result = transaction.isOwnedBy(null);
 
@@ -72,7 +72,7 @@ public class BankingTransactionTest {
 
     @Test
     @DisplayName("assertOwnedBy returns the transaction when the customer owns it")
-    void assertOwnedBy_ValidCustomerId_ReturnsTransaction() {
+    void assertOwnedBy_WhenValidCustomerId_ReturnsTransaction() {
         // given
         Long customerId = customer.getId();
 
@@ -87,7 +87,7 @@ public class BankingTransactionTest {
     @DisplayName(
             "assertOwnedBy throws BankingTransactionNotOwnerException when the customer does not own the transaction"
     )
-    void assertOwnedBy_InvalidCustomerId_ThrowsException() {
+    void assertOwnedBy_WhenInvalidCustomerId_ThrowsException() {
         // given
         Long otherCustomerId = 999L;
 
@@ -104,7 +104,7 @@ public class BankingTransactionTest {
 
     @Test
     @DisplayName("assertOwnedBy throws BankingTransactionNotOwnerException when the given customer ID is null")
-    void assertOwnedBy_NullCustomerId_ThrowsException() {
+    void assertOwnedBy_WhenNullCustomerId_ThrowsException() {
         // when / then
         BankingTransactionNotOwnerException exception = assertThrows(
                 BankingTransactionNotOwnerException.class,
@@ -118,7 +118,7 @@ public class BankingTransactionTest {
 
     @Test
     @DisplayName("setBankingAccount sets the account and assigns the customer from the account")
-    void setBankingAccount_AssignsAccountAndCustomer_ReturnsTransaction() {
+    void setBankingAccount_WhenAssignsAccountAndCustomer_ReturnsTransaction() {
         // given
         BankingAccount account = BankingAccount.create(customer);
 
@@ -133,7 +133,7 @@ public class BankingTransactionTest {
 
     @Test
     @DisplayName("setBankingCard sets the card and assigns the customer from the card")
-    void setBankingCard_AssignsCardAndCustomer_ReturnsTransaction() {
+    void setBankingCard_WhenAssignsCardAndCustomer_ReturnsTransaction() {
         // given
         BankingAccount account = BankingAccount.create(customer);
 
@@ -150,7 +150,7 @@ public class BankingTransactionTest {
 
     @Test
     @DisplayName("setStatus set status COMPLETED")
-    void setStatus_ValidTransition_UpdatesStatus() {
+    void setStatus_WhenValidTransition_UpdatesStatus() {
         // given
         transaction.setStatus(BankingTransactionStatus.PENDING);
 
@@ -164,7 +164,7 @@ public class BankingTransactionTest {
 
     @Test
     @DisplayName("setStatus same status does nothing")
-    void setStatus_SameStatus_DoesNothing() {
+    void setStatus_WhenSameStatus_DoesNothing() {
         // given
         transaction.setStatus(BankingTransactionStatus.PENDING);
 
@@ -178,7 +178,7 @@ public class BankingTransactionTest {
 
     @Test
     @DisplayName("setStatus invalid transition throws BankingTransactionStatusTransitionException")
-    void setStatus_InvalidTransition_ThrowsException() {
+    void setStatus_WhenInvalidTransition_ThrowsException() {
         // given
         transaction.setStatus(BankingTransactionStatus.COMPLETED);
 
@@ -195,7 +195,7 @@ public class BankingTransactionTest {
 
     @Test
     @DisplayName("Should confirm a transaction")
-    void complete_PendingTransaction_ChangesStatusToCompleted() {
+    void complete_WhenPendingTransaction_ChangesStatusToCompleted() {
         // given
         BankingTransaction givenTransaction = BankingTransaction
                 .create(
@@ -216,7 +216,7 @@ public class BankingTransactionTest {
 
     @Test
     @DisplayName("Should reject a transaction")
-    void rejectTransaction_PendingTransaction_ChangesStatusToRejected() {
+    void rejectTransaction_WhenPendingTransaction_ChangesStatusToRejected() {
         // given
         BankingTransaction givenTransaction = BankingTransaction
                 .create(
