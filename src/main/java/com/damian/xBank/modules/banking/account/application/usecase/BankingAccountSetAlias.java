@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.banking.account.application.usecase;
 
-import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountAliasUpdateRequest;
+import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountSetAliasRequest;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
@@ -24,15 +24,14 @@ public class BankingAccountSetAlias {
     }
 
     /**
-     * Create a BankingAccount for the logged customer.
+     * Set an alias for a banking account
      *
-     * @param request BankingAccountCreateRequest the request containing the data needed
-     *                to create the BankingAccount
-     * @return a newly created BankingAccount
+     * @param request BankingAccountAliasUpdateRequest the request containing the new alias
+     * @return the updated BankingAccount
      */
     public BankingAccount execute(
             Long accountId,
-            BankingAccountAliasUpdateRequest request
+            BankingAccountSetAliasRequest request
     ) {
         // Customer logged
         final Customer currentCustomer = authenticationContext.getCurrentCustomer();

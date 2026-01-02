@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.banking.account.application.usecase;
 
-import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountAliasUpdateRequest;
+import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountSetAliasRequest;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
@@ -53,12 +53,12 @@ public class BankingAccountSetAliasTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should returns a BankingAccount with updated alias when valid request")
-    void execute_WhenValidRequest_ReturnsBankingAccountWithUpdatedAlias() {
+    @DisplayName("should returns a BankingAccount with updated alias when valid request")
+    void setAlias_WhenValidRequest_ReturnsAccountWithUpdatedAlias() {
         // given
         setUpContext(customer);
 
-        BankingAccountAliasUpdateRequest request = new BankingAccountAliasUpdateRequest(
+        BankingAccountSetAliasRequest request = new BankingAccountSetAliasRequest(
                 "account for savings"
         );
 
