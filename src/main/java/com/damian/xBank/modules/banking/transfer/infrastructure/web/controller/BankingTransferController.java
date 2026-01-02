@@ -71,7 +71,7 @@ public class BankingTransferController {
             BankingTransferRejectRequest request
     ) {
 
-        BankingTransfer transfer = bankingTransferReject.rejectTransfer(id, request);
+        BankingTransfer transfer = bankingTransferReject.execute(id, request);
         BankingTransferDto transferDto = BankingTransferDtoMapper.toBankingTransferDto(transfer);
 
         return ResponseEntity

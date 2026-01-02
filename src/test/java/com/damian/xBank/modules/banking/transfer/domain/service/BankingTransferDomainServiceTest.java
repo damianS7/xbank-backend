@@ -79,17 +79,13 @@ public class BankingTransferDomainServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("createTransfer should successfully create a transfer when all inputs are valid")
-    void createTransfer_Valid_ReturnsTransfer() {
+    @DisplayName("should return a transfer when all inputs are valid")
+    void createTransfer_WhenValid_ReturnsTransfer() {
         // given
         BigDecimal givenAmount = BigDecimal.valueOf(100);
         String givenDescription = "a gift!";
 
         // when
-        //        when(bankingTransferRepository.save(any(BankingTransfer.class))).thenAnswer(
-        //                i -> i.getArguments()[0]
-        //        );
-
         // then
         BankingTransfer resultTransfer = bankingTransferDomainService.createTransfer(
                 fromCustomer.getId(),
@@ -137,8 +133,8 @@ public class BankingTransferDomainServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("createTransfer should throw exception when the customer is not the owner of the account")
-    void createTransfer_BankingAccountNotOwner_ThrowsException() {
+    @DisplayName("should throw exception when the customer is not the owner of the account")
+    void createTransfer_WhenBankingAccountNotOwner_ThrowsException() {
         // given
         // when
         // then
@@ -160,8 +156,8 @@ public class BankingTransferDomainServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("createTransfer should throw exception when insufficient funds")
-    void createTransfer_InsufficientFunds_ThrowsException() {
+    @DisplayName("should throw exception when insufficient funds")
+    void createTransfer_WhenInsufficientFunds_ThrowsException() {
         // given
         // when
         // then
@@ -183,8 +179,8 @@ public class BankingTransferDomainServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("createTransfer should throw exception when accounts have different currencies")
-    void createTransfer_DifferentCurrencies_ThrowsException() {
+    @DisplayName("should throw exception when accounts have different currencies")
+    void createTransfer_WhenDifferentCurrencies_ThrowsException() {
         // given
         toAccount.setCurrency(BankingAccountCurrency.USD);
 
@@ -208,8 +204,8 @@ public class BankingTransferDomainServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("createTransfer should throw exception when account is closed")
-    void createTransfer_AccountClosed_ThrowsException() {
+    @DisplayName("should throw exception when account is closed")
+    void createTransfer_WhenAccountClosed_ThrowsException() {
         // given
         toAccount.setStatus(BankingAccountStatus.CLOSED);
 
@@ -233,8 +229,8 @@ public class BankingTransferDomainServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("createTransfer should throw exception when account is suspended")
-    void createTransfer_AccountSuspended_ThrowsException() {
+    @DisplayName("should throw exception when account is suspended")
+    void createTransfer_WhenAccountSuspended_ThrowsException() {
         // given
         toAccount.setStatus(BankingAccountStatus.SUSPENDED);
 
@@ -258,8 +254,8 @@ public class BankingTransferDomainServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("createTransfer should throw exception when both accounts are the same")
-    void createTransfer_SameAccount_ThrowsException() {
+    @DisplayName("should throw exception when both accounts are the same")
+    void createTransfer_WhenSameAccount_ThrowsException() {
         // given
         // when
         // then
@@ -282,7 +278,7 @@ public class BankingTransferDomainServiceTest extends AbstractServiceTest {
 
     @Test
     @DisplayName("confirmTransfer should successfully confirm a transfer")
-    void confirmTransfer_Valid_ReturnsConfirmedTransfer() {
+    void confirmTransfer_WhenValid_ReturnsConfirmedTransfer() {
         // given
         BigDecimal fromCustomerAccountInitialBalance = BigDecimal.valueOf(1000);
         fromAccount.setBalance(fromCustomerAccountInitialBalance);

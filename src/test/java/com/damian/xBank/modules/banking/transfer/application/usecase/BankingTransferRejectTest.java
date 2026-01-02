@@ -135,7 +135,7 @@ public class BankingTransferRejectTest extends AbstractServiceTest {
 
         // then
         bankingTransferReject
-                .rejectTransfer(givenTransfer.getId(), request);
+                .execute(givenTransfer.getId(), request);
 
         //        verify(bankingTransferRepository, times(1)).save(any(BankingTransfer.class));
     }

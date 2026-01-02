@@ -48,7 +48,7 @@ public class BankingTransferReject {
      * @return the rejected transfer
      */
     @Transactional
-    public BankingTransfer rejectTransfer(
+    public BankingTransfer execute(
             Long transferId,
             BankingTransferRejectRequest request
     ) {
