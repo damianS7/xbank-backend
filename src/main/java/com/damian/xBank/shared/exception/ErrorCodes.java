@@ -37,6 +37,7 @@ public class ErrorCodes {
     public static final String BANKING_ACCOUNT_DISABLED = "banking.account.disabled";
     public static final String BANKING_ACCOUNT_CARD_LIMIT = "banking.account.card_limit";
     public static final String BANKING_ACCOUNT_INSUFFICIENT_FUNDS = "banking.account.insufficient_funds";
+    public static final String BANKING_ACCOUNT_DEPOSIT_NOT_ADMIN = "banking.account.deposit.not_admin";
     public static final String BANKING_ACCOUNT_INVALID_TRANSITION_STATUS = "banking.account.invalid_transition_status";
     public static final String BANKING_ACCOUNT_FAILED_DEPOSIT = "banking.account.failed_deposit";
 

@@ -1,6 +1,7 @@
 package com.damian.xBank.modules.banking.account.application.usecase;
 
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountDepositRequest;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountDepositNotAdminException;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
@@ -12,8 +13,10 @@ import com.damian.xBank.modules.banking.transaction.infrastructure.service.Banki
 import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
+import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.AbstractServiceTest;
+import com.damian.xBank.shared.exception.ErrorCodes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,6 +27,7 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -50,7 +54,7 @@ public class BankingAccountDepositTest extends AbstractServiceTest {
         customer = Customer.create(
                 UserAccount.create()
                            .setId(1L)
-                           .setEmail("fromCustomer@demo.com")
+                           .setEmail("customer@demo.com")
                            .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(1L);
 
@@ -66,9 +70,10 @@ public class BankingAccountDepositTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should returns a transaction when valid request")
-    void execute_WhenValidRequest_ReturnsTransaction() {
+    @DisplayName("should return deposit transaction")
+    void deposit_WhenValidRequest_ReturnsTransaction() {
         // given
+        customer.setRole(UserAccountRole.ADMIN);
         setUpContext(customer);
 
         BigDecimal initialBalance = bankingAccount.getBalance();
@@ -115,5 +120,33 @@ public class BankingAccountDepositTest extends AbstractServiceTest {
                         initialBalance,
                         initialBalance.add(depositAmount)
                 );
+    }
+
+    @Test
+    @DisplayName("should throw exception when not admin")
+    void deposit_WhenNotAdmin_ThrowsException() {
+        // given
+        setUpContext(customer);
+
+        BigDecimal depositAmount = BigDecimal.valueOf(3000);
+
+        BankingAccountDepositRequest depositRequest = new BankingAccountDepositRequest(
+                bankingAccount.getAccountNumber(),
+                depositAmount
+        );
+
+        // then
+        BankingAccountDepositNotAdminException exception = assertThrows(
+                BankingAccountDepositNotAdminException.class,
+                () -> bankingAccountDeposit.execute(
+                        bankingAccount.getId(),
+                        depositRequest
+                )
+        );
+
+        // then
+        assertThat(exception)
+                .isNotNull()
+                .hasMessage(ErrorCodes.BANKING_ACCOUNT_DEPOSIT_NOT_ADMIN);
     }
 }

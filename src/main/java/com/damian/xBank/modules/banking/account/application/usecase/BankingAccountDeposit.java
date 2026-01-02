@@ -1,6 +1,7 @@
 package com.damian.xBank.modules.banking.account.application.usecase;
 
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountDepositRequest;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountDepositNotAdminException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
@@ -14,7 +15,6 @@ import com.damian.xBank.modules.notification.domain.model.NotificationType;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import com.damian.xBank.shared.security.AuthenticationContext;
-import com.damian.xBank.shared.security.PasswordValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -29,18 +29,15 @@ public class BankingAccountDeposit {
     private final AuthenticationContext authenticationContext;
     private final BankingTransactionPersistenceService bankingTransactionPersistenceService;
     private final NotificationPublisher notificationPublisher;
-    private final PasswordValidator passwordValidator;
 
     public BankingAccountDeposit(
             BankingAccountRepository bankingAccountRepository,
             AuthenticationContext authenticationContext,
             BankingTransactionPersistenceService bankingTransactionPersistenceService,
-            NotificationPublisher notificationPublisher,
-            PasswordValidator passwordValidator
+            NotificationPublisher notificationPublisher
     ) {
         this.bankingTransactionPersistenceService = bankingTransactionPersistenceService;
         this.notificationPublisher = notificationPublisher;
-        this.passwordValidator = passwordValidator;
         this.bankingAccountRepository = bankingAccountRepository;
         this.authenticationContext = authenticationContext;
     }
@@ -61,7 +58,9 @@ public class BankingAccountDeposit {
 
         // if the logged customer is not admin or bank manager
         if (!currentCustomer.isAdmin()) {
-            // TODO throws
+            throw new BankingAccountDepositNotAdminException(
+                    bankingAccountId, currentCustomer.getId()
+            );
         }
 
         // The account to deposit into
