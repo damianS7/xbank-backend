@@ -65,8 +65,8 @@ public class BankingCardControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("Should get customer banking cards")
-    void shouldGetCustomerCards() throws Exception {
+    @DisplayName("should return the customer banking cards")
+    void getCards_WhenValidRequest_Returns200OK() throws Exception {
         // given
         login(customer);
 

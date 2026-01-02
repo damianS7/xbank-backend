@@ -13,14 +13,14 @@ public class BankingCardStatusTest extends AbstractServiceTest {
             value = BankingCardStatus.class,
             names = {"ACTIVE", "DISABLED", "EXPIRED"}
     )
-    @DisplayName("Should validate transitions from PENDING_ACTIVATION")
+    @DisplayName("should return true when validate transitions from PENDING_ACTIVATION")
     void shouldValidateTransitionsFromPendingActivation(BankingCardStatus toStatus) {
         Assertions.assertThat(BankingCardStatus.PENDING_ACTIVATION.canTransitionTo(toStatus)).isTrue();
     }
 
     @ParameterizedTest
     @EnumSource(value = BankingCardStatus.class, names = {"EXPIRED", "DISABLED"})
-    @DisplayName("Should not allow any transitions from terminal states")
+    @DisplayName("should return false when validate not allowed transitions")
     void canTransitionTo_WhenNotAllowedStatus_ReturnsFalse(BankingCardStatus fromStatus) {
         for (BankingCardStatus targetStatus : BankingCardStatus.values()) {
             Assertions.assertThat(fromStatus.canTransitionTo(targetStatus)).isFalse();

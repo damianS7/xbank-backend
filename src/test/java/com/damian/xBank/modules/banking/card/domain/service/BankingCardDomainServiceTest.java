@@ -60,8 +60,8 @@ public class BankingCardDomainServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("should create a BankingCard")
-    void createBankingCard_WhenValidRequest_ReturnBankingCard() {
+    @DisplayName("should return the customer banking card created")
+    void createBankingCard_WhenValidRequest_ReturnsBankingCard() {
         // given
         // when
         when(bankingCardGenerator.generate(bankingAccount, bankingCard.getCardType()))

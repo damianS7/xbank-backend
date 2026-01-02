@@ -71,8 +71,8 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("Should spend from card")
-    void shouldSpend() throws Exception {
+    @DisplayName("should return 201 CREATED when spend from card")
+    void postSpend_WhenValidRequest_Returns201Created() throws Exception {
         // given
         login(customer);
 
@@ -108,8 +108,8 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("Should withdraw from card")
-    void shouldWithdraw() throws Exception {
+    @DisplayName("should return 201 CREATED when withdraw from card")
+    void postWithdraw_WhenValidRequest_Returns201Created() throws Exception {
         // given
         login(customer);
 

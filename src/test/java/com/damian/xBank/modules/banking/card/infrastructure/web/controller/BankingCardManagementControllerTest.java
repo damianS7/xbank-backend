@@ -75,8 +75,8 @@ public class BankingCardManagementControllerTest extends AbstractControllerTest 
     }
 
     @Test
-    @DisplayName("Should update card pin")
-    void shouldUpdateCardPin() throws Exception {
+    @DisplayName("should return 200 OK when update card pin")
+    void postPin_WhenValidRequest_Returns200OK() throws Exception {
         // given
         login(customer);
 
@@ -103,8 +103,8 @@ public class BankingCardManagementControllerTest extends AbstractControllerTest 
     }
 
     @Test
-    @DisplayName("Should update card Daily Limit")
-    void shouldUpdateCardDailyLimit() throws Exception {
+    @DisplayName("should return 200 OK when update card Daily Limit")
+    void postDailyLimit_WhenValidRequest_Returns200OK() throws Exception {
         // given
         login(customer);
 
@@ -135,8 +135,8 @@ public class BankingCardManagementControllerTest extends AbstractControllerTest 
     }
 
     @Test
-    @DisplayName("Should update card status to locked")
-    void shouldLockCard() throws Exception {
+    @DisplayName("should return 200 OK when lock card")
+    void postLock_WhenValidRequest_Returns200OK() throws Exception {
         // given
         login(customer);
 
@@ -166,8 +166,8 @@ public class BankingCardManagementControllerTest extends AbstractControllerTest 
     }
 
     @Test
-    @DisplayName("Should update card status to active")
-    void shouldUnlockCard() throws Exception {
+    @DisplayName("should return 200 OK when unlock card")
+    void postUnlock_WhenValidRequest_Returns200OK() throws Exception {
         // given
         login(customer);
 

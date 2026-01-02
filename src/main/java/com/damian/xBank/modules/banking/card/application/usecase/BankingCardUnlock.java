@@ -55,9 +55,6 @@ public class BankingCardUnlock {
             passwordValidator.validatePassword(currentCustomer.getAccount(), request.password());
         }
 
-        // TODO: assertIsLocked
-        
-        // validate card status transition
         // we mark the card as active
         bankingCard.setStatus(BankingCardStatus.ACTIVE);
 

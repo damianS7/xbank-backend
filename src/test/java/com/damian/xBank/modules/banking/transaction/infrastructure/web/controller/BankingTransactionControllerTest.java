@@ -103,7 +103,7 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
 
     @Test
     @DisplayName("GET /banking/transactions/{id} - should return the transaction for the logged user")
-    void getTransaction_ValidId_ReturnsTransaction() throws Exception {
+    void getTransaction_WhenValidId_ReturnsTransaction() throws Exception {
         // given
         login(customer);
 
@@ -128,7 +128,7 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
 
     @Test
     @DisplayName("GET /banking/transactions/pending - should return only pending transactions for logged user")
-    void getPendingTransactions_LoggedUser_ReturnsOnlyPendingTransactions() throws Exception {
+    void getPendingTransactions_WhenLoggedUser_ReturnsOnlyPendingTransactions() throws Exception {
         // given
         login(customer);
         Customer anotherCustomer = Customer.create()
@@ -204,7 +204,7 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
 
     @Test
     @DisplayName("GET /banking/cards/{id}/transactions - should return all transactions for the specified card")
-    void getCardTransactions_ValidCardId_ReturnsPagedTransactions() throws Exception {
+    void getCardTransactions_WhenValidCardId_ReturnsPagedTransactions() throws Exception {
         // given
         login(customer);
         BankingTransaction transaction = BankingTransaction
@@ -247,7 +247,7 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
 
     @Test
     @DisplayName("GET /banking/accounts/{id}/transactions - should return all transactions for the specified account")
-    void getAccountTransactions_ValidAccountId_ReturnsPagedTransactions() throws Exception {
+    void getAccountTransactions_WhenValidAccountId_ReturnsPagedTransactions() throws Exception {
         // given
         login(customer);
 

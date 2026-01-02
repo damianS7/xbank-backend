@@ -58,7 +58,7 @@ public class BankingCardGetAllTest extends AbstractServiceTest {
 
     @Test
     @DisplayName("should return the cards of the current customer")
-    void execute_WhenCalled_ReturnCustomerCards() {
+    void getAllCards_WhenCalled_ReturnsCustomerCards() {
         // given
         setUpContext(customer);
 
