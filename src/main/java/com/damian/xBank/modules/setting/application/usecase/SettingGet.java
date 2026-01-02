@@ -23,6 +23,11 @@ public class SettingGet {
         this.settingRepository = settingRepository;
     }
 
+    /**
+     * Get current user settings
+     *
+     * @return current user settings
+     */
     public Setting execute() {
         // User logged
         final User currentUser = authenticationContext.getCurrentUser();

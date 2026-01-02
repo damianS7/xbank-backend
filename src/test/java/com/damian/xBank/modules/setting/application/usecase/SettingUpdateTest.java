@@ -3,7 +3,6 @@ package com.damian.xBank.modules.setting.application.usecase;
 import com.damian.xBank.modules.setting.application.dto.request.SettingsUpdateRequest;
 import com.damian.xBank.modules.setting.domain.exception.SettingNotOwnerException;
 import com.damian.xBank.modules.setting.domain.model.*;
-import com.damian.xBank.modules.setting.domain.service.SettingDomainService;
 import com.damian.xBank.modules.setting.infrastructure.persistence.repository.SettingRepository;
 import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
 import com.damian.xBank.modules.user.customer.domain.entity.Customer;
@@ -14,7 +13,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 
 import java.util.Optional;
 
@@ -26,9 +24,6 @@ public class SettingUpdateTest extends AbstractServiceTest {
 
     @Mock
     private SettingRepository settingRepository;
-
-    @Spy
-    private SettingDomainService settingDomainService;
 
     @InjectMocks
     private SettingUpdate settingUpdate;
@@ -54,8 +49,8 @@ public class SettingUpdateTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("execute should update settings")
-    void execute_Valid_ReturnsUpdatedSettings() {
+    @DisplayName("should return updated settings")
+    void updateSettings_WhenValidRequest_ReturnsUpdatedSettings() {
         // given
         setUpContext(customerA.getAccount());
 
@@ -115,8 +110,8 @@ public class SettingUpdateTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("updateSettings should update settings")
-    void updateSettings_NotOwner_ThrowsException() {
+    @DisplayName("should throw exception when user is not the owner of the settings")
+    void updateSettings_WhenNotOwner_ThrowsException() {
         // given
         setUpContext(customerA.getAccount());
 

@@ -25,39 +25,31 @@ public class SettingGetTest extends AbstractServiceTest {
     @InjectMocks
     private SettingGet settingGet;
 
-    private Customer customerA;
-    private Customer customerB;
+    private Customer customer;
 
     @BeforeEach
     void setUp() {
-        customerA = Customer.create(
+        customer = Customer.create(
                 UserAccount.create()
                            .setId(1L)
-                           .setEmail("customerA@demo.com")
+                           .setEmail("customer@demo.com")
                            .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
         ).setId(1L);
-
-        customerB = Customer.create(
-                UserAccount.create()
-                           .setId(2L)
-                           .setEmail("customerB@demo.com")
-                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-        ).setId(2L);
     }
 
     @Test
-    @DisplayName("execute a valid request should get current user settings")
-    void execute_ValidRequest_ReturnsSettings() {
+    @DisplayName("should return current user settings")
+    void getSetting_ValidRequest_ReturnsSettings() {
         // given
-        setUpContext(customerA.getAccount());
+        setUpContext(customer.getAccount());
 
         UserSettings givenUserSettings = UserSettings.defaults();
 
-        Setting givenSettings = Setting.create(customerA)
+        Setting givenSettings = Setting.create(customer)
                                        .setSettings(givenUserSettings);
 
         // when
-        when(settingRepository.findByUser_Id(customerA.getId()))
+        when(settingRepository.findByUser_Id(customer.getId()))
                 .thenReturn(Optional.of(givenSettings));
 
         Setting result = settingGet.execute();
@@ -73,6 +65,6 @@ public class SettingGetTest extends AbstractServiceTest {
                         givenUserSettings.language(),
                         givenUserSettings.emailNotifications()
                 );
-        verify(settingRepository, times(1)).findByUser_Id(customerA.getId());
+        verify(settingRepository, times(1)).findByUser_Id(customer.getId());
     }
 }

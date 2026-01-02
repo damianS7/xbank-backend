@@ -3,7 +3,6 @@ package com.damian.xBank.modules.setting.application.usecase;
 import com.damian.xBank.modules.setting.application.dto.request.SettingsUpdateRequest;
 import com.damian.xBank.modules.setting.domain.exception.SettingNotFoundException;
 import com.damian.xBank.modules.setting.domain.model.Setting;
-import com.damian.xBank.modules.setting.domain.service.SettingDomainService;
 import com.damian.xBank.modules.setting.infrastructure.persistence.repository.SettingRepository;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import com.damian.xBank.shared.security.User;
@@ -17,18 +16,21 @@ public class SettingUpdate {
     private static final Logger log = LoggerFactory.getLogger(SettingUpdate.class);
     private final AuthenticationContext authenticationContext;
     private final SettingRepository settingRepository;
-    private final SettingDomainService settingDomainService;
 
     public SettingUpdate(
             AuthenticationContext authenticationContext,
-            SettingRepository settingRepository,
-            SettingDomainService settingDomainService
+            SettingRepository settingRepository
     ) {
-        this.settingDomainService = settingDomainService;
         this.authenticationContext = authenticationContext;
         this.settingRepository = settingRepository;
     }
 
+    /**
+     * It updates the settings for the current user
+     *
+     * @param request settings to update
+     * @return updated settings
+     */
     @Transactional
     public Setting execute(
             SettingsUpdateRequest request
