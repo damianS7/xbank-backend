@@ -3,7 +3,7 @@ package com.damian.xBank.modules.setting.domain.model;
 import com.damian.xBank.modules.setting.domain.exception.SettingNotOwnerException;
 import com.damian.xBank.modules.setting.infrastructure.persistence.converter.UserSettingsConverter;
 import com.damian.xBank.modules.user.account.account.domain.model.User;
-import com.damian.xBank.modules.user.profile.domain.entity.UserProfile;
+import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import com.damian.xBank.shared.security.UserPrincipal;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -38,19 +38,11 @@ public class Setting {
         this(owner.getUser());
     }
 
-    public Setting(UserProfile owner) {
-        this(owner.getUser());
-    }
-
     public static Setting create(User owner) {
         return new Setting(owner);
     }
 
     public static Setting create(UserPrincipal owner) {
-        return new Setting(owner);
-    }
-
-    public static Setting create(UserProfile owner) {
         return new Setting(owner);
     }
 

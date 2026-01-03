@@ -4,23 +4,23 @@ import com.damian.xBank.modules.banking.account.application.dto.request.BankingA
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.service.BankingAccountDomainService;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
+import com.damian.xBank.modules.user.account.account.UserNotFoundException;
 import com.damian.xBank.modules.user.account.account.domain.model.User;
-import com.damian.xBank.modules.user.profile.domain.exception.UserNotFoundException;
-import com.damian.xBank.modules.user.profile.infrastructure.repository.UserRepository;
+import com.damian.xBank.modules.user.account.account.infrastructure.repository.UserAccountRepository;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.stereotype.Service;
 
 @Service
 public class BankingAccountCreate {
     private final BankingAccountDomainService bankingAccountDomainService;
-    private final UserRepository userRepository;
+    private final UserAccountRepository userRepository;
     private final BankingAccountRepository bankingAccountRepository;
     private final AuthenticationContext authenticationContext;
 
     public BankingAccountCreate(
             BankingAccountDomainService bankingAccountDomainService,
             BankingAccountRepository bankingAccountRepository,
-            UserRepository userRepository,
+            UserAccountRepository userRepository,
             AuthenticationContext authenticationContext
     ) {
         this.bankingAccountDomainService = bankingAccountDomainService;

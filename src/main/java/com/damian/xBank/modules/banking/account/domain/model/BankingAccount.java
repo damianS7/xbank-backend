@@ -7,7 +7,7 @@ import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.user.account.account.domain.model.User;
 import com.damian.xBank.modules.user.account.account.domain.model.UserAccountRole;
-import com.damian.xBank.modules.user.profile.domain.entity.UserProfile;
+import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;

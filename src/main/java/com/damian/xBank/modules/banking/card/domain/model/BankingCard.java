@@ -3,7 +3,6 @@ package com.damian.xBank.modules.banking.card.domain.model;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.card.domain.exception.*;
 import com.damian.xBank.modules.user.account.account.domain.model.User;
-import com.damian.xBank.modules.user.profile.domain.entity.UserProfile;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
@@ -231,24 +230,24 @@ public class BankingCard {
         return this.status == BankingCardStatus.DISABLED;
     }
 
-    public boolean isOwnedBy(Long customerId) {
+    public boolean isOwnedBy(Long userId) {
 
-        // compare card owner id with given customer id
-        return Objects.equals(getOwner().getId(), customerId);
+        // compare card owner id with given user id
+        return Objects.equals(getOwner().getId(), userId);
     }
 
     /**
-     * Assert the ownership of the card belongs to {@link UserProfile}.
+     * Assert the ownership of the card belongs to {@link User}.
      *
-     * @param customerId the customer to check ownership against
+     * @param userId the user to check ownership against
      * @return the current validator instance for chaining
-     * @throws BankingCardNotOwnerException if the card does not belong to the customer
+     * @throws BankingCardNotOwnerException if the card does not belong to the user
      */
-    public BankingCard assertOwnedBy(Long customerId) {
+    public BankingCard assertOwnedBy(Long userId) {
 
-        // compare card owner id with given customer id
-        if (!isOwnedBy(customerId)) {
-            throw new BankingCardNotOwnerException(getId(), customerId);
+        // compare card owner id with given user id
+        if (!isOwnedBy(userId)) {
+            throw new BankingCardNotOwnerException(getId(), userId);
         }
 
         return this;

@@ -6,7 +6,6 @@ import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransfe
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferNotOwnerException;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferSameAccountException;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferStatusTransitionException;
-import com.damian.xBank.modules.user.profile.domain.entity.UserProfile;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -186,7 +185,7 @@ public class BankingTransfer {
     }
 
     /**
-     * Assert the ownership of the account belongs to {@link UserProfile}.
+     * Assert the ownership of the account belongs to {@link User}.
      *
      * @param userId the customer to check ownership against
      * @return the current validator instance for chaining

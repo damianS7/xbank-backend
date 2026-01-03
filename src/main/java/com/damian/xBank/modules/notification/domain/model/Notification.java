@@ -2,7 +2,6 @@ package com.damian.xBank.modules.notification.domain.model;
 
 import com.damian.xBank.modules.notification.domain.exception.NotificationNotOwnerException;
 import com.damian.xBank.modules.user.account.account.domain.model.User;
-import com.damian.xBank.modules.user.profile.domain.entity.UserProfile;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -43,10 +42,6 @@ public class Notification {
 
     public static Notification create(User user) {
         return new Notification(user);
-    }
-
-    public static Notification create(UserProfile customer) {
-        return new Notification(customer.getUser());
     }
 
     public Long getId() {
