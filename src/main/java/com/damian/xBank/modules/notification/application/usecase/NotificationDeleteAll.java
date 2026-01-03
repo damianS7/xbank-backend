@@ -1,8 +1,8 @@
 package com.damian.xBank.modules.notification.application.usecase;
 
 import com.damian.xBank.modules.notification.infrastructure.repository.NotificationRepository;
+import com.damian.xBank.modules.user.account.account.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
-import com.damian.xBank.shared.security.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -36,7 +36,7 @@ public class NotificationDeleteAll {
         // delete selected notifications
         notificationRepository.deleteAllByIdInAndUser_Id(
                 notificationIds,
-                currentUser.getAccount().getId()
+                currentUser.getId()
         );
 
         log.debug("Deleted {} notifications from user: {}", notificationIds.size(), currentUser.getId());

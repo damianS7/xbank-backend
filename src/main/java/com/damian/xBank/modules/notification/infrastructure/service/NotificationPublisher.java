@@ -4,7 +4,7 @@ import com.damian.xBank.modules.notification.domain.model.Notification;
 import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
 import com.damian.xBank.modules.notification.infrastructure.repository.NotificationRepository;
 import com.damian.xBank.modules.notification.infrastructure.sink.NotificationSinkRegistry;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
+import com.damian.xBank.modules.user.account.account.domain.model.User;
 import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountNotFoundException;
 import com.damian.xBank.modules.user.account.account.infrastructure.repository.UserAccountRepository;
 import org.slf4j.Logger;
@@ -35,7 +35,7 @@ public class NotificationPublisher {
      */
     public void publish(NotificationEvent notificationEvent) {
         // find recipient user who will receive the notification
-        UserAccount recipient = userAccountRepository
+        User recipient = userAccountRepository
                 .findById(notificationEvent.toUserId())
                 .orElseThrow(() -> {
                     log.warn(

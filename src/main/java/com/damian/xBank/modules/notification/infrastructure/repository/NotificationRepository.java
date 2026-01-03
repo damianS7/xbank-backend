@@ -12,7 +12,6 @@ import java.util.List;
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
     Page<Notification> findAllByUserId(Long userId, Pageable pageable);
 
-
     void deleteAllByUser_Id(Long userId);
 
     void deleteAllByIdInAndUser_Id(List<Long> notificationIds, Long userId);

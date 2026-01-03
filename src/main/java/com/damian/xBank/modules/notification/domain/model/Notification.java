@@ -1,8 +1,8 @@
 package com.damian.xBank.modules.notification.domain.model;
 
 import com.damian.xBank.modules.notification.domain.exception.NotificationNotOwnerException;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.account.account.domain.model.User;
+import com.damian.xBank.modules.user.profile.domain.entity.UserProfile;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -20,7 +20,7 @@ public class Notification {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private UserAccount user;
+    private User user;
 
     @Enumerated(EnumType.STRING)
     private NotificationType type;
@@ -36,17 +36,17 @@ public class Notification {
         this.createdAt = Instant.now();
     }
 
-    public Notification(UserAccount user) {
+    public Notification(User user) {
         this();
         this.user = user;
     }
 
-    public static Notification create(UserAccount user) {
+    public static Notification create(User user) {
         return new Notification(user);
     }
 
-    public static Notification create(Customer customer) {
-        return new Notification(customer.getAccount());
+    public static Notification create(UserProfile customer) {
+        return new Notification(customer.getUser());
     }
 
     public Long getId() {
@@ -77,11 +77,11 @@ public class Notification {
                "}";
     }
 
-    public UserAccount getOwner() {
+    public User getOwner() {
         return user;
     }
 
-    public Notification setOwner(UserAccount user) {
+    public Notification setOwner(User user) {
         this.user = user;
         return this;
     }

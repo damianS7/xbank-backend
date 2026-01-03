@@ -2,9 +2,9 @@ package com.damian.xBank.modules.setting.domain.model;
 
 import com.damian.xBank.modules.setting.domain.exception.SettingNotOwnerException;
 import com.damian.xBank.modules.setting.infrastructure.persistence.converter.UserSettingsConverter;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
-import com.damian.xBank.shared.security.User;
+import com.damian.xBank.modules.user.account.account.domain.model.User;
+import com.damian.xBank.modules.user.profile.domain.entity.UserProfile;
+import com.damian.xBank.shared.security.UserPrincipal;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -20,7 +20,7 @@ public class Setting {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private UserAccount user;
+    private User user;
 
     @Convert(converter = UserSettingsConverter.class)
     @JdbcTypeCode(SqlTypes.JSON)
@@ -30,27 +30,27 @@ public class Setting {
     public Setting() {
     }
 
-    public Setting(UserAccount userAccount) {
-        this.user = userAccount;
+    public Setting(User user) {
+        this.user = user;
     }
 
-    public Setting(User owner) {
-        this(owner.getAccount());
+    public Setting(UserPrincipal owner) {
+        this(owner.getUser());
     }
 
-    public Setting(Customer owner) {
-        this(owner.getAccount());
-    }
-
-    public static Setting create(UserAccount owner) {
-        return new Setting(owner);
+    public Setting(UserProfile owner) {
+        this(owner.getUser());
     }
 
     public static Setting create(User owner) {
         return new Setting(owner);
     }
 
-    public static Setting create(Customer owner) {
+    public static Setting create(UserPrincipal owner) {
+        return new Setting(owner);
+    }
+
+    public static Setting create(UserProfile owner) {
         return new Setting(owner);
     }
 
@@ -71,21 +71,21 @@ public class Setting {
                "}";
     }
 
-    public UserAccount getUserAccount() {
+    public User getUserAccount() {
         return user;
     }
 
-    public Setting setUserAccount(UserAccount userAccount) {
-        this.user = userAccount;
+    public Setting setUserAccount(User user) {
+        this.user = user;
         return this;
     }
 
-    public boolean isOwnedBy(Customer customer) {
-        return this.isOwnedBy(customer.getAccount().getId());
+    public boolean isOwnedBy(UserProfile customer) {
+        return this.isOwnedBy(customer.getUser().getId());
     }
 
-    public boolean isOwnedBy(User user) {
-        return this.isOwnedBy(user.getAccount().getId());
+    public boolean isOwnedBy(UserPrincipal user) {
+        return this.isOwnedBy(user.getUser().getId());
     }
 
     public boolean isOwnedBy(Long userId) {
