@@ -4,7 +4,7 @@ import com.damian.xBank.modules.auth.application.dto.AuthenticationRequest;
 import com.damian.xBank.modules.auth.application.dto.AuthenticationResponse;
 import com.damian.xBank.modules.auth.domain.exception.UserAccountNotVerifiedException;
 import com.damian.xBank.modules.auth.domain.exception.UserAccountSuspendedException;
-import com.damian.xBank.shared.security.User;
+import com.damian.xBank.shared.security.UserPrincipal;
 import com.damian.xBank.shared.utils.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +62,7 @@ public class AuthenticationLogin {
 
 
         // Get the authenticated user
-        final User currentUser = ((User) auth.getPrincipal());
+        final UserPrincipal currentUser = ((UserPrincipal) auth.getPrincipal());
         final HashMap<String, Object> claims = new HashMap<>();
         claims.put("email", currentUser.getEmail());
         claims.put("role", currentUser.getRole());

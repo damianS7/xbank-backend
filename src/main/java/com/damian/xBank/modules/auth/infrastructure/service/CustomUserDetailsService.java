@@ -1,9 +1,9 @@
 package com.damian.xBank.modules.auth.infrastructure.service;
 
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
+import com.damian.xBank.modules.user.account.account.domain.model.User;
 import com.damian.xBank.modules.user.account.account.infrastructure.repository.UserAccountRepository;
 import com.damian.xBank.shared.exception.ErrorCodes;
-import com.damian.xBank.shared.security.User;
+import com.damian.xBank.shared.security.UserPrincipal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -26,7 +26,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     public UserDetails loadUserByEmail(String email) {
-        UserAccount user = userAccountRepository
+        User user = userAccountRepository
                 .findByEmail(email)
                 .orElseThrow(
                         () -> {
@@ -35,6 +35,6 @@ public class CustomUserDetailsService implements UserDetailsService {
                         }
                 );
 
-        return new User(user);
+        return new UserPrincipal(user);
     }
 }

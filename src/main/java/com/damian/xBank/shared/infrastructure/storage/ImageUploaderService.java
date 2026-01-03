@@ -1,7 +1,7 @@
 package com.damian.xBank.shared.infrastructure.storage;
 
+import com.damian.xBank.modules.user.account.account.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
-import com.damian.xBank.shared.security.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
