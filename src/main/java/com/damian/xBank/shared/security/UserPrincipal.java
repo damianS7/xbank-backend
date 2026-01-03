@@ -3,7 +3,7 @@ package com.damian.xBank.shared.security;
 import com.damian.xBank.modules.user.account.account.domain.model.User;
 import com.damian.xBank.modules.user.account.account.domain.model.UserAccountRole;
 import com.damian.xBank.modules.user.account.account.domain.model.UserAccountStatus;
-import com.damian.xBank.modules.user.profile.domain.entity.UserProfile;
+import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,7 +26,7 @@ public class UserPrincipal implements UserDetails {
     }
 
     public UserProfile getProfile() {
-        return user.getUserProfile();
+        return user.getProfile();
     }
 
     public Long getId() {
@@ -49,7 +49,7 @@ public class UserPrincipal implements UserDetails {
     }
 
     public UserProfile getCustomer() {
-        return user.getUserProfile();
+        return user.getProfile();
     }
 
     public User getUser() {
