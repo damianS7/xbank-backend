@@ -2,7 +2,7 @@ package com.damian.xBank.modules.banking.card.application.usecase;
 
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.account.account.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import com.damian.xBank.shared.security.PasswordValidator;
 import org.springframework.stereotype.Service;
@@ -27,9 +27,9 @@ public class BankingCardGetAll {
 
     // return the cards of the logged customer
     public Set<BankingCard> execute() {
-        // Customer logged
-        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
+        // Current user
+        final User currentUser = authenticationContext.getCurrentUser();
 
-        return bankingCardRepository.findCardsByCustomerId(currentCustomer.getId());
+        return bankingCardRepository.findCardsByUserId(currentUser.getId());
     }
 }

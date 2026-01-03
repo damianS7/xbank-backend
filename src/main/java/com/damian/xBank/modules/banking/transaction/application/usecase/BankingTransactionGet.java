@@ -3,8 +3,8 @@ package com.damian.xBank.modules.banking.transaction.application.usecase;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotFoundException;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
-import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.account.account.domain.model.User;
+import com.damian.xBank.modules.user.account.account.domain.model.UserAccountRole;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.stereotype.Service;
 
@@ -28,8 +28,8 @@ public class BankingTransactionGet {
      * @return requested transaction
      */
     public BankingTransaction execute(Long transactionId) {
-        // Customer logged
-        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
+        // Current user
+        final User currentUser = authenticationContext.getCurrentUser();
 
         BankingTransaction transaction = bankingTransactionRepository
                 .findById(transactionId)
@@ -38,10 +38,10 @@ public class BankingTransactionGet {
                 );
 
         // if the current user is a customer ...
-        if (currentCustomer.hasRole(UserAccountRole.CUSTOMER)) {
+        if (currentUser.hasRole(UserAccountRole.CUSTOMER)) {
 
             // assert transaction belongs to him
-            transaction.assertOwnedBy(currentCustomer.getId());
+            transaction.assertOwnedBy(currentUser.getId());
 
         }
 

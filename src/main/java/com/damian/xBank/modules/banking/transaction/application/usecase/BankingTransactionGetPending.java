@@ -3,7 +3,7 @@ package com.damian.xBank.modules.banking.transaction.application.usecase;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.account.account.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,12 +29,12 @@ public class BankingTransactionGetPending {
      * @return
      */
     public Page<BankingTransaction> execute(Pageable pageable) {
-        // Customer logged
-        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
+        // Current user
+        final User currentUser = authenticationContext.getCurrentUser();
 
-        return bankingTransactionRepository.findByStatusAndBankingAccount_Customer_Id(
+        return bankingTransactionRepository.findByStatusAndBankingAccount_User_Id(
                 BankingTransactionStatus.PENDING,
-                currentCustomer.getId(),
+                currentUser.getId(),
                 pageable
         );
     }

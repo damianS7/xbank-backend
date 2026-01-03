@@ -1,10 +1,10 @@
 package com.damian.xBank.modules.banking.card.application.usecase;
 
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdateDailyLimitRequest;
-import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoundException;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.account.account.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import com.damian.xBank.shared.security.PasswordValidator;
 import org.springframework.stereotype.Service;
@@ -41,8 +41,8 @@ public class BankingCardSetDailyLimit {
             Long bankingCardId,
             BankingCardUpdateDailyLimitRequest request
     ) {
-        // Customer logged
-        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
+        // Current user
+        final User currentUser = authenticationContext.getCurrentUser();
 
         // Banking card to set limit on
         final BankingCard bankingCard = bankingCardRepository.findById(bankingCardId).orElseThrow(
@@ -50,11 +50,11 @@ public class BankingCardSetDailyLimit {
                 () -> new BankingCardNotFoundException(bankingCardId));
 
         // run validations if not admin
-        if (!currentCustomer.isAdmin()) {
+        if (!currentUser.isAdmin()) {
 
-            bankingCard.assertOwnedBy(currentCustomer.getId());
+            bankingCard.assertOwnedBy(currentUser.getId());
 
-            passwordValidator.validatePassword(currentCustomer.getAccount(), request.password());
+            passwordValidator.validatePassword(currentUser, request.password());
         }
 
         // we set the limit of the card

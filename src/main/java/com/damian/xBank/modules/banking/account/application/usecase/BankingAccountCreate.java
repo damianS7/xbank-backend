@@ -4,28 +4,28 @@ import com.damian.xBank.modules.banking.account.application.dto.request.BankingA
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.service.BankingAccountDomainService;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
-import com.damian.xBank.modules.user.customer.domain.exception.CustomerNotFoundException;
-import com.damian.xBank.modules.user.customer.infrastructure.repository.CustomerRepository;
+import com.damian.xBank.modules.user.account.account.domain.model.User;
+import com.damian.xBank.modules.user.profile.domain.exception.UserNotFoundException;
+import com.damian.xBank.modules.user.profile.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.stereotype.Service;
 
 @Service
 public class BankingAccountCreate {
     private final BankingAccountDomainService bankingAccountDomainService;
-    private final CustomerRepository customerRepository;
+    private final UserRepository userRepository;
     private final BankingAccountRepository bankingAccountRepository;
     private final AuthenticationContext authenticationContext;
 
     public BankingAccountCreate(
             BankingAccountDomainService bankingAccountDomainService,
             BankingAccountRepository bankingAccountRepository,
-            CustomerRepository customerRepository,
+            UserRepository userRepository,
             AuthenticationContext authenticationContext
     ) {
         this.bankingAccountDomainService = bankingAccountDomainService;
         this.bankingAccountRepository = bankingAccountRepository;
-        this.customerRepository = customerRepository;
+        this.userRepository = userRepository;
         this.authenticationContext = authenticationContext;
     }
 
@@ -36,16 +36,16 @@ public class BankingAccountCreate {
      * @return a newly created BankingAccount
      */
     public BankingAccount execute(BankingAccountCreateRequest request) {
-        // we extract the customer logged from the SecurityContext
-        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
+        // Current user
+        final User currentUser = authenticationContext.getCurrentUser();
 
         // we get the Customer entity so we can save at the end
-        final Customer customer = customerRepository.findById(currentCustomer.getId()).orElseThrow(
-                () -> new CustomerNotFoundException(currentCustomer.getId())
+        final User user = userRepository.findById(currentUser.getId()).orElseThrow(
+                () -> new UserNotFoundException(currentUser.getId())
         );
 
         BankingAccount bankingAccount = bankingAccountDomainService.createAccount(
-                customer,
+                user,
                 request.type(),
                 request.currency()
         );

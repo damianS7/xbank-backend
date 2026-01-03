@@ -26,14 +26,14 @@ public class BankingTransferDomainService {
      * @return the created BankingTransfer
      */
     public BankingTransfer createTransfer(
-            Long customerId,
+            Long userId,
             BankingAccount fromAccount,
             BankingAccount toAccount,
             BigDecimal amount,
             String description
     ) {
-        // assert customerId is the owner of fromAccount
-        fromAccount.assertOwnedBy(customerId);
+        // assert userId is the owner of fromAccount
+        fromAccount.assertOwnedBy(userId);
 
         // Create the transfer
         BankingTransfer transfer = BankingTransfer
@@ -63,7 +63,7 @@ public class BankingTransferDomainService {
                         amount
                 )
                 .setStatus(BankingTransactionStatus.PENDING)
-                .setDescription("Transfer from " + fromAccount.getOwner().getFullName());
+                .setDescription("Transfer from " + fromAccount.getOwner().getProfile().getFullName());
 
         transfer.addTransaction(toTransaction);
 
@@ -73,13 +73,13 @@ public class BankingTransferDomainService {
     /**
      * Confirms a pending transfer.
      *
-     * @param customerId
+     * @param userId
      * @param transfer
      * @return the confirmed transfer
      */
-    public BankingTransfer confirmTransfer(Long customerId, BankingTransfer transfer) {
-        // assert that the transfer belongs to customerId
-        transfer.assertOwnedBy(customerId);
+    public BankingTransfer confirmTransfer(Long userId, BankingTransfer transfer) {
+        // assert that the transfer belongs to userId
+        transfer.assertOwnedBy(userId);
 
         // deduct balance
         BankingAccount fromAccount = transfer.getFromAccount();
@@ -101,13 +101,13 @@ public class BankingTransferDomainService {
     /**
      * Rejects a pending transfer
      *
-     * @param customerId
+     * @param userId
      * @param transfer
      * @return the rejected transfer
      */
-    public BankingTransfer reject(Long customerId, BankingTransfer transfer) {
-        // assert that the transfer belongs to customerId
-        transfer.assertOwnedBy(customerId);
+    public BankingTransfer reject(Long userId, BankingTransfer transfer) {
+        // assert that the transfer belongs to userId
+        transfer.assertOwnedBy(userId);
 
         // reject transfer
         transfer.reject();

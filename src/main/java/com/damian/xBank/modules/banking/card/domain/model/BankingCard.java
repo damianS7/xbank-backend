@@ -2,7 +2,8 @@ package com.damian.xBank.modules.banking.card.domain.model;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.card.domain.exception.*;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.account.account.domain.model.User;
+import com.damian.xBank.modules.user.profile.domain.entity.UserProfile;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
@@ -76,7 +77,7 @@ public class BankingCard {
         return this;
     }
 
-    public Customer getOwner() {
+    public User getOwner() {
         return bankingAccount.getOwner();
     }
 
@@ -219,7 +220,7 @@ public class BankingCard {
     }
 
     public String getHolderName() {
-        return this.getBankingAccount().getOwner().getFullName();
+        return this.getBankingAccount().getOwner().getProfile().getFullName();
     }
 
     public boolean isLocked() {
@@ -237,7 +238,7 @@ public class BankingCard {
     }
 
     /**
-     * Assert the ownership of the card belongs to {@link Customer}.
+     * Assert the ownership of the card belongs to {@link UserProfile}.
      *
      * @param customerId the customer to check ownership against
      * @return the current validator instance for chaining
@@ -324,7 +325,7 @@ public class BankingCard {
      * @return the current validator instance for chaining
      */
     public BankingCard assertCanSpend(
-            Customer actor,
+            User actor,
             BigDecimal amount,
             String cardPin
     ) {

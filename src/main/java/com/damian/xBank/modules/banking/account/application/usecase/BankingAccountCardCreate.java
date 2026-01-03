@@ -4,9 +4,9 @@ import com.damian.xBank.modules.banking.account.application.dto.request.BankingA
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
-import com.damian.xBank.modules.banking.card.domain.service.BankingCardDomainService;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.banking.card.domain.service.BankingCardDomainService;
+import com.damian.xBank.modules.user.account.account.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,8 +36,8 @@ public class BankingAccountCardCreate {
      */
     @Transactional
     public BankingCard execute(Long bankingAccountId, BankingAccountCardRequest request) {
-        // Customer logged
-        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
+        // Current user
+        final User currentUser = authenticationContext.getCurrentUser();
 
         // we get the BankingAccount to associate the card created.
         final BankingAccount bankingAccount = bankingAccountRepository
@@ -47,9 +47,9 @@ public class BankingAccountCardCreate {
                 );
 
         // if the logged customer is not admin
-        if (!currentCustomer.isAdmin()) {
+        if (!currentUser.isAdmin()) {
             // check if the account belongs to this customer.
-            bankingAccount.assertOwnedBy(currentCustomer.getId());
+            bankingAccount.assertOwnedBy(currentUser.getId());
         }
 
         // if customer has reached the maximum amount of cards per account.

@@ -13,7 +13,7 @@ import com.damian.xBank.modules.banking.transaction.infrastructure.service.Banki
 import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
 import com.damian.xBank.modules.notification.domain.model.NotificationType;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.account.account.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,13 +53,13 @@ public class BankingAccountDeposit {
             Long bankingAccountId,
             BankingAccountDepositRequest request
     ) {
-        // Current customer
-        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
+        // Current user
+        final User currentUser = authenticationContext.getCurrentUser();
 
         // if the logged customer is not admin or bank manager
-        if (!currentCustomer.isAdmin()) {
+        if (!currentUser.isAdmin()) {
             throw new BankingAccountDepositNotAdminException(
-                    bankingAccountId, currentCustomer.getId()
+                    bankingAccountId, currentUser.getId()
             );
         }
 
@@ -94,7 +94,7 @@ public class BankingAccountDeposit {
         // Notify receiver
         notificationPublisher.publish(
                 new NotificationEvent(
-                        bankingAccount.getOwner().getAccount().getId(),
+                        bankingAccount.getOwner().getId(),
                         NotificationType.TRANSACTION,
                         Map.of(
                                 "transaction", BankingTransactionDtoMapper.toBankingTransactionDto(transaction)
@@ -105,7 +105,7 @@ public class BankingAccountDeposit {
 
         log.debug(
                 "Admin {} processed deposit with transaction id {}",
-                currentCustomer.getId(),
+                currentUser.getId(),
                 transaction.getId()
         );
 

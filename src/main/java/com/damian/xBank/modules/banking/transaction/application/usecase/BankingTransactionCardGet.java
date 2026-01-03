@@ -5,8 +5,8 @@ import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
-import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.account.account.domain.model.User;
+import com.damian.xBank.modules.user.account.account.domain.model.UserAccountRole;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,8 +36,8 @@ public class BankingTransactionCardGet {
      * @return
      */
     public Page<BankingTransaction> execute(Long cardId, Pageable pageable) {
-        // Customer logged
-        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
+        // Current user
+        final User currentUser = authenticationContext.getCurrentUser();
 
         BankingCard card = bankingCardRepository
                 .findById(cardId)
@@ -46,10 +46,10 @@ public class BankingTransactionCardGet {
                 );
 
         // if the current user is a customer ...
-        if (currentCustomer.hasRole(UserAccountRole.CUSTOMER)) {
+        if (currentUser.hasRole(UserAccountRole.CUSTOMER)) {
 
             // assert account belongs to him
-            card.assertOwnedBy(currentCustomer.getId());
+            card.assertOwnedBy(currentUser.getId());
 
         }
 

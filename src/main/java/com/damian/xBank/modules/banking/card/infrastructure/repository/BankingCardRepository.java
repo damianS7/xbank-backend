@@ -14,8 +14,8 @@ import java.util.Set;
 public interface BankingCardRepository extends JpaRepository<BankingCard, Long> {
     Set<BankingCard> findByBankingAccountId(Long bankingAccountId);
 
-    @Query("SELECT cards FROM BankingCard cards WHERE cards.bankingAccount.customer.id = :customerId")
-    Set<BankingCard> findCardsByCustomerId(@Param("customerId") Long customerId);
+    @Query("SELECT cards FROM BankingCard cards WHERE cards.bankingAccount.customer.id = :userId")
+    Set<BankingCard> findCardsByUserId(@Param("userId") Long userId);
 
     Set<BankingCard> findByStatusNotAndExpiredDateLessThanEqual(
             BankingCardStatus status,

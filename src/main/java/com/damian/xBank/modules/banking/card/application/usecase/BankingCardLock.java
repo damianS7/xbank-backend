@@ -5,7 +5,7 @@ import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoun
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.account.account.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import com.damian.xBank.shared.security.PasswordValidator;
 import org.springframework.stereotype.Service;
@@ -40,8 +40,8 @@ public class BankingCardLock {
             Long cardId,
             BankingCardLockRequest request
     ) {
-        // Customer logged
-        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
+        // Current user
+        final User currentUser = authenticationContext.getCurrentUser();
 
         // Banking card to be locked
         final BankingCard bankingCard = bankingCardRepository.findById(cardId).orElseThrow(
@@ -49,11 +49,11 @@ public class BankingCardLock {
                 () -> new BankingCardNotFoundException(cardId));
 
         // run validations if not admin
-        if (!currentCustomer.isAdmin()) {
+        if (!currentUser.isAdmin()) {
 
-            bankingCard.assertOwnedBy(currentCustomer.getId());
+            bankingCard.assertOwnedBy(currentUser.getId());
 
-            passwordValidator.validatePassword(currentCustomer.getAccount(), request.password());
+            passwordValidator.validatePassword(currentUser, request.password());
         }
 
         // validate card status transition

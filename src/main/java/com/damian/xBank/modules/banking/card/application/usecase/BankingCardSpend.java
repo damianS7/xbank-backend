@@ -12,7 +12,7 @@ import com.damian.xBank.modules.banking.transaction.infrastructure.service.Banki
 import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
 import com.damian.xBank.modules.notification.domain.model.NotificationType;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.account.account.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import com.damian.xBank.shared.security.PasswordValidator;
 import org.springframework.stereotype.Service;
@@ -52,8 +52,8 @@ public class BankingCardSpend {
      */
     @Transactional
     public BankingTransaction execute(Long bankingCardId, BankingCardSpendRequest request) {
-        // Customer logged
-        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
+        // Current user
+        final User currentUser = authenticationContext.getCurrentUser();
 
         BankingCard bankingCard = bankingCardRepository.findById(bankingCardId).orElseThrow(
                 () -> new BankingCardNotFoundException(bankingCardId)
@@ -61,7 +61,7 @@ public class BankingCardSpend {
 
 
         // run validations for the card and throw exception
-        bankingCard.assertCanSpend(currentCustomer, request.amount(), request.cardPIN());
+        bankingCard.assertCanSpend(currentUser, request.amount(), request.cardPIN());
 
         BankingTransaction transaction = BankingTransaction
                 .create(
@@ -81,7 +81,7 @@ public class BankingCardSpend {
         // Notify the user
         notificationPublisher.publish(
                 new NotificationEvent(
-                        currentCustomer.getAccount().getId(),
+                        currentUser.getId(),
                         NotificationType.TRANSACTION,
                         Map.of(
                                 "transaction", BankingTransactionDtoMapper.toBankingTransactionDto(transaction)

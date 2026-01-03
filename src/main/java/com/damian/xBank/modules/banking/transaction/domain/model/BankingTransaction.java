@@ -5,7 +5,6 @@ import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotOwnerException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionStatusTransitionException;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -18,10 +17,6 @@ public class BankingTransaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "customer_id", referencedColumnName = "id", nullable = false)
-    private Customer customer; // TODO maybe unnecessary?
 
     @ManyToOne
     @JoinColumn(name = "account_id", referencedColumnName = "id", nullable = false)
@@ -98,17 +93,8 @@ public class BankingTransaction {
         return create(type, card.getBankingAccount(), amount);
     }
 
-    public Customer getCustomer() {
-        return customer;
-    }
-
-    public BankingTransaction setCustomer(Customer customer) {
-        this.customer = customer;
-        return this;
-    }
-
-    public boolean isOwnedBy(Long customerId) {
-        return Objects.equals(getBankingAccount().getOwner().getId(), customerId);
+    public boolean isOwnedBy(Long userId) {
+        return Objects.equals(getBankingAccount().getOwner().getId(), userId);
     }
 
     public Long getId() {
@@ -126,7 +112,6 @@ public class BankingTransaction {
 
     public BankingTransaction setBankingAccount(BankingAccount account) {
         this.bankingAccount = account;
-        this.customer = account.getOwner();
         return this;
     }
 
@@ -212,7 +197,6 @@ public class BankingTransaction {
 
     public BankingTransaction setBankingCard(BankingCard bankingCard) {
         this.bankingCard = bankingCard;
-        this.customer = bankingCard.getOwner();
         return this;
     }
 
@@ -259,15 +243,15 @@ public class BankingTransaction {
     /**
      * Assert the ownership of the transaction.
      *
-     * @param customerId the customer to check ownership against
+     * @param userId the customer to check ownership against
      * @return the current validator instance for chaining
      * @throws BankingTransactionNotOwnerException if the transaction does not belong to the customer
      */
-    public BankingTransaction assertOwnedBy(Long customerId) {
+    public BankingTransaction assertOwnedBy(Long userId) {
 
         // compare account owner id with given customer id
-        if (!isOwnedBy(customerId)) {
-            throw new BankingTransactionNotOwnerException(getId(), customerId);
+        if (!isOwnedBy(userId)) {
+            throw new BankingTransactionNotOwnerException(getId(), userId);
         }
 
         return this;

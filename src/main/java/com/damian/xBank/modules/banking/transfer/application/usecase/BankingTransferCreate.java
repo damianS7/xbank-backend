@@ -11,7 +11,7 @@ import com.damian.xBank.modules.banking.transfer.infrastructure.repository.Banki
 import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
 import com.damian.xBank.modules.notification.domain.model.NotificationType;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.account.account.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,8 +43,8 @@ public class BankingTransferCreate {
 
     @Transactional
     public BankingTransfer createTransfer(BankingTransferRequest request) {
-        // Customer logged
-        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
+        // Current user
+        final User currentUser = authenticationContext.getCurrentUser();
 
         // Banking account from where funds will be transfered.
         final BankingAccount fromAccount = bankingAccountRepository
@@ -61,7 +61,7 @@ public class BankingTransferCreate {
                 );
 
         BankingTransfer transfer = bankingTransferDomainService.createTransfer(
-                currentCustomer.getId(),
+                currentUser.getId(),
                 fromAccount,
                 toAccount,
                 request.amount(),
@@ -71,7 +71,7 @@ public class BankingTransferCreate {
         // Notify fromAccount
         notificationPublisher.publish(
                 new NotificationEvent(
-                        toAccount.getOwner().getAccount().getId(),
+                        toAccount.getOwner().getId(),
                         NotificationType.TRANSACTION,
                         Map.of(
                                 "transaction",

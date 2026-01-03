@@ -4,7 +4,7 @@ import com.damian.xBank.modules.banking.account.application.dto.request.BankingA
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.account.account.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,8 +30,8 @@ public class BankingAccountActivate {
      */
     @Transactional
     public BankingAccount execute(Long accountId, BankingAccountActivateRequest request) {
-        // Customer logged
-        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
+        // Current user
+        final User currentUser = authenticationContext.getCurrentUser();
 
         // Banking account to activate
         final BankingAccount bankingAccount = bankingAccountRepository
@@ -43,7 +43,7 @@ public class BankingAccountActivate {
                 );
 
         // validations rules only for customers
-        bankingAccount.activateBy(currentCustomer);
+        bankingAccount.activateBy(currentUser);
 
         return bankingAccountRepository.save(bankingAccount);
     }

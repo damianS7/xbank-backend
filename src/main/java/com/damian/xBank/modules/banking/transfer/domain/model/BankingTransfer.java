@@ -6,7 +6,7 @@ import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransfe
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferNotOwnerException;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferSameAccountException;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferStatusTransitionException;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.profile.domain.entity.UserProfile;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -179,24 +179,24 @@ public class BankingTransfer {
         ).findFirst().orElseThrow();
     }
 
-    public boolean isOwnedBy(Long customerId) {
+    public boolean isOwnedBy(Long userId) {
 
         // compare account owner id with given customer id
-        return Objects.equals(getFromAccount().getOwner().getId(), customerId);
+        return Objects.equals(getFromAccount().getOwner().getId(), userId);
     }
 
     /**
-     * Assert the ownership of the account belongs to {@link Customer}.
+     * Assert the ownership of the account belongs to {@link UserProfile}.
      *
-     * @param customerId the customer to check ownership against
+     * @param userId the customer to check ownership against
      * @return the current validator instance for chaining
      * @throws BankingTransferNotOwnerException if the account does not belong to the customer
      */
-    public BankingTransfer assertOwnedBy(Long customerId) {
+    public BankingTransfer assertOwnedBy(Long userId) {
 
         // compare card owner id with given customer id
-        if (!isOwnedBy(customerId)) {
-            throw new BankingTransferNotOwnerException(getFromAccount().getOwner().getId(), customerId);
+        if (!isOwnedBy(userId)) {
+            throw new BankingTransferNotOwnerException(getFromAccount().getOwner().getId(), userId);
         }
 
         return this;

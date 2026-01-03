@@ -10,7 +10,7 @@ import com.damian.xBank.modules.banking.transfer.infrastructure.repository.Banki
 import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
 import com.damian.xBank.modules.notification.domain.model.NotificationType;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.account.account.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import com.damian.xBank.shared.security.PasswordValidator;
 import org.springframework.stereotype.Service;
@@ -49,18 +49,18 @@ public class BankingTransferConfirm {
             Long transferId,
             BankingTransferConfirmRequest request
     ) {
-        // Customer logged
-        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
+        // Current user
+        final User currentUser = authenticationContext.getCurrentUser();
 
         // validate customer password
-        passwordValidator.validatePassword(currentCustomer, request.password());
+        passwordValidator.validatePassword(currentUser, request.password());
 
         BankingTransfer transfer = bankingTransferRepository.findById(transferId).orElseThrow(
                 () -> new BankingTransferNotFoundException(transferId)
         );
 
         // confirm transfer
-        bankingTransferDomainService.confirmTransfer(currentCustomer.getId(), transfer);
+        bankingTransferDomainService.confirmTransfer(currentUser.getId(), transfer);
 
         // Save accounts (.save is optional because of transactional)
         // Saving the accounts also updates the transactions since we are using CASCADE.ALL
@@ -73,7 +73,7 @@ public class BankingTransferConfirm {
         // Notify receive
         notificationPublisher.publish(
                 new NotificationEvent(
-                        transfer.getToAccount().getOwner().getAccount().getId(),
+                        transfer.getToAccount().getOwner().getId(),
                         NotificationType.TRANSACTION,
                         Map.of(
                                 "transaction",

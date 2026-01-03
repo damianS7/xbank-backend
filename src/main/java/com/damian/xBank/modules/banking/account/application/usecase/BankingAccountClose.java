@@ -4,7 +4,7 @@ import com.damian.xBank.modules.banking.account.application.dto.request.BankingA
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.account.account.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import com.damian.xBank.shared.security.PasswordValidator;
 import org.springframework.stereotype.Service;
@@ -32,8 +32,8 @@ public class BankingAccountClose {
      * @return the banking account with the CLOSED status.
      */
     public BankingAccount execute(Long accountId, BankingAccountCloseRequest request) {
-        // we extract the customer logged from the SecurityContext
-        final Customer currentCustomer = authenticationContext.getCurrentCustomer();
+        // Current user
+        final User currentUser = authenticationContext.getCurrentUser();
 
         // Banking account to be closed
         final BankingAccount bankingAccount = bankingAccountRepository.findById(accountId).orElseThrow(
@@ -42,10 +42,10 @@ public class BankingAccountClose {
                 ) // Banking account not found
         );
 
-        passwordValidator.validatePassword(currentCustomer.getAccount(), request.password());
+        passwordValidator.validatePassword(currentUser, request.password());
 
         // validations rules only for customers
-        bankingAccount.closeBy(currentCustomer);
+        bankingAccount.closeBy(currentUser);
 
         return bankingAccountRepository.save(bankingAccount);
     }

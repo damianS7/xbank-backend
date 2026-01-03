@@ -9,7 +9,7 @@ import java.util.Set;
 
 @Repository
 public interface BankingAccountRepository extends JpaRepository<BankingAccount, Long> {
-    Set<BankingAccount> findByCustomer_Id(Long customerId);
+    Set<BankingAccount> findByUser_Id(Long userId);
 
     Optional<BankingAccount> findByAccountNumber(String accountNumber);
 }

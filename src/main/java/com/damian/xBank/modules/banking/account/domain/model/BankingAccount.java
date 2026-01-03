@@ -1,12 +1,13 @@
 package com.damian.xBank.modules.banking.account.domain.model;
 
 import com.damian.xBank.modules.banking.account.domain.exception.*;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingAccountCardsLimitException;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
-import com.damian.xBank.modules.banking.card.domain.exception.BankingAccountCardsLimitException;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
-import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.account.account.domain.model.User;
+import com.damian.xBank.modules.user.account.account.domain.model.UserAccountRole;
+import com.damian.xBank.modules.user.profile.domain.entity.UserProfile;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -23,8 +24,8 @@ public class BankingAccount {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id", referencedColumnName = "id", nullable = false)
-    private Customer customer;
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
+    private User user;
 
     @OneToMany(mappedBy = "bankingAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<BankingTransaction> accountTransactions;
@@ -72,14 +73,14 @@ public class BankingAccount {
         this.createdAt = Instant.now();
     }
 
-    public BankingAccount(Customer customer) {
+    public BankingAccount(User user) {
         this();
-        this.customer = customer;
-        this.customer.addBankingAccount(this);
+        this.user = user;
+        this.user.addBankingAccount(this);
     }
 
-    public static BankingAccount create(Customer customer) {
-        return new BankingAccount(customer);
+    public static BankingAccount create(User user) {
+        return new BankingAccount(user);
     }
 
     public Long getId() {
@@ -91,12 +92,12 @@ public class BankingAccount {
         return this;
     }
 
-    public Customer getOwner() {
-        return customer;
+    public User getOwner() {
+        return user;
     }
 
-    public BankingAccount setOwner(Customer customer) {
-        this.customer = customer;
+    public BankingAccount setOwner(User user) {
+        this.user = user;
         return this;
     }
 
@@ -266,7 +267,7 @@ public class BankingAccount {
     }
 
     /**
-     * Assert the ownership of the account belongs to {@link Customer}.
+     * Assert the ownership of the account belongs to {@link UserProfile}.
      *
      * @param customerId the customer to check ownership against
      * @return the current validator instance for chaining
@@ -334,7 +335,7 @@ public class BankingAccount {
         return this;
     }
 
-    public void activateBy(Customer actor) {
+    public void activateBy(User actor) {
         if (actor.hasRole(UserAccountRole.ADMIN)) {
             //            assertOwnedBy(actor.getId());
             setStatus(BankingAccountStatus.ACTIVE);
@@ -342,7 +343,7 @@ public class BankingAccount {
 
     }
 
-    public void closeBy(Customer actor) {
+    public void closeBy(User actor) {
         // assert account is not Suspended or Closed already
         assertActive();
 

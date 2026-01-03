@@ -5,7 +5,7 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurre
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.service.BankingAccountNumberGenerator;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.account.account.domain.model.User;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,20 +19,20 @@ public class BankingAccountDomainService {
     }
 
     /**
-     * Create a BankingAccount for a specific customer.
+     * Create a BankingAccount for a specific user.
      *
-     * @param customer        Customer owner of the BankingAccount
+     * @param user            Customer owner of the BankingAccount
      * @param accountType     the type of BankingAccount
      * @param accountCurrency the currency of the BankingAccount
      * @return a newly created BankingAccount
      */
     public BankingAccount createAccount(
-            Customer customer,
+            User user,
             BankingAccountType accountType,
             BankingAccountCurrency accountCurrency
     ) {
         return BankingAccount
-                .create(customer)
+                .create(user)
                 .setStatus(BankingAccountStatus.ACTIVE)
                 .setType(accountType)
                 .setCurrency(accountCurrency)
