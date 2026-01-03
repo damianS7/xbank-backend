@@ -2,7 +2,7 @@ package com.damian.xBank.modules.banking.card.domain.model;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.card.domain.exception.*;
-import com.damian.xBank.modules.user.account.account.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.User;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;

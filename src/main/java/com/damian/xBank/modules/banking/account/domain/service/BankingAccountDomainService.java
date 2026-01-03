@@ -5,7 +5,7 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurre
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.service.BankingAccountNumberGenerator;
-import com.damian.xBank.modules.user.account.account.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.User;
 import org.springframework.stereotype.Service;
 
 @Service

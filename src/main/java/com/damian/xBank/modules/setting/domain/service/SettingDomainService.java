@@ -2,7 +2,7 @@ package com.damian.xBank.modules.setting.domain.service;
 
 import com.damian.xBank.modules.setting.domain.model.Setting;
 import com.damian.xBank.modules.setting.domain.model.UserSettings;
-import com.damian.xBank.modules.user.account.account.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.User;
 import org.springframework.stereotype.Service;
 
 @Service

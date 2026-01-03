@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.notification.domain.model;
 
 import com.damian.xBank.modules.notification.domain.exception.NotificationNotOwnerException;
-import com.damian.xBank.modules.user.account.account.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.User;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;

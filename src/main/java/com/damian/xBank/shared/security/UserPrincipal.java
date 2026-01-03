@@ -1,8 +1,8 @@
 package com.damian.xBank.shared.security;
 
-import com.damian.xBank.modules.user.account.account.domain.model.User;
-import com.damian.xBank.modules.user.account.account.domain.model.UserAccountRole;
-import com.damian.xBank.modules.user.account.account.domain.model.UserAccountStatus;
+import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserAccountRole;
+import com.damian.xBank.modules.user.user.domain.model.UserAccountStatus;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

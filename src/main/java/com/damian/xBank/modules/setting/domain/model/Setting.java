@@ -2,7 +2,7 @@ package com.damian.xBank.modules.setting.domain.model;
 
 import com.damian.xBank.modules.setting.domain.exception.SettingNotOwnerException;
 import com.damian.xBank.modules.setting.infrastructure.persistence.converter.UserSettingsConverter;
-import com.damian.xBank.modules.user.account.account.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import com.damian.xBank.shared.security.UserPrincipal;
 import jakarta.persistence.*;

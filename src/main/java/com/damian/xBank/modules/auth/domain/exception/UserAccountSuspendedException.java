@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.auth.domain.exception;
 
-import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountException;
+import com.damian.xBank.modules.user.user.domain.exception.UserAccountException;
 import com.damian.xBank.shared.exception.ErrorCodes;
 
 public class UserAccountSuspendedException extends UserAccountException {
