@@ -4,7 +4,7 @@ import com.damian.xBank.modules.banking.account.application.dto.request.BankingA
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.service.BankingAccountDomainService;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
-import com.damian.xBank.modules.user.user.UserNotFoundException;
+import com.damian.xBank.modules.user.user.domain.exception.UserAccountNotFoundException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserAccountRepository;
 import com.damian.xBank.shared.security.AuthenticationContext;
@@ -41,7 +41,7 @@ public class BankingAccountCreate {
 
         // we get the Customer entity so we can save at the end
         final User user = userRepository.findById(currentUser.getId()).orElseThrow(
-                () -> new UserNotFoundException(currentUser.getId())
+                () -> new UserAccountNotFoundException(currentUser.getId())
         );
 
         BankingAccount bankingAccount = bankingAccountDomainService.createAccount(
