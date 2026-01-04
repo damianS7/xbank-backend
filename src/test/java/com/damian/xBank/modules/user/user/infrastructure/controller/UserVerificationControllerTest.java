@@ -4,8 +4,8 @@ import com.damian.xBank.modules.user.account.token.domain.model.UserAccountToken
 import com.damian.xBank.modules.user.account.token.domain.model.UserAccountTokenType;
 import com.damian.xBank.modules.user.user.application.dto.request.UserAccountPasswordResetSetRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserAccountRole;
-import com.damian.xBank.modules.user.user.domain.model.UserAccountStatus;
+import com.damian.xBank.modules.user.user.domain.model.UserRole;
+import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.utils.JsonHelper;
 import org.junit.jupiter.api.*;
@@ -25,9 +25,9 @@ public class UserVerificationControllerTest extends AbstractControllerTest {
         user = User.create()
                    .setEmail("user@demo.com")
                    .setPassword(passwordEncoder.encode(this.RAW_PASSWORD))
-                   .setRole(UserAccountRole.ADMIN);
+                   .setRole(UserRole.ADMIN);
 
-        user.setAccountStatus(UserAccountStatus.VERIFIED);
+        user.setStatus(UserStatus.VERIFIED);
         userAccountRepository.save(user);
     }
 
@@ -44,7 +44,7 @@ public class UserVerificationControllerTest extends AbstractControllerTest {
         User unverifiedUser = User.create()
                                   .setEmail("non-verified-user@demo.com")
                                   .setPassword(passwordEncoder.encode(this.RAW_PASSWORD))
-                                  .setAccountStatus(UserAccountStatus.PENDING_VERIFICATION);
+                                  .setStatus(UserStatus.PENDING_VERIFICATION);
         userAccountRepository.save(unverifiedUser);
 
         UserAccountToken givenToken = UserAccountToken.create()

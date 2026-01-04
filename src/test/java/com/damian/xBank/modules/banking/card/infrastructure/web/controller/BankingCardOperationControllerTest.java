@@ -10,7 +10,7 @@ import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.transaction.application.dto.response.BankingTransactionDto;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserAccountStatus;
+import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +36,7 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
     void setUp() {
         customer = UserTestBuilder.aCustomer()
                                   .withEmail("customer@demo.com")
-                                  .withStatus(UserAccountStatus.VERIFIED)
+                                  .withStatus(UserStatus.VERIFIED)
                                   .withPassword(passwordEncoder.encode(RAW_PASSWORD))
                                   .build();
 

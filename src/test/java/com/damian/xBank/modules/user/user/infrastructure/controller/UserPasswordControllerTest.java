@@ -5,8 +5,8 @@ import com.damian.xBank.modules.user.user.application.dto.request.UserAccountPas
 import com.damian.xBank.modules.user.user.application.dto.request.UserAccountPasswordResetSetRequest;
 import com.damian.xBank.modules.user.user.application.dto.request.UserAccountPasswordUpdateRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserAccountRole;
-import com.damian.xBank.modules.user.user.domain.model.UserAccountStatus;
+import com.damian.xBank.modules.user.user.domain.model.UserRole;
+import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.dto.ApiResponse;
 import com.damian.xBank.shared.exception.ErrorCodes;
@@ -32,8 +32,8 @@ public class UserPasswordControllerTest extends AbstractControllerTest {
         user = User.create()
                    .setEmail("user@demo.com")
                    .setPassword(passwordEncoder.encode(this.RAW_PASSWORD))
-                   .setRole(UserAccountRole.ADMIN)
-                   .setAccountStatus(UserAccountStatus.VERIFIED);
+                   .setRole(UserRole.ADMIN)
+                   .setStatus(UserStatus.VERIFIED);
         userAccountRepository.save(user);
     }
 
@@ -192,8 +192,8 @@ public class UserPasswordControllerTest extends AbstractControllerTest {
         User unverifiedUser = User.create()
                                   .setEmail("non-verified-user@demo.com")
                                   .setPassword(passwordEncoder.encode(this.RAW_PASSWORD))
-                                  .setRole(UserAccountRole.CUSTOMER)
-                                  .setAccountStatus(UserAccountStatus.PENDING_VERIFICATION);
+                                  .setRole(UserRole.CUSTOMER)
+                                  .setStatus(UserStatus.PENDING_VERIFICATION);
         userAccountRepository.save(unverifiedUser);
 
         UserAccountToken givenToken = UserAccountToken.create()

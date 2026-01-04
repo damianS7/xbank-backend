@@ -10,7 +10,7 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatu
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserAccountRole;
+import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.UserTestBuilder;
@@ -169,7 +169,7 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
         User customerAdmin = UserTestBuilder.aCustomer()
                                             .withId(2L)
                                             .withEmail("customerAdmin@demo.com")
-                                            .withRole(UserAccountRole.ADMIN)
+                                            .withRole(UserRole.ADMIN)
                                             .withPassword(RAW_PASSWORD)
                                             .build();
 

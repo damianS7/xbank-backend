@@ -3,8 +3,8 @@ package com.damian.xBank.modules.user.user.infrastructure.controller;
 import com.damian.xBank.modules.user.user.application.dto.request.UserAccountEmailUpdateRequest;
 import com.damian.xBank.modules.user.user.application.dto.response.UserAccountDto;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserAccountRole;
-import com.damian.xBank.modules.user.user.domain.model.UserAccountStatus;
+import com.damian.xBank.modules.user.user.domain.model.UserRole;
+import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.utils.JsonHelper;
 import org.junit.jupiter.api.*;
@@ -27,9 +27,9 @@ public class UserControllerTest extends AbstractControllerTest {
         user = User.create()
                    .setEmail("user@demo.com")
                    .setPassword(passwordEncoder.encode(this.RAW_PASSWORD))
-                   .setRole(UserAccountRole.ADMIN);
+                   .setRole(UserRole.ADMIN);
 
-        user.setAccountStatus(UserAccountStatus.VERIFIED);
+        user.setStatus(UserStatus.VERIFIED);
         userAccountRepository.save(user);
     }
 

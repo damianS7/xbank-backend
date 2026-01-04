@@ -12,8 +12,8 @@ import com.damian.xBank.modules.banking.transfer.application.dto.response.Bankin
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferStatus;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserAccountRole;
-import com.damian.xBank.modules.user.user.domain.model.UserAccountStatus;
+import com.damian.xBank.modules.user.user.domain.model.UserRole;
+import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.UserTestBuilder;
@@ -46,7 +46,7 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
         fromCustomer = UserTestBuilder.aCustomer()
                                       .withEmail("fromCustomer@demo.com")
                                       .withPassword(RAW_PASSWORD)
-                                      .withStatus(UserAccountStatus.VERIFIED)
+                                      .withStatus(UserStatus.VERIFIED)
                                       .build();
 
         userAccountRepository.save(fromCustomer);
@@ -62,7 +62,7 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
         toCustomer = UserTestBuilder.aCustomer()
                                     .withEmail("toCustomer@demo.com")
                                     .withPassword(RAW_PASSWORD)
-                                    .withStatus(UserAccountStatus.VERIFIED)
+                                    .withStatus(UserStatus.VERIFIED)
                                     .build();
 
         userAccountRepository.save(toCustomer);
@@ -77,8 +77,8 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
 
         admin = UserTestBuilder.aCustomer()
                                .withEmail("admin@demo.com")
-                               .withStatus(UserAccountStatus.VERIFIED)
-                               .withRole(UserAccountRole.ADMIN)
+                               .withStatus(UserStatus.VERIFIED)
+                               .withRole(UserRole.ADMIN)
                                .build();
 
         userAccountRepository.save(admin);

@@ -7,8 +7,8 @@ import com.damian.xBank.modules.notification.domain.model.Notification;
 import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
 import com.damian.xBank.modules.notification.domain.model.NotificationType;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserAccountRole;
-import com.damian.xBank.modules.user.user.domain.model.UserAccountStatus;
+import com.damian.xBank.modules.user.user.domain.model.UserRole;
+import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.security.UserPrincipal;
 import com.damian.xBank.shared.utils.JwtUtil;
@@ -57,8 +57,8 @@ public class NotificationControllerTest extends AbstractControllerTest {
         customer = UserTestBuilder
                 .aCustomer()
                 .withEmail("customer@demo.com")
-                .withRole(UserAccountRole.CUSTOMER)
-                .withStatus(UserAccountStatus.VERIFIED)
+                .withRole(UserRole.CUSTOMER)
+                .withStatus(UserStatus.VERIFIED)
                 .withPassword(passwordEncoder.encode(RAW_PASSWORD))
                 .build();
 

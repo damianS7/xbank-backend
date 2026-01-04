@@ -11,7 +11,7 @@ import com.damian.xBank.modules.notification.infrastructure.repository.Notificat
 import com.damian.xBank.modules.setting.infrastructure.persistence.repository.SettingRepository;
 import com.damian.xBank.modules.user.account.token.infrastructure.repository.UserAccountTokenRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserAccountRole;
+import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserAccountRepository;
 import com.damian.xBank.shared.security.UserPrincipal;
 import com.damian.xBank.shared.utils.JwtUtil;
@@ -97,10 +97,10 @@ public abstract class AbstractControllerTest {
 
     protected void login(String email) throws Exception {
         // given
-        this.login(email, UserAccountRole.CUSTOMER);
+        this.login(email, UserRole.CUSTOMER);
     }
 
-    protected void login(String email, UserAccountRole role) throws Exception {
+    protected void login(String email, UserRole role) throws Exception {
         // given
         final HashMap<String, Object> claims = new HashMap<>();
         claims.put("email", email);

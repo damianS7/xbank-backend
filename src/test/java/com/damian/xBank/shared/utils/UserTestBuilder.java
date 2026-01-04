@@ -2,8 +2,8 @@ package com.damian.xBank.shared.utils;
 
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserAccountRole;
-import com.damian.xBank.modules.user.user.domain.model.UserAccountStatus;
+import com.damian.xBank.modules.user.user.domain.model.UserRole;
+import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -13,8 +13,8 @@ public class UserTestBuilder {
     private Long id = null;
     private String email = "user@demo.com";
     private String password = "$2a$10$7EqJtq98hPqEX7fNZaFWoOa6sK9Pz7RrH9Z4VQe8C7l8bqZkYwF6e";
-    private UserAccountStatus status = UserAccountStatus.VERIFIED;
-    private UserAccountRole role = UserAccountRole.CUSTOMER;
+    private UserStatus status = UserStatus.VERIFIED;
+    private UserRole role = UserRole.CUSTOMER;
     private UserProfile profile;
 
     private UserTestBuilder() {
@@ -30,7 +30,7 @@ public class UserTestBuilder {
         return this;
     }
 
-    public UserTestBuilder withStatus(UserAccountStatus status) {
+    public UserTestBuilder withStatus(UserStatus status) {
         this.status = status;
         return this;
     }
@@ -40,7 +40,7 @@ public class UserTestBuilder {
         return this;
     }
 
-    public UserTestBuilder withRole(UserAccountRole role) {
+    public UserTestBuilder withRole(UserRole role) {
         this.role = role;
         return this;
     }
@@ -59,7 +59,7 @@ public class UserTestBuilder {
         return User.create()
                    .setId(id)
                    .setPassword(password)
-                   .setAccountStatus(status)
+                   .setStatus(status)
                    .setEmail(email)
                    .setProfile(profile)
                    .setRole(role);

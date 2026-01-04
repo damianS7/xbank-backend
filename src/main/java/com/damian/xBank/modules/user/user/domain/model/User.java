@@ -19,7 +19,7 @@ public class User {
     private Set<BankingAccount> bankingAccounts;
 
     @Enumerated(EnumType.STRING)
-    private UserAccountRole role;
+    private UserRole role;
 
     @Column
     private String email;
@@ -29,7 +29,7 @@ public class User {
 
     @Column(name = "account_status")
     @Enumerated(EnumType.STRING)
-    private UserAccountStatus accountStatus;
+    private UserStatus status;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private UserProfile profile;
@@ -44,8 +44,8 @@ public class User {
         this.createdAt = Instant.now();
         this.updatedAt = Instant.now();
         this.bankingAccounts = new HashSet<>();
-        this.role = UserAccountRole.CUSTOMER;
-        this.accountStatus = UserAccountStatus.PENDING_VERIFICATION;
+        this.role = UserRole.CUSTOMER;
+        this.status = UserStatus.PENDING_VERIFICATION;
         this.profile = new UserProfile(this);
     }
 
@@ -107,16 +107,16 @@ public class User {
         return this;
     }
 
-    public User setRole(UserAccountRole role) {
+    public User setRole(UserRole role) {
         this.role = role;
         return this;
     }
 
-    public UserAccountRole getRole() {
+    public UserRole getRole() {
         return this.role;
     }
 
-    public boolean hasRole(UserAccountRole role) {
+    public boolean hasRole(UserRole role) {
         return this.getRole() == role;
     }
 
@@ -138,21 +138,21 @@ public class User {
         return this;
     }
 
-    public UserAccountStatus getAccountStatus() {
-        return this.accountStatus;
+    public UserStatus getStatus() {
+        return this.status;
     }
 
-    public User setAccountStatus(UserAccountStatus status) {
-        this.accountStatus = status;
+    public User setStatus(UserStatus status) {
+        this.status = status;
         return this;
     }
 
     public boolean isAdmin() {
-        return this.getRole() == UserAccountRole.ADMIN;
+        return this.getRole() == UserRole.ADMIN;
     }
 
     public boolean isCustomer() {
-        return this.getRole() == UserAccountRole.CUSTOMER;
+        return this.getRole() == UserRole.CUSTOMER;
     }
 
     @Override
@@ -162,7 +162,7 @@ public class User {
                ", role=" + role +
                ", email='" + email + '\'' +
                ", passwordHash='" + passwordHash + '\'' +
-               ", accountStatus=" + accountStatus +
+               ", accountStatus=" + status +
                ", createdAt=" + createdAt +
                ", updatedAt=" + updatedAt +
                '}';

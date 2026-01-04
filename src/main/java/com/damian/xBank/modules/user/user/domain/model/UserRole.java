@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.user.user.domain.model;
 
-public enum UserAccountRole {
+public enum UserRole {
     CUSTOMER, // App customers
     EMPLOYEE, // Employees from the bank
     MANAGER, // Managers from the bank

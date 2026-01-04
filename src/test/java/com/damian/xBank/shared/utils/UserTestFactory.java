@@ -1,8 +1,8 @@
 package com.damian.xBank.shared.utils;
 
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserAccountRole;
-import com.damian.xBank.modules.user.user.domain.model.UserAccountStatus;
+import com.damian.xBank.modules.user.user.domain.model.UserRole;
+import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class UserTestFactory {
@@ -16,8 +16,8 @@ public class UserTestFactory {
                    .setId(1L)
                    .setEmail("customer@demo.com")
                    .setPassword(bCryptPasswordEncoder.encode("123456"))
-                   .setRole(UserAccountRole.CUSTOMER)
-                   .setAccountStatus(UserAccountStatus.VERIFIED);
+                   .setRole(UserRole.CUSTOMER)
+                   .setStatus(UserStatus.VERIFIED);
     }
 
     public static User admin() {
@@ -25,8 +25,8 @@ public class UserTestFactory {
                    .setId(1L)
                    .setEmail("admin@demo.com")
                    .setPassword(bCryptPasswordEncoder.encode("123456"))
-                   .setRole(UserAccountRole.ADMIN)
-                   .setAccountStatus(UserAccountStatus.VERIFIED);
+                   .setRole(UserRole.ADMIN)
+                   .setStatus(UserStatus.VERIFIED);
     }
 
 }

@@ -4,8 +4,8 @@ import com.damian.xBank.modules.setting.application.dto.request.SettingsUpdateRe
 import com.damian.xBank.modules.setting.application.dto.response.SettingDto;
 import com.damian.xBank.modules.setting.domain.model.*;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserAccountRole;
-import com.damian.xBank.modules.user.user.domain.model.UserAccountStatus;
+import com.damian.xBank.modules.user.user.domain.model.UserRole;
+import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.utils.JsonHelper;
 import com.damian.xBank.shared.utils.UserTestBuilder;
@@ -31,8 +31,8 @@ public class SettingControllerTest extends AbstractControllerTest {
         customer = UserTestBuilder
                 .aCustomer()
                 .withEmail("customer@demo.com")
-                .withRole(UserAccountRole.CUSTOMER)
-                .withStatus(UserAccountStatus.VERIFIED)
+                .withRole(UserRole.CUSTOMER)
+                .withStatus(UserStatus.VERIFIED)
                 .withPassword(passwordEncoder.encode(RAW_PASSWORD))
                 .build();
 

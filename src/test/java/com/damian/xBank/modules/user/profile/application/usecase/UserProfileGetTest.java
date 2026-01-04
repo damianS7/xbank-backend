@@ -4,7 +4,7 @@ import com.damian.xBank.modules.user.profile.domain.exception.UserProfileNotFoun
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import com.damian.xBank.modules.user.profile.infrastructure.repository.UserProfileRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserAccountRole;
+import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.UserProfileTestFactory;
@@ -42,7 +42,7 @@ public class UserProfileGetTest extends AbstractServiceTest {
                                   .withId(1L)
                                   .withEmail("customer@test.com")
                                   .withPassword(this.bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                  .withRole(UserAccountRole.CUSTOMER)
+                                  .withRole(UserRole.CUSTOMER)
                                   .withProfile(profile)
                                   .build();
     }

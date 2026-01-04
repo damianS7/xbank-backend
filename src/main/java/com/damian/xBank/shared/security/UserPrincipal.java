@@ -1,9 +1,9 @@
 package com.damian.xBank.shared.security;
 
-import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserAccountRole;
-import com.damian.xBank.modules.user.user.domain.model.UserAccountStatus;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
+import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserRole;
+import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -70,12 +70,12 @@ public class UserPrincipal implements UserDetails {
         return this;
     }
 
-    public UserPrincipal setAccountStatus(UserAccountStatus status) {
-        this.user.setAccountStatus(status);
+    public UserPrincipal setAccountStatus(UserStatus status) {
+        this.user.setStatus(status);
         return this;
     }
 
-    public UserAccountRole getRole() {
+    public UserRole getRole() {
         return user.getRole();
     }
 
@@ -108,11 +108,11 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return user.getAccountStatus() != UserAccountStatus.SUSPENDED;
+        return user.getStatus() != UserStatus.SUSPENDED;
     }
 
     @Override
     public boolean isEnabled() {
-        return user.getAccountStatus() == UserAccountStatus.VERIFIED;
+        return user.getStatus() == UserStatus.VERIFIED;
     }
 }

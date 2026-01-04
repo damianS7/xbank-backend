@@ -5,9 +5,9 @@ import com.damian.xBank.modules.banking.card.domain.exception.BankingAccountCard
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
-import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserAccountRole;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
+import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -336,7 +336,7 @@ public class BankingAccount {
     }
 
     public void activateBy(User actor) {
-        if (actor.hasRole(UserAccountRole.ADMIN)) {
+        if (actor.hasRole(UserRole.ADMIN)) {
             //            assertOwnedBy(actor.getId());
             setStatus(BankingAccountStatus.ACTIVE);
         }
@@ -348,7 +348,7 @@ public class BankingAccount {
         assertActive();
 
         // if not admin check ownership
-        if (!actor.hasRole(UserAccountRole.ADMIN)) {
+        if (!actor.hasRole(UserRole.ADMIN)) {
             assertOwnedBy(actor.getId());
         }
 

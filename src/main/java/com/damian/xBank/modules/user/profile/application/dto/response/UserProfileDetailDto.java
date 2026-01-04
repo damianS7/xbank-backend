@@ -1,14 +1,14 @@
 package com.damian.xBank.modules.user.profile.application.dto.response;
 
 import com.damian.xBank.modules.user.profile.domain.model.UserGender;
-import com.damian.xBank.modules.user.user.domain.model.UserAccountRole;
+import com.damian.xBank.modules.user.user.domain.model.UserRole;
 
 import java.time.Instant;
 import java.time.LocalDate;
 
 public record UserProfileDetailDto(
         Long id,
-        UserAccountRole role,
+        UserRole role,
         String email,
         String firstName,
         String lastName,

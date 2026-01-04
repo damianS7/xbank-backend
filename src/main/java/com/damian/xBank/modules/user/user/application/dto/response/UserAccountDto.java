@@ -1,13 +1,13 @@
 package com.damian.xBank.modules.user.user.application.dto.response;
 
-import com.damian.xBank.modules.user.user.domain.model.UserAccountRole;
+import com.damian.xBank.modules.user.user.domain.model.UserRole;
 
 import java.time.Instant;
 
 public record UserAccountDto(
         Long id,
         String email,
-        UserAccountRole role,
+        UserRole role,
         Instant createdAt
 ) {
 }

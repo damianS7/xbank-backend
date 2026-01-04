@@ -5,7 +5,7 @@ import com.damian.xBank.modules.auth.application.dto.AuthenticationResponse;
 import com.damian.xBank.modules.auth.domain.exception.UserAccountNotVerifiedException;
 import com.damian.xBank.modules.auth.domain.exception.UserAccountSuspendedException;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserAccountStatus;
+import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.security.UserPrincipal;
@@ -105,7 +105,7 @@ public class AuthenticationLoginTest extends AbstractServiceTest {
                         .setId(1L)
                         .setEmail("user@demo.com")
                         .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                        .setAccountStatus(UserAccountStatus.SUSPENDED);
+                        .setStatus(UserStatus.SUSPENDED);
 
         AuthenticationRequest request = new AuthenticationRequest(
                 user.getEmail(),

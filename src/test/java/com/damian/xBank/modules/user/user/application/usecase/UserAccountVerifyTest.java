@@ -6,7 +6,7 @@ import com.damian.xBank.modules.user.account.token.infrastructure.repository.Use
 import com.damian.xBank.modules.user.account.token.infrastructure.service.UserAccountTokenService;
 import com.damian.xBank.modules.user.user.domain.exception.UserAccountVerificationNotPendingException;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserAccountStatus;
+import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserAccountRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.utils.UserProfileTestFactory;
@@ -75,7 +75,7 @@ public class UserAccountVerifyTest extends AbstractServiceTest {
         // then
         //        verify(accountRepository, times(1)).save(user);
         Assertions.assertThat(activationToken.isUsed()).isEqualTo(true);
-        Assertions.assertThat(user.getAccountStatus()).isEqualTo(UserAccountStatus.VERIFIED);
+        Assertions.assertThat(user.getStatus()).isEqualTo(UserStatus.VERIFIED);
     }
 
     @Test
@@ -87,7 +87,7 @@ public class UserAccountVerifyTest extends AbstractServiceTest {
                 .setId(10L)
                 .setEmail("user@demo.com")
                 .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                .setAccountStatus(UserAccountStatus.SUSPENDED);
+                .setStatus(UserStatus.SUSPENDED);
 
         UserAccountToken activationToken = new UserAccountToken(user);
         activationToken.setToken("sdfsidjgfiosdjfi");
@@ -110,7 +110,7 @@ public class UserAccountVerifyTest extends AbstractServiceTest {
                 .setId(10L)
                 .setEmail("user@demo.com")
                 .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                .setAccountStatus(UserAccountStatus.VERIFIED);
+                .setStatus(UserStatus.VERIFIED);
 
         UserAccountToken activationToken = new UserAccountToken(user);
         activationToken.setToken("sdfsidjgfiosdjfi");

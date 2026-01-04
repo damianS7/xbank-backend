@@ -13,7 +13,7 @@ import com.damian.xBank.modules.banking.transaction.infrastructure.service.Banki
 import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserAccountRole;
+import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.UserTestBuilder;
@@ -72,7 +72,7 @@ public class BankingAccountDepositTest extends AbstractServiceTest {
     @DisplayName("should return deposit transaction")
     void deposit_WhenValidRequest_ReturnsTransaction() {
         // given
-        customer.setRole(UserAccountRole.ADMIN);
+        customer.setRole(UserRole.ADMIN);
         setUpContext(customer);
 
         BigDecimal initialBalance = bankingAccount.getBalance();

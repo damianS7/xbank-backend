@@ -2,7 +2,7 @@ package com.damian.xBank.modules.user.user.domain.service;
 
 import com.damian.xBank.modules.user.user.domain.exception.UserAccountEmailTakenException;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserAccountRole;
+import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -29,7 +29,7 @@ public class UserAccountDomainService {
      * @return the user created
      * @throws UserAccountEmailTakenException if another user has the email
      */
-    public User createUserAccount(String email, String password, UserAccountRole role) {
+    public User createUserAccount(String email, String password, UserRole role) {
 
         // we create the user and assign the data
         User user = new User();

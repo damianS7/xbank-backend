@@ -6,7 +6,7 @@ import com.damian.xBank.modules.user.account.token.infrastructure.service.UserAc
 import com.damian.xBank.modules.user.user.domain.exception.UserAccountNotFoundException;
 import com.damian.xBank.modules.user.user.domain.exception.UserAccountVerificationNotPendingException;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserAccountStatus;
+import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserAccountRepository;
 import com.damian.xBank.modules.user.user.infrastructure.service.UserAccountVerificationService;
 import com.damian.xBank.shared.infrastructure.mail.EmailSenderService;
@@ -59,7 +59,7 @@ public class UserAccountVerify {
         User account = userAccountToken.getAccount();
 
         // checks if the account is pending for activation.
-        if (!account.getAccountStatus().equals(UserAccountStatus.PENDING_VERIFICATION)) {
+        if (!account.getStatus().equals(UserStatus.PENDING_VERIFICATION)) {
             log.warn("Failed to verify account. UserAccount is not awaiting verification.");
             throw new UserAccountVerificationNotPendingException(account.getId());
         }
@@ -69,7 +69,7 @@ public class UserAccountVerify {
         userAccountTokenRepository.save(userAccountToken);
 
         // update account status to active
-        account.setAccountStatus(UserAccountStatus.VERIFIED);
+        account.setStatus(UserStatus.VERIFIED);
 
         // set the time at what the account was updated
         account.setUpdatedAt(Instant.now());

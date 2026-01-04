@@ -10,7 +10,7 @@ import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransact
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserAccountStatus;
+import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -36,7 +36,7 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
     void setUp() {
         customer = UserTestBuilder.aCustomer()
                                   .withEmail("customer@demo.com")
-                                  .withStatus(UserAccountStatus.VERIFIED)
+                                  .withStatus(UserStatus.VERIFIED)
                                   .withPassword(passwordEncoder.encode(RAW_PASSWORD))
                                   .build();
 
@@ -123,10 +123,10 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
         login(customer);
         User anotherCustomer = UserTestBuilder.aCustomer()
                                               .withEmail("anotherCustomer@demo.com")
-                                              .withStatus(UserAccountStatus.VERIFIED)
+                                              .withStatus(UserStatus.VERIFIED)
                                               .withPassword(passwordEncoder.encode(RAW_PASSWORD))
                                               .build();
-        
+
         userAccountRepository.save(anotherCustomer);
 
         BankingAccount anotherCustomerBankingAccount = BankingAccount

@@ -8,7 +8,7 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatu
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserAccountRole;
+import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.UserTestBuilder;
@@ -62,7 +62,7 @@ public class BankingAccountActivateTest extends AbstractServiceTest {
     @DisplayName("should return active account when admin tries to activate suspended account")
     void execute_WhenSuspendedAccountActiveByAdmin_ReturnActiveAccount() {
         // given
-        customer.setRole(UserAccountRole.ADMIN);
+        customer.setRole(UserRole.ADMIN);
         setUpContext(customer);
 
         bankingAccount.setStatus(BankingAccountStatus.SUSPENDED);
@@ -115,7 +115,7 @@ public class BankingAccountActivateTest extends AbstractServiceTest {
     @DisplayName("Should throws exception when trying to activate closed account")
     void execute_WhenClosedAccount_ThrowsException() {
         // given
-        customer.setRole(UserAccountRole.ADMIN);
+        customer.setRole(UserRole.ADMIN);
         setUpContext(customer);
 
         bankingAccount.setStatus(BankingAccountStatus.CLOSED);

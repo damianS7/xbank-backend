@@ -12,7 +12,7 @@ import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardType;
 import com.damian.xBank.modules.banking.card.domain.service.BankingCardDomainService;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserAccountRole;
+import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.UserTestBuilder;
@@ -163,7 +163,7 @@ public class BankingAccountCardRequestTest extends AbstractServiceTest {
         // given
         User admin = UserTestBuilder.aCustomer()
                                     .withId(5L)
-                                    .withRole(UserAccountRole.ADMIN)
+                                    .withRole(UserRole.ADMIN)
                                     .withEmail("customer@demo.com")
                                     .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
                                     .build();

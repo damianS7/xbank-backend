@@ -10,7 +10,7 @@ import com.damian.xBank.modules.user.user.application.dto.request.UserAccountPas
 import com.damian.xBank.modules.user.user.domain.exception.UserAccountNotFoundException;
 import com.damian.xBank.modules.user.user.domain.exception.UserAccountVerificationNotPendingException;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserAccountStatus;
+import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserAccountRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,7 +87,7 @@ public class UserAccountTokenService {
         );
 
         // only account pending for verification can request the email
-        if (!user.getAccountStatus().equals(UserAccountStatus.PENDING_VERIFICATION)) {
+        if (!user.getStatus().equals(UserStatus.PENDING_VERIFICATION)) {
             log.error(
                     "Failed to generate verification token. UserAccount for: {} is not awaiting verification.",
                     email

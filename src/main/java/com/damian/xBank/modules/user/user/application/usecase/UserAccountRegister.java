@@ -8,7 +8,7 @@ import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import com.damian.xBank.modules.user.user.application.dto.request.UserAccountRegistrationRequest;
 import com.damian.xBank.modules.user.user.domain.exception.UserAccountEmailTakenException;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserAccountRole;
+import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.service.UserAccountDomainService;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserAccountRepository;
 import com.damian.xBank.modules.user.user.infrastructure.service.UserAccountVerificationService;
@@ -57,7 +57,7 @@ public class UserAccountRegister {
         User user = userAccountDomainService.createUserAccount(
                 request.email(),
                 request.password(),
-                UserAccountRole.CUSTOMER
+                UserRole.CUSTOMER
         );
 
         // we create the user and assign the data
