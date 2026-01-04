@@ -46,6 +46,7 @@ public class User {
         this.bankingAccounts = new HashSet<>();
         this.role = UserAccountRole.CUSTOMER;
         this.accountStatus = UserAccountStatus.PENDING_VERIFICATION;
+        this.profile = new UserProfile(this);
     }
 
     public User(UserProfile profile) {

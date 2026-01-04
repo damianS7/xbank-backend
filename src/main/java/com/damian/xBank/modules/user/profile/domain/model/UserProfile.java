@@ -52,7 +52,6 @@ public class UserProfile {
     private Instant updatedAt;
 
     public UserProfile() {
-        this.user = new User(this);
         this.updatedAt = Instant.now();
     }
 
@@ -202,9 +201,6 @@ public class UserProfile {
 
     public UserProfile setUser(User user) {
         this.user = user;
-        if (this.user.getProfile() == null) {
-            this.user.setProfile(this);
-        }
         return this;
     }
 }
