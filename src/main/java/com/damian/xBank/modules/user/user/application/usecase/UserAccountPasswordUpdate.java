@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.user.user.application.usecase;
 
-import com.damian.xBank.modules.user.account.token.infrastructure.repository.UserAccountTokenRepository;
-import com.damian.xBank.modules.user.account.token.infrastructure.service.UserAccountTokenService;
+import com.damian.xBank.modules.user.token.infrastructure.repository.UserAccountTokenRepository;
+import com.damian.xBank.modules.user.token.infrastructure.service.UserAccountTokenService;
 import com.damian.xBank.modules.user.user.application.dto.request.UserAccountPasswordUpdateRequest;
 import com.damian.xBank.modules.user.user.domain.exception.UserAccountInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.user.domain.exception.UserAccountNotFoundException;

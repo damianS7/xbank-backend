@@ -1,8 +1,8 @@
 package com.damian.xBank.modules.user.user.application.usecase;
 
-import com.damian.xBank.modules.user.account.token.domain.model.UserAccountToken;
-import com.damian.xBank.modules.user.account.token.infrastructure.repository.UserAccountTokenRepository;
-import com.damian.xBank.modules.user.account.token.infrastructure.service.UserAccountTokenService;
+import com.damian.xBank.modules.user.token.domain.model.UserAccountToken;
+import com.damian.xBank.modules.user.token.infrastructure.repository.UserAccountTokenRepository;
+import com.damian.xBank.modules.user.token.infrastructure.service.UserAccountTokenService;
 import com.damian.xBank.modules.user.user.application.dto.request.UserAccountVerificationResendRequest;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserAccountRepository;
 import com.damian.xBank.modules.user.user.infrastructure.service.UserAccountVerificationService;

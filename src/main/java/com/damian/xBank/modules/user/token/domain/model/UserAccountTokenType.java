@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.user.account.token.domain.model;
+package com.damian.xBank.modules.user.token.domain.model;
 
 public enum UserAccountTokenType {
     ACCOUNT_VERIFICATION,

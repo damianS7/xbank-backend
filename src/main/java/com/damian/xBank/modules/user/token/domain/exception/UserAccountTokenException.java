@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.user.account.token.domain.exception;
+package com.damian.xBank.modules.user.token.domain.exception;
 
 import com.damian.xBank.modules.user.user.domain.exception.UserAccountException;
 

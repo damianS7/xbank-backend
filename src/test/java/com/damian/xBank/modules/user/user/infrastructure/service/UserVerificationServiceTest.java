@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.user.user.infrastructure.service;
 
-import com.damian.xBank.modules.user.account.token.infrastructure.repository.UserAccountTokenRepository;
-import com.damian.xBank.modules.user.account.token.infrastructure.service.UserAccountTokenService;
+import com.damian.xBank.modules.user.token.infrastructure.repository.UserAccountTokenRepository;
+import com.damian.xBank.modules.user.token.infrastructure.service.UserAccountTokenService;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserAccountRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import org.mockito.InjectMocks;

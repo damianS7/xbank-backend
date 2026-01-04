@@ -1,6 +1,6 @@
-package com.damian.xBank.modules.user.account.token.infrastructure.repository;
+package com.damian.xBank.modules.user.token.infrastructure.repository;
 
-import com.damian.xBank.modules.user.account.token.domain.model.UserAccountToken;
+import com.damian.xBank.modules.user.token.domain.model.UserAccountToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

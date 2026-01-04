@@ -1,8 +1,8 @@
-package com.damian.xBank.modules.user.account.token.infrastructure.web.exception;
+package com.damian.xBank.modules.user.token.infrastructure.web.exception;
 
-import com.damian.xBank.modules.user.account.token.domain.exception.UserAccountTokenExpiredException;
-import com.damian.xBank.modules.user.account.token.domain.exception.UserAccountTokenNotFoundException;
-import com.damian.xBank.modules.user.account.token.domain.exception.UserAccountTokenUsedException;
+import com.damian.xBank.modules.user.token.domain.exception.UserAccountTokenExpiredException;
+import com.damian.xBank.modules.user.token.domain.exception.UserAccountTokenNotFoundException;
+import com.damian.xBank.modules.user.token.domain.exception.UserAccountTokenUsedException;
 import com.damian.xBank.shared.dto.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

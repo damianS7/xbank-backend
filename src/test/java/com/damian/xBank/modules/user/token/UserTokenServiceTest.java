@@ -1,12 +1,12 @@
-package com.damian.xBank.modules.user.account.token;
+package com.damian.xBank.modules.user.token;
 
-import com.damian.xBank.modules.user.account.token.domain.exception.UserAccountTokenExpiredException;
-import com.damian.xBank.modules.user.account.token.domain.exception.UserAccountTokenNotFoundException;
-import com.damian.xBank.modules.user.account.token.domain.exception.UserAccountTokenUsedException;
-import com.damian.xBank.modules.user.account.token.domain.model.UserAccountToken;
-import com.damian.xBank.modules.user.account.token.domain.model.UserAccountTokenType;
-import com.damian.xBank.modules.user.account.token.infrastructure.repository.UserAccountTokenRepository;
-import com.damian.xBank.modules.user.account.token.infrastructure.service.UserAccountTokenService;
+import com.damian.xBank.modules.user.token.domain.exception.UserAccountTokenExpiredException;
+import com.damian.xBank.modules.user.token.domain.exception.UserAccountTokenNotFoundException;
+import com.damian.xBank.modules.user.token.domain.exception.UserAccountTokenUsedException;
+import com.damian.xBank.modules.user.token.domain.model.UserAccountToken;
+import com.damian.xBank.modules.user.token.domain.model.UserAccountTokenType;
+import com.damian.xBank.modules.user.token.infrastructure.repository.UserAccountTokenRepository;
+import com.damian.xBank.modules.user.token.infrastructure.service.UserAccountTokenService;
 import com.damian.xBank.modules.user.user.application.dto.request.UserAccountPasswordResetRequest;
 import com.damian.xBank.modules.user.user.domain.exception.UserAccountNotFoundException;
 import com.damian.xBank.modules.user.user.domain.model.User;

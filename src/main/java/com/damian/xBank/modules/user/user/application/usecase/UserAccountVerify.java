@@ -1,8 +1,8 @@
 package com.damian.xBank.modules.user.user.application.usecase;
 
-import com.damian.xBank.modules.user.account.token.domain.model.UserAccountToken;
-import com.damian.xBank.modules.user.account.token.infrastructure.repository.UserAccountTokenRepository;
-import com.damian.xBank.modules.user.account.token.infrastructure.service.UserAccountTokenService;
+import com.damian.xBank.modules.user.token.domain.model.UserAccountToken;
+import com.damian.xBank.modules.user.token.infrastructure.repository.UserAccountTokenRepository;
+import com.damian.xBank.modules.user.token.infrastructure.service.UserAccountTokenService;
 import com.damian.xBank.modules.user.user.domain.exception.UserAccountNotFoundException;
 import com.damian.xBank.modules.user.user.domain.exception.UserAccountVerificationNotPendingException;
 import com.damian.xBank.modules.user.user.domain.model.User;

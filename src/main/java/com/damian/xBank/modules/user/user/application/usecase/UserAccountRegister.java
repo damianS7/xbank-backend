@@ -1,10 +1,10 @@
 package com.damian.xBank.modules.user.user.application.usecase;
 
 import com.damian.xBank.modules.setting.domain.service.SettingDomainService;
-import com.damian.xBank.modules.user.account.token.domain.model.UserAccountToken;
-import com.damian.xBank.modules.user.account.token.infrastructure.service.UserAccountTokenService;
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileException;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
+import com.damian.xBank.modules.user.token.domain.model.UserAccountToken;
+import com.damian.xBank.modules.user.token.infrastructure.service.UserAccountTokenService;
 import com.damian.xBank.modules.user.user.application.dto.request.UserAccountRegistrationRequest;
 import com.damian.xBank.modules.user.user.domain.exception.UserAccountEmailTakenException;
 import com.damian.xBank.modules.user.user.domain.model.User;

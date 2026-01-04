@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.user.account.token.domain.model;
+package com.damian.xBank.modules.user.token.domain.model;
 
 import com.damian.xBank.modules.user.user.domain.model.User;
 import jakarta.persistence.*;
