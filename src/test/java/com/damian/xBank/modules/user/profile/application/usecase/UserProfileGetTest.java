@@ -48,9 +48,11 @@ public class UserProfileGetTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("")
-    void getProfile_WhenCustomerExists_ReturnsProfile() {
+    @DisplayName("should return profile when user exists")
+    void getProfile_WhenUserExists_ReturnsProfile() {
         // given
+        setUpContext(customer);
+
         // when
         when(userProfileRepository.findByUserId(anyLong()))
                 .thenReturn(Optional.of(customer.getProfile()));
@@ -58,18 +60,21 @@ public class UserProfileGetTest extends AbstractServiceTest {
         UserProfile result = userProfileGet.execute();
 
         // then
-        verify(userProfileRepository, times(1)).findById(customer.getId());
-        assertEquals(customer.getId(), result.getId());
+        assertEquals(customer.getId(), result.getUser().getId());
         assertEquals(customer.getEmail(), result.getUser().getEmail());
+        verify(userProfileRepository, times(1)).findByUserId(customer.getId());
     }
 
     @Test
-    @DisplayName("")
-    void getProfile_WhenCustomerNotExists_ThrowsException() {
+    @DisplayName("should throw exception when user not found")
+    void getProfile_WhenUserNotFound_ThrowsException() {
         // given
-        customer.setId(-1L);
+        setUpContext(customer);
 
         // when
+        when(userProfileRepository.findByUserId(anyLong()))
+                .thenReturn(Optional.empty());
+
         UserProfileNotFoundException exception = assertThrows(
                 UserProfileNotFoundException.class,
                 () -> userProfileGet.execute()

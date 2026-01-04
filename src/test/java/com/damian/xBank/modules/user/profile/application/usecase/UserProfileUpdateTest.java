@@ -55,8 +55,8 @@ public class UserProfileUpdateTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should update customer")
-    void shouldUpdateProfile() {
+    @DisplayName("should return updated profile when valid request")
+    void updateProfile_WhenValidRequest_ReturnsUpdatedProfile() {
         // given
         setUpContext(customer);
 
@@ -92,8 +92,33 @@ public class UserProfileUpdateTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should not update customer when password is wrong")
-    void shouldNotUpdateUserWhenPasswordIsWrong() {
+    @DisplayName("should throw exception when invalid field")
+    void updateProfile_WhenInvalidField_ThrowsException() {
+        // given
+        setUpContext(customer);
+
+        Map<String, Object> fields = new HashMap<>();
+        fields.put("firstName", "David");
+        fields.put("fakeField", "1234");
+        UserProfileUpdateRequest givenRequest = new UserProfileUpdateRequest(
+                RAW_PASSWORD,
+                fields
+        );
+
+        // when
+        when(userProfileRepository.findByUserId(customer.getId())).thenReturn(Optional.of(customer.getProfile()));
+        UserProfileUpdateException exception = assertThrows(
+                UserProfileUpdateException.class,
+                () -> userProfileUpdate.execute(givenRequest)
+        );
+
+        // Then
+        assertEquals(ErrorCodes.PROFILE_UPDATE_FAILED, exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("should throw exception when invalid password")
+    void updateProfile_WhenInvalidPassword_ThrowsException() {
         // given
         setUpContext(customer);
 
@@ -125,8 +150,8 @@ public class UserProfileUpdateTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should not update customer when customer not found")
-    void shouldNotUpdateUserWhenUserNotFound() {
+    @DisplayName("should throw exception when user not found")
+    void updateProfile_WhenUserNotFound_ThrowsException() {
         // given
         setUpContext(customer);
 
@@ -149,8 +174,8 @@ public class UserProfileUpdateTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should not update customer when customer not found")
-    void shouldNotUpdateUserWhenYouAreNotOwner() {
+    @DisplayName("should throw exception when user not owner")
+    void updateProfile_WhenUserNotOwner_ThrowsException() {
         // given
         setUpContext(customer);
 
@@ -177,31 +202,6 @@ public class UserProfileUpdateTest extends AbstractServiceTest {
 
         UserProfileNotOwnerException exception = assertThrows(
                 UserProfileNotOwnerException.class,
-                () -> userProfileUpdate.execute(givenRequest)
-        );
-
-        // Then
-        assertEquals(ErrorCodes.PROFILE_UPDATE_FAILED, exception.getMessage());
-    }
-
-    @Test
-    @DisplayName("Should not update customer when customer not found")
-    void shouldNotUpdateUserWhenInvalidField() {
-        // given
-        setUpContext(customer);
-
-        Map<String, Object> fields = new HashMap<>();
-        fields.put("firstName", "David");
-        fields.put("fakeField", "1234");
-        UserProfileUpdateRequest givenRequest = new UserProfileUpdateRequest(
-                RAW_PASSWORD,
-                fields
-        );
-
-        // when
-        when(userProfileRepository.findByUserId(customer.getId())).thenReturn(Optional.of(customer.getProfile()));
-        UserProfileUpdateException exception = assertThrows(
-                UserProfileUpdateException.class,
                 () -> userProfileUpdate.execute(givenRequest)
         );
 

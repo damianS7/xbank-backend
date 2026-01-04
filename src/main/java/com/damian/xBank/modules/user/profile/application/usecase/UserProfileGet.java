@@ -28,7 +28,7 @@ public class UserProfileGet {
     }
 
     /**
-     * Returns a user profile
+     * Returns a current user profile
      *
      * @return the user profile
      * @throws UserProfileNotFoundException

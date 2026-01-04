@@ -1,6 +1,8 @@
-package com.damian.xBank.shared.infrastructure.storage;
+package com.damian.xBank.modules.user.profile.application.usecase;
 
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
+import com.damian.xBank.modules.user.profile.infrastructure.repository.UserProfileRepository;
+import com.damian.xBank.modules.user.profile.infrastructure.service.UserProfileImageService;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.utils.ImageTestHelper;
@@ -15,20 +17,21 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-public class ImageUploaderServiceTest extends AbstractServiceTest {
-
-    @InjectMocks
-    private ImageUploaderService imageUploaderService;
+public class UserProfileImageUploadTest extends AbstractServiceTest {
 
     @Mock
-    private FileStorageService fileStorageService;
+    private UserProfileRepository userProfileRepository;
+
+    @Mock
+    private UserProfileImageService userProfileImageService;
+
+    @InjectMocks
+    private UserProfileImageUpload userProfileImageUpload;
 
     private User customer;
 
@@ -45,31 +48,28 @@ public class ImageUploaderServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should get upload path")
-    void shouldGetUploadPath() {
-        System.out.println(
-                ImageUploaderService.getUserUploadFolder(1L)
-        );
-    }
-
-    @Test
-    @DisplayName("Should upload image")
-    void shouldUploadImage() {
+    @DisplayName("should return image file after upload")
+    void uploadImage_WhenValidRequest_ReturnsImageFile() {
         // given
+        setUpContext(customer);
         MultipartFile givenMultipart = ImageTestHelper.createDefaultJpg();
         File tempFile = ImageTestHelper.multipartToFile(givenMultipart);
 
         // when
-        when(fileStorageService.storeFile(any(MultipartFile.class), anyString(), anyString()))
-                .thenReturn(tempFile);
+        when(userProfileRepository.save(any(UserProfile.class))).thenReturn(customer.getProfile());
 
-        File uploadedImage = imageUploaderService.uploadImage(
-                givenMultipart, customer.getId(), "posts", tempFile.getName()
+        when(userProfileImageService.uploadImage(
+                anyLong(),
+                any(MultipartFile.class)
+        )).thenReturn(tempFile);
+
+        File resultImage = userProfileImageUpload.execute(
+                RAW_PASSWORD, givenMultipart
         );
 
         // then
-        assertNotNull(uploadedImage);
-        assertThat(uploadedImage.exists()).isTrue();
-        assertEquals(tempFile.length(), uploadedImage.length());
+        assertNotNull(resultImage);
+        assertEquals(resultImage.length(), tempFile.length());
+        verify(userProfileRepository, times(1)).save(any(UserProfile.class));
     }
 }

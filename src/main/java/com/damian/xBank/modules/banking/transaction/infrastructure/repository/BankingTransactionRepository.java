@@ -15,8 +15,6 @@ public interface BankingTransactionRepository extends JpaRepository<BankingTrans
 
     Page<BankingTransaction> findByBankingAccountId(Long bankingAccountId, Pageable pageable);
 
-    Page<BankingTransaction> findByUserId(Long userId, Pageable pageable);
-
     Page<BankingTransaction> findByStatusAndBankingAccount_User_Id(
             BankingTransactionStatus status,
             Long userId,

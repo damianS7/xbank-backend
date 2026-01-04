@@ -1,17 +1,12 @@
 package com.damian.xBank.modules.user.profile.infrastructure.service;
 
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileImageNotFoundException;
-import com.damian.xBank.modules.user.profile.infrastructure.repository.UserProfileRepository;
 import com.damian.xBank.modules.user.user.domain.exception.UserAccountNotFoundException;
-import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.infrastructure.repository.UserAccountRepository;
 import com.damian.xBank.shared.infrastructure.storage.FileStorageService;
 import com.damian.xBank.shared.infrastructure.storage.ImageProcessingService;
 import com.damian.xBank.shared.infrastructure.storage.ImageUploaderService;
 import com.damian.xBank.shared.infrastructure.storage.ImageValidationService;
 import com.damian.xBank.shared.infrastructure.storage.exception.ImageTooLargeException;
-import com.damian.xBank.shared.security.AuthenticationContext;
-import com.damian.xBank.shared.security.PasswordValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -24,13 +19,10 @@ import java.nio.file.Paths;
 @Service
 public class UserProfileImageService {
 
-    public static final String PROFILE_IMAGE_FOLDER = "";
     private static final Logger log = LoggerFactory.getLogger(UserProfileImageService.class);
-    private final UserAccountRepository userAccountRepository;
-    private final UserProfileRepository userProfileRepository;
+    public static final String PROFILE_IMAGE_FOLDER = "";
     private final ImageUploaderService imageUploaderService;
     private final FileStorageService fileStorageService;
-    private final PasswordValidator passwordValidator;
     private final ImageProcessingService imageProcessingService;
     private final ImageValidationService imageValidationService;
     private final long COMPRESS_SIZE_TRIGGER = 250L * 1024; // 250 kb
@@ -38,26 +30,17 @@ public class UserProfileImageService {
     private final int MAX_WIDTH = 500; // 500px
     private final int MAX_HEIGHT = 500; // 500px
     private final String[] ALLOWED_IMAGE_TYPES = {"image/jpg", "image/jpeg", "image/png"};
-    private final AuthenticationContext authenticationContext;
 
     public UserProfileImageService(
             FileStorageService fileStorageService,
-            UserAccountRepository userAccountRepository,
-            UserProfileRepository userProfileRepository,
             ImageUploaderService imageUploaderService,
-            PasswordValidator passwordValidator,
             ImageProcessingService imageProcessingService,
-            ImageValidationService imageValidationService,
-            AuthenticationContext authenticationContext
+            ImageValidationService imageValidationService
     ) {
         this.fileStorageService = fileStorageService;
-        this.userAccountRepository = userAccountRepository;
-        this.userProfileRepository = userProfileRepository;
         this.imageUploaderService = imageUploaderService;
-        this.passwordValidator = passwordValidator;
         this.imageProcessingService = imageProcessingService;
         this.imageValidationService = imageValidationService;
-        this.authenticationContext = authenticationContext;
     }
 
     public String getProfileImageFolder(Long userId) {
@@ -70,19 +53,12 @@ public class UserProfileImageService {
     /**
      * It uploads an image and set it as user photo
      *
-     * @param currentPassword the password of the current user
-     * @param image           the uploaded image
+     * @param image the uploaded image
      * @return image filename
      * @throws ImageTooLargeException if the image size exceeds the limit
      */
-    public File uploadImage(String currentPassword, MultipartFile image) {
-        // Current user
-        final User currentUser = authenticationContext.getCurrentUser();
-
-        log.debug("Uploading user: {} user image", currentUser.getId());
-
-        // validate password
-        passwordValidator.validatePassword(currentUser, currentPassword);
+    public File uploadImage(Long userId, MultipartFile image) {
+        log.debug("Uploading user: {} user image", userId);
 
         // run basic image validations
         imageValidationService.validateImage(
@@ -96,17 +72,12 @@ public class UserProfileImageService {
         image = imageProcessingService.optimizeImage(image, MAX_WIDTH, MAX_HEIGHT);
 
         // Upload the image
-        File uploadedImage = imageUploaderService.uploadImage(
+        return imageUploaderService.uploadImage(
                 image,
+                userId,
                 PROFILE_IMAGE_FOLDER,
                 "avatar"
         );
-
-        // update user photo in db
-        currentUser.getProfile().setPhotoPath(uploadedImage.getName());
-        userProfileRepository.save(currentUser.getProfile());
-
-        return uploadedImage;
     }
 
     /**
@@ -117,37 +88,14 @@ public class UserProfileImageService {
      * @throws UserAccountNotFoundException      if the user does not exist
      * @throws UserProfileImageNotFoundException if the user photo does not exist in the db
      */
-    public Resource getImage(Long userId) {
-        // find the user
-        User user = userAccountRepository.findById(userId).orElseThrow(
-                () -> new UserAccountNotFoundException(userId)
-        );
-
-        // check if the user has a user photo filename stored in db
-        if (user.getProfile().getPhotoPath() == null) {
-            throw new UserProfileImageNotFoundException(user.getProfile().getId());
-        }
-
-        log.debug("Getting user: {} user image: {}", userId, user.getProfile().getPhotoPath());
+    public Resource getImage(Long userId, String filename) {
 
         File file = fileStorageService.getFile(
                 getProfileImageFolder(userId),
-                user.getProfile().getPhotoPath()
+                filename
         );
 
         // return the image as resource
         return fileStorageService.createResource(file);
-    }
-
-    /**
-     * It gets the current user photo
-     *
-     * @return the current user photo resource
-     */
-    public Resource getImage() {
-        // Current user
-        final User currentUser = authenticationContext.getCurrentUser();
-
-        return this.getImage(currentUser.getId());
     }
 }

@@ -15,7 +15,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<BankingAccount> bankingAccounts;
 
     @Enumerated(EnumType.STRING)
@@ -171,11 +171,12 @@ public class User {
         return profile;
     }
 
-    public User setProfile(UserProfile profile) {
-        this.profile = profile;
-        if (this.profile.getUser() == null) {
-            this.profile.setUser(this);
+    public User setProfile(UserProfile newProfile) {
+        if (newProfile != null) {
+            this.profile = newProfile;
         }
+
+        this.profile.setUser(this);
         return this;
     }
 }
