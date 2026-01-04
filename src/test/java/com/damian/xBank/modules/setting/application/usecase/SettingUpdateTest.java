@@ -42,7 +42,7 @@ public class SettingUpdateTest extends AbstractServiceTest {
         customerB = UserTestBuilder.aCustomer()
                                    .withId(2L)
                                    .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                   .withEmail("customerA@demo.com")
+                                   .withEmail("customerB@demo.com")
                                    .build();
     }
 
