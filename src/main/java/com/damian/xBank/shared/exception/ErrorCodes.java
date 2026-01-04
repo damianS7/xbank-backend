@@ -23,11 +23,11 @@ public class ErrorCodes {
     public static final String USER_ACCOUNT_VERIFICATION_TOKEN_USED = "user.account.verification.token.used";
     public static final String USER_ACCOUNT_VERIFICATION_TOKEN_EXPIRED = "user.account.verification.token.expired";
 
-    // Customer
-    public static final String CUSTOMER_NOT_OWNER = "customer.not_owner";
-    public static final String CUSTOMER_NOT_FOUND = "customer.not_found";
-    public static final String CUSTOMER_UPDATE_FAILED = "customer.update_failed";
-    public static final String CUSTOMER_IMAGE_NOT_FOUND = "customer.image.not_found";
+    // Profile
+    public static final String PROFILE_NOT_OWNER = "profile.not_owner";
+    public static final String PROFILE_NOT_FOUND = "profile.not_found";
+    public static final String PROFILE_UPDATE_FAILED = "profile.update_failed";
+    public static final String PROFILE_IMAGE_NOT_FOUND = "profile.image.not_found";
 
     // Banking account
     public static final String BANKING_ACCOUNT_NOT_OWNER = "banking.account.not_owner";

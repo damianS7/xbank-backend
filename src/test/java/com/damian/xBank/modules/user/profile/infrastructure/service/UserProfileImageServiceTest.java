@@ -121,7 +121,7 @@ public class UserProfileImageServiceTest extends AbstractServiceTest {
 
         // then
         assertNotNull(exception);
-        assertEquals(ErrorCodes.CUSTOMER_IMAGE_NOT_FOUND, exception.getMessage());
+        assertEquals(ErrorCodes.PROFILE_IMAGE_NOT_FOUND, exception.getMessage());
     }
 
     @Test

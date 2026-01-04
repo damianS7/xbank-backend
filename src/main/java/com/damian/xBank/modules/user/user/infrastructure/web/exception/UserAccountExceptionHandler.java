@@ -1,6 +1,5 @@
 package com.damian.xBank.modules.user.user.infrastructure.web.exception;
 
-import com.damian.xBank.modules.user.account.user.domain.exception.*;
 import com.damian.xBank.modules.user.user.domain.exception.*;
 import com.damian.xBank.shared.dto.ApiResponse;
 import org.slf4j.Logger;

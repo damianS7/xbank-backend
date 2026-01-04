@@ -39,7 +39,7 @@ public class UserProfileGet {
 
         // if the user does not exist we throw an exception
         return userProfileRepository
-                .findById(currentUser.getId())
+                .findByUserId(currentUser.getId())
                 .orElseThrow(
                         () -> new UserProfileNotFoundException(currentUser.getId())
                 );

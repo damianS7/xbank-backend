@@ -181,7 +181,7 @@ public class UserProfileUpdateTest extends AbstractServiceTest {
         );
 
         // Then
-        assertEquals(ErrorCodes.CUSTOMER_UPDATE_FAILED, exception.getMessage());
+        assertEquals(ErrorCodes.PROFILE_UPDATE_FAILED, exception.getMessage());
     }
 
     @Test
@@ -206,6 +206,6 @@ public class UserProfileUpdateTest extends AbstractServiceTest {
         );
 
         // Then
-        assertEquals(ErrorCodes.CUSTOMER_UPDATE_FAILED, exception.getMessage());
+        assertEquals(ErrorCodes.PROFILE_UPDATE_FAILED, exception.getMessage());
     }
 }

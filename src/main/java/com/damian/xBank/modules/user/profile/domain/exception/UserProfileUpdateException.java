@@ -5,6 +5,6 @@ import com.damian.xBank.shared.exception.ErrorCodes;
 public class UserProfileUpdateException extends UserProfileException {
 
     public UserProfileUpdateException(Long customerId, Object[] args) {
-        super(ErrorCodes.CUSTOMER_UPDATE_FAILED, customerId, args);
+        super(ErrorCodes.PROFILE_UPDATE_FAILED, customerId, args);
     }
 }

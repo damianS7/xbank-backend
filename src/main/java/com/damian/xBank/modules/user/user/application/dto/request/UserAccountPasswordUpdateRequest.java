@@ -22,4 +22,7 @@ public record UserAccountPasswordUpdateRequest(
         )
         String newPassword
 ) {
+    public String nw() {
+        return null;
+    }
 }

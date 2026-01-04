@@ -4,7 +4,7 @@ import com.damian.xBank.shared.exception.ErrorCodes;
 
 public class UserProfileNotOwnerException extends UserProfileException {
     public UserProfileNotOwnerException(Long customerId) {
-        super(ErrorCodes.CUSTOMER_UPDATE_FAILED, customerId);
+        super(ErrorCodes.PROFILE_UPDATE_FAILED, customerId);
     }
 }
 // TODO for removal
