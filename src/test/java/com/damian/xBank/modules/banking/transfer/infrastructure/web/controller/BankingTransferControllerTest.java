@@ -45,6 +45,7 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
     void setUp() {
         fromCustomer = UserTestBuilder.aCustomer()
                                       .withEmail("fromCustomer@demo.com")
+                                      .withPassword(RAW_PASSWORD)
                                       .withStatus(UserAccountStatus.VERIFIED)
                                       .build();
 
@@ -60,6 +61,7 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
 
         toCustomer = UserTestBuilder.aCustomer()
                                     .withEmail("toCustomer@demo.com")
+                                    .withPassword(RAW_PASSWORD)
                                     .withStatus(UserAccountStatus.VERIFIED)
                                     .build();
 

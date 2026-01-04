@@ -42,7 +42,7 @@ public class BankingCardSetPinTest extends AbstractServiceTest {
         customer = UserTestBuilder.aCustomer()
                                   .withId(1L)
                                   .withEmail("customer@demo.com")
-                                  .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                                  .withPassword(RAW_PASSWORD)
                                   .build();
 
         bankingAccount = BankingAccount
@@ -107,7 +107,7 @@ public class BankingCardSetPinTest extends AbstractServiceTest {
     void setPin_WhenNotOwnerCard_ThrowsException() {
         // given
         User customerNotOwner = UserTestBuilder.aCustomer()
-                                               .withId(1L)
+                                               .withId(99L)
                                                .withEmail("customerNotOwner@demo.com")
                                                .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
                                                .build();

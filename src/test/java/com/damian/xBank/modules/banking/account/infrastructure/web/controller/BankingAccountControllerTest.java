@@ -39,7 +39,7 @@ public class BankingAccountControllerTest extends AbstractControllerTest {
         customer = UserTestBuilder.aCustomer()
                                   .withEmail("customer@demo.com")
                                   .withStatus(UserAccountStatus.VERIFIED)
-                                  .withPassword(passwordEncoder.encode(RAW_PASSWORD))
+                                  .withPassword(RAW_PASSWORD)
                                   .build();
 
         userAccountRepository.save(customer);

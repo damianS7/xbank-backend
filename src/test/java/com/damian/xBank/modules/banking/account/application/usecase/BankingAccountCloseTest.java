@@ -45,7 +45,7 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
         customer = UserTestBuilder.aCustomer()
                                   .withId(1L)
                                   .withEmail("customer@demo.com")
-                                  .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                                  .withPassword(RAW_PASSWORD)
                                   .build();
 
         bankingAccount = BankingAccount
@@ -141,7 +141,7 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
         User customer2 = UserTestBuilder.aCustomer()
                                         .withId(2L)
                                         .withEmail("customer2@demo.com")
-                                        .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                                        .withPassword(RAW_PASSWORD)
                                         .build();
 
         setUpContext(customer2);
@@ -170,7 +170,7 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
                                             .withId(2L)
                                             .withEmail("customerAdmin@demo.com")
                                             .withRole(UserAccountRole.ADMIN)
-                                            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                                            .withPassword(RAW_PASSWORD)
                                             .build();
 
         setUpContext(customerAdmin);

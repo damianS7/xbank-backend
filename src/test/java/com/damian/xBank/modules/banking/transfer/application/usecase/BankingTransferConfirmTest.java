@@ -68,7 +68,7 @@ public class BankingTransferConfirmTest extends AbstractServiceTest {
         fromCustomer = UserTestBuilder.aCustomer()
                                       .withId(1L)
                                       .withEmail("fromCustomer@demo.com")
-                                      .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                                      .withPassword(RAW_PASSWORD)
                                       .build();
 
         fromAccount = BankingAccount

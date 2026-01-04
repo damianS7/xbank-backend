@@ -58,7 +58,7 @@ public class BankingTransferRejectTest extends AbstractServiceTest {
         fromCustomer = UserTestBuilder.aCustomer()
                                       .withId(1L)
                                       .withEmail("fromCustomer@demo.com")
-                                      .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                                      .withPassword(RAW_PASSWORD)
                                       .build();
 
         fromAccount = BankingAccount
@@ -72,7 +72,7 @@ public class BankingTransferRejectTest extends AbstractServiceTest {
         toCustomer = UserTestBuilder.aCustomer()
                                     .withId(2L)
                                     .withEmail("toCustomer@demo.com")
-                                    .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                                    .withPassword(RAW_PASSWORD)
                                     .build();
 
         toAccount = BankingAccount

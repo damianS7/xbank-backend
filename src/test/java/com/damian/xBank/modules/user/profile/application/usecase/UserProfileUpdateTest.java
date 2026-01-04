@@ -48,7 +48,7 @@ public class UserProfileUpdateTest extends AbstractServiceTest {
         customer = UserTestBuilder.aCustomer()
                                   .withId(1L)
                                   .withEmail("customer@test.com")
-                                  .withPassword(this.bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                                  .withPassword(RAW_PASSWORD)
                                   .withRole(UserAccountRole.CUSTOMER)
                                   .withProfile(profile)
                                   .build();
@@ -191,7 +191,7 @@ public class UserProfileUpdateTest extends AbstractServiceTest {
         User givenCustomer = UserTestBuilder.aCustomer()
                                             .withId(5L)
                                             .withEmail("customer@test.com")
-                                            .withPassword(this.bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                                            .withPassword(RAW_PASSWORD)
                                             .withRole(UserAccountRole.CUSTOMER)
                                             .withProfile(profile)
                                             .build();

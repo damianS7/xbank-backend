@@ -43,7 +43,7 @@ public class BankingCardUnlockTest extends AbstractServiceTest {
         customer = UserTestBuilder.aCustomer()
                                   .withId(1L)
                                   .withEmail("customer@demo.com")
-                                  .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                                  .withPassword(RAW_PASSWORD)
                                   .build();
 
         bankingAccount = BankingAccount

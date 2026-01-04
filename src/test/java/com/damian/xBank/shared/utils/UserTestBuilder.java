@@ -4,8 +4,12 @@ import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserAccountRole;
 import com.damian.xBank.modules.user.user.domain.model.UserAccountStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class UserTestBuilder {
+    private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
     private Long id = null;
     private String email = "user@demo.com";
     private String password = "$2a$10$7EqJtq98hPqEX7fNZaFWoOa6sK9Pz7RrH9Z4VQe8C7l8bqZkYwF6e";
@@ -42,7 +46,7 @@ public class UserTestBuilder {
     }
 
     public UserTestBuilder withPassword(String password) {
-        this.password = password;
+        this.password = passwordEncoder.encode(password);
         return this;
     }
 

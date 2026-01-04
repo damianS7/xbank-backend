@@ -55,7 +55,7 @@ public class UserProfileImageControllerTest extends AbstractControllerTest {
                 .withEmail("customer@demo.com")
                 .withRole(UserAccountRole.CUSTOMER)
                 .withStatus(UserAccountStatus.VERIFIED)
-                .withPassword(passwordEncoder.encode(RAW_PASSWORD))
+                .withPassword(RAW_PASSWORD)
                 .withProfile(profile)
                 .build();
 

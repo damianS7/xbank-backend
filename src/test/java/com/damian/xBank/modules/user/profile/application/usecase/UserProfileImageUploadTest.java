@@ -41,7 +41,7 @@ public class UserProfileImageUploadTest extends AbstractServiceTest {
 
         customer = UserTestBuilder.aCustomer()
                                   .withId(1L)
-                                  .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                                  .withPassword(RAW_PASSWORD)
                                   .withEmail("customer@demo.com")
                                   .withProfile(profile)
                                   .build();
