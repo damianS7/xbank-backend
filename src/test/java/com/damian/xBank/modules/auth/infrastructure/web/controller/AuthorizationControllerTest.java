@@ -48,7 +48,7 @@ public class AuthorizationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("GET /customers returns 200 OK when JWT token is valid")
+    @DisplayName("GET /test returns 200 OK when JWT token is valid")
     void getCustomers_WithValidToken_Returns200OK() throws Exception {
         // given
         final String givenToken = jwtUtil.generateToken(
@@ -58,26 +58,25 @@ public class AuthorizationControllerTest extends AbstractControllerTest {
 
         // when
         mockMvc.perform(MockMvcRequestBuilders
-                       .get("/api/v1/customers")
+                       .get("/api/v1/test")
                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + givenToken))
                .andDo(print())
-               .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
-               .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
+               .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()));
     }
 
     @Test
-    @DisplayName("GET /customers returns 401 Unauthorized when request is not authenticated")
+    @DisplayName("GET /test returns 401 Unauthorized when request is not authenticated")
     void getCustomers_WithoutAuthentication_Returns401Unauthorized() throws Exception {
         // when
         mockMvc.perform(MockMvcRequestBuilders
-                       .get("/api/v1/customers"))
+                       .get("/api/v1/test"))
                .andDo(print())
                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.UNAUTHORIZED.value()))
                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
-    @DisplayName("GET /customers returns 401 Unauthorized when JWT token is expired")
+    @DisplayName("GET /test returns 401 Unauthorized when JWT token is expired")
     void getCustomers_WithExpiredToken_Returns401Unauthorized() throws Exception {
         // given
         final String expiredToken = jwtUtil.generateToken(
@@ -98,7 +97,7 @@ public class AuthorizationControllerTest extends AbstractControllerTest {
 
         // when
         mockMvc.perform(MockMvcRequestBuilders
-                       .get("/api/v1/customers")
+                       .get("/api/v1/test")
                        .contentType(MediaType.APPLICATION_JSON)
                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + expiredToken)
                        .content(jsonRequest))
@@ -109,7 +108,7 @@ public class AuthorizationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("GET /customers returns 401 Unauthorized when JWT token is invalid")
+    @DisplayName("GET /test returns 401 Unauthorized when JWT token is invalid")
     void getCustomers_WithInvalidToken_Returns401Unauthorized() throws Exception {
         // given
         final String invalidToken = "bad-token";
@@ -127,7 +126,7 @@ public class AuthorizationControllerTest extends AbstractControllerTest {
 
         // when
         mockMvc.perform(MockMvcRequestBuilders
-                       .get("/api/v1/customers")
+                       .get("/api/v1/test")
                        .contentType(MediaType.APPLICATION_JSON)
                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + invalidToken)
                        .content(jsonRequest))
@@ -138,7 +137,7 @@ public class AuthorizationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("GET /customers returns 401 Unauthorized when JWT token email does not exist")
+    @DisplayName("GET /test returns 401 Unauthorized when JWT token email does not exist")
     void getCustomers_WithNonExistingEmailInToken_Returns401Unauthorized() throws Exception {
         // given
         final String token = jwtUtil.generateToken(
@@ -148,7 +147,7 @@ public class AuthorizationControllerTest extends AbstractControllerTest {
 
         // when
         mockMvc.perform(MockMvcRequestBuilders
-                       .get("/api/v1/customers")
+                       .get("/api/v1/test")
                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
                .andDo(print())
                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.UNAUTHORIZED.value()))

@@ -42,4 +42,13 @@ public class AuthenticationController {
                 .status(HttpStatus.OK)
                 .build();
     }
+
+    // endpoint for token validation
+    @GetMapping("/test")
+    public ResponseEntity<?> test(
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .build();
+    }
 }
