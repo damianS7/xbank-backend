@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.user.user.infrastructure.controller;
+package com.damian.xBank.modules.user.user.infrastructure.web.controller;
 
 import com.damian.xBank.modules.user.profile.application.dto.response.UserProfileDetailDto;
 import com.damian.xBank.modules.user.profile.domain.model.UserGender;

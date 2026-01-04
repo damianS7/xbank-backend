@@ -5,13 +5,13 @@ import com.damian.xBank.modules.user.profile.domain.exception.UserProfileExcepti
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenService;
+import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenVerificationService;
 import com.damian.xBank.modules.user.user.application.dto.request.UserRegistrationRequest;
 import com.damian.xBank.modules.user.user.domain.exception.UserEmailTakenException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.service.UserDomainService;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
-import com.damian.xBank.modules.user.user.infrastructure.service.UserVerificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -23,20 +23,20 @@ public class UserRegister {
     private final UserRepository userRepository;
     private final UserDomainService userDomainService;
     private final SettingDomainService settingDomainService;
-    private final UserVerificationService userVerificationService;
+    private final UserTokenVerificationService userTokenVerificationService;
     private final UserTokenService userTokenService;
 
     public UserRegister(
             UserRepository userRepository,
             UserDomainService userDomainService,
             SettingDomainService settingDomainService,
-            UserVerificationService userVerificationService,
+            UserTokenVerificationService userTokenVerificationService,
             UserTokenService userTokenService
     ) {
         this.userRepository = userRepository;
         this.userDomainService = userDomainService;
         this.settingDomainService = settingDomainService;
-        this.userVerificationService = userVerificationService;
+        this.userTokenVerificationService = userTokenVerificationService;
         this.userTokenService = userTokenService;
     }
 
@@ -88,7 +88,7 @@ public class UserRegister {
         UserToken userToken = userTokenService.generateVerificationToken(request.email());
 
         // send the account activation link
-        userVerificationService
+        userTokenVerificationService
                 .sendVerificationLinkEmail(request.email(), userToken.getToken());
 
         log.debug(

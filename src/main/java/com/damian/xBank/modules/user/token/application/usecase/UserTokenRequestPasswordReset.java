@@ -4,8 +4,8 @@ import com.damian.xBank.modules.user.token.application.dto.request.UserPasswordR
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
 import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenService;
+import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenVerificationService;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
-import com.damian.xBank.modules.user.user.infrastructure.service.UserVerificationService;
 import com.damian.xBank.shared.infrastructure.mail.EmailSenderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +19,7 @@ public class UserTokenRequestPasswordReset {
     private final UserTokenRepository userTokenRepository;
     private final UserRepository userRepository;
     private final EmailSenderService emailSenderService;
-    private final UserVerificationService userVerificationService;
+    private final UserTokenVerificationService userTokenVerificationService;
     private final UserTokenService userTokenService;
 
     public UserTokenRequestPasswordReset(
@@ -27,14 +27,14 @@ public class UserTokenRequestPasswordReset {
             UserTokenRepository userTokenRepository,
             UserRepository userRepository,
             EmailSenderService emailSenderService,
-            UserVerificationService userVerificationService,
+            UserTokenVerificationService userTokenVerificationService,
             UserTokenService userTokenService
     ) {
         this.env = env;
         this.userTokenRepository = userTokenRepository;
         this.userRepository = userRepository;
         this.emailSenderService = emailSenderService;
-        this.userVerificationService = userVerificationService;
+        this.userTokenVerificationService = userTokenVerificationService;
         this.userTokenService = userTokenService;
     }
 

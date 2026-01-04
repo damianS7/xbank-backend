@@ -1,7 +1,6 @@
-package com.damian.xBank.modules.user.user.application.usecase;
+package com.damian.xBank.modules.user.token.application.usecase;
 
 import com.damian.xBank.modules.user.token.application.dto.request.UserPasswordResetSetRequest;
-import com.damian.xBank.modules.user.token.application.usecase.UserTokenPasswordUpdate;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.domain.model.UserTokenType;
 import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenService;

@@ -3,12 +3,12 @@ package com.damian.xBank.modules.user.token.application.usecase;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
 import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenService;
+import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenVerificationService;
 import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException;
 import com.damian.xBank.modules.user.user.domain.exception.UserVerificationNotPendingException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
-import com.damian.xBank.modules.user.user.infrastructure.service.UserVerificationService;
 import com.damian.xBank.shared.infrastructure.mail.EmailSenderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +24,7 @@ public class UserTokenVerify {
     private final UserTokenRepository userTokenRepository;
     private final UserRepository userRepository;
     private final EmailSenderService emailSenderService;
-    private final UserVerificationService userVerificationService;
+    private final UserTokenVerificationService userTokenVerificationService;
     private final UserTokenService userTokenService;
 
     public UserTokenVerify(
@@ -32,14 +32,14 @@ public class UserTokenVerify {
             UserTokenRepository userTokenRepository,
             UserRepository userRepository,
             EmailSenderService emailSenderService,
-            UserVerificationService userVerificationService,
+            UserTokenVerificationService userTokenVerificationService,
             UserTokenService userTokenService
     ) {
         this.env = env;
         this.userTokenRepository = userTokenRepository;
         this.userRepository = userRepository;
         this.emailSenderService = emailSenderService;
-        this.userVerificationService = userVerificationService;
+        this.userTokenVerificationService = userTokenVerificationService;
         this.userTokenService = userTokenService;
     }
 
@@ -75,7 +75,7 @@ public class UserTokenVerify {
         account.setUpdatedAt(Instant.now());
 
         // send email to user after account has been verificated
-        userVerificationService.sendConfirmedVerificationEmail(account);
+        userTokenVerificationService.sendConfirmedVerificationEmail(account);
 
         log.debug("UserAccount successfully verified.");
         return userRepository.save(account);

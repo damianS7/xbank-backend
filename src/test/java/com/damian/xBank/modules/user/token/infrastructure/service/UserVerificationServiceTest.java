@@ -1,7 +1,6 @@
-package com.damian.xBank.modules.user.user.infrastructure.service;
+package com.damian.xBank.modules.user.token.infrastructure.service;
 
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
-import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenService;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import org.mockito.InjectMocks;
@@ -19,7 +18,7 @@ public class UserVerificationServiceTest extends AbstractServiceTest {
     private UserTokenService userTokenService;
 
     @InjectMocks
-    private UserVerificationService userVerificationService;
+    private UserTokenVerificationService userTokenVerificationService;
 
 
 }

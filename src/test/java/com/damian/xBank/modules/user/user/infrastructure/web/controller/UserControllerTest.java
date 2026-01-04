@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.user.user.infrastructure.controller;
+package com.damian.xBank.modules.user.user.infrastructure.web.controller;
 
 import com.damian.xBank.modules.user.user.application.dto.request.UserEmailUpdateRequest;
 import com.damian.xBank.modules.user.user.application.dto.response.UserDto;

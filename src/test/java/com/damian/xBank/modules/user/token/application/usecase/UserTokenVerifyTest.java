@@ -1,6 +1,5 @@
-package com.damian.xBank.modules.user.user.application.usecase;
+package com.damian.xBank.modules.user.token.application.usecase;
 
-import com.damian.xBank.modules.user.token.application.usecase.UserTokenVerify;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.domain.model.UserTokenType;
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;

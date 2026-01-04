@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.user.user.infrastructure.controller;
+package com.damian.xBank.modules.user.token.infrastructure.web.controller;
 
 import com.damian.xBank.modules.user.token.application.dto.request.UserPasswordResetSetRequest;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
@@ -17,7 +17,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class UserVerificationControllerTest extends AbstractControllerTest {
+public class UserTokenControllerTest extends AbstractControllerTest {
     private User user;
 
     @BeforeEach

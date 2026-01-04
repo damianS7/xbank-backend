@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.user.user.infrastructure.service;
+package com.damian.xBank.modules.user.token.infrastructure.service;
 
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.infrastructure.mail.EmailSenderService;
@@ -8,12 +8,12 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserVerificationService {
-    private static final Logger log = LoggerFactory.getLogger(UserVerificationService.class);
+public class UserTokenVerificationService {
+    private static final Logger log = LoggerFactory.getLogger(UserTokenVerificationService.class);
     private final Environment env;
     private final EmailSenderService emailSenderService;
 
-    public UserVerificationService(
+    public UserTokenVerificationService(
             Environment env,
             EmailSenderService emailSenderService
     ) {

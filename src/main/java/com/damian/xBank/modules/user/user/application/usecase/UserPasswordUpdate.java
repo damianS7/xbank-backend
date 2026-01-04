@@ -2,13 +2,13 @@ package com.damian.xBank.modules.user.user.application.usecase;
 
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
 import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenService;
+import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenVerificationService;
 import com.damian.xBank.modules.user.user.application.dto.request.UserPasswordUpdateRequest;
 import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.modules.user.user.infrastructure.service.UserPasswordService;
-import com.damian.xBank.modules.user.user.infrastructure.service.UserVerificationService;
 import com.damian.xBank.shared.infrastructure.mail.EmailSenderService;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import com.damian.xBank.shared.security.PasswordValidator;
@@ -29,7 +29,7 @@ public class UserPasswordUpdate {
     private final UserTokenRepository userTokenRepository;
     private final UserRepository userRepository;
     private final EmailSenderService emailSenderService;
-    private final UserVerificationService userVerificationService;
+    private final UserTokenVerificationService userTokenVerificationService;
     private final UserTokenService userTokenService;
 
     public UserPasswordUpdate(
@@ -41,7 +41,7 @@ public class UserPasswordUpdate {
             UserTokenRepository userTokenRepository,
             UserRepository userRepository,
             EmailSenderService emailSenderService,
-            UserVerificationService userVerificationService,
+            UserTokenVerificationService userTokenVerificationService,
             UserTokenService userTokenService
     ) {
         this.env = env;
@@ -52,7 +52,7 @@ public class UserPasswordUpdate {
         this.userTokenRepository = userTokenRepository;
         this.userRepository = userRepository;
         this.emailSenderService = emailSenderService;
-        this.userVerificationService = userVerificationService;
+        this.userTokenVerificationService = userTokenVerificationService;
         this.userTokenService = userTokenService;
     }
 

@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.user.token;
+package com.damian.xBank.modules.user.token.infrastructure.service;
 
 import com.damian.xBank.modules.user.token.application.dto.request.UserPasswordResetRequest;
 import com.damian.xBank.modules.user.token.domain.exception.UserTokenExpiredException;
@@ -7,7 +7,6 @@ import com.damian.xBank.modules.user.token.domain.exception.UserTokenUsedExcepti
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.domain.model.UserTokenType;
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
-import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenService;
 import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
