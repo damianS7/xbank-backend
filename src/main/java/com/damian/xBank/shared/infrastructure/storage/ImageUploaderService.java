@@ -1,7 +1,5 @@
 package com.damian.xBank.shared.infrastructure.storage;
 
-import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.shared.security.AuthenticationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -11,7 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.UUID;
 
 /**
  * Service class for handling image uploads to the server.
@@ -21,14 +18,11 @@ public class ImageUploaderService {
     public static final String UPLOAD_PATH = "uploads/images/users/{userId}";
     private static final Logger log = LoggerFactory.getLogger(ImageUploaderService.class);
     private final FileStorageService fileStorageService;
-    private final AuthenticationContext authenticationContext;
 
     public ImageUploaderService(
-            FileStorageService fileStorageService,
-            AuthenticationContext authenticationContext
+            FileStorageService fileStorageService
     ) {
         this.fileStorageService = fileStorageService;
-        this.authenticationContext = authenticationContext;
     }
 
     public static String getUserUploadFolder(Long userId) {
@@ -38,10 +32,9 @@ public class ImageUploaderService {
     /**
      * Uploads an image to the server
      */
-    public File uploadImage(MultipartFile file, String folder, String filename) {
-        final User currentUser = authenticationContext.getCurrentUser();
+    public File uploadImage(MultipartFile file, Long userId, String folder, String filename) {
         Path path = Paths.get(
-                getUserUploadFolder(currentUser.getId()),
+                getUserUploadFolder(userId),
                 folder
         );
 
@@ -50,16 +43,8 @@ public class ImageUploaderService {
             filename += "." + extension;
         }
 
-        log.debug("user: {} uploading file: {} to: {}", currentUser.getId(), filename, path);
+        log.debug("user: {} uploading file: {} to: {}", userId, filename, path);
         // saving file
         return fileStorageService.storeFile(file, path.toString(), filename);
-    }
-
-    /**
-     * Uploads an image to the server
-     */
-    public File uploadImage(MultipartFile file, String folder) {
-        String filename = UUID.randomUUID().toString();
-        return this.uploadImage(file, folder, filename);
     }
 }
