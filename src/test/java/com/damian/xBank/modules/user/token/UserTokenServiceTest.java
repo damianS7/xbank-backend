@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.user.token;
 
+import com.damian.xBank.modules.user.token.application.dto.request.UserPasswordResetRequest;
 import com.damian.xBank.modules.user.token.domain.exception.UserTokenExpiredException;
 import com.damian.xBank.modules.user.token.domain.exception.UserTokenNotFoundException;
 import com.damian.xBank.modules.user.token.domain.exception.UserTokenUsedException;
@@ -7,10 +8,9 @@ import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.domain.model.UserTokenType;
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
 import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenService;
-import com.damian.xBank.modules.user.user.application.dto.request.UserAccountPasswordResetRequest;
-import com.damian.xBank.modules.user.user.domain.exception.UserAccountNotFoundException;
+import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.infrastructure.repository.UserAccountRepository;
+import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,7 +31,7 @@ import static org.mockito.Mockito.*;
 public class UserTokenServiceTest extends AbstractServiceTest {
 
     @Mock
-    private UserAccountRepository userAccountRepository;
+    private UserRepository userRepository;
 
     @InjectMocks
     private UserTokenService userTokenService;
@@ -140,7 +140,7 @@ public class UserTokenServiceTest extends AbstractServiceTest {
                                                   .setType(UserTokenType.ACCOUNT_VERIFICATION);
 
         // when
-        when(userAccountRepository.findByEmail(user.getEmail()))
+        when(userRepository.findByEmail(user.getEmail()))
                 .thenReturn(Optional.of(user));
         when(userTokenRepository.findByUser_Id(user.getId()))
                 .thenReturn(Optional.of(givenActivationToken));
@@ -158,7 +158,7 @@ public class UserTokenServiceTest extends AbstractServiceTest {
                 .isEqualTo(false);
 
         verify(userTokenRepository, times(1)).findByUser_Id(user.getId());
-        verify(userAccountRepository, times(1)).findByEmail(user.getEmail());
+        verify(userRepository, times(1)).findByEmail(user.getEmail());
         verify(userTokenRepository, times(1)).save(any(UserToken.class));
     }
 
@@ -167,12 +167,12 @@ public class UserTokenServiceTest extends AbstractServiceTest {
     void shouldGeneratePasswordResetToken() {
         // given
 
-        UserAccountPasswordResetRequest passwordResetRequest = new UserAccountPasswordResetRequest(
+        UserPasswordResetRequest passwordResetRequest = new UserPasswordResetRequest(
                 user.getEmail()
         );
 
         // when
-        when(userAccountRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(userTokenRepository.save(any(UserToken.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -195,7 +195,7 @@ public class UserTokenServiceTest extends AbstractServiceTest {
                 .setEmail("user@demo.com")
                 .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD));
 
-        UserAccountPasswordResetRequest passwordResetRequest = new UserAccountPasswordResetRequest(
+        UserPasswordResetRequest passwordResetRequest = new UserPasswordResetRequest(
                 user.getEmail()
         );
 
@@ -204,13 +204,13 @@ public class UserTokenServiceTest extends AbstractServiceTest {
         token.setType(UserTokenType.RESET_PASSWORD);
 
         // when
-        when(userAccountRepository.findByEmail(user.getEmail())).thenReturn(Optional.empty());
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.empty());
         assertThrows(
-                UserAccountNotFoundException.class,
+                UserNotFoundException.class,
                 () -> userTokenService.generatePasswordResetToken(passwordResetRequest)
         );
 
         // then
-        verify(userAccountRepository, times(1)).findByEmail(anyString());
+        verify(userRepository, times(1)).findByEmail(anyString());
     }
 }

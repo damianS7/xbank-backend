@@ -1,9 +1,9 @@
 package com.damian.xBank.modules.user.user.infrastructure.controller;
 
+import com.damian.xBank.modules.user.token.application.dto.request.UserPasswordResetRequest;
+import com.damian.xBank.modules.user.token.application.dto.request.UserPasswordResetSetRequest;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
-import com.damian.xBank.modules.user.user.application.dto.request.UserAccountPasswordResetRequest;
-import com.damian.xBank.modules.user.user.application.dto.request.UserAccountPasswordResetSetRequest;
-import com.damian.xBank.modules.user.user.application.dto.request.UserAccountPasswordUpdateRequest;
+import com.damian.xBank.modules.user.user.application.dto.request.UserPasswordUpdateRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
@@ -34,13 +34,13 @@ public class UserPasswordControllerTest extends AbstractControllerTest {
                    .setPassword(passwordEncoder.encode(this.RAW_PASSWORD))
                    .setRole(UserRole.ADMIN)
                    .setStatus(UserStatus.VERIFIED);
-        userAccountRepository.save(user);
+        userRepository.save(user);
     }
 
     @AfterEach
     void tearDown() {
         userTokenRepository.deleteAll();
-        userAccountRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
@@ -49,7 +49,7 @@ public class UserPasswordControllerTest extends AbstractControllerTest {
         // given
         login(user);
 
-        UserAccountPasswordUpdateRequest updatePasswordRequest = new UserAccountPasswordUpdateRequest(
+        UserPasswordUpdateRequest updatePasswordRequest = new UserPasswordUpdateRequest(
                 RAW_PASSWORD,
                 "12345678$Xa"
         );
@@ -69,7 +69,7 @@ public class UserPasswordControllerTest extends AbstractControllerTest {
     void shouldNotUpdatePasswordWhenPasswordMismatch() throws Exception {
         // given
         login(user);
-        UserAccountPasswordUpdateRequest updatePasswordRequest = new UserAccountPasswordUpdateRequest(
+        UserPasswordUpdateRequest updatePasswordRequest = new UserPasswordUpdateRequest(
                 "1234564",
                 "12345678$Xa"
         );
@@ -89,7 +89,7 @@ public class UserPasswordControllerTest extends AbstractControllerTest {
     void shouldNotUpdatePasswordWhenPasswordPolicyNotSatisfied() throws Exception {
         // given
         login(user);
-        UserAccountPasswordUpdateRequest updatePasswordRequest = new UserAccountPasswordUpdateRequest(
+        UserPasswordUpdateRequest updatePasswordRequest = new UserPasswordUpdateRequest(
                 RAW_PASSWORD,
                 "1234"
         );
@@ -131,7 +131,7 @@ public class UserPasswordControllerTest extends AbstractControllerTest {
     void shouldNotUpdatePasswordWhenPasswordIsNull() throws Exception {
         // given
         login(user);
-        UserAccountPasswordUpdateRequest updatePasswordRequest = new UserAccountPasswordUpdateRequest(
+        UserPasswordUpdateRequest updatePasswordRequest = new UserPasswordUpdateRequest(
                 "1234564",
                 null
         );
@@ -172,7 +172,7 @@ public class UserPasswordControllerTest extends AbstractControllerTest {
     @DisplayName("Should send reset password token to user email")
     void shouldSendResetPasswordToken() throws Exception {
         // given
-        UserAccountPasswordResetRequest request = new UserAccountPasswordResetRequest(
+        UserPasswordResetRequest request = new UserPasswordResetRequest(
                 user.getEmail()
         );
 
@@ -194,13 +194,13 @@ public class UserPasswordControllerTest extends AbstractControllerTest {
                                   .setPassword(passwordEncoder.encode(this.RAW_PASSWORD))
                                   .setRole(UserRole.CUSTOMER)
                                   .setStatus(UserStatus.PENDING_VERIFICATION);
-        userAccountRepository.save(unverifiedUser);
+        userRepository.save(unverifiedUser);
 
         UserToken givenToken = UserToken.create()
                                         .setUser(unverifiedUser);
         userTokenRepository.save(givenToken);
 
-        UserAccountPasswordResetSetRequest request = new UserAccountPasswordResetSetRequest(
+        UserPasswordResetSetRequest request = new UserPasswordResetSetRequest(
                 "12345678$Xa"
         );
 

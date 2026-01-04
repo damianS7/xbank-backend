@@ -2,7 +2,7 @@ package com.damian.xBank.modules.user.user.infrastructure.controller;
 
 import com.damian.xBank.modules.user.profile.application.dto.response.UserProfileDetailDto;
 import com.damian.xBank.modules.user.profile.domain.model.UserGender;
-import com.damian.xBank.modules.user.user.application.dto.request.UserAccountRegistrationRequest;
+import com.damian.xBank.modules.user.user.application.dto.request.UserRegistrationRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.dto.ApiResponse;
@@ -28,7 +28,7 @@ public class UserRegistrationControllerTest extends AbstractControllerTest {
     @DisplayName("Should register a customer")
     void shouldRegisterCustomer() throws Exception {
         // given
-        UserAccountRegistrationRequest request = new UserAccountRegistrationRequest(
+        UserRegistrationRequest request = new UserRegistrationRequest(
                 "customer@test.com",
                 "12345689X$$sa",
                 "Customer",
@@ -82,7 +82,7 @@ public class UserRegistrationControllerTest extends AbstractControllerTest {
     @DisplayName("Should not register customer when missing fields")
     void shouldNotRegisterCustomerWhenMissingFields() throws Exception {
         // given
-        UserAccountRegistrationRequest request = new UserAccountRegistrationRequest(
+        UserRegistrationRequest request = new UserRegistrationRequest(
                 "customer@test.com",
                 "12345689X$$sa",
                 "",
@@ -124,7 +124,7 @@ public class UserRegistrationControllerTest extends AbstractControllerTest {
     @DisplayName("Should not register customer when email is not well-formed")
     void shouldNotRegisterCustomerWhenEmailIsNotWellFormed() throws Exception {
         // given
-        UserAccountRegistrationRequest request = new UserAccountRegistrationRequest(
+        UserRegistrationRequest request = new UserRegistrationRequest(
                 "bad-email.com",
                 "12345689X$$sa",
                 "Customer",
@@ -171,7 +171,7 @@ public class UserRegistrationControllerTest extends AbstractControllerTest {
     @DisplayName("Should not register customer when email is taken")
     void shouldNotRegisterCustomerWhenEmailIsTaken() throws Exception {
         // given
-        UserAccountRegistrationRequest request = new UserAccountRegistrationRequest(
+        UserRegistrationRequest request = new UserRegistrationRequest(
                 "customer@test.com",
                 "12345699Xxs$$",
                 "Customer",
@@ -188,7 +188,7 @@ public class UserRegistrationControllerTest extends AbstractControllerTest {
         User givenUser = User.create()
                              .setEmail(request.email())
                              .setPassword(passwordEncoder.encode(RAW_PASSWORD));
-        userAccountRepository.save(givenUser);
+        userRepository.save(givenUser);
 
 
         // when
@@ -221,7 +221,7 @@ public class UserRegistrationControllerTest extends AbstractControllerTest {
     @DisplayName("Should not register customer when password policy not satisfied")
     void shouldNotRegisterCustomerWhenPasswordPolicyNotSatisfied() throws Exception {
         // given
-        UserAccountRegistrationRequest request = new UserAccountRegistrationRequest(
+        UserRegistrationRequest request = new UserRegistrationRequest(
                 "customer@test.com",
                 "123456",
                 "Customer",

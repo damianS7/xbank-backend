@@ -2,8 +2,8 @@ package com.damian.xBank.modules.auth.application.usecase;
 
 import com.damian.xBank.modules.auth.application.dto.AuthenticationRequest;
 import com.damian.xBank.modules.auth.application.dto.AuthenticationResponse;
-import com.damian.xBank.modules.auth.domain.exception.UserAccountNotVerifiedException;
-import com.damian.xBank.modules.auth.domain.exception.UserAccountSuspendedException;
+import com.damian.xBank.modules.auth.domain.exception.UserNotVerifiedException;
+import com.damian.xBank.modules.auth.domain.exception.UserSuspendedException;
 import com.damian.xBank.shared.security.UserPrincipal;
 import com.damian.xBank.shared.utils.JwtUtil;
 import org.slf4j.Logger;
@@ -37,8 +37,8 @@ public class AuthenticationLogin {
      *
      * @param request Contains the fields needed to login into the service
      * @return Contains the data (User, Profile) and the token
-     * @throws BadCredentialsException         if credentials are invalid
-     * @throws UserAccountNotVerifiedException if the account is not verified
+     * @throws BadCredentialsException  if credentials are invalid
+     * @throws UserNotVerifiedException if the account is not verified
      */
     public AuthenticationResponse execute(AuthenticationRequest request) {
         final String email = request.email();
@@ -55,9 +55,9 @@ public class AuthenticationLogin {
                     new UsernamePasswordAuthenticationToken(email, password)
             );
         } catch (DisabledException e) {
-            throw new UserAccountNotVerifiedException(email);
+            throw new UserNotVerifiedException(email);
         } catch (LockedException e) {
-            throw new UserAccountSuspendedException(email);
+            throw new UserSuspendedException(email);
         }
 
 

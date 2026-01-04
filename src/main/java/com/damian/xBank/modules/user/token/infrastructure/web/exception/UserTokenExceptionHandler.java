@@ -25,11 +25,11 @@ public class UserTokenExceptionHandler {
 
     // Token Exceptions
     @ExceptionHandler(UserTokenNotFoundException.class) // 404
-    public ResponseEntity<ApiResponse<String>> handleAccountTokenNotFound(
+    public ResponseEntity<ApiResponse<String>> handleTokenNotFound(
             UserTokenNotFoundException ex
     ) {
         log.warn(
-                "user: {} account token: {} not found.",
+                "user: {} token: {} not found.",
                 ex.getResourceId(),
                 ex.getArgs()[0]
         );
@@ -39,11 +39,11 @@ public class UserTokenExceptionHandler {
     }
 
     @ExceptionHandler(UserTokenUsedException.class) // 403
-    public ResponseEntity<ApiResponse<String>> handleAccountVerificationTokenUsed(
+    public ResponseEntity<ApiResponse<String>> handleVerificationTokenUsed(
             UserTokenUsedException ex
     ) {
         log.warn(
-                "User: {} account token: {} is already used.",
+                "User: {} token: {} is already used.",
                 ex.getResourceId(),
                 ex.getArgs()[0]
         );
@@ -53,11 +53,11 @@ public class UserTokenExceptionHandler {
     }
 
     @ExceptionHandler(UserTokenExpiredException.class) // 410
-    public ResponseEntity<ApiResponse<String>> handleAccountVerificationTokenExpired(
+    public ResponseEntity<ApiResponse<String>> handleVerificationTokenExpired(
             UserTokenExpiredException ex
     ) {
         log.warn(
-                "account: {} account token: {} is expired.",
+                "user: {} token: {} is expired.",
                 ex.getResourceId(),
                 ex.getArgs()[0]
         );

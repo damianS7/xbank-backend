@@ -4,9 +4,9 @@ import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
 import com.damian.xBank.modules.notification.domain.model.NotificationType;
 import com.damian.xBank.modules.notification.infrastructure.repository.NotificationRepository;
 import com.damian.xBank.modules.notification.infrastructure.sink.NotificationSinkRegistry;
-import com.damian.xBank.modules.user.user.domain.exception.UserAccountNotFoundException;
+import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.infrastructure.repository.UserAccountRepository;
+import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.UserTestBuilder;
@@ -30,7 +30,7 @@ public class NotificationPublisherTest extends AbstractServiceTest {
     private NotificationRepository notificationRepository;
 
     @Mock
-    private UserAccountRepository userAccountRepository;
+    private UserRepository userRepository;
 
     @Mock
     private NotificationSinkRegistry notificationSinkRegistry;
@@ -66,7 +66,7 @@ public class NotificationPublisherTest extends AbstractServiceTest {
         );
 
         // when
-        when(userAccountRepository.findById(anyLong())).thenReturn(Optional.of(customer));
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(customer));
         when(notificationRepository.save(any()))
                 .thenAnswer(i -> i.getArguments()[0]);
         notificationPublisher.publish(event);
@@ -93,9 +93,9 @@ public class NotificationPublisherTest extends AbstractServiceTest {
         );
 
         // when
-        when(userAccountRepository.findById(anyLong())).thenReturn(Optional.empty());
-        UserAccountNotFoundException exception = assertThrows(
-                UserAccountNotFoundException.class,
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+        UserNotFoundException exception = assertThrows(
+                UserNotFoundException.class,
                 () -> notificationPublisher.publish(event)
         );
 

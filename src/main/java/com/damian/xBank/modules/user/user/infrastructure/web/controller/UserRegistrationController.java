@@ -1,9 +1,9 @@
 package com.damian.xBank.modules.user.user.infrastructure.web.controller;
 
-import com.damian.xBank.modules.user.user.application.dto.mapper.UserAccountDtoMapper;
-import com.damian.xBank.modules.user.user.application.dto.request.UserAccountRegistrationRequest;
-import com.damian.xBank.modules.user.user.application.dto.response.UserAccountDto;
-import com.damian.xBank.modules.user.user.application.usecase.UserAccountRegister;
+import com.damian.xBank.modules.user.user.application.dto.mapper.UserDtoMapper;
+import com.damian.xBank.modules.user.user.application.dto.request.UserRegistrationRequest;
+import com.damian.xBank.modules.user.user.application.dto.response.UserDto;
+import com.damian.xBank.modules.user.user.application.usecase.UserRegister;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,24 +17,24 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1")
 @RestController
 public class UserRegistrationController {
-    private final UserAccountRegister userAccountRegister;
+    private final UserRegister userRegister;
 
     @Autowired
     public UserRegistrationController(
-            UserAccountRegister userAccountRegister
+            UserRegister userRegister
     ) {
-        this.userAccountRegister = userAccountRegister;
+        this.userRegister = userRegister;
     }
 
     // endpoint for the current user to upload his profile photo
     @PostMapping("/users/register")
     public ResponseEntity<?> registerCustomer(
             @Validated @RequestBody
-            UserAccountRegistrationRequest request
+            UserRegistrationRequest request
     ) {
 
-        User registeredUser = userAccountRegister.execute(request);
-        UserAccountDto userDto = UserAccountDtoMapper.toUserDto(registeredUser);
+        User registeredUser = userRegister.execute(request);
+        UserDto userDto = UserDtoMapper.toUserDto(registeredUser);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)

@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.user.user.infrastructure.controller;
 
-import com.damian.xBank.modules.user.user.application.dto.request.UserAccountEmailUpdateRequest;
-import com.damian.xBank.modules.user.user.application.dto.response.UserAccountDto;
+import com.damian.xBank.modules.user.user.application.dto.request.UserEmailUpdateRequest;
+import com.damian.xBank.modules.user.user.application.dto.response.UserDto;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
@@ -30,13 +30,13 @@ public class UserControllerTest extends AbstractControllerTest {
                    .setRole(UserRole.ADMIN);
 
         user.setStatus(UserStatus.VERIFIED);
-        userAccountRepository.save(user);
+        userRepository.save(user);
     }
 
     @AfterEach
     void tearDown() {
         userTokenRepository.deleteAll();
-        userAccountRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
@@ -45,7 +45,7 @@ public class UserControllerTest extends AbstractControllerTest {
         // given
         login(user);
 
-        UserAccountEmailUpdateRequest givenRequest = new UserAccountEmailUpdateRequest(
+        UserEmailUpdateRequest givenRequest = new UserEmailUpdateRequest(
                 RAW_PASSWORD,
                 "user2@test.com"
         );
@@ -62,17 +62,17 @@ public class UserControllerTest extends AbstractControllerTest {
                 .andReturn();
 
         // then
-        UserAccountDto userAccountDto = JsonHelper.fromJson(
+        UserDto userDto = JsonHelper.fromJson(
                 result.getResponse().getContentAsString(),
-                UserAccountDto.class
+                UserDto.class
         );
 
         // then
-        assertThat(userAccountDto)
+        assertThat(userDto)
                 .isNotNull()
                 .extracting(
-                        UserAccountDto::id,
-                        UserAccountDto::email
+                        UserDto::id,
+                        UserDto::email
                 ).containsExactly(
                         user.getId(),
                         givenRequest.newEmail()

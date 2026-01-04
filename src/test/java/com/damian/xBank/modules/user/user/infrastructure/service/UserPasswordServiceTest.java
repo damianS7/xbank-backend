@@ -2,10 +2,10 @@ package com.damian.xBank.modules.user.user.infrastructure.service;
 
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
 import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenService;
-import com.damian.xBank.modules.user.user.application.dto.request.UserAccountPasswordUpdateRequest;
-import com.damian.xBank.modules.user.user.domain.exception.UserAccountNotFoundException;
+import com.damian.xBank.modules.user.user.application.dto.request.UserPasswordUpdateRequest;
+import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.infrastructure.repository.UserAccountRepository;
+import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.infrastructure.mail.EmailSenderService;
@@ -26,16 +26,16 @@ public class UserPasswordServiceTest extends AbstractServiceTest {
     private EmailSenderService emailSenderService;
 
     @Mock
-    private UserAccountRepository userAccountRepository;
+    private UserRepository userRepository;
 
     @InjectMocks
-    private UserAccountPasswordService userAccountPasswordService;
+    private UserPasswordService userPasswordService;
 
     @Mock
     private UserTokenRepository userTokenRepository;
 
     @Mock
-    private UserAccountVerificationService userAccountVerificationService;
+    private UserVerificationService userVerificationService;
 
     @Mock
     private UserTokenService userTokenService;
@@ -53,7 +53,7 @@ public class UserPasswordServiceTest extends AbstractServiceTest {
                 .setEmail("user@demo.com")
                 .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD));
 
-        UserAccountPasswordUpdateRequest updateRequest = new UserAccountPasswordUpdateRequest(
+        UserPasswordUpdateRequest updateRequest = new UserPasswordUpdateRequest(
                 RAW_PASSWORD,
                 rawNewPassword
         );
@@ -63,11 +63,11 @@ public class UserPasswordServiceTest extends AbstractServiceTest {
 
         // when
         when(bCryptPasswordEncoder.encode(rawNewPassword)).thenReturn(encodedNewPassword);
-        when(userAccountRepository.findById(user.getId())).thenReturn(Optional.of(user));
-        userAccountPasswordService.updatePassword(user.getId(), updateRequest.newPassword());
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        userPasswordService.updatePassword(user.getId(), updateRequest.newPassword());
 
         // then
-        verify(userAccountRepository, times(1)).save(user);
+        verify(userRepository, times(1)).save(user);
     }
 
     @Test
@@ -83,17 +83,17 @@ public class UserPasswordServiceTest extends AbstractServiceTest {
         // set the user on the context
         setUpContext(user);
 
-        UserAccountPasswordUpdateRequest updateRequest = new UserAccountPasswordUpdateRequest(
+        UserPasswordUpdateRequest updateRequest = new UserPasswordUpdateRequest(
                 RAW_PASSWORD,
                 "1234678Ax$"
         );
 
-        when(userAccountRepository.findById(user.getId()))
+        when(userRepository.findById(user.getId()))
                 .thenReturn(Optional.empty());
 
-        UserAccountNotFoundException exception = assertThrows(
-                UserAccountNotFoundException.class,
-                () -> userAccountPasswordService.updatePassword(
+        UserNotFoundException exception = assertThrows(
+                UserNotFoundException.class,
+                () -> userPasswordService.updatePassword(
                         user.getId(), updateRequest.newPassword()
                 )
         );

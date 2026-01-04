@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.auth.infrastructure.web.controller;
 
-import com.damian.xBank.modules.user.user.application.dto.request.UserAccountUpdateRequest;
+import com.damian.xBank.modules.user.profile.application.dto.request.UserProfileUpdateRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
@@ -44,7 +44,7 @@ public class AuthorizationControllerTest extends AbstractControllerTest {
                 .withPassword(passwordEncoder.encode(RAW_PASSWORD))
                 .build();
 
-        userAccountRepository.save(customer);
+        userRepository.save(customer);
     }
 
     @Test
@@ -88,7 +88,7 @@ public class AuthorizationControllerTest extends AbstractControllerTest {
         Map<String, Object> fields = new HashMap<>();
         fields.put("firstName", "alice");
 
-        UserAccountUpdateRequest request = new UserAccountUpdateRequest(
+        UserProfileUpdateRequest request = new UserProfileUpdateRequest(
                 this.RAW_PASSWORD,
                 fields
         );
@@ -117,7 +117,7 @@ public class AuthorizationControllerTest extends AbstractControllerTest {
         Map<String, Object> fields = new HashMap<>();
         fields.put("firstName", "alice");
 
-        UserAccountUpdateRequest request = new UserAccountUpdateRequest(
+        UserProfileUpdateRequest request = new UserProfileUpdateRequest(
                 this.RAW_PASSWORD,
                 fields
         );

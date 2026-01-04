@@ -49,7 +49,7 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
                                       .withStatus(UserStatus.VERIFIED)
                                       .build();
 
-        userAccountRepository.save(fromCustomer);
+        userRepository.save(fromCustomer);
 
         fromBankingAccount = new BankingAccount(fromCustomer);
         fromBankingAccount.setAccountNumber("ES1234567890123456789012");
@@ -65,7 +65,7 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
                                     .withStatus(UserStatus.VERIFIED)
                                     .build();
 
-        userAccountRepository.save(toCustomer);
+        userRepository.save(toCustomer);
 
         toBankingAccount = new BankingAccount(toCustomer);
         toBankingAccount.setAccountNumber("DE1234567890123456789012");
@@ -81,7 +81,7 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
                                .withRole(UserRole.ADMIN)
                                .build();
 
-        userAccountRepository.save(admin);
+        userRepository.save(admin);
 
         transfer = BankingTransfer
                 .create(fromBankingAccount, toBankingAccount, BigDecimal.valueOf(100))

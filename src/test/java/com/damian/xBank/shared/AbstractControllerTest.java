@@ -12,7 +12,7 @@ import com.damian.xBank.modules.setting.infrastructure.persistence.repository.Se
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
-import com.damian.xBank.modules.user.user.infrastructure.repository.UserAccountRepository;
+import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.security.UserPrincipal;
 import com.damian.xBank.shared.utils.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -70,7 +70,7 @@ public abstract class AbstractControllerTest {
     protected UserTokenRepository userTokenRepository;
 
     @Autowired
-    protected UserAccountRepository userAccountRepository;
+    protected UserRepository userRepository;
 
     @Autowired
     protected SettingRepository settingRepository;
@@ -92,7 +92,7 @@ public abstract class AbstractControllerTest {
         bankingCardRepository.deleteAll();
         bankingAccountRepository.deleteAll();
         userTokenRepository.deleteAll();
-        userAccountRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     protected void login(String email) throws Exception {

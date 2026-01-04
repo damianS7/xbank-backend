@@ -5,8 +5,8 @@ import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
 import com.damian.xBank.modules.notification.infrastructure.repository.NotificationRepository;
 import com.damian.xBank.modules.notification.infrastructure.sink.NotificationSinkRegistry;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.exception.UserAccountNotFoundException;
-import com.damian.xBank.modules.user.user.infrastructure.repository.UserAccountRepository;
+import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException;
+import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -15,16 +15,16 @@ import org.springframework.stereotype.Service;
 public class NotificationPublisher {
     private static final Logger log = LoggerFactory.getLogger(NotificationPublisher.class);
     private final NotificationRepository notificationRepository;
-    private final UserAccountRepository userAccountRepository;
+    private final UserRepository userRepository;
     private final NotificationSinkRegistry sinkRegistry;
 
     public NotificationPublisher(
             NotificationRepository notificationRepository,
-            UserAccountRepository userAccountRepository,
+            UserRepository userRepository,
             NotificationSinkRegistry sinkRegistry
     ) {
         this.notificationRepository = notificationRepository;
-        this.userAccountRepository = userAccountRepository;
+        this.userRepository = userRepository;
         this.sinkRegistry = sinkRegistry;
     }
 
@@ -35,14 +35,14 @@ public class NotificationPublisher {
      */
     public void publish(NotificationEvent notificationEvent) {
         // find recipient user who will receive the notification
-        User recipient = userAccountRepository
+        User recipient = userRepository
                 .findById(notificationEvent.toUserId())
                 .orElseThrow(() -> {
                     log.warn(
                             "Notification failed: recipient: {} not found.",
                             notificationEvent.toUserId()
                     );
-                    return new UserAccountNotFoundException(notificationEvent.toUserId());
+                    return new UserNotFoundException(notificationEvent.toUserId());
                 });
 
         // create and save notification to the database

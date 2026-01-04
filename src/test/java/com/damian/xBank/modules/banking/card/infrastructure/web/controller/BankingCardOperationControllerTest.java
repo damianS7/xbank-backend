@@ -40,7 +40,7 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
                                   .withPassword(passwordEncoder.encode(RAW_PASSWORD))
                                   .build();
 
-        userAccountRepository.save(customer);
+        userRepository.save(customer);
 
         customerBankingAccount = BankingAccount
                 .create(customer)

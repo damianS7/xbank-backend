@@ -39,7 +39,7 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
                 .withPassword(RAW_PASSWORD)
                 .build();
 
-        userAccountRepository.save(customer);
+        userRepository.save(customer);
     }
 
     @Test
@@ -134,7 +134,7 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
     void login_WhenAccountSuspended_Returns403Forbidden() throws Exception {
         // given
         customer.setStatus(UserStatus.SUSPENDED);
-        userAccountRepository.save(customer);
+        userRepository.save(customer);
 
         AuthenticationRequest request = new AuthenticationRequest(
                 customer.getEmail(),
@@ -169,7 +169,7 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
 
         // undo changes
         customer.setStatus(UserStatus.VERIFIED);
-        userAccountRepository.save(customer);
+        userRepository.save(customer);
     }
 
     @Test
@@ -177,7 +177,7 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
     void login_WhenAccountDisabled_Returns403Forbidden() throws Exception {
         // given
         customer.setStatus(UserStatus.PENDING_VERIFICATION);
-        userAccountRepository.save(customer);
+        userRepository.save(customer);
 
         AuthenticationRequest request = new AuthenticationRequest(
                 customer.getEmail(),
@@ -210,7 +210,7 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
 
         // undo changes to customer
         customer.setStatus(UserStatus.VERIFIED);
-        userAccountRepository.save(customer);
+        userRepository.save(customer);
     }
 
     @Test

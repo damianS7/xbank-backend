@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.auth.infrastructure.service;
 
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.infrastructure.repository.UserAccountRepository;
+import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.security.UserPrincipal;
 import org.slf4j.Logger;
@@ -14,10 +14,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
     private static final Logger log = LoggerFactory.getLogger(CustomUserDetailsService.class);
-    private final UserAccountRepository userAccountRepository;
+    private final UserRepository userRepository;
 
-    public CustomUserDetailsService(UserAccountRepository userAccountRepository) {
-        this.userAccountRepository = userAccountRepository;
+    public CustomUserDetailsService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -26,7 +26,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     public UserDetails loadUserByEmail(String email) {
-        User user = userAccountRepository
+        User user = userRepository
                 .findByEmail(email)
                 .orElseThrow(
                         () -> {

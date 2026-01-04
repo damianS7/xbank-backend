@@ -59,7 +59,7 @@ public class UserProfileImageControllerTest extends AbstractControllerTest {
                 .withProfile(profile)
                 .build();
 
-        userAccountRepository.save(customer);
+        userRepository.save(customer);
     }
 
     @Test

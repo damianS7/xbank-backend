@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.user.profile.infrastructure.service;
 
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileImageNotFoundException;
-import com.damian.xBank.modules.user.user.domain.exception.UserAccountNotFoundException;
+import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException;
 import com.damian.xBank.shared.infrastructure.storage.FileStorageService;
 import com.damian.xBank.shared.infrastructure.storage.ImageProcessingService;
 import com.damian.xBank.shared.infrastructure.storage.ImageUploaderService;
@@ -85,7 +85,7 @@ public class UserProfileImageService {
      *
      * @param userId the id of the user to get the photo for
      * @return the user photo resource
-     * @throws UserAccountNotFoundException      if the user does not exist
+     * @throws UserNotFoundException             if the user does not exist
      * @throws UserProfileImageNotFoundException if the user photo does not exist in the db
      */
     public Resource getImage(Long userId, String filename) {

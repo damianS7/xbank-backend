@@ -2,8 +2,8 @@ package com.damian.xBank.modules.auth.application.usecase;
 
 import com.damian.xBank.modules.auth.application.dto.AuthenticationRequest;
 import com.damian.xBank.modules.auth.application.dto.AuthenticationResponse;
-import com.damian.xBank.modules.auth.domain.exception.UserAccountNotVerifiedException;
-import com.damian.xBank.modules.auth.domain.exception.UserAccountSuspendedException;
+import com.damian.xBank.modules.auth.domain.exception.UserNotVerifiedException;
+import com.damian.xBank.modules.auth.domain.exception.UserSuspendedException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractServiceTest;
@@ -114,11 +114,11 @@ public class AuthenticationLoginTest extends AbstractServiceTest {
 
         // when
         when(authenticationManager.authenticate(any())).thenThrow(
-                new UserAccountSuspendedException(user.getEmail())
+                new UserSuspendedException(user.getEmail())
         );
 
-        UserAccountSuspendedException exception = assertThrows(
-                UserAccountSuspendedException.class,
+        UserSuspendedException exception = assertThrows(
+                UserSuspendedException.class,
                 () -> authenticationLogin.execute(request)
         );
 
@@ -137,11 +137,11 @@ public class AuthenticationLoginTest extends AbstractServiceTest {
 
         // when
         when(authenticationManager.authenticate(any())).thenThrow(
-                new UserAccountNotVerifiedException(request.email())
+                new UserNotVerifiedException(request.email())
         );
 
-        UserAccountNotVerifiedException exception = assertThrows(
-                UserAccountNotVerifiedException.class,
+        UserNotVerifiedException exception = assertThrows(
+                UserNotVerifiedException.class,
                 () -> authenticationLogin.execute(request)
         );
 

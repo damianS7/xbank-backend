@@ -6,7 +6,7 @@ import com.damian.xBank.modules.user.profile.domain.exception.UserProfileNotOwne
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileUpdateException;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import com.damian.xBank.modules.user.profile.infrastructure.repository.UserProfileRepository;
-import com.damian.xBank.modules.user.user.domain.exception.UserAccountInvalidPasswordConfirmationException;
+import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.shared.AbstractServiceTest;
@@ -140,8 +140,8 @@ public class UserProfileUpdateTest extends AbstractServiceTest {
         //        ).when(authenticationContext).validatePassword(
         //                any(Customer.class), anyString());
 
-        UserAccountInvalidPasswordConfirmationException exception = assertThrows(
-                UserAccountInvalidPasswordConfirmationException.class,
+        UserInvalidPasswordConfirmationException exception = assertThrows(
+                UserInvalidPasswordConfirmationException.class,
                 () -> userProfileUpdate.execute(givenRequest)
         );
 

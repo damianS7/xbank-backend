@@ -3,9 +3,9 @@ package com.damian.xBank.modules.user.profile.application.usecase;
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileImageNotFoundException;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import com.damian.xBank.modules.user.profile.infrastructure.service.UserProfileImageService;
-import com.damian.xBank.modules.user.user.domain.exception.UserAccountNotFoundException;
+import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.infrastructure.repository.UserAccountRepository;
+import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.ImageTestHelper;
@@ -29,7 +29,7 @@ import static org.mockito.Mockito.when;
 public class UserProfileImageGetTest extends AbstractServiceTest {
 
     @Mock
-    private UserAccountRepository userAccountRepository;
+    private UserRepository userRepository;
 
     @Mock
     private UserProfileImageService userProfileImageService;
@@ -61,7 +61,7 @@ public class UserProfileImageGetTest extends AbstractServiceTest {
         Resource givenResource = new UrlResource(givenFile.toURI());
 
         // when
-        when(userAccountRepository.findById(customer.getId()))
+        when(userRepository.findById(customer.getId()))
                 .thenReturn(Optional.of(customer));
 
 
@@ -83,10 +83,10 @@ public class UserProfileImageGetTest extends AbstractServiceTest {
     void getImage_WhenUserNotFound_ThrowsException() throws IOException {
         // given
         // when
-        when(userAccountRepository.findById(customer.getId())).thenReturn(Optional.empty());
+        when(userRepository.findById(customer.getId())).thenReturn(Optional.empty());
 
-        UserAccountNotFoundException exception = assertThrows(
-                UserAccountNotFoundException.class,
+        UserNotFoundException exception = assertThrows(
+                UserNotFoundException.class,
                 () -> userProfileImageGet.execute(customer.getId())
         );
 
@@ -102,7 +102,7 @@ public class UserProfileImageGetTest extends AbstractServiceTest {
         customer.getProfile().setPhotoPath(null);
 
         // when
-        when(userAccountRepository.findById(customer.getId())).thenReturn(Optional.of(customer));
+        when(userRepository.findById(customer.getId())).thenReturn(Optional.of(customer));
 
         UserProfileImageNotFoundException exception = assertThrows(
                 UserProfileImageNotFoundException.class,

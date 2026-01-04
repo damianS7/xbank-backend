@@ -7,9 +7,9 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.domain.service.BankingAccountDomainService;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.account.infrastructure.service.BankingAccountNumberGenerator;
-import com.damian.xBank.modules.user.user.domain.exception.UserAccountNotFoundException;
+import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.infrastructure.repository.UserAccountRepository;
+import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.UserTestBuilder;
@@ -33,7 +33,7 @@ public class BankingAccountCreateTest extends AbstractServiceTest {
     private BankingAccountRepository bankingAccountRepository;
 
     @Mock
-    private UserAccountRepository userRepository;
+    private UserRepository userRepository;
 
     @Mock
     private BankingAccountNumberGenerator bankingAccountNumberGenerator;
@@ -110,8 +110,8 @@ public class BankingAccountCreateTest extends AbstractServiceTest {
         // when
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        UserAccountNotFoundException exception = assertThrows(
-                UserAccountNotFoundException.class,
+        UserNotFoundException exception = assertThrows(
+                UserNotFoundException.class,
                 () -> bankingAccountCreate.execute(request)
         );
 

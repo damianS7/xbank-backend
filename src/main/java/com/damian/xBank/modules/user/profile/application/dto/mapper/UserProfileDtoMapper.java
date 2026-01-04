@@ -1,11 +1,11 @@
 package com.damian.xBank.modules.user.profile.application.dto.mapper;
 
-import com.damian.xBank.modules.user.user.application.dto.mapper.UserAccountDtoMapper;
-import com.damian.xBank.modules.user.user.application.dto.response.UserAccountDto;
-import com.damian.xBank.modules.user.user.domain.exception.UserAccountNotFoundException;
 import com.damian.xBank.modules.user.profile.application.dto.response.UserProfileDetailDto;
 import com.damian.xBank.modules.user.profile.application.dto.response.UserProfileDto;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
+import com.damian.xBank.modules.user.user.application.dto.mapper.UserDtoMapper;
+import com.damian.xBank.modules.user.user.application.dto.response.UserDto;
+import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -30,10 +30,10 @@ public class UserProfileDtoMapper {
     }
 
     public static UserProfileDetailDto toCustomerWithAccountDto(UserProfile profile) {
-        UserAccountDto userAccountDto = Optional.ofNullable(
-                UserAccountDtoMapper.toUserDto(profile.getUser())
+        UserDto userDto = Optional.ofNullable(
+                UserDtoMapper.toUserDto(profile.getUser())
         ).orElseThrow(
-                () -> new UserAccountNotFoundException(0L)
+                () -> new UserNotFoundException(0L)
         );
 
         //        Set<BankingAccountDto> bankingAccountsDTO = Optional.ofNullable(user.getBankingAccounts())
@@ -44,8 +44,8 @@ public class UserProfileDtoMapper {
 
         return new UserProfileDetailDto(
                 profile.getId(),
-                userAccountDto.role(),
-                userAccountDto.email(),
+                userDto.role(),
+                userDto.email(),
                 profile.getFirstName(),
                 profile.getLastName(),
                 profile.getPhone(),

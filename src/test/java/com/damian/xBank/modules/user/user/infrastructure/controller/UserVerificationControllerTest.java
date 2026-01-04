@@ -1,8 +1,8 @@
 package com.damian.xBank.modules.user.user.infrastructure.controller;
 
+import com.damian.xBank.modules.user.token.application.dto.request.UserPasswordResetSetRequest;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.domain.model.UserTokenType;
-import com.damian.xBank.modules.user.user.application.dto.request.UserAccountPasswordResetSetRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
@@ -28,13 +28,13 @@ public class UserVerificationControllerTest extends AbstractControllerTest {
                    .setRole(UserRole.ADMIN);
 
         user.setStatus(UserStatus.VERIFIED);
-        userAccountRepository.save(user);
+        userRepository.save(user);
     }
 
     @AfterEach
     void tearDown() {
         userTokenRepository.deleteAll();
-        userAccountRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
@@ -45,14 +45,14 @@ public class UserVerificationControllerTest extends AbstractControllerTest {
                                   .setEmail("non-verified-user@demo.com")
                                   .setPassword(passwordEncoder.encode(this.RAW_PASSWORD))
                                   .setStatus(UserStatus.PENDING_VERIFICATION);
-        userAccountRepository.save(unverifiedUser);
+        userRepository.save(unverifiedUser);
 
         UserToken givenToken = UserToken.create()
                                         .setType(UserTokenType.ACCOUNT_VERIFICATION)
                                         .setUser(unverifiedUser);
         userTokenRepository.save(givenToken);
 
-        UserAccountPasswordResetSetRequest request = new UserAccountPasswordResetSetRequest(
+        UserPasswordResetSetRequest request = new UserPasswordResetSetRequest(
                 "12345678$Xa"
         );
 

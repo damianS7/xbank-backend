@@ -62,7 +62,7 @@ public class NotificationControllerTest extends AbstractControllerTest {
                 .withPassword(passwordEncoder.encode(RAW_PASSWORD))
                 .build();
 
-        userAccountRepository.save(customer);
+        userRepository.save(customer);
     }
 
     @Test

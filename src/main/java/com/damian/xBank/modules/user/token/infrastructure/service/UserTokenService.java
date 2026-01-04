@@ -1,17 +1,17 @@
 package com.damian.xBank.modules.user.token.infrastructure.service;
 
+import com.damian.xBank.modules.user.token.application.dto.request.UserPasswordResetRequest;
 import com.damian.xBank.modules.user.token.domain.exception.UserTokenExpiredException;
 import com.damian.xBank.modules.user.token.domain.exception.UserTokenNotFoundException;
 import com.damian.xBank.modules.user.token.domain.exception.UserTokenUsedException;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.domain.model.UserTokenType;
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
-import com.damian.xBank.modules.user.user.application.dto.request.UserAccountPasswordResetRequest;
-import com.damian.xBank.modules.user.user.domain.exception.UserAccountNotFoundException;
-import com.damian.xBank.modules.user.user.domain.exception.UserAccountVerificationNotPendingException;
+import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException;
+import com.damian.xBank.modules.user.user.domain.exception.UserVerificationNotPendingException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
-import com.damian.xBank.modules.user.user.infrastructure.repository.UserAccountRepository;
+import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -24,14 +24,14 @@ import java.util.UUID;
 public class UserTokenService {
     private static final Logger log = LoggerFactory.getLogger(UserTokenService.class);
     private final UserTokenRepository userTokenRepository;
-    private final UserAccountRepository userAccountRepository;
+    private final UserRepository userRepository;
 
     public UserTokenService(
             UserTokenRepository userTokenRepository,
-            UserAccountRepository userAccountRepository
+            UserRepository userRepository
     ) {
         this.userTokenRepository = userTokenRepository;
-        this.userAccountRepository = userAccountRepository;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -73,16 +73,16 @@ public class UserTokenService {
      *
      * @param email The email address of the user.
      * @return An AccountToken object containing the verification token.
-     * @throws UserAccountNotFoundException               If the user is not found.
-     * @throws UserAccountVerificationNotPendingException If the account is not pending for verification.
+     * @throws UserNotFoundException               If the user is not found.
+     * @throws UserVerificationNotPendingException If the account is not pending for verification.
      */
     public UserToken generateVerificationToken(String email) {
         log.debug("Generating verification token for: {}", email);
         // retrieve the user by email
-        User user = userAccountRepository.findByEmail(email).orElseThrow(
+        User user = userRepository.findByEmail(email).orElseThrow(
                 () -> {
                     log.error("Failed to generate verification token. UserAccount for: {} not found.", email);
-                    return new UserAccountNotFoundException(email);
+                    return new UserNotFoundException(email);
                 }
         );
 
@@ -92,7 +92,7 @@ public class UserTokenService {
                     "Failed to generate verification token. UserAccount for: {} is not awaiting verification.",
                     email
             );
-            throw new UserAccountVerificationNotPendingException(email);
+            throw new UserVerificationNotPendingException(email);
         }
 
         // check if AccountToken exists orElse create a new one
@@ -122,9 +122,9 @@ public class UserTokenService {
      * @param request the request containing the email of the user and password
      * @return AccountToken with the token
      */
-    public UserToken generatePasswordResetToken(UserAccountPasswordResetRequest request) {
+    public UserToken generatePasswordResetToken(UserPasswordResetRequest request) {
         log.debug("Generating password reset token for email: {}", request.email());
-        User user = userAccountRepository
+        User user = userRepository
                 .findByEmail(request.email())
                 .orElseThrow(
                         () -> {
@@ -132,7 +132,7 @@ public class UserTokenService {
                                     "Failed to generate password reset token. No account found for: {}",
                                     request.email()
                             );
-                            return new UserAccountNotFoundException(request.email());
+                            return new UserNotFoundException(request.email());
                         }
                 );
 

@@ -2,7 +2,7 @@ package com.damian.xBank.modules.user.profile.infrastructure.service;
 
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.infrastructure.repository.UserAccountRepository;
+import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.infrastructure.storage.FileStorageService;
 import com.damian.xBank.shared.infrastructure.storage.ImageProcessingService;
@@ -17,7 +17,7 @@ import org.mockito.Mock;
 public class UserProfileImageServiceTest extends AbstractServiceTest {
 
     @Mock
-    private UserAccountRepository userAccountRepository;
+    private UserRepository userRepository;
 
     @Mock
     private ImageUploaderService imageUploaderService;

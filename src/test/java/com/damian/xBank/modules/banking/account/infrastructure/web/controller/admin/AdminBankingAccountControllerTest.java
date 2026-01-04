@@ -39,7 +39,7 @@ public class AdminBankingAccountControllerTest extends AbstractControllerTest {
                                   .withPassword(passwordEncoder.encode(RAW_PASSWORD))
                                   .build();
 
-        userAccountRepository.save(customer);
+        userRepository.save(customer);
 
         admin = UserTestBuilder.aCustomer()
                                .withEmail("admin@demo.com")
@@ -48,7 +48,7 @@ public class AdminBankingAccountControllerTest extends AbstractControllerTest {
                                .withPassword(passwordEncoder.encode(RAW_PASSWORD))
                                .build();
 
-        userAccountRepository.save(admin);
+        userRepository.save(admin);
     }
 
     @Test

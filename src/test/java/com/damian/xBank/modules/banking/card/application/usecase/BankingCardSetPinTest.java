@@ -8,7 +8,7 @@ import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoun
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotOwnerException;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
-import com.damian.xBank.modules.user.user.domain.exception.UserAccountInvalidPasswordConfirmationException;
+import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
@@ -139,8 +139,8 @@ public class BankingCardSetPinTest extends AbstractServiceTest {
         // when
         when(bankingCardRepository.findById(anyLong())).thenReturn(Optional.of(bankingCard));
 
-        UserAccountInvalidPasswordConfirmationException exception = Assert.assertThrows(
-                UserAccountInvalidPasswordConfirmationException.class,
+        UserInvalidPasswordConfirmationException exception = Assert.assertThrows(
+                UserInvalidPasswordConfirmationException.class,
                 () -> bankingCardSetPin.execute(bankingCard.getId(), request)
         );
 

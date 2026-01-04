@@ -16,7 +16,7 @@ import com.damian.xBank.modules.banking.transfer.domain.service.BankingTransferD
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
 import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
-import com.damian.xBank.modules.user.user.domain.exception.UserAccountInvalidPasswordConfirmationException;
+import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
@@ -191,8 +191,8 @@ public class BankingTransferConfirmTest extends AbstractServiceTest {
 
         // when
         // then
-        UserAccountInvalidPasswordConfirmationException exception = assertThrows(
-                UserAccountInvalidPasswordConfirmationException.class,
+        UserInvalidPasswordConfirmationException exception = assertThrows(
+                UserInvalidPasswordConfirmationException.class,
                 () -> bankingTransferConfirm.execute(givenTransfer.getId(), request)
         );
 

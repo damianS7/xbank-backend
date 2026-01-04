@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.auth.infrastructure.web.exception;
 
-import com.damian.xBank.modules.auth.domain.exception.UserAccountNotVerifiedException;
-import com.damian.xBank.modules.auth.domain.exception.UserAccountSuspendedException;
+import com.damian.xBank.modules.auth.domain.exception.UserNotVerifiedException;
+import com.damian.xBank.modules.auth.domain.exception.UserSuspendedException;
 import com.damian.xBank.shared.dto.ApiResponse;
 import com.damian.xBank.shared.exception.ApplicationException;
 import com.damian.xBank.shared.exception.ErrorCodes;
@@ -48,7 +48,7 @@ public class AuthExceptionHandler {
     @ExceptionHandler(
             {
                     LockedException.class,
-                    UserAccountSuspendedException.class
+                    UserSuspendedException.class
             }
     )
     public ResponseEntity<?> handleLocked(RuntimeException e) {
@@ -68,7 +68,7 @@ public class AuthExceptionHandler {
 
     @ExceptionHandler(
             {
-                    UserAccountNotVerifiedException.class,
+                    UserNotVerifiedException.class,
                     DisabledException.class
             }
     )
