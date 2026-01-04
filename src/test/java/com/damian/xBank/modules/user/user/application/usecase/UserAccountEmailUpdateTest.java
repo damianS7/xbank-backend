@@ -1,21 +1,19 @@
-package com.damian.xBank.modules.user.account.application.service;
+package com.damian.xBank.modules.user.user.application.usecase;
 
-import com.damian.xBank.modules.user.account.account.application.dto.request.UserAccountEmailUpdateRequest;
-import com.damian.xBank.modules.user.account.account.application.service.UserAccountService;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
-import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountEmailTakenException;
-import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountInvalidPasswordConfirmationException;
-import com.damian.xBank.modules.user.account.account.infrastructure.repository.UserAccountRepository;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.user.application.dto.request.UserAccountEmailUpdateRequest;
+import com.damian.xBank.modules.user.user.domain.exception.UserAccountEmailTakenException;
+import com.damian.xBank.modules.user.user.domain.exception.UserAccountInvalidPasswordConfirmationException;
+import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.infrastructure.repository.UserAccountRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.utils.UserProfileTestFactory;
+import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
 
@@ -26,29 +24,24 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-public class UserAccountServiceTest extends AbstractServiceTest {
+public class UserAccountEmailUpdateTest extends AbstractServiceTest {
 
     @Mock
     private UserAccountRepository userAccountRepository;
 
     @InjectMocks
-    private UserAccountService userAccountService;
-    private UserAccount userAccount;
-    private Customer customer;
+    private UserAccountEmailUpdate userAccountEmailUpdate;
 
-    @Spy
-    private BCryptPasswordEncoder passwordEncoder;
+    private User customer;
 
     @BeforeEach
     void setUp() {
-        userAccount = UserAccount.create()
-                                 .setId(2L)
-                                 .setEmail("user@demo.com")
-                                 .setPassword(passwordEncoder.encode(RAW_PASSWORD));
-
-        customer = Customer.create()
-                           .setId(1L)
-                           .setAccount(userAccount);
+        customer = UserTestBuilder.aCustomer()
+                                  .withId(1L)
+                                  .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                                  .withEmail("customer@demo.com")
+                                  .withProfile(UserProfileTestFactory.aProfile())
+                                  .build();
     }
 
     @Test
@@ -56,7 +49,7 @@ public class UserAccountServiceTest extends AbstractServiceTest {
     void shouldUpdateEmail() {
         // given
         // set the user on the context
-        setUpContext(userAccount);
+        setUpContext(customer);
 
         UserAccountEmailUpdateRequest updateRequest = new UserAccountEmailUpdateRequest(
                 RAW_PASSWORD,
@@ -64,24 +57,24 @@ public class UserAccountServiceTest extends AbstractServiceTest {
         );
 
         // when
-        when(userAccountRepository.findById(userAccount.getId())).thenReturn(Optional.of(userAccount));
+        when(userAccountRepository.findById(customer.getId())).thenReturn(Optional.of(customer));
         when(userAccountRepository.existsByEmail(anyString())).thenReturn(false);
-        when(userAccountRepository.save(any(UserAccount.class))).thenAnswer(
+        when(userAccountRepository.save(any(User.class))).thenAnswer(
                 invocation -> invocation.getArgument(0)
         );
 
-        UserAccount updatedAccount = userAccountService.updateEmail(updateRequest);
+        User updatedAccount = userAccountEmailUpdate.execute(updateRequest);
 
         // then
         assertThat(updatedAccount)
                 .isNotNull()
                 .extracting(
-                        UserAccount::getEmail
+                        User::getEmail
                 ).isEqualTo(
                         updateRequest.newEmail()
                 );
 
-        verify(userAccountRepository, times(1)).save(any(UserAccount.class));
+        verify(userAccountRepository, times(1)).save(any(User.class));
     }
 
     @Test
@@ -90,7 +83,7 @@ public class UserAccountServiceTest extends AbstractServiceTest {
         // given
 
         // set the user on the context
-        setUpContext(userAccount);
+        setUpContext(customer);
 
         UserAccountEmailUpdateRequest updateRequest = new UserAccountEmailUpdateRequest(
                 RAW_PASSWORD,
@@ -98,12 +91,12 @@ public class UserAccountServiceTest extends AbstractServiceTest {
         );
 
         // when
-        when(userAccountRepository.findById(userAccount.getId())).thenReturn(Optional.of(userAccount));
+        when(userAccountRepository.findById(customer.getId())).thenReturn(Optional.of(customer));
         when(userAccountRepository.existsByEmail(updateRequest.newEmail())).thenReturn(true);
 
         UserAccountEmailTakenException exception = assertThrows(
                 UserAccountEmailTakenException.class,
-                () -> userAccountService.updateEmail(updateRequest)
+                () -> userAccountEmailUpdate.execute(updateRequest)
         );
 
         // then
@@ -115,7 +108,7 @@ public class UserAccountServiceTest extends AbstractServiceTest {
     void shouldNotUpdateEmailWhenPasswordIsWrong() {
         // given
         // set the user on the context
-        setUpContext(userAccount);
+        setUpContext(customer);
 
         UserAccountEmailUpdateRequest updateRequest = new UserAccountEmailUpdateRequest(
                 "wrong password",
@@ -125,7 +118,7 @@ public class UserAccountServiceTest extends AbstractServiceTest {
         // when
         UserAccountInvalidPasswordConfirmationException exception = assertThrows(
                 UserAccountInvalidPasswordConfirmationException.class,
-                () -> userAccountService.updateEmail(updateRequest)
+                () -> userAccountEmailUpdate.execute(updateRequest)
         );
 
         // then

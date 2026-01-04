@@ -8,8 +8,9 @@ import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransfe
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferNotOwnerException;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferSameAccountException;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferStatusTransitionException;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,16 +22,21 @@ import static org.junit.Assert.assertThrows;
 
 public class BankingTransferTest {
 
-    private Customer fromCustomer;
-    private Customer toCustomer;
+    private User fromCustomer;
+    private User toCustomer;
     private BankingAccount fromAccount;
     private BankingAccount toAccount;
     private BankingTransfer transfer;
 
     @BeforeEach
     void setUp() {
-        fromCustomer = Customer.create().setId(1L);
-        toCustomer = Customer.create().setId(2L);
+        fromCustomer = UserTestBuilder.aCustomer()
+                                      .withId(1L)
+                                      .build();
+        toCustomer = UserTestBuilder.aCustomer()
+                                    .withId(2L)
+                                    .build();
+
         fromAccount = BankingAccount.create(fromCustomer)
                                     .setCurrency(BankingAccountCurrency.EUR);
 

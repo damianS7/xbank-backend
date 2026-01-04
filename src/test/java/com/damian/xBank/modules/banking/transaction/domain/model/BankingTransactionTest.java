@@ -4,7 +4,7 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotOwnerException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionStatusTransitionException;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,13 +18,13 @@ import static org.junit.Assert.assertThrows;
 
 public class BankingTransactionTest {
 
-    private Customer customer;
+    private User customer;
     private BankingAccount account;
     private BankingTransaction transaction;
 
     @BeforeEach
     void setUp() {
-        customer = Customer.create().setId(1L);
+        customer = User.create().setId(1L);
         account = BankingAccount.create(customer);
         transaction = BankingTransaction
                 .create(
@@ -128,7 +128,6 @@ public class BankingTransactionTest {
         // then
         assertThat(result).isSameAs(transaction);
         assertThat(transaction.getBankingAccount()).isSameAs(account);
-        assertThat(transaction.getCustomer()).isSameAs(customer);
     }
 
     @Test
@@ -145,7 +144,6 @@ public class BankingTransactionTest {
         // then
         assertThat(result).isSameAs(transaction);
         assertThat(transaction.getBankingCard()).isSameAs(card);
-        assertThat(transaction.getCustomer()).isSameAs(customer);
     }
 
     @Test

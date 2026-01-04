@@ -7,11 +7,11 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatu
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.transaction.application.dto.response.BankingTransactionDto;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
-import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
-import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
-import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
+import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserAccountRole;
+import com.damian.xBank.modules.user.user.domain.model.UserAccountStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
+import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -29,41 +28,27 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class AdminBankingAccountControllerTest extends AbstractControllerTest {
-    private Customer customer;
-    private Customer admin;
+    private User customer;
+    private User admin;
 
     @BeforeEach
     void setUp() {
-        customer = Customer.create()
-                           .setEmail("customer@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
-                           .setFirstName("David")
-                           .setLastName("Brow")
-                           .setBirthdate(LocalDate.now())
-                           .setPhotoPath("avatar.jpg")
-                           .setPhone("123 123 123")
-                           .setPostalCode("01003")
-                           .setAddress("Fake ave")
-                           .setCountry("US")
-                           .setGender(CustomerGender.MALE);
-        customer.getAccount().setAccountStatus(UserAccountStatus.VERIFIED);
-        customerRepository.save(customer);
+        customer = UserTestBuilder.aCustomer()
+                                  .withEmail("customer@demo.com")
+                                  .withStatus(UserAccountStatus.VERIFIED)
+                                  .withPassword(passwordEncoder.encode(RAW_PASSWORD))
+                                  .build();
 
-        admin = Customer.create()
-                        .setEmail("admin@demo.com")
-                        .setPassword(passwordEncoder.encode(RAW_PASSWORD))
-                        .setFirstName("David")
-                        .setLastName("Brow")
-                        .setBirthdate(LocalDate.now())
-                        .setPhotoPath("avatar.jpg")
-                        .setPhone("123 123 123")
-                        .setPostalCode("01003")
-                        .setAddress("Fake ave")
-                        .setCountry("US")
-                        .setRole(UserAccountRole.ADMIN)
-                        .setGender(CustomerGender.MALE);
-        admin.getAccount().setAccountStatus(UserAccountStatus.VERIFIED);
-        customerRepository.save(admin);
+        userAccountRepository.save(customer);
+
+        admin = UserTestBuilder.aCustomer()
+                               .withEmail("admin@demo.com")
+                               .withRole(UserAccountRole.ADMIN)
+                               .withStatus(UserAccountStatus.VERIFIED)
+                               .withPassword(passwordEncoder.encode(RAW_PASSWORD))
+                               .build();
+        
+        userAccountRepository.save(admin);
     }
 
     @Test

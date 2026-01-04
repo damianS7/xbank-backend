@@ -4,13 +4,13 @@ import com.damian.xBank.modules.auth.application.dto.AuthenticationRequest;
 import com.damian.xBank.modules.auth.application.dto.AuthenticationResponse;
 import com.damian.xBank.modules.auth.domain.exception.UserAccountNotVerifiedException;
 import com.damian.xBank.modules.auth.domain.exception.UserAccountSuspendedException;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
-import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserAccountStatus;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
-import com.damian.xBank.shared.security.User;
+import com.damian.xBank.shared.security.UserPrincipal;
 import com.damian.xBank.shared.utils.JwtUtil;
+import com.damian.xBank.shared.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,17 +38,11 @@ public class AuthenticationLoginTest extends AbstractServiceTest {
     @InjectMocks
     private AuthenticationLogin authenticationLogin;
 
-    private Customer customer;
+    private User customer;
 
     @BeforeEach
     void setUp() {
-        customer = Customer.create(
-                UserAccount.create()
-                           .setId(1L)
-                           .setEmail("customer@demo.com")
-                           .setAccountStatus(UserAccountStatus.VERIFIED)
-                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-        ).setId(1L);
+        customer = UserTestFactory.customer();
     }
 
 
@@ -59,11 +53,11 @@ public class AuthenticationLoginTest extends AbstractServiceTest {
         Authentication authentication = mock(Authentication.class);
         String givenToken = "jwt-token";
 
-        User user = new User(customer.getAccount());
+        UserPrincipal user = new UserPrincipal(this.customer);
 
         AuthenticationRequest request = new AuthenticationRequest(
-                customer.getEmail(),
-                customer.getAccount().getPassword()
+                this.customer.getEmail(),
+                this.customer.getPassword()
         );
 
         // when
@@ -87,7 +81,7 @@ public class AuthenticationLoginTest extends AbstractServiceTest {
         // given
         AuthenticationRequest request = new AuthenticationRequest(
                 customer.getEmail(),
-                customer.getAccount().getPassword()
+                customer.getPassword()
         );
 
         // when
@@ -107,20 +101,20 @@ public class AuthenticationLoginTest extends AbstractServiceTest {
     @DisplayName("should throw exception when account is suspended")
     void login_WhenAccountSuspended_ThrowsException() {
         // given
-        UserAccount userAccount = UserAccount.create()
-                                             .setId(1L)
-                                             .setEmail("user@demo.com")
-                                             .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                             .setAccountStatus(UserAccountStatus.SUSPENDED);
+        User user = User.create()
+                        .setId(1L)
+                        .setEmail("user@demo.com")
+                        .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                        .setAccountStatus(UserAccountStatus.SUSPENDED);
 
         AuthenticationRequest request = new AuthenticationRequest(
-                userAccount.getEmail(),
-                userAccount.getPassword()
+                user.getEmail(),
+                user.getPassword()
         );
 
         // when
         when(authenticationManager.authenticate(any())).thenThrow(
-                new UserAccountSuspendedException(userAccount.getEmail())
+                new UserAccountSuspendedException(user.getEmail())
         );
 
         UserAccountSuspendedException exception = assertThrows(
@@ -138,7 +132,7 @@ public class AuthenticationLoginTest extends AbstractServiceTest {
         // given
         AuthenticationRequest request = new AuthenticationRequest(
                 customer.getEmail(),
-                customer.getAccount().getPassword()
+                customer.getPassword()
         );
 
         // when

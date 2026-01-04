@@ -12,11 +12,11 @@ import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransact
 import com.damian.xBank.modules.banking.transaction.infrastructure.service.BankingTransactionPersistenceService;
 import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
-import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserAccountRole;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -46,17 +46,16 @@ public class BankingAccountDepositTest extends AbstractServiceTest {
     @Mock
     private NotificationPublisher notificationPublisher;
 
-    private Customer customer;
+    private User customer;
     private BankingAccount bankingAccount;
 
     @BeforeEach
     void setUp() {
-        customer = Customer.create(
-                UserAccount.create()
-                           .setId(1L)
-                           .setEmail("customer@demo.com")
-                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-        ).setId(1L);
+        customer = UserTestBuilder.aCustomer()
+                                  .withId(1L)
+                                  .withEmail("customer@demo.com")
+                                  .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                                  .build();
 
         bankingAccount = BankingAccount
                 .create(customer)

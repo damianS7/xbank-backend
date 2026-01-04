@@ -3,19 +3,18 @@ package com.damian.xBank.modules.setting.infrastructure.controller;
 import com.damian.xBank.modules.setting.application.dto.request.SettingsUpdateRequest;
 import com.damian.xBank.modules.setting.application.dto.response.SettingDto;
 import com.damian.xBank.modules.setting.domain.model.*;
-import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
-import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
+import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserAccountRole;
+import com.damian.xBank.modules.user.user.domain.model.UserAccountStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.utils.JsonHelper;
+import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-
-import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -25,24 +24,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class SettingControllerTest extends AbstractControllerTest {
 
-    private Customer customer;
+    private User customer;
 
     @BeforeEach
     void setUp() {
-        customer = Customer.create()
-                           .setEmail("customer@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
-                           .setFirstName("David")
-                           .setLastName("Brow")
-                           .setBirthdate(LocalDate.now())
-                           .setPhotoPath("avatar.jpg")
-                           .setPhone("123 123 123")
-                           .setPostalCode("01003")
-                           .setAddress("Fake ave")
-                           .setCountry("US")
-                           .setGender(CustomerGender.MALE);
-        customer.getAccount().setAccountStatus(UserAccountStatus.VERIFIED);
-        customerRepository.save(customer);
+        customer = UserTestBuilder
+                .aCustomer()
+                .withEmail("customer@demo.com")
+                .withRole(UserAccountRole.CUSTOMER)
+                .withStatus(UserAccountStatus.VERIFIED)
+                .withPassword(passwordEncoder.encode(RAW_PASSWORD))
+                .build();
+
+        userAccountRepository.save(customer);
     }
 
     @AfterEach

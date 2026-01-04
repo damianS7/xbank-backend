@@ -9,11 +9,11 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurre
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
-import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserAccountRole;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -37,17 +37,16 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
     @InjectMocks
     private BankingAccountClose bankingAccountClose;
 
-    private Customer customer;
+    private User customer;
     private BankingAccount bankingAccount;
 
     @BeforeEach
     void setUp() {
-        customer = Customer.create(
-                UserAccount.create()
-                           .setId(1L)
-                           .setEmail("fromCustomer@demo.com")
-                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-        ).setId(1L);
+        customer = UserTestBuilder.aCustomer()
+                                  .withId(1L)
+                                  .withEmail("customer@demo.com")
+                                  .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                                  .build();
 
         bankingAccount = BankingAccount
                 .create(customer)
@@ -139,12 +138,11 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
     @DisplayName("Should throws exception when authenticated customer is not the owner of the account")
     void closeAccount_WhenAccountNotOwnedByCustomer_ThrowsException() {
         // given
-        Customer customer2 = Customer.create(
-                UserAccount.create()
-                           .setId(2L)
-                           .setEmail("customer2@demo.com")
-                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-        ).setId(2L);
+        User customer2 = UserTestBuilder.aCustomer()
+                                        .withId(2L)
+                                        .withEmail("customer2@demo.com")
+                                        .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                                        .build();
 
         setUpContext(customer2);
 
@@ -168,13 +166,12 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
     @DisplayName("Should returns a closed BankingAccount when not owner but it is admin")
     void closeAccount_WhenAccountNotOwnedByCustomerButItIsAdmin_ThrowsException() {
         // given
-        Customer customerAdmin = Customer.create(
-                UserAccount.create()
-                           .setId(1L)
-                           .setRole(UserAccountRole.ADMIN)
-                           .setEmail("customerAdmin@demo.com")
-                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-        ).setId(1L);
+        User customerAdmin = UserTestBuilder.aCustomer()
+                                            .withId(2L)
+                                            .withEmail("customerAdmin@demo.com")
+                                            .withRole(UserAccountRole.ADMIN)
+                                            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                                            .build();
 
         setUpContext(customerAdmin);
 

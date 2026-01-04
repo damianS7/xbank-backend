@@ -5,9 +5,9 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.service.BankingAccountNumberGenerator;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
+import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,27 +27,26 @@ public class BankingAccountDomainServiceTest extends AbstractServiceTest {
     @InjectMocks
     private BankingAccountDomainService bankingAccountDomainService;
 
-    private Customer customer;
+    private User user;
     private BankingAccount bankingAccount;
 
     @BeforeEach
     void setUp() {
-        customer = Customer.create(
-                UserAccount.create()
-                           .setId(1L)
-                           .setEmail("customer@demo.com")
-                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-        ).setId(1L);
+        user = UserTestBuilder.aCustomer()
+                              .withId(1L)
+                              .withEmail("customer@demo.com")
+                              .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                              .build();
 
         bankingAccount = BankingAccount
-                .create(customer)
+                .create(user)
                 .setId(1L)
                 .setBalance(BigDecimal.valueOf(1000))
                 .setCurrency(BankingAccountCurrency.EUR)
                 .setType(BankingAccountType.SAVINGS)
                 .setAccountNumber("US9900001111112233334444");
 
-        customer.addBankingAccount(bankingAccount);
+        user.addBankingAccount(bankingAccount);
     }
 
     @Test
@@ -64,7 +63,7 @@ public class BankingAccountDomainServiceTest extends AbstractServiceTest {
                 .thenReturn("ES1234567890123456789012");
 
         BankingAccount result = bankingAccountDomainService.createAccount(
-                customer,
+                user,
                 request.type(),
                 request.currency()
         );

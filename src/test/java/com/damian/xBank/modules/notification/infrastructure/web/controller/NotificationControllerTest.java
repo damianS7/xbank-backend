@@ -6,12 +6,13 @@ import com.damian.xBank.modules.notification.application.usecase.NotificationSin
 import com.damian.xBank.modules.notification.domain.model.Notification;
 import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
 import com.damian.xBank.modules.notification.domain.model.NotificationType;
-import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
-import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
+import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserAccountRole;
+import com.damian.xBank.modules.user.user.domain.model.UserAccountStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
-import com.damian.xBank.shared.security.User;
+import com.damian.xBank.shared.security.UserPrincipal;
 import com.damian.xBank.shared.utils.JwtUtil;
+import com.damian.xBank.shared.utils.UserTestBuilder;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,7 +31,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import reactor.core.publisher.Flux;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -43,7 +43,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class NotificationControllerTest extends AbstractControllerTest {
-    private Customer customer;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -51,22 +50,19 @@ public class NotificationControllerTest extends AbstractControllerTest {
     @SpyBean
     private NotificationSinkGet notificationSinkGet;
 
+    private User customer;
+
     @BeforeEach
     void setUp() {
-        customer = Customer.create()
-                           .setEmail("customer@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
-                           .setFirstName("David")
-                           .setLastName("Brow")
-                           .setBirthdate(LocalDate.now())
-                           .setPhotoPath("avatar.jpg")
-                           .setPhone("123 123 123")
-                           .setPostalCode("01003")
-                           .setAddress("Fake ave")
-                           .setCountry("US")
-                           .setGender(CustomerGender.MALE);
-        customer.getAccount().setAccountStatus(UserAccountStatus.VERIFIED);
-        customerRepository.save(customer);
+        customer = UserTestBuilder
+                .aCustomer()
+                .withEmail("customer@demo.com")
+                .withRole(UserAccountRole.CUSTOMER)
+                .withStatus(UserAccountStatus.VERIFIED)
+                .withPassword(passwordEncoder.encode(RAW_PASSWORD))
+                .build();
+
+        userAccountRepository.save(customer);
     }
 
     @Test
@@ -145,13 +141,13 @@ public class NotificationControllerTest extends AbstractControllerTest {
         login(customer);
 
         NotificationEvent notificationEvent = new NotificationEvent(
-                customer.getAccount().getId(),
+                customer.getId(),
                 NotificationType.INFO,
                 Map.of("postId", 123),
                 "2025-09-10T00:00:00"
         );
 
-        User user = new User(customer.getAccount());
+        UserPrincipal user = new UserPrincipal(customer);
         Authentication authentication = Mockito.mock(Authentication.class);
         SecurityContext securityContext = Mockito.mock(SecurityContext.class);
         SecurityContextHolder.setContext(securityContext);

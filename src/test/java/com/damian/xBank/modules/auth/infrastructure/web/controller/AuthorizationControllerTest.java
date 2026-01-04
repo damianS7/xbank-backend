@@ -1,12 +1,13 @@
 package com.damian.xBank.modules.auth.infrastructure.web.controller;
 
-import com.damian.xBank.modules.user.account.account.application.dto.request.UserAccountUpdateRequest;
-import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
-import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
+import com.damian.xBank.modules.user.user.application.dto.request.UserAccountUpdateRequest;
+import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserAccountRole;
+import com.damian.xBank.modules.user.user.domain.model.UserAccountStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.JwtUtil;
+import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,7 +19,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,24 +32,19 @@ public class AuthorizationControllerTest extends AbstractControllerTest {
     @Autowired
     private JwtUtil jwtUtil;
 
-    private Customer customer;
+    private User customer;
 
     @BeforeEach
     void setUp() {
-        customer = Customer.create()
-                           .setEmail("customer@demo.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
-                           .setFirstName("David")
-                           .setLastName("Brow")
-                           .setBirthdate(LocalDate.now())
-                           .setPhotoPath("avatar.jpg")
-                           .setPhone("123 123 123")
-                           .setPostalCode("01003")
-                           .setAddress("Fake ave")
-                           .setCountry("US")
-                           .setGender(CustomerGender.MALE);
-        customer.getAccount().setAccountStatus(UserAccountStatus.VERIFIED);
-        customerRepository.save(customer);
+        customer = UserTestBuilder
+                .aCustomer()
+                .withEmail("customer@demo.com")
+                .withRole(UserAccountRole.CUSTOMER)
+                .withStatus(UserAccountStatus.VERIFIED)
+                .withPassword(passwordEncoder.encode(RAW_PASSWORD))
+                .build();
+
+        userAccountRepository.save(customer);
     }
 
     @Test
@@ -57,7 +52,7 @@ public class AuthorizationControllerTest extends AbstractControllerTest {
     void getCustomers_WithValidToken_Returns200OK() throws Exception {
         // given
         final String givenToken = jwtUtil.generateToken(
-                customer.getAccount().getEmail(),
+                customer.getEmail(),
                 new Date(System.currentTimeMillis() + 1000 * 60 * 60)
         );
 

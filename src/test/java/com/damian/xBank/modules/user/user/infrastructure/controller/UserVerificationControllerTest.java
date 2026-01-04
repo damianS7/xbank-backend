@@ -1,11 +1,11 @@
-package com.damian.xBank.modules.user.account.infrastructure.controller;
+package com.damian.xBank.modules.user.user.infrastructure.controller;
 
-import com.damian.xBank.modules.user.account.account.application.dto.request.UserAccountPasswordResetSetRequest;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
-import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
-import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
-import com.damian.xBank.modules.user.account.token.domain.entity.UserAccountToken;
-import com.damian.xBank.modules.user.account.token.domain.enums.UserAccountTokenType;
+import com.damian.xBank.modules.user.account.token.domain.model.UserAccountToken;
+import com.damian.xBank.modules.user.account.token.domain.model.UserAccountTokenType;
+import com.damian.xBank.modules.user.user.application.dto.request.UserAccountPasswordResetSetRequest;
+import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserAccountRole;
+import com.damian.xBank.modules.user.user.domain.model.UserAccountStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.utils.JsonHelper;
 import org.junit.jupiter.api.*;
@@ -17,18 +17,18 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class UserAccountVerificationControllerTest extends AbstractControllerTest {
-    private UserAccount userAccount;
+public class UserVerificationControllerTest extends AbstractControllerTest {
+    private User user;
 
     @BeforeEach
     void setUp() {
-        userAccount = UserAccount.create()
-                                 .setEmail("user@demo.com")
-                                 .setPassword(passwordEncoder.encode(this.RAW_PASSWORD))
-                                 .setRole(UserAccountRole.ADMIN);
+        user = User.create()
+                   .setEmail("user@demo.com")
+                   .setPassword(passwordEncoder.encode(this.RAW_PASSWORD))
+                   .setRole(UserAccountRole.ADMIN);
 
-        userAccount.setAccountStatus(UserAccountStatus.VERIFIED);
-        userAccountRepository.save(userAccount);
+        user.setAccountStatus(UserAccountStatus.VERIFIED);
+        userAccountRepository.save(user);
     }
 
     @AfterEach
@@ -41,10 +41,10 @@ public class UserAccountVerificationControllerTest extends AbstractControllerTes
     @DisplayName("Should verify account using token")
     void shouldVerifyAccountUsingToken() throws Exception {
         // given
-        UserAccount unverifiedUser = UserAccount.create()
-                                                .setEmail("non-verified-user@demo.com")
-                                                .setPassword(passwordEncoder.encode(this.RAW_PASSWORD))
-                                                .setAccountStatus(UserAccountStatus.PENDING_VERIFICATION);
+        User unverifiedUser = User.create()
+                                  .setEmail("non-verified-user@demo.com")
+                                  .setPassword(passwordEncoder.encode(this.RAW_PASSWORD))
+                                  .setAccountStatus(UserAccountStatus.PENDING_VERIFICATION);
         userAccountRepository.save(unverifiedUser);
 
         UserAccountToken givenToken = UserAccountToken.create()

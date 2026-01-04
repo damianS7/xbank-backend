@@ -16,11 +16,11 @@ import com.damian.xBank.modules.banking.transfer.domain.service.BankingTransferD
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
 import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
-import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountInvalidPasswordConfirmationException;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.user.domain.exception.UserAccountInvalidPasswordConfirmationException;
+import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -58,19 +58,18 @@ public class BankingTransferConfirmTest extends AbstractServiceTest {
     @Mock
     private BankingTransactionPersistenceService bankingTransactionPersistenceService;
 
-    private Customer fromCustomer;
-    private Customer toCustomer;
+    private User fromCustomer;
+    private User toCustomer;
     private BankingAccount fromAccount;
     private BankingAccount toAccount;
 
     @BeforeEach
     void setUp() {
-        fromCustomer = Customer.create(
-                UserAccount.create()
-                           .setId(1L)
-                           .setEmail("fromCustomer@demo.com")
-                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-        ).setId(1L);
+        fromCustomer = UserTestBuilder.aCustomer()
+                                      .withId(1L)
+                                      .withEmail("fromCustomer@demo.com")
+                                      .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                                      .build();
 
         fromAccount = BankingAccount
                 .create(fromCustomer)
@@ -80,12 +79,11 @@ public class BankingTransferConfirmTest extends AbstractServiceTest {
                 .setType(BankingAccountType.SAVINGS)
                 .setAccountNumber("US9900001111112233334444");
 
-        toCustomer = Customer.create(
-                UserAccount.create()
-                           .setId(2L)
-                           .setEmail("toCustomer@demo.com")
-                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-        ).setId(2L);
+        toCustomer = UserTestBuilder.aCustomer()
+                                    .withId(2L)
+                                    .withEmail("toCustomer@demo.com")
+                                    .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                                    .build();
 
         toAccount = BankingAccount
                 .create(toCustomer)

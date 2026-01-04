@@ -1,10 +1,10 @@
-package com.damian.xBank.modules.user.account.infrastructure.controller;
+package com.damian.xBank.modules.user.user.infrastructure.controller;
 
-import com.damian.xBank.modules.user.account.account.application.dto.request.UserAccountEmailUpdateRequest;
-import com.damian.xBank.modules.user.account.account.application.dto.response.UserAccountDto;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
-import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
-import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
+import com.damian.xBank.modules.user.user.application.dto.request.UserAccountEmailUpdateRequest;
+import com.damian.xBank.modules.user.user.application.dto.response.UserAccountDto;
+import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserAccountRole;
+import com.damian.xBank.modules.user.user.domain.model.UserAccountStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.utils.JsonHelper;
 import org.junit.jupiter.api.*;
@@ -19,18 +19,18 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class UserAccountControllerTest extends AbstractControllerTest {
-    private UserAccount userAccount;
+public class UserControllerTest extends AbstractControllerTest {
+    private User user;
 
     @BeforeEach
     void setUp() {
-        userAccount = UserAccount.create()
-                                 .setEmail("user@demo.com")
-                                 .setPassword(passwordEncoder.encode(this.RAW_PASSWORD))
-                                 .setRole(UserAccountRole.ADMIN);
+        user = User.create()
+                   .setEmail("user@demo.com")
+                   .setPassword(passwordEncoder.encode(this.RAW_PASSWORD))
+                   .setRole(UserAccountRole.ADMIN);
 
-        userAccount.setAccountStatus(UserAccountStatus.VERIFIED);
-        userAccountRepository.save(userAccount);
+        user.setAccountStatus(UserAccountStatus.VERIFIED);
+        userAccountRepository.save(user);
     }
 
     @AfterEach
@@ -43,7 +43,7 @@ public class UserAccountControllerTest extends AbstractControllerTest {
     @DisplayName("Should update email")
     void shouldUpdateEmail() throws Exception {
         // given
-        login(userAccount);
+        login(user);
 
         UserAccountEmailUpdateRequest givenRequest = new UserAccountEmailUpdateRequest(
                 RAW_PASSWORD,
@@ -74,7 +74,7 @@ public class UserAccountControllerTest extends AbstractControllerTest {
                         UserAccountDto::id,
                         UserAccountDto::email
                 ).containsExactly(
-                        userAccount.getId(),
+                        user.getId(),
                         givenRequest.newEmail()
                 );
     }

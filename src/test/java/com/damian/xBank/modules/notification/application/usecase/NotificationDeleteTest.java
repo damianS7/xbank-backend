@@ -3,10 +3,10 @@ package com.damian.xBank.modules.notification.application.usecase;
 import com.damian.xBank.modules.notification.domain.exception.NotificationNotOwnerException;
 import com.damian.xBank.modules.notification.domain.model.Notification;
 import com.damian.xBank.modules.notification.infrastructure.repository.NotificationRepository;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,23 +27,22 @@ public class NotificationDeleteTest extends AbstractServiceTest {
     @InjectMocks
     private NotificationDelete notificationDelete;
 
-    private Customer customer;
+    private User customer;
 
     @BeforeEach
     void setUp() {
-        customer = Customer.create(
-                UserAccount.create()
-                           .setId(1L)
-                           .setEmail("customer@demo.com")
-                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-        ).setId(1L);
+        customer = UserTestBuilder.aCustomer()
+                                  .withId(1L)
+                                  .withEmail("customer@demo.com")
+                                  .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                                  .build();
     }
 
     @Test
     @DisplayName("should delete notification")
     void deleteNotification_WhenValid_DeletesNotification() {
         // given
-        setUpContext(customer.getAccount());
+        setUpContext(customer);
 
         Notification givenNotification = Notification.create(customer)
                                                      .setId(1L)
@@ -63,14 +62,13 @@ public class NotificationDeleteTest extends AbstractServiceTest {
     @DisplayName("should throw exception when not owner")
     void deleteNotification_WhenNotOwner_ThrowsException() {
         // given
-        setUpContext(customer.getAccount());
+        setUpContext(customer);
 
-        Customer anotherCustomer = Customer.create(
-                UserAccount.create()
-                           .setId(99L)
-                           .setEmail("customer@demo.com")
-                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-        ).setId(99L);
+        User anotherCustomer = UserTestBuilder.aCustomer()
+                                              .withId(99L)
+                                              .withEmail("anotherCustomer@demo.com")
+                                              .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                                              .build();
 
         Notification givenNotification = Notification.create(anotherCustomer)
                                                      .setId(1L)

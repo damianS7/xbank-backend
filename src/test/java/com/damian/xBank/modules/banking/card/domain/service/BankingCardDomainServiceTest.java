@@ -6,9 +6,9 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardType;
 import com.damian.xBank.modules.banking.card.infrastructure.service.BankingCardGenerator;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
+import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,18 +28,17 @@ public class BankingCardDomainServiceTest extends AbstractServiceTest {
     @InjectMocks
     private BankingCardDomainService bankingCardDomainService;
 
-    private Customer customer;
+    private User customer;
     private BankingAccount bankingAccount;
     private BankingCard bankingCard;
 
     @BeforeEach
     void setUp() {
-        customer = Customer.create(
-                UserAccount.create()
-                           .setId(1L)
-                           .setEmail("customer@demo.com")
-                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-        ).setId(1L);
+        customer = UserTestBuilder.aCustomer()
+                                  .withId(1L)
+                                  .withEmail("customer@demo.com")
+                                  .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                                  .build();
 
         bankingAccount = BankingAccount
                 .create(customer)

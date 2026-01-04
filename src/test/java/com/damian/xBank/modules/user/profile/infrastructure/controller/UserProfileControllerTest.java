@@ -1,15 +1,20 @@
-package com.damian.xBank.modules.user.customer.infrastructure.controller;
+package com.damian.xBank.modules.user.profile.infrastructure.controller;
 
+import com.damian.xBank.modules.user.profile.application.dto.request.UserProfileUpdateRequest;
+import com.damian.xBank.modules.user.profile.application.dto.response.UserProfileDetailDto;
+import com.damian.xBank.modules.user.profile.domain.model.UserGender;
+import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
+import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserAccountRole;
+import com.damian.xBank.modules.user.user.domain.model.UserAccountStatus;
+import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.infrastructure.storage.FileStorageService;
 import com.damian.xBank.shared.infrastructure.storage.ImageUploaderService;
 import com.damian.xBank.shared.infrastructure.storage.exception.FileStorageNotFoundException;
-import com.damian.xBank.modules.user.customer.application.dto.request.CustomerUpdateRequest;
-import com.damian.xBank.modules.user.customer.application.dto.response.CustomerDetailDto;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
-import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
-import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.utils.ImageTestHelper;
 import com.damian.xBank.shared.utils.JsonHelper;
+import com.damian.xBank.shared.utils.UserProfileTestFactory;
+import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,8 +44,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class CustomerControllerTest extends AbstractControllerTest {
-    private Customer customer;
+public class UserProfileControllerTest extends AbstractControllerTest {
+    private User customer;
 
     @MockitoBean
     private FileStorageService fileStorageService;
@@ -50,19 +55,18 @@ public class CustomerControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setUp() {
-        customer = Customer.create()
-                           .setEmail("customer@test.com")
-                           .setPassword(passwordEncoder.encode(RAW_PASSWORD))
-                           .setNationalId("123456789Z")
-                           .setFirstName("John")
-                           .setLastName("Wick")
-                           .setGender(CustomerGender.MALE)
-                           .setBirthdate(LocalDate.of(1989, 1, 1))
-                           .setCountry("USA")
-                           .setAddress("fake ave")
-                           .setPostalCode("050012")
-                           .setPhotoPath("no photoPath");
-        customerRepository.save(customer);
+        UserProfile profile = UserProfileTestFactory.aProfile();
+
+        customer = UserTestBuilder
+                .aCustomer()
+                .withEmail("customer@demo.com")
+                .withRole(UserAccountRole.CUSTOMER)
+                .withStatus(UserAccountStatus.VERIFIED)
+                .withPassword(passwordEncoder.encode(RAW_PASSWORD))
+                .withProfile(profile)
+                .build();
+
+        userAccountRepository.save(customer);
     }
 
     @Test
@@ -82,14 +86,14 @@ public class CustomerControllerTest extends AbstractControllerTest {
                 .andReturn();
 
         // then
-        CustomerDetailDto customerWithProfileDTO = objectMapper.readValue(
+        UserProfileDetailDto customerWithProfileDTO = objectMapper.readValue(
                 result.getResponse().getContentAsString(),
-                CustomerDetailDto.class
+                UserProfileDetailDto.class
         );
 
         // then
         assertThat(customerWithProfileDTO).isNotNull();
-        assertThat(customerWithProfileDTO.email()).isEqualTo(customer.getAccount().getEmail());
+        assertThat(customerWithProfileDTO.email()).isEqualTo(customer.getEmail());
     }
 
     @Test
@@ -103,9 +107,9 @@ public class CustomerControllerTest extends AbstractControllerTest {
         fields.put("lastName", "white");
         fields.put("phoneNumber", "999 999 999");
         fields.put("birthdate", LocalDate.of(1989, 1, 1));
-        fields.put("gender", CustomerGender.FEMALE);
+        fields.put("gender", UserGender.FEMALE);
 
-        CustomerUpdateRequest givenRequest = new CustomerUpdateRequest(
+        UserProfileUpdateRequest givenRequest = new UserProfileUpdateRequest(
                 RAW_PASSWORD,
                 fields
         );
@@ -123,19 +127,19 @@ public class CustomerControllerTest extends AbstractControllerTest {
                 .andReturn();
 
         // then
-        CustomerDetailDto customerDto = JsonHelper.fromJson(
+        UserProfileDetailDto customerDto = JsonHelper.fromJson(
                 result.getResponse().getContentAsString(),
-                CustomerDetailDto.class
+                UserProfileDetailDto.class
         );
 
         assertThat(customerDto)
                 .isNotNull()
                 .extracting(
-                        CustomerDetailDto::firstName,
-                        CustomerDetailDto::lastName,
-                        CustomerDetailDto::phone,
-                        CustomerDetailDto::birthdate,
-                        CustomerDetailDto::gender
+                        UserProfileDetailDto::firstName,
+                        UserProfileDetailDto::lastName,
+                        UserProfileDetailDto::phone,
+                        UserProfileDetailDto::birthdate,
+                        UserProfileDetailDto::gender
                 ).containsExactly(
                         givenRequest.fieldsToUpdate().get("firstName"),
                         givenRequest.fieldsToUpdate().get("lastName"),
@@ -261,7 +265,7 @@ public class CustomerControllerTest extends AbstractControllerTest {
 
         MockMultipartFile file = new MockMultipartFile(
                 "file",
-                customer.getPhotoPath(),
+                customer.getProfile().getPhotoPath(),
                 "image/jpeg",
                 new byte[0]
         );
@@ -290,7 +294,7 @@ public class CustomerControllerTest extends AbstractControllerTest {
 
         MockMultipartFile file = new MockMultipartFile(
                 "file",
-                customer.getPhotoPath(),
+                customer.getProfile().getPhotoPath(),
                 "image/jpeg",
                 new byte[5 * 1024 * 1024 + 1]
         );
@@ -319,7 +323,7 @@ public class CustomerControllerTest extends AbstractControllerTest {
         //        MockMultipartFile file = ImageTestHelper.createDefaultBmp();
         MockMultipartFile file = new MockMultipartFile(
                 "file",
-                customer.getPhotoPath(),
+                customer.getProfile().getPhotoPath(),
                 "text/plain",
                 new byte[5]
         );

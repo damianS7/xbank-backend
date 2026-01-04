@@ -2,13 +2,14 @@ package com.damian.xBank.modules.auth.infrastructure.web.controller;
 
 import com.damian.xBank.modules.auth.application.dto.AuthenticationRequest;
 import com.damian.xBank.modules.auth.application.dto.AuthenticationResponse;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
-import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
-import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
+import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserAccountRole;
+import com.damian.xBank.modules.user.user.domain.model.UserAccountStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.dto.ApiResponse;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.JsonHelper;
+import com.damian.xBank.shared.utils.UserTestBuilder;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,16 +27,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class AuthenticationControllerTest extends AbstractControllerTest {
-    private UserAccount userAccount;
+    private User customer;
 
     @BeforeEach
     void setUp() {
-        userAccount = UserAccount.create()
-                                 .setEmail("user@demo.com")
-                                 .setPassword(passwordEncoder.encode(RAW_PASSWORD))
-                                 .setRole(UserAccountRole.CUSTOMER)
-                                 .setAccountStatus(UserAccountStatus.VERIFIED);
-        userAccountRepository.save(userAccount);
+        customer = UserTestBuilder
+                .aCustomer()
+                .withEmail("customer@demo.com")
+                .withRole(UserAccountRole.CUSTOMER)
+                .withStatus(UserAccountStatus.VERIFIED)
+                .withPassword(passwordEncoder.encode(RAW_PASSWORD))
+                .build();
+
+        userAccountRepository.save(customer);
     }
 
     @Test
@@ -43,7 +47,7 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
     void login_WithValidCredentials_Returns200OK() throws Exception {
         // given
         AuthenticationRequest request = new AuthenticationRequest(
-                userAccount.getEmail(),
+                customer.getEmail(),
                 RAW_PASSWORD
         );
 
@@ -66,7 +70,7 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
         // then
         assertThat(response)
                 .isNotNull();
-        assertThat(jwtUtil.extractEmail(response.token())).isEqualTo(userAccount.getEmail());
+        assertThat(jwtUtil.extractEmail(response.token())).isEqualTo(customer.getEmail());
         assertTrue(jwtUtil.isTokenValid(response.token()));
     }
 
@@ -75,7 +79,7 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
     void login_WithInvalidCredentials_Returns401Unauthorized() throws Exception {
         // given
         AuthenticationRequest request = new AuthenticationRequest(
-                userAccount.getEmail(),
+                customer.getEmail(),
                 "badPassword"
         );
 
@@ -129,11 +133,11 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
     @DisplayName("POST /auth/login returns 403 Forbidden when account is suspended")
     void login_WhenAccountSuspended_Returns403Forbidden() throws Exception {
         // given
-        userAccount.setAccountStatus(UserAccountStatus.SUSPENDED);
-        userAccountRepository.save(userAccount);
+        customer.setAccountStatus(UserAccountStatus.SUSPENDED);
+        userAccountRepository.save(customer);
 
         AuthenticationRequest request = new AuthenticationRequest(
-                userAccount.getEmail(),
+                customer.getEmail(),
                 RAW_PASSWORD
         );
 
@@ -164,19 +168,19 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
                 );
 
         // undo changes
-        userAccount.setAccountStatus(UserAccountStatus.VERIFIED);
-        userAccountRepository.save(userAccount);
+        customer.setAccountStatus(UserAccountStatus.VERIFIED);
+        userAccountRepository.save(customer);
     }
 
     @Test
     @DisplayName("POST /auth/login returns 403 Forbidden when account is disabled")
     void login_WhenAccountDisabled_Returns403Forbidden() throws Exception {
         // given
-        userAccount.setAccountStatus(UserAccountStatus.PENDING_VERIFICATION);
-        userAccountRepository.save(userAccount);
+        customer.setAccountStatus(UserAccountStatus.PENDING_VERIFICATION);
+        userAccountRepository.save(customer);
 
         AuthenticationRequest request = new AuthenticationRequest(
-                userAccount.getEmail(),
+                customer.getEmail(),
                 RAW_PASSWORD
         );
 
@@ -205,8 +209,8 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
                 );
 
         // undo changes to customer
-        userAccount.setAccountStatus(UserAccountStatus.VERIFIED);
-        userAccountRepository.save(userAccount);
+        customer.setAccountStatus(UserAccountStatus.VERIFIED);
+        userAccountRepository.save(customer);
     }
 
     @Test

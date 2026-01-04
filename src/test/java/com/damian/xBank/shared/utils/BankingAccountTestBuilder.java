@@ -4,14 +4,14 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.user.domain.model.User;
 
 import java.math.BigDecimal;
 
 public class BankingAccountTestBuilder {
 
     private Long id = 1L;
-    private Customer owner;
+    private User owner;
     private BigDecimal balance = BigDecimal.valueOf(1000);
     private BankingAccountCurrency currency = BankingAccountCurrency.EUR;
     private BankingAccountType accountType = BankingAccountType.SAVINGS;
@@ -31,7 +31,7 @@ public class BankingAccountTestBuilder {
         return this;
     }
 
-    public BankingAccountTestBuilder withOwner(Customer owner) {
+    public BankingAccountTestBuilder withOwner(User owner) {
         this.owner = owner;
         return this;
     }

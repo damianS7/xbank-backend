@@ -1,17 +1,19 @@
 package com.damian.xBank.modules.user.account.token;
 
-import com.damian.xBank.modules.user.account.account.application.dto.request.UserAccountPasswordResetRequest;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
-import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountNotFoundException;
-import com.damian.xBank.modules.user.account.account.infrastructure.repository.UserAccountRepository;
-import com.damian.xBank.modules.user.account.token.application.service.UserAccountTokenService;
-import com.damian.xBank.modules.user.account.token.domain.entity.UserAccountToken;
-import com.damian.xBank.modules.user.account.token.domain.enums.UserAccountTokenType;
 import com.damian.xBank.modules.user.account.token.domain.exception.UserAccountTokenExpiredException;
 import com.damian.xBank.modules.user.account.token.domain.exception.UserAccountTokenNotFoundException;
 import com.damian.xBank.modules.user.account.token.domain.exception.UserAccountTokenUsedException;
+import com.damian.xBank.modules.user.account.token.domain.model.UserAccountToken;
+import com.damian.xBank.modules.user.account.token.domain.model.UserAccountTokenType;
 import com.damian.xBank.modules.user.account.token.infrastructure.repository.UserAccountTokenRepository;
+import com.damian.xBank.modules.user.account.token.infrastructure.service.UserAccountTokenService;
+import com.damian.xBank.modules.user.user.application.dto.request.UserAccountPasswordResetRequest;
+import com.damian.xBank.modules.user.user.domain.exception.UserAccountNotFoundException;
+import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.infrastructure.repository.UserAccountRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
+import com.damian.xBank.shared.utils.UserTestBuilder;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -26,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-public class UserAccountTokenServiceTest extends AbstractServiceTest {
+public class UserTokenServiceTest extends AbstractServiceTest {
 
     @Mock
     private UserAccountRepository userAccountRepository;
@@ -37,18 +39,23 @@ public class UserAccountTokenServiceTest extends AbstractServiceTest {
     @Mock
     private UserAccountTokenRepository userAccountTokenRepository;
 
+    private User user;
+
+    @BeforeEach
+    void setUp() {
+        user = UserTestBuilder.aCustomer()
+                              .withId(1L)
+                              .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                              .withEmail("customerA@demo.com")
+                              .build();
+    }
+
     @Test
     @DisplayName("Should validate token")
     void shouldValidateToken() {
         // given
-        UserAccount userAccount = UserAccount
-                .create()
-                .setId(10L)
-                .setEmail("user@demo.com")
-                .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD));
-
         UserAccountToken userAccountToken = new UserAccountToken();
-        userAccountToken.setAccount(userAccount);
+        userAccountToken.setAccount(user);
         userAccountToken.setToken("token");
         userAccountToken.setCreatedAt(Instant.now());
         userAccountToken.setExpiresAt(Instant.now().plus(1, ChronoUnit.DAYS));
@@ -83,14 +90,8 @@ public class UserAccountTokenServiceTest extends AbstractServiceTest {
     @DisplayName("Should not validate when token expired")
     void shouldNotValidateTokenWhenExpired() {
         // given
-        UserAccount userAccount = UserAccount
-                .create()
-                .setId(10L)
-                .setEmail("user@demo.com")
-                .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD));
-
         UserAccountToken userAccountToken = new UserAccountToken();
-        userAccountToken.setAccount(userAccount);
+        userAccountToken.setAccount(user);
         userAccountToken.setToken("token");
         userAccountToken.setCreatedAt(Instant.now());
         userAccountToken.setExpiresAt(Instant.now().minus(1, ChronoUnit.DAYS));
@@ -110,14 +111,9 @@ public class UserAccountTokenServiceTest extends AbstractServiceTest {
     @DisplayName("Should not validate when token is used")
     void shouldNotValidateTokenIsUsed() {
         // given
-        UserAccount userAccount = UserAccount
-                .create()
-                .setId(10L)
-                .setEmail("user@demo.com")
-                .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD));
 
         UserAccountToken userAccountToken = new UserAccountToken();
-        userAccountToken.setAccount(userAccount);
+        userAccountToken.setAccount(user);
         userAccountToken.setUsed(true);
         userAccountToken.setToken("token");
         userAccountToken.setCreatedAt(Instant.now());
@@ -138,27 +134,22 @@ public class UserAccountTokenServiceTest extends AbstractServiceTest {
     @DisplayName("Should generate account activation token")
     void shouldGenerateAccountActivationToken() {
         // given
-        UserAccount userAccount = UserAccount
-                .create()
-                .setEmail("userAccount@test.com")
-                .setPassword(bCryptPasswordEncoder.encode(bCryptPasswordEncoder.encode(RAW_PASSWORD)));
-
         UserAccountToken givenActivationToken = UserAccountToken.create()
-                                                                .setAccount(userAccount)
+                                                                .setAccount(user)
                                                                 .setToken("activation-token")
                                                                 .setType(UserAccountTokenType.ACCOUNT_VERIFICATION);
 
         // when
-        when(userAccountRepository.findByEmail(userAccount.getEmail()))
-                .thenReturn(Optional.of(userAccount));
-        when(userAccountTokenRepository.findByAccount_Id(userAccount.getId()))
+        when(userAccountRepository.findByEmail(user.getEmail()))
+                .thenReturn(Optional.of(user));
+        when(userAccountTokenRepository.findByAccount_Id(user.getId()))
                 .thenReturn(Optional.of(givenActivationToken));
         when(userAccountTokenRepository.save(any(UserAccountToken.class)))
                 .thenReturn(givenActivationToken);
 
         UserAccountToken
                 generatedToken
-                = userAccountTokenService.generateVerificationToken(userAccount.getEmail());
+                = userAccountTokenService.generateVerificationToken(user.getEmail());
 
         // then
         assertThat(generatedToken)
@@ -166,8 +157,8 @@ public class UserAccountTokenServiceTest extends AbstractServiceTest {
                 .extracting(UserAccountToken::isUsed)
                 .isEqualTo(false);
 
-        verify(userAccountTokenRepository, times(1)).findByAccount_Id(userAccount.getId());
-        verify(userAccountRepository, times(1)).findByEmail(userAccount.getEmail());
+        verify(userAccountTokenRepository, times(1)).findByAccount_Id(user.getId());
+        verify(userAccountRepository, times(1)).findByEmail(user.getEmail());
         verify(userAccountTokenRepository, times(1)).save(any(UserAccountToken.class));
     }
 
@@ -175,11 +166,6 @@ public class UserAccountTokenServiceTest extends AbstractServiceTest {
     @DisplayName("Should generate password reset token")
     void shouldGeneratePasswordResetToken() {
         // given
-        UserAccount user = UserAccount
-                .create()
-                .setId(10L)
-                .setEmail("user@demo.com")
-                .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD));
 
         UserAccountPasswordResetRequest passwordResetRequest = new UserAccountPasswordResetRequest(
                 user.getEmail()
@@ -203,22 +189,22 @@ public class UserAccountTokenServiceTest extends AbstractServiceTest {
     @DisplayName("Should not generate password reset token when account not found")
     void shouldNotGeneratePasswordResetTokenWhenAccountNotFound() {
         // given
-        UserAccount userAccount = UserAccount
+        User user = User
                 .create()
                 .setId(10L)
                 .setEmail("user@demo.com")
                 .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD));
 
         UserAccountPasswordResetRequest passwordResetRequest = new UserAccountPasswordResetRequest(
-                userAccount.getEmail()
+                user.getEmail()
         );
 
-        UserAccountToken token = new UserAccountToken(userAccount);
+        UserAccountToken token = new UserAccountToken(user);
         token.setToken(token.generateToken());
         token.setType(UserAccountTokenType.RESET_PASSWORD);
 
         // when
-        when(userAccountRepository.findByEmail(userAccount.getEmail())).thenReturn(Optional.empty());
+        when(userAccountRepository.findByEmail(user.getEmail())).thenReturn(Optional.empty());
         assertThrows(
                 UserAccountNotFoundException.class,
                 () -> userAccountTokenService.generatePasswordResetToken(passwordResetRequest)

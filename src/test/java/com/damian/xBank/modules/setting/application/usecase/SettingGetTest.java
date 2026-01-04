@@ -3,9 +3,9 @@ package com.damian.xBank.modules.setting.application.usecase;
 import com.damian.xBank.modules.setting.domain.model.Setting;
 import com.damian.xBank.modules.setting.domain.model.UserSettings;
 import com.damian.xBank.modules.setting.infrastructure.persistence.repository.SettingRepository;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
+import com.damian.xBank.shared.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,23 +25,18 @@ public class SettingGetTest extends AbstractServiceTest {
     @InjectMocks
     private SettingGet settingGet;
 
-    private Customer customer;
+    private User customer;
 
     @BeforeEach
     void setUp() {
-        customer = Customer.create(
-                UserAccount.create()
-                           .setId(1L)
-                           .setEmail("customer@demo.com")
-                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-        ).setId(1L);
+        customer = UserTestFactory.customer();
     }
 
     @Test
     @DisplayName("should return current user settings")
     void getSetting_ValidRequest_ReturnsSettings() {
         // given
-        setUpContext(customer.getAccount());
+        setUpContext(customer);
 
         UserSettings givenUserSettings = UserSettings.defaults();
 

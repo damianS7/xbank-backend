@@ -8,9 +8,9 @@ import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCa
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
+import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,17 +37,16 @@ public class BankingTransactionPersistenceServiceTest extends AbstractServiceTes
     @InjectMocks
     private BankingTransactionPersistenceService bankingTransactionPersistenceService;
 
-    private Customer customer;
+    private User customer;
     private BankingAccount customerBankingAccount;
 
     @BeforeEach
     void setUp() {
-        customer = Customer.create(
-                UserAccount.create()
-                           .setId(1L)
-                           .setEmail("customer@demo.com")
-                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-        ).setId(1L);
+        customer = UserTestBuilder.aCustomer()
+                                  .withId(1L)
+                                  .withEmail("customer@demo.com")
+                                  .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                                  .build();
 
         customerBankingAccount = BankingAccount
                 .create(customer)

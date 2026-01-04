@@ -7,12 +7,12 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.domain.service.BankingAccountDomainService;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.account.infrastructure.service.BankingAccountNumberGenerator;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
-import com.damian.xBank.modules.user.customer.domain.exception.CustomerNotFoundException;
-import com.damian.xBank.modules.user.customer.infrastructure.repository.CustomerRepository;
+import com.damian.xBank.modules.user.user.domain.exception.UserAccountNotFoundException;
+import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.infrastructure.repository.UserAccountRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,7 @@ public class BankingAccountCreateTest extends AbstractServiceTest {
     private BankingAccountRepository bankingAccountRepository;
 
     @Mock
-    private CustomerRepository customerRepository;
+    private UserAccountRepository userRepository;
 
     @Mock
     private BankingAccountNumberGenerator bankingAccountNumberGenerator;
@@ -43,7 +43,7 @@ public class BankingAccountCreateTest extends AbstractServiceTest {
     @InjectMocks
     private BankingAccountCreate bankingAccountCreate;
 
-    private Customer customer;
+    private User user;
 
     @BeforeEach
     void setUp() {
@@ -54,23 +54,22 @@ public class BankingAccountCreateTest extends AbstractServiceTest {
         bankingAccountCreate = new BankingAccountCreate(
                 bankingAccountDomainService,
                 bankingAccountRepository,
-                customerRepository,
+                userRepository,
                 authenticationContext
         );
 
-        customer = Customer.create(
-                UserAccount.create()
-                           .setId(1L)
-                           .setEmail("customer@demo.com")
-                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-        ).setId(1L);
+        user = UserTestBuilder.aCustomer()
+                              .withId(1L)
+                              .withEmail("customer@demo.com")
+                              .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                              .build();
     }
 
     @Test
     @DisplayName("should returns a newly created BankingAccount when valid request")
     void accountCreate_WhenValidRequest_ReturnsCreatedAccount() {
         // given
-        setUpContext(customer);
+        setUpContext(user);
 
         BankingAccountCreateRequest request = new BankingAccountCreateRequest(
                 BankingAccountType.SAVINGS,
@@ -78,7 +77,7 @@ public class BankingAccountCreateTest extends AbstractServiceTest {
         );
 
         // when
-        when(customerRepository.findById(customer.getId())).thenReturn(Optional.of(customer));
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 
         when(bankingAccountNumberGenerator.generate())
                 .thenReturn("US9900001111112233334444");
@@ -101,7 +100,7 @@ public class BankingAccountCreateTest extends AbstractServiceTest {
     @DisplayName("should throws exception when customer not found")
     void accountCreate_WhenCustomerNotFound_ThrowsException() {
         // given
-        setUpContext(customer);
+        setUpContext(user);
 
         BankingAccountCreateRequest request = new BankingAccountCreateRequest(
                 BankingAccountType.SAVINGS,
@@ -109,15 +108,15 @@ public class BankingAccountCreateTest extends AbstractServiceTest {
         );
 
         // when
-        when(customerRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        CustomerNotFoundException exception = assertThrows(
-                CustomerNotFoundException.class,
+        UserAccountNotFoundException exception = assertThrows(
+                UserAccountNotFoundException.class,
                 () -> bankingAccountCreate.execute(request)
         );
 
         // then
-        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.CUSTOMER_NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.PROFILE_NOT_FOUND);
         verify(bankingAccountRepository, times(0)).save(any(BankingAccount.class));
     }
 }

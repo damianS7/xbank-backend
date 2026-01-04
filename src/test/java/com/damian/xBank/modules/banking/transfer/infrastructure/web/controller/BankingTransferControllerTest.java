@@ -11,12 +11,12 @@ import com.damian.xBank.modules.banking.transfer.application.dto.request.Banking
 import com.damian.xBank.modules.banking.transfer.application.dto.response.BankingTransferDto;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferStatus;
-import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
-import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountStatus;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
-import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
+import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserAccountRole;
+import com.damian.xBank.modules.user.user.domain.model.UserAccountStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -35,29 +34,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class BankingTransferControllerTest extends AbstractControllerTest {
 
-    private Customer fromCustomer;
+    private User fromCustomer;
     private BankingAccount fromBankingAccount;
-    private Customer toCustomer;
+    private User toCustomer;
     private BankingAccount toBankingAccount;
-    private Customer admin;
+    private User admin;
     private BankingTransfer transfer;
 
     @BeforeEach
     void setUp() {
-        fromCustomer = Customer.create()
-                               .setEmail("customer@demo.com")
-                               .setPassword(passwordEncoder.encode(RAW_PASSWORD))
-                               .setFirstName("David")
-                               .setLastName("Brow")
-                               .setBirthdate(LocalDate.now())
-                               .setPhotoPath("avatar.jpg")
-                               .setPhone("123 123 123")
-                               .setPostalCode("01003")
-                               .setAddress("Fake ave")
-                               .setCountry("US")
-                               .setGender(CustomerGender.MALE);
-        fromCustomer.getAccount().setAccountStatus(UserAccountStatus.VERIFIED);
-        customerRepository.save(fromCustomer);
+        fromCustomer = UserTestBuilder.aCustomer()
+                                      .withEmail("fromCustomer@demo.com")
+                                      .withStatus(UserAccountStatus.VERIFIED)
+                                      .build();
+
+        userAccountRepository.save(fromCustomer);
 
         fromBankingAccount = new BankingAccount(fromCustomer);
         fromBankingAccount.setAccountNumber("ES1234567890123456789012");
@@ -67,20 +58,12 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
         fromBankingAccount.setBalance(BigDecimal.valueOf(3200));
         bankingAccountRepository.save(fromBankingAccount);
 
-        toCustomer = Customer.create()
-                             .setEmail("customerB@demo.com")
-                             .setPassword(passwordEncoder.encode(RAW_PASSWORD))
-                             .setFirstName("David")
-                             .setLastName("Brow")
-                             .setBirthdate(LocalDate.now())
-                             .setPhotoPath("avatar.jpg")
-                             .setPhone("123 123 123")
-                             .setPostalCode("01003")
-                             .setAddress("Fake ave")
-                             .setCountry("US")
-                             .setGender(CustomerGender.MALE);
-        toCustomer.getAccount().setAccountStatus(UserAccountStatus.VERIFIED);
-        customerRepository.save(toCustomer);
+        toCustomer = UserTestBuilder.aCustomer()
+                                    .withEmail("toCustomer@demo.com")
+                                    .withStatus(UserAccountStatus.VERIFIED)
+                                    .build();
+
+        userAccountRepository.save(toCustomer);
 
         toBankingAccount = new BankingAccount(toCustomer);
         toBankingAccount.setAccountNumber("DE1234567890123456789012");
@@ -90,21 +73,13 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
         toBankingAccount.setBalance(BigDecimal.valueOf(200));
         bankingAccountRepository.save(toBankingAccount);
 
-        admin = Customer.create()
-                        .setEmail("admin@demo.com")
-                        .setPassword(passwordEncoder.encode(RAW_PASSWORD))
-                        .setFirstName("David")
-                        .setLastName("Brow")
-                        .setBirthdate(LocalDate.now())
-                        .setPhotoPath("avatar.jpg")
-                        .setPhone("123 123 123")
-                        .setPostalCode("01003")
-                        .setAddress("Fake ave")
-                        .setCountry("US")
-                        .setRole(UserAccountRole.ADMIN)
-                        .setGender(CustomerGender.MALE);
-        admin.getAccount().setAccountStatus(UserAccountStatus.VERIFIED);
-        customerRepository.save(admin);
+        admin = UserTestBuilder.aCustomer()
+                               .withEmail("admin@demo.com")
+                               .withStatus(UserAccountStatus.VERIFIED)
+                               .withRole(UserAccountRole.ADMIN)
+                               .build();
+
+        userAccountRepository.save(admin);
 
         transfer = BankingTransfer
                 .create(fromBankingAccount, toBankingAccount, BigDecimal.valueOf(100))

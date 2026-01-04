@@ -1,6 +1,6 @@
 package com.damian.xBank.shared.infrastructure.storage;
 
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
+import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.utils.ImageTestHelper;
 import org.junit.jupiter.api.DisplayName;
@@ -38,8 +38,8 @@ public class ImageUploaderServiceTest extends AbstractServiceTest {
     @DisplayName("Should upload image")
     void shouldUploadImage() {
         // given
-        setUpContext(UserAccount.create()
-                                .setId(1L)
+        setUpContext(User.create()
+                         .setId(1L)
         );
 
         MultipartFile givenMultipart = ImageTestHelper.createDefaultJpg();

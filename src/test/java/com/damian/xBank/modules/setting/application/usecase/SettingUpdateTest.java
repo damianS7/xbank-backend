@@ -4,10 +4,10 @@ import com.damian.xBank.modules.setting.application.dto.request.SettingsUpdateRe
 import com.damian.xBank.modules.setting.domain.exception.SettingNotOwnerException;
 import com.damian.xBank.modules.setting.domain.model.*;
 import com.damian.xBank.modules.setting.infrastructure.persistence.repository.SettingRepository;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,31 +28,29 @@ public class SettingUpdateTest extends AbstractServiceTest {
     @InjectMocks
     private SettingUpdate settingUpdate;
 
-    private Customer customerA;
-    private Customer customerB;
+    private User customerA;
+    private User customerB;
 
     @BeforeEach
     void setUp() {
-        customerA = Customer.create(
-                UserAccount.create()
-                           .setId(1L)
-                           .setEmail("customerA@demo.com")
-                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-        ).setId(1L);
+        customerA = UserTestBuilder.aCustomer()
+                                   .withId(1L)
+                                   .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                                   .withEmail("customerA@demo.com")
+                                   .build();
 
-        customerB = Customer.create(
-                UserAccount.create()
-                           .setId(2L)
-                           .setEmail("customerB@demo.com")
-                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-        ).setId(2L);
+        customerB = UserTestBuilder.aCustomer()
+                                   .withId(2L)
+                                   .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                                   .withEmail("customerA@demo.com")
+                                   .build();
     }
 
     @Test
     @DisplayName("should return updated settings")
     void updateSettings_WhenValidRequest_ReturnsUpdatedSettings() {
         // given
-        setUpContext(customerA.getAccount());
+        setUpContext(customerA);
 
         UserSettings customerCurrentSettings = new UserSettings(
                 true,
@@ -113,7 +111,7 @@ public class SettingUpdateTest extends AbstractServiceTest {
     @DisplayName("should throw exception when user is not the owner of the settings")
     void updateSettings_WhenNotOwner_ThrowsException() {
         // given
-        setUpContext(customerA.getAccount());
+        setUpContext(customerA);
 
         UserSettings customerCurrentSettings = new UserSettings(
                 true,

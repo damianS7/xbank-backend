@@ -3,10 +3,10 @@ package com.damian.xBank.modules.banking.card.domain.model;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
-import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserAccountRole;
 import com.damian.xBank.shared.AbstractServiceTest;
+import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.math.BigDecimal;
@@ -14,27 +14,25 @@ import java.math.BigDecimal;
 public class BankingCardTest extends AbstractServiceTest {
 
 
-    private Customer customer;
-    private Customer admin;
+    private User customer;
+    private User admin;
     private BankingAccount bankingAccount;
     private BankingCard bankingCard;
 
     @BeforeEach
     void setUp() {
-        admin = Customer.create(
-                UserAccount.create()
-                           .setId(1L)
-                           .setRole(UserAccountRole.ADMIN)
-                           .setEmail("admin@demo.com")
-                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-        ).setId(2L);
+        admin = UserTestBuilder.aCustomer()
+                               .withId(2L)
+                               .withRole(UserAccountRole.ADMIN)
+                               .withEmail("admin@demo.com")
+                               .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                               .build();
 
-        customer = Customer.create(
-                UserAccount.create()
-                           .setId(1L)
-                           .setEmail("fromCustomer@demo.com")
-                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-        ).setId(1L);
+        customer = UserTestBuilder.aCustomer()
+                                  .withId(1L)
+                                  .withEmail("customer@demo.com")
+                                  .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                                  .build();
 
         bankingAccount = BankingAccount
                 .create(customer)

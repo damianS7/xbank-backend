@@ -4,9 +4,9 @@ import com.damian.xBank.modules.setting.domain.model.Setting;
 import com.damian.xBank.modules.setting.domain.model.UserSettings;
 import com.damian.xBank.modules.setting.domain.service.SettingDomainService;
 import com.damian.xBank.modules.setting.infrastructure.persistence.repository.SettingRepository;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
+import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,24 +23,22 @@ public class SettingDomainServiceTest extends AbstractServiceTest {
     @InjectMocks
     private SettingDomainService settingDomainService;
 
-    private Customer customerA;
-    private Customer customerB;
+    private User customerA;
+    private User customerB;
 
     @BeforeEach
     void setUp() {
-        customerA = Customer.create(
-                UserAccount.create()
-                           .setId(1L)
-                           .setEmail("customerA@demo.com")
-                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-        ).setId(1L);
+        customerA = UserTestBuilder.aCustomer()
+                                   .withId(1L)
+                                   .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                                   .withEmail("customerA@demo.com")
+                                   .build();
 
-        customerB = Customer.create(
-                UserAccount.create()
-                           .setId(2L)
-                           .setEmail("customerB@demo.com")
-                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-        ).setId(2L);
+        customerB = UserTestBuilder.aCustomer()
+                                   .withId(2L)
+                                   .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                                   .withEmail("customerA@demo.com")
+                                   .build();
     }
 
     @Test
@@ -48,13 +46,13 @@ public class SettingDomainServiceTest extends AbstractServiceTest {
     void initializeDefaultSettingsFor_ValidUserAccount_ReturnsSettingWithDefaultValues() {
         // given
         // when
-        Setting result = settingDomainService.initializeDefaultSettingsFor(customerA.getAccount());
+        Setting result = settingDomainService.initializeDefaultSettingsFor(customerA);
 
         // then
         assertThat(result).isNotNull();
 
         assertThat(result.getUserAccount())
-                .isSameAs(customerA.getAccount());
+                .isSameAs(customerA);
 
         assertThat(result.getSettings())
                 .isEqualTo(UserSettings.defaults());

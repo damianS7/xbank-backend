@@ -1,9 +1,9 @@
-package com.damian.xBank.modules.user.customer.infrastructure.controller;
+package com.damian.xBank.modules.user.user.infrastructure.controller;
 
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
-import com.damian.xBank.modules.user.customer.application.dto.request.CustomerRegistrationRequest;
-import com.damian.xBank.modules.user.customer.application.dto.response.CustomerDetailDto;
-import com.damian.xBank.modules.user.customer.domain.enums.CustomerGender;
+import com.damian.xBank.modules.user.profile.application.dto.response.UserProfileDetailDto;
+import com.damian.xBank.modules.user.profile.domain.model.UserGender;
+import com.damian.xBank.modules.user.user.application.dto.request.UserAccountRegistrationRequest;
+import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.dto.ApiResponse;
 import com.damian.xBank.shared.exception.ErrorCodes;
@@ -22,20 +22,20 @@ import java.time.LocalDate;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
-public class CustomerRegistrationControllerTest extends AbstractControllerTest {
+public class UserRegistrationControllerTest extends AbstractControllerTest {
 
     @Test
     @DisplayName("Should register a customer")
     void shouldRegisterCustomer() throws Exception {
         // given
-        CustomerRegistrationRequest request = new CustomerRegistrationRequest(
+        UserAccountRegistrationRequest request = new UserAccountRegistrationRequest(
                 "customer@test.com",
                 "12345689X$$sa",
                 "Customer",
                 "Test",
                 "123 123 123",
                 LocalDate.of(1989, 1, 1),
-                CustomerGender.MALE,
+                UserGender.MALE,
                 "Fake AV",
                 "50120",
                 "USA",
@@ -53,21 +53,21 @@ public class CustomerRegistrationControllerTest extends AbstractControllerTest {
                                   .andReturn();
 
         // then
-        CustomerDetailDto customerDto = JsonHelper.fromJson(
+        UserProfileDetailDto customerDto = JsonHelper.fromJson(
                 result.getResponse().getContentAsString(),
-                CustomerDetailDto.class
+                UserProfileDetailDto.class
         );
 
         // then
         assertThat(customerDto)
                 .isNotNull()
                 .extracting(
-                        CustomerDetailDto::email,
-                        CustomerDetailDto::firstName,
-                        CustomerDetailDto::lastName,
-                        CustomerDetailDto::phone,
-                        CustomerDetailDto::birthdate,
-                        CustomerDetailDto::gender
+                        UserProfileDetailDto::email,
+                        UserProfileDetailDto::firstName,
+                        UserProfileDetailDto::lastName,
+                        UserProfileDetailDto::phone,
+                        UserProfileDetailDto::birthdate,
+                        UserProfileDetailDto::gender
                 ).containsExactly(
                         request.email(),
                         request.firstName(),
@@ -82,14 +82,14 @@ public class CustomerRegistrationControllerTest extends AbstractControllerTest {
     @DisplayName("Should not register customer when missing fields")
     void shouldNotRegisterCustomerWhenMissingFields() throws Exception {
         // given
-        CustomerRegistrationRequest request = new CustomerRegistrationRequest(
+        UserAccountRegistrationRequest request = new UserAccountRegistrationRequest(
                 "customer@test.com",
                 "12345689X$$sa",
                 "",
                 "",
                 "123 123 123",
                 LocalDate.of(1989, 1, 1),
-                CustomerGender.MALE,
+                UserGender.MALE,
                 "Fake AV",
                 "50120",
                 "USA",
@@ -124,14 +124,14 @@ public class CustomerRegistrationControllerTest extends AbstractControllerTest {
     @DisplayName("Should not register customer when email is not well-formed")
     void shouldNotRegisterCustomerWhenEmailIsNotWellFormed() throws Exception {
         // given
-        CustomerRegistrationRequest request = new CustomerRegistrationRequest(
+        UserAccountRegistrationRequest request = new UserAccountRegistrationRequest(
                 "bad-email.com",
                 "12345689X$$sa",
                 "Customer",
                 "Test",
                 "123 123 123",
                 LocalDate.of(1989, 1, 1),
-                CustomerGender.MALE,
+                UserGender.MALE,
                 "Fake AV",
                 "50120",
                 "USA",
@@ -171,24 +171,24 @@ public class CustomerRegistrationControllerTest extends AbstractControllerTest {
     @DisplayName("Should not register customer when email is taken")
     void shouldNotRegisterCustomerWhenEmailIsTaken() throws Exception {
         // given
-        CustomerRegistrationRequest request = new CustomerRegistrationRequest(
+        UserAccountRegistrationRequest request = new UserAccountRegistrationRequest(
                 "customer@test.com",
                 "12345699Xxs$$",
                 "Customer",
                 "Test",
                 "123 123 123",
                 LocalDate.of(1989, 1, 1),
-                CustomerGender.MALE,
+                UserGender.MALE,
                 "Fake AV",
                 "50120",
                 "USA",
                 "123123123Z"
         );
 
-        UserAccount givenUserAccount = UserAccount.create()
-                                                  .setEmail(request.email())
-                                                  .setPassword(passwordEncoder.encode(RAW_PASSWORD));
-        userAccountRepository.save(givenUserAccount);
+        User givenUser = User.create()
+                             .setEmail(request.email())
+                             .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+        userAccountRepository.save(givenUser);
 
 
         // when
@@ -221,14 +221,14 @@ public class CustomerRegistrationControllerTest extends AbstractControllerTest {
     @DisplayName("Should not register customer when password policy not satisfied")
     void shouldNotRegisterCustomerWhenPasswordPolicyNotSatisfied() throws Exception {
         // given
-        CustomerRegistrationRequest request = new CustomerRegistrationRequest(
+        UserAccountRegistrationRequest request = new UserAccountRegistrationRequest(
                 "customer@test.com",
                 "123456",
                 "Customer",
                 "Test",
                 "123 123 123",
                 LocalDate.of(1989, 1, 1),
-                CustomerGender.MALE,
+                UserGender.MALE,
                 "Fake AV",
                 "50120",
                 "USA",

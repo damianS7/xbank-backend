@@ -4,9 +4,9 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
+import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,16 +27,15 @@ public class BankingAccountGetAllTest extends AbstractServiceTest {
     @InjectMocks
     private BankingAccountGetAll bankingAccountGetAll;
 
-    private Customer customer;
+    private User customer;
 
     @BeforeEach
     void setUp() {
-        customer = Customer.create(
-                UserAccount.create()
-                           .setId(1L)
-                           .setEmail("fromCustomer@demo.com")
-                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-        ).setId(1L);
+        customer = UserTestBuilder.aCustomer()
+                                  .withId(1L)
+                                  .withEmail("customer@demo.com")
+                                  .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                                  .build();
 
         BankingAccount account1 = BankingAccount
                 .create(customer)
@@ -74,7 +73,7 @@ public class BankingAccountGetAllTest extends AbstractServiceTest {
         setUpContext(customer);
 
         // when
-        when(bankingAccountRepository.findByCustomer_Id(anyLong())).thenReturn(
+        when(bankingAccountRepository.findByUser_Id(anyLong())).thenReturn(
                 customer.getBankingAccounts()
         );
 
@@ -82,6 +81,6 @@ public class BankingAccountGetAllTest extends AbstractServiceTest {
 
         // then
         assertThat(result.size()).isEqualTo(customer.getBankingAccounts().size());
-        verify(bankingAccountRepository, times(1)).findByCustomer_Id(anyLong());
+        verify(bankingAccountRepository, times(1)).findByUser_Id(anyLong());
     }
 }

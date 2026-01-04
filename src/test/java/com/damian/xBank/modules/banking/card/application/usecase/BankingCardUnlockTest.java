@@ -9,11 +9,11 @@ import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotOwne
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
-import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountInvalidPasswordConfirmationException;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.user.domain.exception.UserAccountInvalidPasswordConfirmationException;
+import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,18 +34,17 @@ public class BankingCardUnlockTest extends AbstractServiceTest {
     @InjectMocks
     private BankingCardUnlock bankingCardUnlock;
 
-    private Customer customer;
+    private User customer;
     private BankingAccount bankingAccount;
     private BankingCard bankingCard;
 
     @BeforeEach
     void setUp() {
-        customer = Customer.create(
-                UserAccount.create()
-                           .setId(1L)
-                           .setEmail("customer@demo.com")
-                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-        ).setId(1L);
+        customer = UserTestBuilder.aCustomer()
+                                  .withId(1L)
+                                  .withEmail("customer@demo.com")
+                                  .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                                  .build();
 
         bankingAccount = BankingAccount
                 .create(customer)
@@ -115,12 +114,11 @@ public class BankingCardUnlockTest extends AbstractServiceTest {
     @DisplayName("should throw exception when card not owner")
     void unlockCard_WhenNotOwnerCard_ThrowsException() {
         // given
-        Customer customerNotOwner = Customer.create(
-                UserAccount.create()
-                           .setId(2L)
-                           .setEmail("customerNotOwner@demo.com")
-                           .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-        ).setId(2L);
+        User customerNotOwner = UserTestBuilder.aCustomer()
+                                               .withId(2L)
+                                               .withEmail("customerNotOwner@demo.com")
+                                               .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                                               .build();
 
         setUpContext(customerNotOwner);
 
