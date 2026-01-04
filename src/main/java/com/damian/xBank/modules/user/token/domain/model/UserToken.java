@@ -9,21 +9,21 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "user_account_tokens")
-public class UserAccountToken {
+public class UserToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User account;
+    private User user;
 
     @Column
     private String token;
 
     @Column
     @Enumerated(EnumType.STRING)
-    private UserAccountTokenType type;
+    private UserTokenType type;
 
     @Column
     private boolean used;
@@ -34,29 +34,29 @@ public class UserAccountToken {
     @Column
     private Instant expiresAt;
 
-    public UserAccountToken() {
+    public UserToken() {
         this.used = false;
         this.token = generateToken();
-        this.type = UserAccountTokenType.ACCOUNT_VERIFICATION;
+        this.type = UserTokenType.ACCOUNT_VERIFICATION;
         this.createdAt = Instant.now();
         this.expiresAt = Instant.now().plus(1, ChronoUnit.DAYS);
     }
 
-    public UserAccountToken(User account) {
+    public UserToken(User user) {
         this();
-        this.account = account;
+        this.user = user;
     }
 
-    public static UserAccountToken create() {
-        return new UserAccountToken();
+    public static UserToken create() {
+        return new UserToken();
     }
 
-    public User getAccount() {
-        return this.account;
+    public User getUser() {
+        return this.user;
     }
 
-    public UserAccountToken setAccount(User account) {
-        this.account = account;
+    public UserToken setUser(User user) {
+        this.user = user;
         return this;
     }
 
@@ -64,20 +64,16 @@ public class UserAccountToken {
         return id;
     }
 
-    public UserAccountToken setId(Long id) {
+    public UserToken setId(Long id) {
         this.id = id;
         return this;
     }
-
-    //    public Long getUserId() {
-    //        return this.user.getId();
-    //    }
 
     public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public UserAccountToken setCreatedAt(Instant createdAt) {
+    public UserToken setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
         return this;
     }
@@ -86,7 +82,7 @@ public class UserAccountToken {
         return expiresAt;
     }
 
-    public UserAccountToken setExpiresAt(Instant expiresAt) {
+    public UserToken setExpiresAt(Instant expiresAt) {
         this.expiresAt = expiresAt;
         return this;
     }
@@ -95,16 +91,16 @@ public class UserAccountToken {
         return used;
     }
 
-    public UserAccountToken setUsed(boolean used) {
+    public UserToken setUsed(boolean used) {
         this.used = used;
         return this;
     }
 
-    public UserAccountTokenType getType() {
+    public UserTokenType getType() {
         return type;
     }
 
-    public UserAccountToken setType(UserAccountTokenType type) {
+    public UserToken setType(UserTokenType type) {
         this.type = type;
         return this;
     }
@@ -113,7 +109,7 @@ public class UserAccountToken {
         return token;
     }
 
-    public UserAccountToken setToken(String token) {
+    public UserToken setToken(String token) {
         this.token = token;
         return this;
     }

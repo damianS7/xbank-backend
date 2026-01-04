@@ -1,8 +1,8 @@
 package com.damian.xBank.modules.user.user.application.usecase;
 
-import com.damian.xBank.modules.user.token.domain.model.UserAccountToken;
-import com.damian.xBank.modules.user.token.infrastructure.repository.UserAccountTokenRepository;
-import com.damian.xBank.modules.user.token.infrastructure.service.UserAccountTokenService;
+import com.damian.xBank.modules.user.token.domain.model.UserToken;
+import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
+import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenService;
 import com.damian.xBank.modules.user.user.domain.exception.UserAccountNotFoundException;
 import com.damian.xBank.modules.user.user.domain.exception.UserAccountVerificationNotPendingException;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -21,26 +21,26 @@ import java.time.Instant;
 public class UserAccountVerify {
     private static final Logger log = LoggerFactory.getLogger(UserAccountVerify.class);
     private final Environment env;
-    private final UserAccountTokenRepository userAccountTokenRepository;
+    private final UserTokenRepository userTokenRepository;
     private final UserAccountRepository userAccountRepository;
     private final EmailSenderService emailSenderService;
     private final UserAccountVerificationService userAccountVerificationService;
-    private final UserAccountTokenService userAccountTokenService;
+    private final UserTokenService userTokenService;
 
     public UserAccountVerify(
             Environment env,
-            UserAccountTokenRepository userAccountTokenRepository,
+            UserTokenRepository userTokenRepository,
             UserAccountRepository userAccountRepository,
             EmailSenderService emailSenderService,
             UserAccountVerificationService userAccountVerificationService,
-            UserAccountTokenService userAccountTokenService
+            UserTokenService userTokenService
     ) {
         this.env = env;
-        this.userAccountTokenRepository = userAccountTokenRepository;
+        this.userTokenRepository = userTokenRepository;
         this.userAccountRepository = userAccountRepository;
         this.emailSenderService = emailSenderService;
         this.userAccountVerificationService = userAccountVerificationService;
-        this.userAccountTokenService = userAccountTokenService;
+        this.userTokenService = userTokenService;
     }
 
     /**
@@ -52,11 +52,11 @@ public class UserAccountVerify {
      */
     public User execute(String token) {
         // check the token is valid and not expired.
-        UserAccountToken userAccountToken = userAccountTokenService.validateToken(token);
+        UserToken userToken = userTokenService.validateToken(token);
 
-        log.debug("Verifying account from user: {}", userAccountToken.getAccount().getId());
+        log.debug("Verifying account from user: {}", userToken.getUser().getId());
 
-        User account = userAccountToken.getAccount();
+        User account = userToken.getUser();
 
         // checks if the account is pending for activation.
         if (!account.getStatus().equals(UserStatus.PENDING_VERIFICATION)) {
@@ -65,8 +65,8 @@ public class UserAccountVerify {
         }
 
         // mark the token as used
-        userAccountToken.setUsed(true);
-        userAccountTokenRepository.save(userAccountToken);
+        userToken.setUsed(true);
+        userTokenRepository.save(userToken);
 
         // update account status to active
         account.setStatus(UserStatus.VERIFIED);

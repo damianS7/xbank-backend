@@ -1,8 +1,8 @@
 package com.damian.xBank.modules.user.user.application.usecase;
 
-import com.damian.xBank.modules.user.token.domain.model.UserAccountToken;
-import com.damian.xBank.modules.user.token.domain.model.UserAccountTokenType;
-import com.damian.xBank.modules.user.token.infrastructure.service.UserAccountTokenService;
+import com.damian.xBank.modules.user.token.domain.model.UserToken;
+import com.damian.xBank.modules.user.token.domain.model.UserTokenType;
+import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenService;
 import com.damian.xBank.modules.user.user.application.dto.request.UserAccountPasswordResetSetRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserAccountRepository;
@@ -33,7 +33,7 @@ public class UserAccountPasswordUpdateWithTokenTest extends AbstractServiceTest 
     private UserAccountPasswordUpdateWithToken userAccountPasswordUpdateWithToken;
 
     @Mock
-    private UserAccountTokenService userAccountTokenService;
+    private UserTokenService userTokenService;
 
     private User customer;
 
@@ -59,13 +59,13 @@ public class UserAccountPasswordUpdateWithTokenTest extends AbstractServiceTest 
                 rawNewPassword
         );
 
-        UserAccountToken token = new UserAccountToken(customer);
+        UserToken token = new UserToken(customer);
         token.setToken(token.generateToken());
-        token.setType(UserAccountTokenType.RESET_PASSWORD);
+        token.setType(UserTokenType.RESET_PASSWORD);
 
         // when
         when(userAccountRepository.findById(customer.getId())).thenReturn(Optional.of(customer));
-        when(userAccountTokenService.validateToken(token.getToken())).thenReturn(token);
+        when(userTokenService.validateToken(token.getToken())).thenReturn(token);
         when(bCryptPasswordEncoder.encode(rawNewPassword)).thenReturn(encodedNewPassword);
         when(userAccountRepository.save(any(User.class))).thenReturn(customer);
         doNothing().when(emailSenderService).send(anyString(), anyString(), anyString());

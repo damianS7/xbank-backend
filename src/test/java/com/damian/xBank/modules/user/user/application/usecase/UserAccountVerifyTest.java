@@ -1,9 +1,9 @@
 package com.damian.xBank.modules.user.user.application.usecase;
 
-import com.damian.xBank.modules.user.token.domain.model.UserAccountToken;
-import com.damian.xBank.modules.user.token.domain.model.UserAccountTokenType;
-import com.damian.xBank.modules.user.token.infrastructure.repository.UserAccountTokenRepository;
-import com.damian.xBank.modules.user.token.infrastructure.service.UserAccountTokenService;
+import com.damian.xBank.modules.user.token.domain.model.UserToken;
+import com.damian.xBank.modules.user.token.domain.model.UserTokenType;
+import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
+import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenService;
 import com.damian.xBank.modules.user.user.domain.exception.UserAccountVerificationNotPendingException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
@@ -27,10 +27,10 @@ import static org.mockito.Mockito.*;
 public class UserAccountVerifyTest extends AbstractServiceTest {
 
     @Mock
-    private UserAccountTokenRepository userAccountTokenRepository;
+    private UserTokenRepository userTokenRepository;
 
     @Mock
-    private UserAccountTokenService userAccountTokenService;
+    private UserTokenService userTokenService;
 
     @Mock
     private UserAccountRepository userAccountRepository;
@@ -61,13 +61,13 @@ public class UserAccountVerifyTest extends AbstractServiceTest {
                 .setEmail("user@demo.com")
                 .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD));
 
-        UserAccountToken activationToken = new UserAccountToken(user);
+        UserToken activationToken = new UserToken(user);
         activationToken.setToken("sdfsidjgfiosdjfi");
-        activationToken.setType(UserAccountTokenType.ACCOUNT_VERIFICATION);
+        activationToken.setType(UserTokenType.ACCOUNT_VERIFICATION);
 
         // when
-        when(userAccountTokenService.validateToken(anyString())).thenReturn(activationToken);
-        when(userAccountTokenRepository.save(any(UserAccountToken.class))).thenReturn(activationToken);
+        when(userTokenService.validateToken(anyString())).thenReturn(activationToken);
+        when(userTokenRepository.save(any(UserToken.class))).thenReturn(activationToken);
         when(userAccountRepository.save(any(User.class))).thenReturn(user);
 
         userAccountVerify.execute(activationToken.getToken());
@@ -89,12 +89,12 @@ public class UserAccountVerifyTest extends AbstractServiceTest {
                 .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
                 .setStatus(UserStatus.SUSPENDED);
 
-        UserAccountToken activationToken = new UserAccountToken(user);
+        UserToken activationToken = new UserToken(user);
         activationToken.setToken("sdfsidjgfiosdjfi");
-        activationToken.setType(UserAccountTokenType.ACCOUNT_VERIFICATION);
+        activationToken.setType(UserTokenType.ACCOUNT_VERIFICATION);
 
         // when
-        when(userAccountTokenService.validateToken(anyString())).thenReturn(activationToken);
+        when(userTokenService.validateToken(anyString())).thenReturn(activationToken);
         assertThrows(
                 UserAccountVerificationNotPendingException.class,
                 () -> userAccountVerify.execute(activationToken.getToken())
@@ -112,12 +112,12 @@ public class UserAccountVerifyTest extends AbstractServiceTest {
                 .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
                 .setStatus(UserStatus.VERIFIED);
 
-        UserAccountToken activationToken = new UserAccountToken(user);
+        UserToken activationToken = new UserToken(user);
         activationToken.setToken("sdfsidjgfiosdjfi");
-        activationToken.setType(UserAccountTokenType.ACCOUNT_VERIFICATION);
+        activationToken.setType(UserTokenType.ACCOUNT_VERIFICATION);
 
         // when
-        when(userAccountTokenService.validateToken(anyString())).thenReturn(activationToken);
+        when(userTokenService.validateToken(anyString())).thenReturn(activationToken);
         assertThrows(
                 UserAccountVerificationNotPendingException.class,
                 () -> userAccountVerify.execute(activationToken.getToken())

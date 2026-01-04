@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.user.user.infrastructure.controller;
 
-import com.damian.xBank.modules.user.token.domain.model.UserAccountToken;
+import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.user.application.dto.request.UserAccountPasswordResetRequest;
 import com.damian.xBank.modules.user.user.application.dto.request.UserAccountPasswordResetSetRequest;
 import com.damian.xBank.modules.user.user.application.dto.request.UserAccountPasswordUpdateRequest;
@@ -39,7 +39,7 @@ public class UserPasswordControllerTest extends AbstractControllerTest {
 
     @AfterEach
     void tearDown() {
-        userAccountTokenRepository.deleteAll();
+        userTokenRepository.deleteAll();
         userAccountRepository.deleteAll();
     }
 
@@ -196,9 +196,9 @@ public class UserPasswordControllerTest extends AbstractControllerTest {
                                   .setStatus(UserStatus.PENDING_VERIFICATION);
         userAccountRepository.save(unverifiedUser);
 
-        UserAccountToken givenToken = UserAccountToken.create()
-                                                      .setAccount(unverifiedUser);
-        userAccountTokenRepository.save(givenToken);
+        UserToken givenToken = UserToken.create()
+                                        .setUser(unverifiedUser);
+        userTokenRepository.save(givenToken);
 
         UserAccountPasswordResetSetRequest request = new UserAccountPasswordResetSetRequest(
                 "12345678$Xa"

@@ -35,7 +35,7 @@ public class UserControllerTest extends AbstractControllerTest {
 
     @AfterEach
     void tearDown() {
-        userAccountTokenRepository.deleteAll();
+        userTokenRepository.deleteAll();
         userAccountRepository.deleteAll();
     }
 

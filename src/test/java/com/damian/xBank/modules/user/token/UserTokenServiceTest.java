@@ -1,12 +1,12 @@
 package com.damian.xBank.modules.user.token;
 
-import com.damian.xBank.modules.user.token.domain.exception.UserAccountTokenExpiredException;
-import com.damian.xBank.modules.user.token.domain.exception.UserAccountTokenNotFoundException;
-import com.damian.xBank.modules.user.token.domain.exception.UserAccountTokenUsedException;
-import com.damian.xBank.modules.user.token.domain.model.UserAccountToken;
-import com.damian.xBank.modules.user.token.domain.model.UserAccountTokenType;
-import com.damian.xBank.modules.user.token.infrastructure.repository.UserAccountTokenRepository;
-import com.damian.xBank.modules.user.token.infrastructure.service.UserAccountTokenService;
+import com.damian.xBank.modules.user.token.domain.exception.UserTokenExpiredException;
+import com.damian.xBank.modules.user.token.domain.exception.UserTokenNotFoundException;
+import com.damian.xBank.modules.user.token.domain.exception.UserTokenUsedException;
+import com.damian.xBank.modules.user.token.domain.model.UserToken;
+import com.damian.xBank.modules.user.token.domain.model.UserTokenType;
+import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
+import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenService;
 import com.damian.xBank.modules.user.user.application.dto.request.UserAccountPasswordResetRequest;
 import com.damian.xBank.modules.user.user.domain.exception.UserAccountNotFoundException;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -34,10 +34,10 @@ public class UserTokenServiceTest extends AbstractServiceTest {
     private UserAccountRepository userAccountRepository;
 
     @InjectMocks
-    private UserAccountTokenService userAccountTokenService;
+    private UserTokenService userTokenService;
 
     @Mock
-    private UserAccountTokenRepository userAccountTokenRepository;
+    private UserTokenRepository userTokenRepository;
 
     private User user;
 
@@ -54,21 +54,21 @@ public class UserTokenServiceTest extends AbstractServiceTest {
     @DisplayName("Should validate token")
     void shouldValidateToken() {
         // given
-        UserAccountToken userAccountToken = new UserAccountToken();
-        userAccountToken.setAccount(user);
-        userAccountToken.setToken("token");
-        userAccountToken.setCreatedAt(Instant.now());
-        userAccountToken.setExpiresAt(Instant.now().plus(1, ChronoUnit.DAYS));
-        userAccountToken.setToken("token");
+        UserToken userToken = new UserToken();
+        userToken.setUser(user);
+        userToken.setToken("token");
+        userToken.setCreatedAt(Instant.now());
+        userToken.setExpiresAt(Instant.now().plus(1, ChronoUnit.DAYS));
+        userToken.setToken("token");
 
         // when
-        when(userAccountTokenRepository.findByToken(userAccountToken.getToken())).thenReturn(Optional.of(
-                userAccountToken));
-        UserAccountToken result = userAccountTokenService.validateToken(userAccountToken.getToken());
+        when(userTokenRepository.findByToken(userToken.getToken())).thenReturn(Optional.of(
+                userToken));
+        UserToken result = userTokenService.validateToken(userToken.getToken());
 
         // then
-        verify(userAccountTokenRepository, times(1)).findByToken(userAccountToken.getToken());
-        assertEquals(result.getToken(), userAccountToken.getToken());
+        verify(userTokenRepository, times(1)).findByToken(userToken.getToken());
+        assertEquals(result.getToken(), userToken.getToken());
     }
 
     @Test
@@ -76,35 +76,35 @@ public class UserTokenServiceTest extends AbstractServiceTest {
     void shouldNotValidateTokenWhenNotExists() {
         // given
         // when
-        when(userAccountTokenRepository.findByToken(anyString())).thenReturn(Optional.empty());
+        when(userTokenRepository.findByToken(anyString())).thenReturn(Optional.empty());
         assertThrows(
-                UserAccountTokenNotFoundException.class,
-                () -> userAccountTokenService.validateToken(anyString())
+                UserTokenNotFoundException.class,
+                () -> userTokenService.validateToken(anyString())
         );
 
         // then
-        verify(userAccountTokenRepository, times(1)).findByToken(anyString());
+        verify(userTokenRepository, times(1)).findByToken(anyString());
     }
 
     @Test
     @DisplayName("Should not validate when token expired")
     void shouldNotValidateTokenWhenExpired() {
         // given
-        UserAccountToken userAccountToken = new UserAccountToken();
-        userAccountToken.setAccount(user);
-        userAccountToken.setToken("token");
-        userAccountToken.setCreatedAt(Instant.now());
-        userAccountToken.setExpiresAt(Instant.now().minus(1, ChronoUnit.DAYS));
-        userAccountToken.setToken("token");
+        UserToken userToken = new UserToken();
+        userToken.setUser(user);
+        userToken.setToken("token");
+        userToken.setCreatedAt(Instant.now());
+        userToken.setExpiresAt(Instant.now().minus(1, ChronoUnit.DAYS));
+        userToken.setToken("token");
         // when
-        when(userAccountTokenRepository.findByToken(anyString())).thenReturn(Optional.of(userAccountToken));
+        when(userTokenRepository.findByToken(anyString())).thenReturn(Optional.of(userToken));
         assertThrows(
-                UserAccountTokenExpiredException.class,
-                () -> userAccountTokenService.validateToken(anyString())
+                UserTokenExpiredException.class,
+                () -> userTokenService.validateToken(anyString())
         );
 
         // then
-        verify(userAccountTokenRepository, times(1)).findByToken(anyString());
+        verify(userTokenRepository, times(1)).findByToken(anyString());
     }
 
     @Test
@@ -112,54 +112,54 @@ public class UserTokenServiceTest extends AbstractServiceTest {
     void shouldNotValidateTokenIsUsed() {
         // given
 
-        UserAccountToken userAccountToken = new UserAccountToken();
-        userAccountToken.setAccount(user);
-        userAccountToken.setUsed(true);
-        userAccountToken.setToken("token");
-        userAccountToken.setCreatedAt(Instant.now());
-        userAccountToken.setExpiresAt(Instant.now().plus(1, ChronoUnit.DAYS));
-        userAccountToken.setToken("token");
+        UserToken userToken = new UserToken();
+        userToken.setUser(user);
+        userToken.setUsed(true);
+        userToken.setToken("token");
+        userToken.setCreatedAt(Instant.now());
+        userToken.setExpiresAt(Instant.now().plus(1, ChronoUnit.DAYS));
+        userToken.setToken("token");
         // when
-        when(userAccountTokenRepository.findByToken(anyString())).thenReturn(Optional.of(userAccountToken));
+        when(userTokenRepository.findByToken(anyString())).thenReturn(Optional.of(userToken));
         assertThrows(
-                UserAccountTokenUsedException.class,
-                () -> userAccountTokenService.validateToken(anyString())
+                UserTokenUsedException.class,
+                () -> userTokenService.validateToken(anyString())
         );
 
         // then
-        verify(userAccountTokenRepository, times(1)).findByToken(anyString());
+        verify(userTokenRepository, times(1)).findByToken(anyString());
     }
 
     @Test
     @DisplayName("Should generate account activation token")
     void shouldGenerateAccountActivationToken() {
         // given
-        UserAccountToken givenActivationToken = UserAccountToken.create()
-                                                                .setAccount(user)
-                                                                .setToken("activation-token")
-                                                                .setType(UserAccountTokenType.ACCOUNT_VERIFICATION);
+        UserToken givenActivationToken = UserToken.create()
+                                                  .setUser(user)
+                                                  .setToken("activation-token")
+                                                  .setType(UserTokenType.ACCOUNT_VERIFICATION);
 
         // when
         when(userAccountRepository.findByEmail(user.getEmail()))
                 .thenReturn(Optional.of(user));
-        when(userAccountTokenRepository.findByAccount_Id(user.getId()))
+        when(userTokenRepository.findByUser_Id(user.getId()))
                 .thenReturn(Optional.of(givenActivationToken));
-        when(userAccountTokenRepository.save(any(UserAccountToken.class)))
+        when(userTokenRepository.save(any(UserToken.class)))
                 .thenReturn(givenActivationToken);
 
-        UserAccountToken
+        UserToken
                 generatedToken
-                = userAccountTokenService.generateVerificationToken(user.getEmail());
+                = userTokenService.generateVerificationToken(user.getEmail());
 
         // then
         assertThat(generatedToken)
                 .isNotNull()
-                .extracting(UserAccountToken::isUsed)
+                .extracting(UserToken::isUsed)
                 .isEqualTo(false);
 
-        verify(userAccountTokenRepository, times(1)).findByAccount_Id(user.getId());
+        verify(userTokenRepository, times(1)).findByUser_Id(user.getId());
         verify(userAccountRepository, times(1)).findByEmail(user.getEmail());
-        verify(userAccountTokenRepository, times(1)).save(any(UserAccountToken.class));
+        verify(userTokenRepository, times(1)).save(any(UserToken.class));
     }
 
     @Test
@@ -173,16 +173,16 @@ public class UserTokenServiceTest extends AbstractServiceTest {
 
         // when
         when(userAccountRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
-        when(userAccountTokenRepository.save(any(UserAccountToken.class)))
+        when(userTokenRepository.save(any(UserToken.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        UserAccountToken generatedToken = userAccountTokenService.generatePasswordResetToken(passwordResetRequest);
+        UserToken generatedToken = userTokenService.generatePasswordResetToken(passwordResetRequest);
 
         // then
         assertThat(generatedToken)
                 .isNotNull();
         assertThat(generatedToken.getToken().length()).isGreaterThanOrEqualTo(5);
-        verify(userAccountTokenRepository, times(1)).save(any(UserAccountToken.class));
+        verify(userTokenRepository, times(1)).save(any(UserToken.class));
     }
 
     @Test
@@ -199,15 +199,15 @@ public class UserTokenServiceTest extends AbstractServiceTest {
                 user.getEmail()
         );
 
-        UserAccountToken token = new UserAccountToken(user);
+        UserToken token = new UserToken(user);
         token.setToken(token.generateToken());
-        token.setType(UserAccountTokenType.RESET_PASSWORD);
+        token.setType(UserTokenType.RESET_PASSWORD);
 
         // when
         when(userAccountRepository.findByEmail(user.getEmail())).thenReturn(Optional.empty());
         assertThrows(
                 UserAccountNotFoundException.class,
-                () -> userAccountTokenService.generatePasswordResetToken(passwordResetRequest)
+                () -> userTokenService.generatePasswordResetToken(passwordResetRequest)
         );
 
         // then

@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.user.user.application.usecase;
 
-import com.damian.xBank.modules.user.token.infrastructure.repository.UserAccountTokenRepository;
-import com.damian.xBank.modules.user.token.infrastructure.service.UserAccountTokenService;
+import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
+import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenService;
 import com.damian.xBank.modules.user.user.application.dto.request.UserAccountPasswordUpdateRequest;
 import com.damian.xBank.modules.user.user.domain.exception.UserAccountInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.user.domain.exception.UserAccountNotFoundException;
@@ -26,11 +26,11 @@ public class UserAccountPasswordUpdate {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final PasswordValidator passwordValidator;
     private final AuthenticationContext authenticationContext;
-    private final UserAccountTokenRepository userAccountTokenRepository;
+    private final UserTokenRepository userTokenRepository;
     private final UserAccountRepository userAccountRepository;
     private final EmailSenderService emailSenderService;
     private final UserAccountVerificationService userAccountVerificationService;
-    private final UserAccountTokenService userAccountTokenService;
+    private final UserTokenService userTokenService;
 
     public UserAccountPasswordUpdate(
             Environment env,
@@ -38,22 +38,22 @@ public class UserAccountPasswordUpdate {
             BCryptPasswordEncoder bCryptPasswordEncoder,
             PasswordValidator passwordValidator,
             AuthenticationContext authenticationContext,
-            UserAccountTokenRepository userAccountTokenRepository,
+            UserTokenRepository userTokenRepository,
             UserAccountRepository userAccountRepository,
             EmailSenderService emailSenderService,
             UserAccountVerificationService userAccountVerificationService,
-            UserAccountTokenService userAccountTokenService
+            UserTokenService userTokenService
     ) {
         this.env = env;
         this.userAccountPasswordService = userAccountPasswordService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.passwordValidator = passwordValidator;
         this.authenticationContext = authenticationContext;
-        this.userAccountTokenRepository = userAccountTokenRepository;
+        this.userTokenRepository = userTokenRepository;
         this.userAccountRepository = userAccountRepository;
         this.emailSenderService = emailSenderService;
         this.userAccountVerificationService = userAccountVerificationService;
-        this.userAccountTokenService = userAccountTokenService;
+        this.userTokenService = userTokenService;
     }
 
     /**

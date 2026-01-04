@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.user.user.infrastructure.service;
 
-import com.damian.xBank.modules.user.token.infrastructure.repository.UserAccountTokenRepository;
-import com.damian.xBank.modules.user.token.infrastructure.service.UserAccountTokenService;
+import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
+import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenService;
 import com.damian.xBank.modules.user.user.application.dto.request.UserAccountPasswordUpdateRequest;
 import com.damian.xBank.modules.user.user.domain.exception.UserAccountNotFoundException;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -32,13 +32,13 @@ public class UserPasswordServiceTest extends AbstractServiceTest {
     private UserAccountPasswordService userAccountPasswordService;
 
     @Mock
-    private UserAccountTokenRepository userAccountTokenRepository;
+    private UserTokenRepository userTokenRepository;
 
     @Mock
     private UserAccountVerificationService userAccountVerificationService;
 
     @Mock
-    private UserAccountTokenService userAccountTokenService;
+    private UserTokenService userTokenService;
 
     @Test
     @DisplayName("Should update account password")

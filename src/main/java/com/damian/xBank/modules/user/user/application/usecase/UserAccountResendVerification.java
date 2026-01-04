@@ -1,8 +1,8 @@
 package com.damian.xBank.modules.user.user.application.usecase;
 
-import com.damian.xBank.modules.user.token.domain.model.UserAccountToken;
-import com.damian.xBank.modules.user.token.infrastructure.repository.UserAccountTokenRepository;
-import com.damian.xBank.modules.user.token.infrastructure.service.UserAccountTokenService;
+import com.damian.xBank.modules.user.token.domain.model.UserToken;
+import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
+import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenService;
 import com.damian.xBank.modules.user.user.application.dto.request.UserAccountVerificationResendRequest;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserAccountRepository;
 import com.damian.xBank.modules.user.user.infrastructure.service.UserAccountVerificationService;
@@ -14,24 +14,24 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserAccountResendVerification {
     private static final Logger log = LoggerFactory.getLogger(UserAccountResendVerification.class);
-    private final UserAccountTokenRepository userAccountTokenRepository;
+    private final UserTokenRepository userTokenRepository;
     private final UserAccountRepository userAccountRepository;
     private final EmailSenderService emailSenderService;
     private final UserAccountVerificationService userAccountVerificationService;
-    private final UserAccountTokenService userAccountTokenService;
+    private final UserTokenService userTokenService;
 
     public UserAccountResendVerification(
-            UserAccountTokenRepository userAccountTokenRepository,
+            UserTokenRepository userTokenRepository,
             UserAccountRepository userAccountRepository,
             EmailSenderService emailSenderService,
             UserAccountVerificationService userAccountVerificationService,
-            UserAccountTokenService userAccountTokenService
+            UserTokenService userTokenService
     ) {
-        this.userAccountTokenRepository = userAccountTokenRepository;
+        this.userTokenRepository = userTokenRepository;
         this.userAccountRepository = userAccountRepository;
         this.emailSenderService = emailSenderService;
         this.userAccountVerificationService = userAccountVerificationService;
-        this.userAccountTokenService = userAccountTokenService;
+        this.userTokenService = userTokenService;
     }
 
     /**
@@ -41,10 +41,10 @@ public class UserAccountResendVerification {
     public void execute(UserAccountVerificationResendRequest request) {
 
         // generate a new verification token
-        UserAccountToken userAccountToken = userAccountTokenService
+        UserToken userToken = userTokenService
                 .generateVerificationToken(request.email());
 
         userAccountVerificationService
-                .sendVerificationLinkEmail(request.email(), userAccountToken.getToken());
+                .sendVerificationLinkEmail(request.email(), userToken.getToken());
     }
 }

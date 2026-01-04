@@ -3,8 +3,8 @@ package com.damian.xBank.modules.user.user.application.usecase;
 import com.damian.xBank.modules.setting.domain.service.SettingDomainService;
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileException;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
-import com.damian.xBank.modules.user.token.domain.model.UserAccountToken;
-import com.damian.xBank.modules.user.token.infrastructure.service.UserAccountTokenService;
+import com.damian.xBank.modules.user.token.domain.model.UserToken;
+import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenService;
 import com.damian.xBank.modules.user.user.application.dto.request.UserAccountRegistrationRequest;
 import com.damian.xBank.modules.user.user.domain.exception.UserAccountEmailTakenException;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -24,20 +24,20 @@ public class UserAccountRegister {
     private final UserAccountDomainService userAccountDomainService;
     private final SettingDomainService settingDomainService;
     private final UserAccountVerificationService userAccountVerificationService;
-    private final UserAccountTokenService userAccountTokenService;
+    private final UserTokenService userTokenService;
 
     public UserAccountRegister(
             UserAccountRepository userRepository,
             UserAccountDomainService userAccountDomainService,
             SettingDomainService settingDomainService,
             UserAccountVerificationService userAccountVerificationService,
-            UserAccountTokenService userAccountTokenService
+            UserTokenService userTokenService
     ) {
         this.userRepository = userRepository;
         this.userAccountDomainService = userAccountDomainService;
         this.settingDomainService = settingDomainService;
         this.userAccountVerificationService = userAccountVerificationService;
-        this.userAccountTokenService = userAccountTokenService;
+        this.userTokenService = userTokenService;
     }
 
     /**
@@ -85,11 +85,11 @@ public class UserAccountRegister {
         User registeredUser = userRepository.save(user);
 
         // Create a token for the account activation
-        UserAccountToken userAccountToken = userAccountTokenService.generateVerificationToken(request.email());
+        UserToken userToken = userTokenService.generateVerificationToken(request.email());
 
         // send the account activation link
         userAccountVerificationService
-                .sendVerificationLinkEmail(request.email(), userAccountToken.getToken());
+                .sendVerificationLinkEmail(request.email(), userToken.getToken());
 
         log.debug(
                 "user: {} with email:{} registered",

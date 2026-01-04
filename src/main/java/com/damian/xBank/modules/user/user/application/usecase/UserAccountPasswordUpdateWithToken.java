@@ -1,8 +1,8 @@
 package com.damian.xBank.modules.user.user.application.usecase;
 
-import com.damian.xBank.modules.user.token.domain.model.UserAccountToken;
-import com.damian.xBank.modules.user.token.infrastructure.repository.UserAccountTokenRepository;
-import com.damian.xBank.modules.user.token.infrastructure.service.UserAccountTokenService;
+import com.damian.xBank.modules.user.token.domain.model.UserToken;
+import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
+import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenService;
 import com.damian.xBank.modules.user.user.application.dto.request.UserAccountPasswordResetSetRequest;
 import com.damian.xBank.modules.user.user.infrastructure.service.UserAccountPasswordService;
 import com.damian.xBank.shared.infrastructure.mail.EmailSenderService;
@@ -13,19 +13,19 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserAccountPasswordUpdateWithToken {
     private static final Logger log = LoggerFactory.getLogger(UserAccountPasswordUpdateWithToken.class);
-    private final UserAccountTokenRepository userAccountTokenRepository;
+    private final UserTokenRepository userTokenRepository;
     private final EmailSenderService emailSenderService;
-    private final UserAccountTokenService userAccountTokenService;
+    private final UserTokenService userTokenService;
     private final UserAccountPasswordService userAccountPasswordService;
 
     public UserAccountPasswordUpdateWithToken(
-            UserAccountTokenRepository userAccountTokenRepository,
+            UserTokenRepository userTokenRepository,
             EmailSenderService emailSenderService,
-            UserAccountTokenService userAccountTokenService, UserAccountPasswordService userAccountPasswordService
+            UserTokenService userTokenService, UserAccountPasswordService userAccountPasswordService
     ) {
-        this.userAccountTokenRepository = userAccountTokenRepository;
+        this.userTokenRepository = userTokenRepository;
         this.emailSenderService = emailSenderService;
-        this.userAccountTokenService = userAccountTokenService;
+        this.userTokenService = userTokenService;
         this.userAccountPasswordService = userAccountPasswordService;
     }
 
@@ -38,17 +38,17 @@ public class UserAccountPasswordUpdateWithToken {
     public void execute(String token, UserAccountPasswordResetSetRequest request) {
         log.debug("Resetting password using a token.");
         // verify the token
-        final UserAccountToken userAccountToken = userAccountTokenService.validateToken(token);
+        final UserToken userToken = userTokenService.validateToken(token);
 
         // update the password
-        userAccountPasswordService.updatePassword(userAccountToken.getAccount().getId(), request.password());
+        userAccountPasswordService.updatePassword(userToken.getUser().getId(), request.password());
 
         // set the token as used
-        userAccountToken.setUsed(true);
-        userAccountTokenRepository.save(userAccountToken);
+        userToken.setUsed(true);
+        userTokenRepository.save(userToken);
 
         // send the email notifying the user that his password is successfully changed
-        this.sendResetPasswordSuccessEmail(userAccountToken.getAccount().getEmail());
+        this.sendResetPasswordSuccessEmail(userToken.getUser().getEmail());
         log.debug("Password reset successfully.");
     }
 

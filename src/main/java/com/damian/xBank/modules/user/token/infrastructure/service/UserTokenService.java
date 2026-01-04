@@ -1,11 +1,11 @@
 package com.damian.xBank.modules.user.token.infrastructure.service;
 
-import com.damian.xBank.modules.user.token.domain.exception.UserAccountTokenExpiredException;
-import com.damian.xBank.modules.user.token.domain.exception.UserAccountTokenNotFoundException;
-import com.damian.xBank.modules.user.token.domain.exception.UserAccountTokenUsedException;
-import com.damian.xBank.modules.user.token.domain.model.UserAccountToken;
-import com.damian.xBank.modules.user.token.domain.model.UserAccountTokenType;
-import com.damian.xBank.modules.user.token.infrastructure.repository.UserAccountTokenRepository;
+import com.damian.xBank.modules.user.token.domain.exception.UserTokenExpiredException;
+import com.damian.xBank.modules.user.token.domain.exception.UserTokenNotFoundException;
+import com.damian.xBank.modules.user.token.domain.exception.UserTokenUsedException;
+import com.damian.xBank.modules.user.token.domain.model.UserToken;
+import com.damian.xBank.modules.user.token.domain.model.UserTokenType;
+import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
 import com.damian.xBank.modules.user.user.application.dto.request.UserAccountPasswordResetRequest;
 import com.damian.xBank.modules.user.user.domain.exception.UserAccountNotFoundException;
 import com.damian.xBank.modules.user.user.domain.exception.UserAccountVerificationNotPendingException;
@@ -21,16 +21,16 @@ import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 @Service
-public class UserAccountTokenService {
-    private static final Logger log = LoggerFactory.getLogger(UserAccountTokenService.class);
-    private final UserAccountTokenRepository userAccountTokenRepository;
+public class UserTokenService {
+    private static final Logger log = LoggerFactory.getLogger(UserTokenService.class);
+    private final UserTokenRepository userTokenRepository;
     private final UserAccountRepository userAccountRepository;
 
-    public UserAccountTokenService(
-            UserAccountTokenRepository userAccountTokenRepository,
+    public UserTokenService(
+            UserTokenRepository userTokenRepository,
             UserAccountRepository userAccountRepository
     ) {
-        this.userAccountTokenRepository = userAccountTokenRepository;
+        this.userTokenRepository = userTokenRepository;
         this.userAccountRepository = userAccountRepository;
     }
 
@@ -41,31 +41,31 @@ public class UserAccountTokenService {
      * @param token the token to verify
      * @return AccountToken the token entity
      */
-    public UserAccountToken validateToken(String token) {
+    public UserToken validateToken(String token) {
         log.debug("Validating token");
         // check the token if it matches with the one in database
-        UserAccountToken userAccountToken = userAccountTokenRepository
+        UserToken userToken = userTokenRepository
                 .findByToken(token)
                 .orElseThrow(
                         () -> {
                             log.error("Failed to validate token. Token {} not found.", token);
-                            return new UserAccountTokenNotFoundException();
+                            return new UserTokenNotFoundException();
                         }
                 );
 
         // check expiration
-        if (!userAccountToken.getExpiresAt().isAfter(Instant.now())) {
+        if (!userToken.getExpiresAt().isAfter(Instant.now())) {
             log.error("Failed to validate token. Token {} expired.", token);
-            throw new UserAccountTokenExpiredException(userAccountToken.getAccount().getId(), token);
+            throw new UserTokenExpiredException(userToken.getUser().getId(), token);
         }
 
         // check if token is already used
-        if (userAccountToken.isUsed()) {
+        if (userToken.isUsed()) {
             log.error("Failed to validate token. Token {} used.", token);
-            throw new UserAccountTokenUsedException(userAccountToken.getAccount().getId(), token);
+            throw new UserTokenUsedException(userToken.getUser().getId(), token);
         }
 
-        return userAccountToken;
+        return userToken;
     }
 
     /**
@@ -76,7 +76,7 @@ public class UserAccountTokenService {
      * @throws UserAccountNotFoundException               If the user is not found.
      * @throws UserAccountVerificationNotPendingException If the account is not pending for verification.
      */
-    public UserAccountToken generateVerificationToken(String email) {
+    public UserToken generateVerificationToken(String email) {
         log.debug("Generating verification token for: {}", email);
         // retrieve the user by email
         User user = userAccountRepository.findByEmail(email).orElseThrow(
@@ -96,23 +96,23 @@ public class UserAccountTokenService {
         }
 
         // check if AccountToken exists orElse create a new one
-        UserAccountToken userAccountToken = userAccountTokenRepository
-                .findByAccount_Id(user.getId())
+        UserToken userToken = userTokenRepository
+                .findByUser_Id(user.getId())
                 .orElseGet(() -> {
                     log.debug("No previous token found. A new one will be created.");
-                    return userAccountTokenRepository.save(new UserAccountToken(user));
+                    return userTokenRepository.save(new UserToken(user));
                 });
 
         // we set the accountToken data
-        userAccountToken.setType(UserAccountTokenType.ACCOUNT_VERIFICATION)
-                        .setToken(UUID.randomUUID().toString())
-                        .setCreatedAt(Instant.now())
-                        .setExpiresAt(Instant.now().plus(1, ChronoUnit.DAYS));
+        userToken.setType(UserTokenType.ACCOUNT_VERIFICATION)
+                 .setToken(UUID.randomUUID().toString())
+                 .setCreatedAt(Instant.now())
+                 .setExpiresAt(Instant.now().plus(1, ChronoUnit.DAYS));
 
-        log.debug("Verification token: {} for: {} generated.", userAccountToken.getToken(), email);
+        log.debug("Verification token: {} for: {} generated.", userToken.getToken(), email);
         // save the token to the database
-        return userAccountTokenRepository.save(
-                userAccountToken
+        return userTokenRepository.save(
+                userToken
         );
     }
 
@@ -122,7 +122,7 @@ public class UserAccountTokenService {
      * @param request the request containing the email of the user and password
      * @return AccountToken with the token
      */
-    public UserAccountToken generatePasswordResetToken(UserAccountPasswordResetRequest request) {
+    public UserToken generatePasswordResetToken(UserAccountPasswordResetRequest request) {
         log.debug("Generating password reset token for email: {}", request.email());
         User user = userAccountRepository
                 .findByEmail(request.email())
@@ -137,10 +137,10 @@ public class UserAccountTokenService {
                 );
 
         // generate the token for password reset
-        UserAccountToken token = new UserAccountToken(user);
-        token.setType(UserAccountTokenType.RESET_PASSWORD);
+        UserToken token = new UserToken(user);
+        token.setType(UserTokenType.RESET_PASSWORD);
 
         log.debug("Password reset token generated successfully for email: {}", request.email());
-        return userAccountTokenRepository.save(token);
+        return userTokenRepository.save(token);
     }
 }

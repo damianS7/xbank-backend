@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.user.user.infrastructure.service;
 
-import com.damian.xBank.modules.user.token.infrastructure.repository.UserAccountTokenRepository;
-import com.damian.xBank.modules.user.token.infrastructure.service.UserAccountTokenService;
+import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
+import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenService;
 import com.damian.xBank.modules.user.user.domain.exception.UserAccountInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.user.domain.exception.UserAccountNotFoundException;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -24,9 +24,9 @@ public class UserAccountPasswordService {
     private final UserAccountRepository userAccountRepository;
     private final PasswordValidator passwordValidator;
     private final EmailSenderService emailSenderService;
-    private final UserAccountTokenRepository userAccountTokenRepository;
+    private final UserTokenRepository userTokenRepository;
     private final Environment env;
-    private final UserAccountTokenService userAccountTokenService;
+    private final UserTokenService userTokenService;
     private final AuthenticationContext authenticationContext;
 
     public UserAccountPasswordService(
@@ -34,19 +34,19 @@ public class UserAccountPasswordService {
             UserAccountRepository userAccountRepository,
             PasswordValidator passwordValidator,
             EmailSenderService emailSenderService,
-            UserAccountTokenRepository userAccountTokenRepository,
+            UserTokenRepository userTokenRepository,
             Environment env,
-            UserAccountTokenService userAccountTokenService,
+            UserTokenService userTokenService,
             AuthenticationContext authenticationContext
     ) {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userAccountRepository = userAccountRepository;
         this.passwordValidator = passwordValidator;
         this.emailSenderService = emailSenderService;
-        this.userAccountTokenRepository = userAccountTokenRepository;
+        this.userTokenRepository = userTokenRepository;
         this.env = env;
         this.authenticationContext = authenticationContext;
-        this.userAccountTokenService = userAccountTokenService;
+        this.userTokenService = userTokenService;
     }
 
 
