@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Pattern;
  *
  * @param password
  */
-public record UserPasswordResetSetRequest(
+public record UserTokenResetPasswordRequest(
         @NotBlank(message = "Password must not be blank")
         @Pattern(
                 regexp = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
