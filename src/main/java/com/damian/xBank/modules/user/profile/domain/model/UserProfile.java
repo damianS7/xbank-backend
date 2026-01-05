@@ -1,10 +1,12 @@
 package com.damian.xBank.modules.user.profile.domain.model;
 
+import com.damian.xBank.modules.user.profile.domain.exception.UserProfileNotOwnerException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import jakarta.persistence.*;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Entity
 @Table(name = "user_profiles")
@@ -201,6 +203,33 @@ public class UserProfile {
 
     public UserProfile setUser(User user) {
         this.user = user;
+        return this;
+    }
+
+    /**
+     *
+     * @param userId
+     * @return true if the userId equals to the profile owner
+     */
+    public boolean isOwnedBy(Long userId) {
+
+        // compare profile owner id with given user id
+        return Objects.equals(getUser().getId(), userId);
+    }
+
+    /**
+     * Assert the ownership of the profile belongs to {@link User}.
+     *
+     * @param userId the user to check ownership against
+     * @return the current validator instance for chaining
+     * @throws UserProfileNotOwnerException if the profile does not belong to the user
+     */
+    public UserProfile assertOwnedBy(Long userId) {
+
+        if (!isOwnedBy(userId)) {
+            throw new UserProfileNotOwnerException(getId(), userId);
+        }
+
         return this;
     }
 }
