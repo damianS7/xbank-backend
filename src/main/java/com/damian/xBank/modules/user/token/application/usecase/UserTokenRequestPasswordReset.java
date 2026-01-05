@@ -1,60 +1,75 @@
 package com.damian.xBank.modules.user.token.application.usecase;
 
-import com.damian.xBank.modules.user.token.application.dto.request.UserPasswordResetRequest;
+import com.damian.xBank.modules.user.token.application.dto.request.UserTokenRequestPasswordResetRequest;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
-import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenService;
-import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenVerificationService;
+import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenLinkBuilder;
+import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenPasswordNotifier;
+import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException;
+import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
-import com.damian.xBank.shared.infrastructure.mail.EmailSenderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+/**
+ * Request a password reset token to be sent to the user email.
+ * <p>
+ * Email will contain a link to reset the password.
+ */
 @Service
 public class UserTokenRequestPasswordReset {
     private static final Logger log = LoggerFactory.getLogger(UserTokenRequestPasswordReset.class);
-    private final Environment env;
-    private final UserTokenRepository userTokenRepository;
+    private final UserTokenPasswordNotifier userTokenPasswordNotifier;
     private final UserRepository userRepository;
-    private final EmailSenderService emailSenderService;
-    private final UserTokenVerificationService userTokenVerificationService;
-    private final UserTokenService userTokenService;
+    private final UserTokenLinkBuilder userTokenLinkBuilder;
+    private final UserTokenRepository userTokenRepository;
 
     public UserTokenRequestPasswordReset(
-            Environment env,
-            UserTokenRepository userTokenRepository,
+            UserTokenPasswordNotifier userTokenPasswordNotifier,
             UserRepository userRepository,
-            EmailSenderService emailSenderService,
-            UserTokenVerificationService userTokenVerificationService,
-            UserTokenService userTokenService
+            UserTokenLinkBuilder userTokenLinkBuilder,
+            UserTokenRepository userTokenRepository
     ) {
-        this.env = env;
-        this.userTokenRepository = userTokenRepository;
+        this.userTokenPasswordNotifier = userTokenPasswordNotifier;
+        this.userTokenLinkBuilder = userTokenLinkBuilder;
         this.userRepository = userRepository;
-        this.emailSenderService = emailSenderService;
-        this.userTokenVerificationService = userTokenVerificationService;
-        this.userTokenService = userTokenService;
+        this.userTokenRepository = userTokenRepository;
     }
 
     /**
+     * Generate a token for password reset.
      * Send email to the user with a link to reset password.
      *
+     * @param request the request containing the email of the user and password
      */
-    public void execute(UserPasswordResetRequest request) {
+    public void execute(UserTokenRequestPasswordResetRequest request) {
         // generate a new password reset token
-        UserToken userToken = userTokenService.generatePasswordResetToken(request);
+        log.debug("Generating password reset token for email: {}", request.email());
+        User user = userRepository
+                .findByEmail(request.email())
+                .orElseThrow(
+                        () -> {
+                            log.error(
+                                    "Failed to generate password reset token. No user found for: {}",
+                                    request.email()
+                            );
+                            return new UserNotFoundException(request.email());
+                        }
+                );
 
-        String host = env.getProperty("app.frontend.host");
-        String port = env.getProperty("app.frontend.port");
-        String url = String.format("http://%s:%s", host, port);
-        String link = url + "/accounts/password/reset/" + userToken.getToken();
-        emailSenderService.send(
-                request.email(),
-                "Photogram account: Password reset request.",
-                "Reset your password following this url: " + link
-        );
+        // generate the token for password reset
+        UserToken token = new UserToken(user);
+        token.generateResetPasswordToken();
+
+        userTokenRepository.save(token);
+
+        // create the password reset link
+        String link = userTokenLinkBuilder.buildPasswordResetLink(token.getToken());
+
+        // send the email
+        userTokenPasswordNotifier.sendPasswordResetToken(request.email(), link);
+
+        log.debug("Password reset token generated and sent to: {}", request.email());
     }
-
 }

@@ -1,16 +1,14 @@
 package com.damian.xBank.modules.user.token.infrastructure.service;
 
-import com.damian.xBank.modules.user.token.application.dto.request.UserPasswordResetRequest;
 import com.damian.xBank.modules.user.token.domain.exception.UserTokenExpiredException;
 import com.damian.xBank.modules.user.token.domain.exception.UserTokenNotFoundException;
 import com.damian.xBank.modules.user.token.domain.exception.UserTokenUsedException;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
-import com.damian.xBank.modules.user.token.domain.model.UserTokenType;
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
-import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
+import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,7 +21,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -44,172 +41,97 @@ public class UserTokenServiceTest extends AbstractServiceTest {
     void setUp() {
         user = UserTestBuilder.aCustomer()
                               .withId(1L)
-                              .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                              .withEmail("customerA@demo.com")
+                              .withPassword(RAW_PASSWORD)
+                              .withEmail("customer@demo.com")
                               .build();
     }
 
     @Test
-    @DisplayName("Should validate token")
-    void shouldValidateToken() {
+    @DisplayName("should return token when valid")
+    void validateToken_WhenValidToken_ReturnsToken() {
         // given
-        UserToken userToken = new UserToken();
-        userToken.setUser(user);
-        userToken.setToken("token");
-        userToken.setCreatedAt(Instant.now());
-        userToken.setExpiresAt(Instant.now().plus(1, ChronoUnit.DAYS));
-        userToken.setToken("token");
+        UserToken userToken = new UserToken(user);
+        userToken.generateVerificationToken();
 
         // when
-        when(userTokenRepository.findByToken(userToken.getToken())).thenReturn(Optional.of(
-                userToken));
+        when(userTokenRepository.findByToken(userToken.getToken()))
+                .thenReturn(Optional.of(userToken));
+
         UserToken result = userTokenService.validateToken(userToken.getToken());
 
         // then
+        assertThat(result)
+                .isNotNull()
+                .extracting(UserToken::getToken)
+                .isEqualTo(userToken.getToken());
         verify(userTokenRepository, times(1)).findByToken(userToken.getToken());
-        assertEquals(result.getToken(), userToken.getToken());
     }
 
     @Test
-    @DisplayName("Should not validate when token not exists")
-    void shouldNotValidateTokenWhenNotExists() {
+    @DisplayName("should throw exception when given token not exists")
+    void validateToken_WhenNotExists_ThrowsException() {
         // given
         // when
         when(userTokenRepository.findByToken(anyString())).thenReturn(Optional.empty());
-        assertThrows(
+
+        UserTokenNotFoundException exception = assertThrows(
                 UserTokenNotFoundException.class,
                 () -> userTokenService.validateToken(anyString())
         );
 
         // then
+        assertThat(exception)
+                .isNotNull()
+                .hasMessage(ErrorCodes.USER_TOKEN_NOT_FOUND);
+
         verify(userTokenRepository, times(1)).findByToken(anyString());
     }
 
     @Test
-    @DisplayName("Should not validate when token expired")
-    void shouldNotValidateTokenWhenExpired() {
+    @DisplayName("should throw exception when given token expired")
+    void validateToken_WhenTokenExpired_ThrowsException() {
         // given
-        UserToken userToken = new UserToken();
-        userToken.setUser(user);
-        userToken.setToken("token");
+        UserToken userToken = new UserToken(user);
+        userToken.generateVerificationToken();
         userToken.setCreatedAt(Instant.now());
         userToken.setExpiresAt(Instant.now().minus(1, ChronoUnit.DAYS));
-        userToken.setToken("token");
+
         // when
         when(userTokenRepository.findByToken(anyString())).thenReturn(Optional.of(userToken));
-        assertThrows(
+
+        UserTokenExpiredException exception = assertThrows(
                 UserTokenExpiredException.class,
                 () -> userTokenService.validateToken(anyString())
         );
 
         // then
+        assertThat(exception)
+                .isNotNull()
+                .hasMessage(ErrorCodes.USER_TOKEN_EXPIRED);
         verify(userTokenRepository, times(1)).findByToken(anyString());
     }
 
     @Test
-    @DisplayName("Should not validate when token is used")
-    void shouldNotValidateTokenIsUsed() {
+    @DisplayName("should throw exception when given token is used")
+    void validateToken_WhenTokenUsed_ThrowsException() {
         // given
-
-        UserToken userToken = new UserToken();
-        userToken.setUser(user);
+        UserToken userToken = new UserToken(user);
+        userToken.generateVerificationToken();
         userToken.setUsed(true);
-        userToken.setToken("token");
-        userToken.setCreatedAt(Instant.now());
-        userToken.setExpiresAt(Instant.now().plus(1, ChronoUnit.DAYS));
-        userToken.setToken("token");
+
         // when
         when(userTokenRepository.findByToken(anyString())).thenReturn(Optional.of(userToken));
-        assertThrows(
+
+        UserTokenUsedException exception = assertThrows(
                 UserTokenUsedException.class,
                 () -> userTokenService.validateToken(anyString())
         );
 
         // then
-        verify(userTokenRepository, times(1)).findByToken(anyString());
-    }
-
-    @Test
-    @DisplayName("Should generate account activation token")
-    void shouldGenerateAccountActivationToken() {
-        // given
-        UserToken givenActivationToken = UserToken.create()
-                                                  .setUser(user)
-                                                  .setToken("activation-token")
-                                                  .setType(UserTokenType.ACCOUNT_VERIFICATION);
-
-        // when
-        when(userRepository.findByEmail(user.getEmail()))
-                .thenReturn(Optional.of(user));
-        when(userTokenRepository.findByUser_Id(user.getId()))
-                .thenReturn(Optional.of(givenActivationToken));
-        when(userTokenRepository.save(any(UserToken.class)))
-                .thenReturn(givenActivationToken);
-
-        UserToken
-                generatedToken
-                = userTokenService.generateVerificationToken(user.getEmail());
-
-        // then
-        assertThat(generatedToken)
+        assertThat(exception)
                 .isNotNull()
-                .extracting(UserToken::isUsed)
-                .isEqualTo(false);
+                .hasMessage(ErrorCodes.USER_TOKEN_USED);
 
-        verify(userTokenRepository, times(1)).findByUser_Id(user.getId());
-        verify(userRepository, times(1)).findByEmail(user.getEmail());
-        verify(userTokenRepository, times(1)).save(any(UserToken.class));
-    }
-
-    @Test
-    @DisplayName("Should generate password reset token")
-    void shouldGeneratePasswordResetToken() {
-        // given
-
-        UserPasswordResetRequest passwordResetRequest = new UserPasswordResetRequest(
-                user.getEmail()
-        );
-
-        // when
-        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
-        when(userTokenRepository.save(any(UserToken.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
-
-        UserToken generatedToken = userTokenService.generatePasswordResetToken(passwordResetRequest);
-
-        // then
-        assertThat(generatedToken)
-                .isNotNull();
-        assertThat(generatedToken.getToken().length()).isGreaterThanOrEqualTo(5);
-        verify(userTokenRepository, times(1)).save(any(UserToken.class));
-    }
-
-    @Test
-    @DisplayName("Should not generate password reset token when account not found")
-    void shouldNotGeneratePasswordResetTokenWhenAccountNotFound() {
-        // given
-        User user = User
-                .create()
-                .setId(10L)
-                .setEmail("user@demo.com")
-                .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD));
-
-        UserPasswordResetRequest passwordResetRequest = new UserPasswordResetRequest(
-                user.getEmail()
-        );
-
-        UserToken token = new UserToken(user);
-        token.setToken(token.generateToken());
-        token.setType(UserTokenType.RESET_PASSWORD);
-
-        // when
-        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.empty());
-        assertThrows(
-                UserNotFoundException.class,
-                () -> userTokenService.generatePasswordResetToken(passwordResetRequest)
-        );
-
-        // then
-        verify(userRepository, times(1)).findByEmail(anyString());
+        verify(userTokenRepository, times(1)).findByToken(anyString());
     }
 }
