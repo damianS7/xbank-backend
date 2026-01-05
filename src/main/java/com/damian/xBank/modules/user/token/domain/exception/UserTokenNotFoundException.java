@@ -4,7 +4,7 @@ import com.damian.xBank.shared.exception.ErrorCodes;
 
 public class UserTokenNotFoundException extends UserTokenException {
     public UserTokenNotFoundException(Object resourceId) {
-        super(ErrorCodes.USER_ACCOUNT_VERIFICATION_TOKEN_NOT_FOUND, resourceId);
+        super(ErrorCodes.USER_TOKEN_NOT_FOUND, resourceId);
     }
 
     public UserTokenNotFoundException() {

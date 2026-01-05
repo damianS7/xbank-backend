@@ -11,17 +11,17 @@ public class ErrorCodes {
     public static final String AUTH_JWT_TOKEN_INVALID = "auth.jwt.token.invalid";
 
     // User account
-    public static final String USER_ACCOUNT_NOT_FOUND = "user.account.not_found";
-    public static final String USER_ACCOUNT_SUSPENDED = "user.account.suspended";
-    public static final String USER_ACCOUNT_EMAIL_TAKEN = "user.account.email_taken";
-    public static final String USER_ACCOUNT_INVALID_PASSWORD = "user.account.invalid_password";
-    public static final String USER_ACCOUNT_NOT_VERIFIED = "user.account.not_verified";
+    public static final String USER_NOT_FOUND = "user.not_found";
+    public static final String USER_SUSPENDED = "user.suspended";
+    public static final String USER_EMAIL_TAKEN = "user.email_taken";
+    public static final String USER_INVALID_PASSWORD = "user.invalid_password";
+    public static final String USER_NOT_VERIFIED = "user.not_verified";
 
     // User account verification
-    public static final String USER_ACCOUNT_VERIFICATION_NOT_PENDING = "user.account.verification.not_pending";
-    public static final String USER_ACCOUNT_VERIFICATION_TOKEN_NOT_FOUND = "user.account.verification.token.not_found";
-    public static final String USER_ACCOUNT_VERIFICATION_TOKEN_USED = "user.account.verification.token.used";
-    public static final String USER_ACCOUNT_VERIFICATION_TOKEN_EXPIRED = "user.account.verification.token.expired";
+    public static final String USER_VERIFICATION_NOT_PENDING = "user.verification.not_pending";
+    public static final String USER_TOKEN_NOT_FOUND = "user.verification.token.not_found";
+    public static final String USER_TOKEN_USED = "user.verification.token.used";
+    public static final String USER_TOKEN_EXPIRED = "user.verification.token.expired";
 
     // Profile
     public static final String PROFILE_NOT_OWNER = "profile.not_owner";
