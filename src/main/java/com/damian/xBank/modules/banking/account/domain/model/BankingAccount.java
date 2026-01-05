@@ -5,7 +5,6 @@ import com.damian.xBank.modules.banking.card.domain.exception.BankingAccountCard
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
-import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import jakarta.persistence.*;
@@ -267,17 +266,17 @@ public class BankingAccount {
     }
 
     /**
-     * Assert the ownership of the account belongs to {@link UserProfile}.
+     * Assert the ownership of the account belongs to {@link User}.
      *
-     * @param customerId the customer to check ownership against
+     * @param userId the customer to check ownership against
      * @return the current validator instance for chaining
      * @throws BankingAccountNotOwnerException if the account does not belong to the customer
      */
-    public BankingAccount assertOwnedBy(Long customerId) {
+    public BankingAccount assertOwnedBy(Long userId) {
 
         // compare card owner id with given customer id
-        if (!isOwnedBy(customerId)) {
-            throw new BankingAccountNotOwnerException(getId(), customerId);
+        if (!isOwnedBy(userId)) {
+            throw new BankingAccountNotOwnerException(getId(), userId);
         }
 
         return this;
