@@ -2,7 +2,6 @@ package com.damian.xBank.modules.user.profile.application.usecase;
 
 import com.damian.xBank.modules.user.profile.application.dto.request.UserProfileUpdateRequest;
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileNotFoundException;
-import com.damian.xBank.modules.user.profile.domain.exception.UserProfileNotOwnerException;
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileUpdateException;
 import com.damian.xBank.modules.user.profile.domain.model.UserGender;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
@@ -60,18 +59,13 @@ public class UserProfileUpdate {
                         () -> new UserProfileNotFoundException(userId)
                 );
 
-
         if (!currentUser.isAdmin()) {
-            // TODO assertOwner
             // we make sure that this profile belongs to the current user
-            if (!profile.getUser().getId().equals(currentUser.getId())) {
-                throw new UserProfileNotOwnerException(userId);
-            }
+            profile.assertOwnedBy(currentUser.getId());
 
             // we validate the password before updating the profile
             passwordValidator.validatePassword(currentUser, request.currentPassword());
         }
-
 
         // we iterate over the fields (if any)
         request.fieldsToUpdate().forEach((key, value) -> {
