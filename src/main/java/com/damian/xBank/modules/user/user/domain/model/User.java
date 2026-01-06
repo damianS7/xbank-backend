@@ -1,7 +1,9 @@
 package com.damian.xBank.modules.user.user.domain.model;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
+import com.damian.xBank.modules.setting.domain.model.Setting;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
+import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.user.domain.exception.UserVerificationNotPendingException;
 import jakarta.persistence.*;
 
@@ -32,8 +34,14 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserStatus status;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserProfile profile;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Setting settings;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private UserToken token;
 
     @Column
     private Instant createdAt;
@@ -48,6 +56,7 @@ public class User {
         this.role = UserRole.CUSTOMER;
         this.status = UserStatus.PENDING_VERIFICATION;
         this.profile = new UserProfile(this);
+        this.settings = new Setting();
     }
 
     public User(UserProfile profile) {
@@ -163,7 +172,7 @@ public class User {
 
     @Override
     public String toString() {
-        return "UserAccount{" +
+        return "User{" +
                "id=" + id +
                ", role=" + role +
                ", email='" + email + '\'' +
@@ -176,6 +185,18 @@ public class User {
 
     public UserProfile getProfile() {
         return profile;
+    }
+
+    public User setToken(UserToken token) {
+        this.token = token;
+        this.token.setUser(this);
+        return this;
+    }
+
+    public User setSettings(Setting setting) {
+        this.settings = setting;
+        this.settings.setUser(this);
+        return this;
     }
 
     public User setProfile(UserProfile newProfile) {
