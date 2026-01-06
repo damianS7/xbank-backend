@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.user.user.application.usecase;
 
+import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.user.application.dto.request.UserEmailUpdateRequest;
 import com.damian.xBank.modules.user.user.domain.exception.UserEmailTakenException;
 import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordConfirmationException;
@@ -7,7 +8,6 @@ import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
-import com.damian.xBank.shared.utils.UserProfileTestFactory;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -38,9 +38,9 @@ public class UserEmailUpdateTest extends AbstractServiceTest {
     void setUp() {
         customer = UserTestBuilder.aCustomer()
                                   .withId(1L)
-                                  .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                                  .withPassword(RAW_PASSWORD)
                                   .withEmail("customer@demo.com")
-                                  .withProfile(UserProfileTestFactory.aProfile())
+                                  .withProfile(UserProfileFactory.testProfile())
                                   .build();
     }
 
@@ -100,7 +100,7 @@ public class UserEmailUpdateTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(ErrorCodes.USER_ACCOUNT_EMAIL_TAKEN, exception.getMessage());
+        assertEquals(ErrorCodes.USER_EMAIL_TAKEN, exception.getMessage());
     }
 
     @Test
@@ -116,13 +116,14 @@ public class UserEmailUpdateTest extends AbstractServiceTest {
         );
 
         // when
+        when(userRepository.findById(customer.getId())).thenReturn(Optional.of(customer));
         UserInvalidPasswordConfirmationException exception = assertThrows(
                 UserInvalidPasswordConfirmationException.class,
                 () -> userEmailUpdate.execute(updateRequest)
         );
 
         // then
-        assertEquals(ErrorCodes.USER_ACCOUNT_INVALID_PASSWORD, exception.getMessage());
+        assertEquals(ErrorCodes.USER_INVALID_PASSWORD, exception.getMessage());
     }
 
 }

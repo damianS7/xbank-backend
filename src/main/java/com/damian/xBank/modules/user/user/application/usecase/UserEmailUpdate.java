@@ -32,51 +32,40 @@ public class UserEmailUpdate {
     }
 
     /**
-     * It updates the email of a user
-     *
-     * @param userId   the id of the user
-     * @param newEmail the new email to set
-     * @return the user updated
-     * @throws UserNotFoundException   if the user does not exist
-     * @throws UserEmailTakenException if the email is already taken
-     */
-    public User updateEmail(Long userId, String newEmail) {
-        log.debug("Updating user: {} email: {}", userId, newEmail);
-
-        // we get the User entity so we can save at the end
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException(userId)
-        );
-
-        // check if the email is already taken
-        if (userRepository.existsByEmail(newEmail)) {
-            throw new UserEmailTakenException(newEmail);
-        }
-
-        // set the new email
-        user.setEmail(newEmail);
-
-        // we change the updateAt timestamp field
-        user.setUpdatedAt(Instant.now());
-
-        // save the changes
-        return userRepository.save(user);
-    }
-
-    /**
      * It updates the email from the logged user
      *
      * @param request that contains the current password and the new email.
      * @return the user updated
+     * @throws UserNotFoundException                    if the user does not exist
+     * @throws UserEmailTakenException                  if the email is already taken
      * @throws UserInvalidPasswordConfirmationException if the password does not match
      */
     public User execute(UserEmailUpdateRequest request) {
         // Current user
         final User currentUser = authenticationContext.getCurrentUser();
 
+        // we get the User entity so we can save at the end
+        User user = userRepository.findById(currentUser.getId()).orElseThrow(
+                () -> new UserNotFoundException(currentUser.getId())
+        );
+
         // Before making any changes we check that the password sent by the user matches the one in the entity
         passwordValidator.validatePassword(currentUser, request.currentPassword());
 
-        return this.updateEmail(currentUser.getId(), request.newEmail());
+        // check if the email is already taken
+        if (userRepository.existsByEmail(request.newEmail())) {
+            throw new UserEmailTakenException(request.newEmail());
+        }
+
+        log.debug("Updating user: {} to email: {}", user.getId(), request.newEmail());
+
+        // set the new email
+        user.setEmail(request.newEmail());
+
+        // we change the updateAt timestamp field
+        user.setUpdatedAt(Instant.now());
+
+        // save the changes
+        return userRepository.save(user);
     }
 }
