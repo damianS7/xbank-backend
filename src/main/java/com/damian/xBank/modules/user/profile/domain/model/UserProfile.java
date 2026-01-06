@@ -171,9 +171,8 @@ public class UserProfile {
 
     @Override
     public String toString() {
-        return "Customer{" +
+        return "UserProfile{" +
                "id=" + id +
-               ", account=" + user.toString() +
                ", firstName='" + firstName + '\'' +
                ", lastName='" + lastName + '\'' +
                ", phoneNumber='" + phone + '\'' +
