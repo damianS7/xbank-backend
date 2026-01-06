@@ -1,55 +1,31 @@
 package com.damian.xBank.modules.user.user.application.usecase;
 
-import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
-import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenService;
 import com.damian.xBank.modules.user.user.application.dto.request.UserPasswordUpdateRequest;
 import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.modules.user.user.infrastructure.service.UserPasswordService;
-import com.damian.xBank.shared.infrastructure.mail.EmailSenderService;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import com.damian.xBank.shared.security.PasswordValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.env.Environment;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserPasswordUpdate {
     private static final Logger log = LoggerFactory.getLogger(UserPasswordUpdate.class);
-    private final Environment env;
     private final UserPasswordService userPasswordService;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final PasswordValidator passwordValidator;
     private final AuthenticationContext authenticationContext;
-    private final UserTokenRepository userTokenRepository;
-    private final UserRepository userRepository;
-    private final EmailSenderService emailSenderService;
-    private final UserTokenService userTokenService;
 
     public UserPasswordUpdate(
-            Environment env,
             UserPasswordService userPasswordService,
-            BCryptPasswordEncoder bCryptPasswordEncoder,
             PasswordValidator passwordValidator,
-            AuthenticationContext authenticationContext,
-            UserTokenRepository userTokenRepository,
-            UserRepository userRepository,
-            EmailSenderService emailSenderService,
-            UserTokenService userTokenService
+            AuthenticationContext authenticationContext
     ) {
-        this.env = env;
         this.userPasswordService = userPasswordService;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.passwordValidator = passwordValidator;
         this.authenticationContext = authenticationContext;
-        this.userTokenRepository = userTokenRepository;
-        this.userRepository = userRepository;
-        this.emailSenderService = emailSenderService;
-        this.userTokenService = userTokenService;
     }
 
     /**
@@ -69,6 +45,4 @@ public class UserPasswordUpdate {
         // update the password
         userPasswordService.updatePassword(currentUser.getId(), request.newPassword());
     }
-
-
 }
