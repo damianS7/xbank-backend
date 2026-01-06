@@ -3,8 +3,8 @@ package com.damian.xBank.modules.user.token.application.usecase;
 import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.token.application.dto.request.UserTokenResetPasswordRequest;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
+import com.damian.xBank.modules.user.token.domain.notification.UserTokenPasswordResetNotifier;
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
-import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenPasswordNotifier;
 import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenService;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 public class UserTokenResetPasswordTest extends AbstractServiceTest {
 
     @Mock
-    private UserTokenPasswordNotifier userTokenPasswordNotifier;
+    private UserTokenPasswordResetNotifier userTokenPasswordResetNotifier;
 
     @Mock
     private UserPasswordService userPasswordService;

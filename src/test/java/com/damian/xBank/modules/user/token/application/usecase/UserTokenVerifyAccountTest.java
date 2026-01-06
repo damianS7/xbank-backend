@@ -2,9 +2,9 @@ package com.damian.xBank.modules.user.token.application.usecase;
 
 import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
+import com.damian.xBank.modules.user.token.domain.notification.UserTokenVerificationNotifier;
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
 import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenService;
-import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenVerificationNotifier;
 import com.damian.xBank.modules.user.user.domain.exception.UserVerificationNotPendingException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;

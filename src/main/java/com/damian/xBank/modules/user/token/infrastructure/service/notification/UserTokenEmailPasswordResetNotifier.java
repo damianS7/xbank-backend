@@ -1,14 +1,15 @@
-package com.damian.xBank.modules.user.token.infrastructure.service;
+package com.damian.xBank.modules.user.token.infrastructure.service.notification;
 
+import com.damian.xBank.modules.user.token.domain.notification.UserTokenPasswordResetNotifier;
 import com.damian.xBank.shared.infrastructure.mail.EmailSenderService;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserTokenEmailPasswordNotifier implements UserTokenPasswordNotifier {
+public class UserTokenEmailPasswordResetNotifier implements UserTokenPasswordResetNotifier {
 
     private final EmailSenderService emailSender;
 
-    public UserTokenEmailPasswordNotifier(EmailSenderService emailSender) {
+    public UserTokenEmailPasswordResetNotifier(EmailSenderService emailSender) {
         this.emailSender = emailSender;
     }
 

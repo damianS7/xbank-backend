@@ -1,5 +1,6 @@
-package com.damian.xBank.modules.user.token.infrastructure.service;
+package com.damian.xBank.modules.user.token.infrastructure.service.notification;
 
+import com.damian.xBank.modules.user.token.domain.notification.UserTokenVerificationNotifier;
 import com.damian.xBank.shared.infrastructure.mail.EmailSenderService;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +12,7 @@ public class UserTokenEmailVerificationNotifier implements UserTokenVerification
     public UserTokenEmailVerificationNotifier(EmailSenderService emailSender) {
         this.emailSender = emailSender;
     }
-    
+
     /**
      * It sends an email with a verification link
      *

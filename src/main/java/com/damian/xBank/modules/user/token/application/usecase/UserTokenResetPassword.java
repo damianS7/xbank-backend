@@ -2,8 +2,8 @@ package com.damian.xBank.modules.user.token.application.usecase;
 
 import com.damian.xBank.modules.user.token.application.dto.request.UserTokenResetPasswordRequest;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
+import com.damian.xBank.modules.user.token.domain.notification.UserTokenPasswordResetNotifier;
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
-import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenPasswordNotifier;
 import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenService;
 import com.damian.xBank.modules.user.user.infrastructure.service.UserPasswordService;
 import org.slf4j.Logger;
@@ -20,18 +20,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserTokenResetPassword {
     private static final Logger log = LoggerFactory.getLogger(UserTokenResetPassword.class);
     private final UserTokenRepository userTokenRepository;
-    private final UserTokenPasswordNotifier userTokenPasswordNotifier;
+    private final UserTokenPasswordResetNotifier userTokenPasswordResetNotifier;
     private final UserTokenService userTokenService;
     private final UserPasswordService userPasswordService;
 
     public UserTokenResetPassword(
             UserTokenRepository userTokenRepository,
-            UserTokenPasswordNotifier userTokenPasswordNotifier,
+            UserTokenPasswordResetNotifier userTokenPasswordResetNotifier,
             UserTokenService userTokenService,
             UserPasswordService userPasswordService
     ) {
         this.userTokenRepository = userTokenRepository;
-        this.userTokenPasswordNotifier = userTokenPasswordNotifier;
+        this.userTokenPasswordResetNotifier = userTokenPasswordResetNotifier;
         this.userTokenService = userTokenService;
         this.userPasswordService = userPasswordService;
     }
@@ -57,7 +57,7 @@ public class UserTokenResetPassword {
         userTokenRepository.save(userToken);
 
         // send the email notifying the user that his password is successfully changed
-        userTokenPasswordNotifier.notifyPasswordReset(userToken.getUser().getEmail());
+        userTokenPasswordResetNotifier.notifyPasswordReset(userToken.getUser().getEmail());
         log.debug("Password reset successfully.");
     }
 }

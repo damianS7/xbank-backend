@@ -2,9 +2,9 @@ package com.damian.xBank.modules.user.token.application.usecase;
 
 import com.damian.xBank.modules.user.token.application.dto.request.UserTokenRequestPasswordResetRequest;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
+import com.damian.xBank.modules.user.token.domain.notification.UserTokenPasswordResetNotifier;
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
-import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenLinkBuilder;
-import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenPasswordNotifier;
+import com.damian.xBank.modules.user.token.infrastructure.service.notification.UserTokenLinkBuilder;
 import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
@@ -20,18 +20,18 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserTokenRequestPasswordReset {
     private static final Logger log = LoggerFactory.getLogger(UserTokenRequestPasswordReset.class);
-    private final UserTokenPasswordNotifier userTokenPasswordNotifier;
+    private final UserTokenPasswordResetNotifier userTokenPasswordResetNotifier;
     private final UserRepository userRepository;
     private final UserTokenLinkBuilder userTokenLinkBuilder;
     private final UserTokenRepository userTokenRepository;
 
     public UserTokenRequestPasswordReset(
-            UserTokenPasswordNotifier userTokenPasswordNotifier,
+            UserTokenPasswordResetNotifier userTokenPasswordResetNotifier,
             UserRepository userRepository,
             UserTokenLinkBuilder userTokenLinkBuilder,
             UserTokenRepository userTokenRepository
     ) {
-        this.userTokenPasswordNotifier = userTokenPasswordNotifier;
+        this.userTokenPasswordResetNotifier = userTokenPasswordResetNotifier;
         this.userTokenLinkBuilder = userTokenLinkBuilder;
         this.userRepository = userRepository;
         this.userTokenRepository = userTokenRepository;
@@ -68,7 +68,7 @@ public class UserTokenRequestPasswordReset {
         String link = userTokenLinkBuilder.buildPasswordResetLink(token.getToken());
 
         // send the email
-        userTokenPasswordNotifier.sendPasswordResetToken(request.email(), link);
+        userTokenPasswordResetNotifier.sendPasswordResetToken(request.email(), link);
 
         log.debug("Password reset token generated and sent to: {}", request.email());
     }

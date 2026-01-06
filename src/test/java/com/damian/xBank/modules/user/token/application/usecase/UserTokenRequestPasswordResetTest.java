@@ -2,9 +2,9 @@ package com.damian.xBank.modules.user.token.application.usecase;
 
 import com.damian.xBank.modules.user.token.application.dto.request.UserTokenRequestPasswordResetRequest;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
+import com.damian.xBank.modules.user.token.domain.notification.UserTokenPasswordResetNotifier;
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
-import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenLinkBuilder;
-import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenPasswordNotifier;
+import com.damian.xBank.modules.user.token.infrastructure.service.notification.UserTokenLinkBuilder;
 import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.*;
 public class UserTokenRequestPasswordResetTest extends AbstractServiceTest {
 
     @Mock
-    private UserTokenPasswordNotifier userTokenPasswordNotifier;
+    private UserTokenPasswordResetNotifier userTokenPasswordResetNotifier;
 
     @Mock
     private UserTokenLinkBuilder userTokenLinkBuilder;
