@@ -11,23 +11,23 @@ public class ErrorCodes {
     public static final String AUTH_JWT_TOKEN_INVALID = "auth.jwt.token.invalid";
 
     // User account
-    public static final String USER_ACCOUNT_NOT_FOUND = "user.account.not_found";
-    public static final String USER_ACCOUNT_SUSPENDED = "user.account.suspended";
-    public static final String USER_ACCOUNT_EMAIL_TAKEN = "user.account.email_taken";
-    public static final String USER_ACCOUNT_INVALID_PASSWORD = "user.account.invalid_password";
-    public static final String USER_ACCOUNT_NOT_VERIFIED = "user.account.not_verified";
+    public static final String USER_NOT_FOUND = "user.not_found";
+    public static final String USER_SUSPENDED = "user.suspended";
+    public static final String USER_EMAIL_TAKEN = "user.email_taken";
+    public static final String USER_INVALID_PASSWORD = "user.invalid_password";
+    public static final String USER_NOT_VERIFIED = "user.not_verified";
 
     // User account verification
-    public static final String USER_ACCOUNT_VERIFICATION_NOT_PENDING = "user.account.verification.not_pending";
-    public static final String USER_ACCOUNT_VERIFICATION_TOKEN_NOT_FOUND = "user.account.verification.token.not_found";
-    public static final String USER_ACCOUNT_VERIFICATION_TOKEN_USED = "user.account.verification.token.used";
-    public static final String USER_ACCOUNT_VERIFICATION_TOKEN_EXPIRED = "user.account.verification.token.expired";
+    public static final String USER_VERIFICATION_NOT_PENDING = "user.verification.not_pending";
+    public static final String USER_TOKEN_NOT_FOUND = "user.verification.token.not_found";
+    public static final String USER_TOKEN_USED = "user.verification.token.used";
+    public static final String USER_TOKEN_EXPIRED = "user.verification.token.expired";
 
-    // Customer
-    public static final String CUSTOMER_NOT_OWNER = "customer.not_owner";
-    public static final String CUSTOMER_NOT_FOUND = "customer.not_found";
-    public static final String CUSTOMER_UPDATE_FAILED = "customer.update_failed";
-    public static final String CUSTOMER_IMAGE_NOT_FOUND = "customer.image.not_found";
+    // Profile
+    public static final String PROFILE_NOT_OWNER = "profile.not_owner";
+    public static final String PROFILE_NOT_FOUND = "profile.not_found";
+    public static final String PROFILE_UPDATE_FAILED = "profile.update_failed";
+    public static final String PROFILE_IMAGE_NOT_FOUND = "profile.image.not_found";
 
     // Banking account
     public static final String BANKING_ACCOUNT_NOT_OWNER = "banking.account.not_owner";
@@ -35,10 +35,9 @@ public class ErrorCodes {
     public static final String BANKING_ACCOUNT_SUSPENDED = "banking.account.suspended";
     public static final String BANKING_ACCOUNT_CLOSED = "banking.account.closed";
     public static final String BANKING_ACCOUNT_DISABLED = "banking.account.disabled";
-    public static final String BANKING_ACCOUNT_TRANSFER_SAME_DESTINATION = "banking.account.same_destination";
-    public static final String BANKING_ACCOUNT_TRANSFER_DIFFERENT_CURRENCY = "banking.account.different_currency";
     public static final String BANKING_ACCOUNT_CARD_LIMIT = "banking.account.card_limit";
     public static final String BANKING_ACCOUNT_INSUFFICIENT_FUNDS = "banking.account.insufficient_funds";
+    public static final String BANKING_ACCOUNT_DEPOSIT_NOT_ADMIN = "banking.account.deposit.not_admin";
     public static final String BANKING_ACCOUNT_INVALID_TRANSITION_STATUS = "banking.account.invalid_transition_status";
     public static final String BANKING_ACCOUNT_FAILED_DEPOSIT = "banking.account.failed_deposit";
 
@@ -58,8 +57,18 @@ public class ErrorCodes {
             BANKING_TRANSACTION_INVALID_TRANSITION_STATUS
             = "banking.transaction.invalid_transition_status";
 
+    // Transfers
+    public static final String BANKING_TRANSFER_NOT_FOUND = "banking.transfer.not_found";
+    public static final String BANKING_TRANSFER_NOT_OWNER = "banking.transfer.not_owner";
+    public static final String
+            BANKING_TRANSFER_INVALID_TRANSITION_STATUS
+            = "banking.transfer.invalid_transition_status";
+    public static final String BANKING_TRANSFER_SAME_ACCOUNT = "banking.transfer.same_destination";
+    public static final String BANKING_TRANSFER_DIFFERENT_CURRENCY = "banking.transfer.different_currency";
+
     // Notification
     public static final String NOTIFICATION_NOT_FOUND = "notification.not_found";
+    public static final String NOTIFICATION_NOT_OWNER = "notification.not_owner";
 
     // Setting
     public static final String SETTING_NOT_OWNER = "setting.not_owner";

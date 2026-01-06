@@ -1,8 +1,8 @@
 package com.damian.xBank.modules.banking.card.application.job;
 
-import com.damian.xBank.modules.banking.card.application.service.BankingCardService;
-import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
-import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
+import com.damian.xBank.modules.banking.card.domain.service.BankingCardDomainService;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,14 +18,14 @@ public class BankingCardExpirationJob {
 
     private static final Logger log = LoggerFactory.getLogger(BankingCardExpirationJob.class);
     private final BankingCardRepository bankingCardRepository;
-    private final BankingCardService bankingCardService;
+    private final BankingCardDomainService bankingCardDomainService;
 
     public BankingCardExpirationJob(
             BankingCardRepository bankingCardRepository,
-            BankingCardService bankingCardService
+            BankingCardDomainService bankingCardDomainService
     ) {
         this.bankingCardRepository = bankingCardRepository;
-        this.bankingCardService = bankingCardService;
+        this.bankingCardDomainService = bankingCardDomainService;
     }
 
 
@@ -37,7 +37,7 @@ public class BankingCardExpirationJob {
     public void disableExpiredCards() {
         log.info("Checking for expired cards...");
         Set<BankingCard> expiredCards =
-                bankingCardRepository.findByCardStatusNotAndExpiredDateLessThanEqual(
+                bankingCardRepository.findByStatusNotAndExpiredDateLessThanEqual(
                         BankingCardStatus.EXPIRED,
                         LocalDate.now()
                 );
@@ -49,7 +49,7 @@ public class BankingCardExpirationJob {
 
         log.info("Found {} expired cards", expiredCards.size());
         for (BankingCard bankingCard : expiredCards) {
-            bankingCard.setCardStatus(BankingCardStatus.EXPIRED);
+            bankingCard.setStatus(BankingCardStatus.EXPIRED);
         }
 
         bankingCardRepository.saveAll(expiredCards);

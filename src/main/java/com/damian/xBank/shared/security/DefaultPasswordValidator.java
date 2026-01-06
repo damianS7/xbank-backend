@@ -1,8 +1,7 @@
 package com.damian.xBank.shared.security;
 
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
-import com.damian.xBank.modules.user.account.account.domain.exception.UserAccountInvalidPasswordConfirmationException;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordConfirmationException;
+import com.damian.xBank.modules.user.user.domain.model.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -16,18 +15,13 @@ public class DefaultPasswordValidator implements PasswordValidator {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
-    public void validatePassword(UserAccount userAccount, String rawPassword) {
-        if (!bCryptPasswordEncoder.matches(rawPassword, userAccount.getPassword())) {
-            throw new UserAccountInvalidPasswordConfirmationException(userAccount.getId());
+    public void validatePassword(User user, String rawPassword) {
+        if (!bCryptPasswordEncoder.matches(rawPassword, user.getPassword())) {
+            throw new UserInvalidPasswordConfirmationException(user.getId());
         }
     }
 
-    public void validatePassword(User user, String rawPassword) {
-        validatePassword(user.getAccount(), rawPassword);
+    public void validatePassword(UserPrincipal userPrincipal, String rawPassword) {
+        validatePassword(userPrincipal.getUser(), rawPassword);
     }
-
-    public void validatePassword(Customer customer, String rawPassword) {
-        validatePassword(customer.getAccount(), rawPassword);
-    }
-
 }

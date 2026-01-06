@@ -4,7 +4,11 @@ import com.damian.xBank.shared.exception.ApplicationException;
 
 public class NotificationException extends ApplicationException {
 
+    public NotificationException(String errorCode, Object resourceId, Object[] args) {
+        super(errorCode, resourceId, args);
+    }
+
     public NotificationException(String errorCode, Object resourceId) {
-        super(errorCode, resourceId, new Object[]{resourceId});
+        this(errorCode, resourceId, new Object[]{resourceId});
     }
 }

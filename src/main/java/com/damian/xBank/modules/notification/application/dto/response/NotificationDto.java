@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.notification.application.dto.response;
 
-import com.damian.xBank.modules.notification.domain.enums.NotificationType;
+import com.damian.xBank.modules.notification.domain.model.NotificationType;
 
 import java.util.Map;
 

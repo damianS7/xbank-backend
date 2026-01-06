@@ -1,0 +1,52 @@
+package com.damian.xBank.shared.infrastructure.storage;
+
+import com.damian.xBank.shared.infrastructure.storage.exception.ImageEmptyFileException;
+import com.damian.xBank.shared.infrastructure.storage.exception.ImageTooLargeException;
+import com.damian.xBank.shared.infrastructure.storage.exception.ImageTypeNotSupportedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Arrays;
+
+/**
+ * Service class for validating images.
+ */
+@Service
+public class ImageValidationService {
+    private static final Logger log = LoggerFactory.getLogger(ImageValidationService.class);
+    private final long MAX_FILE_SIZE = 5L * 1024 * 1024; // 5 MB
+    private final String[] ALLOWED_IMAGE_TYPES = {"image/jpg", "image/jpeg", "image/png"};
+
+    public void validateImage(MultipartFile file) {
+        this.validateImage(file, MAX_FILE_SIZE, ALLOWED_IMAGE_TYPES);
+    }
+
+    /**
+     * Run validations before uploading the file.
+     *
+     * @param file              The file to validate
+     * @param maxFileSize       Max file size allowed
+     * @param allowedImageTypes Types allowed
+     */
+    public void validateImage(MultipartFile file, long maxFileSize, String[] allowedImageTypes) {
+        if (file.isEmpty()) {
+            throw new ImageEmptyFileException(file.getOriginalFilename());
+        }
+
+        String contentType = file.getContentType();
+        boolean imageTypeAllowed = Arrays.stream(allowedImageTypes)
+                                         .anyMatch(ct -> ct.equalsIgnoreCase(contentType));
+
+        if (!imageTypeAllowed) {
+            throw new ImageTypeNotSupportedException(file.getOriginalFilename(), contentType);
+        }
+
+        if (file.getSize() > maxFileSize) {
+            throw new ImageTooLargeException(file.getOriginalFilename(), maxFileSize);
+        }
+
+        log.debug("Image: {} validated.", file.getOriginalFilename());
+    }
+}

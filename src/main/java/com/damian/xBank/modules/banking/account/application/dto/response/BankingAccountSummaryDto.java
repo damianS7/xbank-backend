@@ -1,8 +1,8 @@
 package com.damian.xBank.modules.banking.account.application.dto.response;
 
-import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountCurrency;
-import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountStatus;
-import com.damian.xBank.modules.banking.account.domain.enums.BankingAccountType;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 
 import java.math.BigDecimal;
 import java.time.Instant;

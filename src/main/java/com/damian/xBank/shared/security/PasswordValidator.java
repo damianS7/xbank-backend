@@ -1,14 +1,10 @@
 package com.damian.xBank.shared.security;
 
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.user.domain.model.User;
 
 public interface PasswordValidator {
 
-    void validatePassword(UserAccount user, String rawPassword);
-
     void validatePassword(User user, String rawPassword);
 
-    void validatePassword(Customer customer, String rawPassword);
-
+    void validatePassword(UserPrincipal user, String rawPassword);
 }

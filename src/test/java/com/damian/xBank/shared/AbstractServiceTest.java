@@ -1,11 +1,10 @@
 package com.damian.xBank.shared;
 
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import com.damian.xBank.shared.security.DefaultPasswordValidator;
 import com.damian.xBank.shared.security.PasswordValidator;
-import com.damian.xBank.shared.security.User;
+import com.damian.xBank.shared.security.UserPrincipal;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,16 +44,11 @@ public abstract class AbstractServiceTest {
         SecurityContextHolder.clearContext();
     }
 
-    protected void setUpContext(Customer customer) {
-        when(authenticationContext.getCurrentCustomer()).thenReturn(customer);
+    protected void setUpContext(UserPrincipal user) {
+        when(authenticationContext.getUserPrincipal()).thenReturn(user);
     }
 
     protected void setUpContext(User user) {
-        when(authenticationContext.getCurrentUser()).thenReturn(user);
-    }
-
-    protected void setUpContext(UserAccount userAccount) {
-        User user = new User(userAccount);
         when(authenticationContext.getCurrentUser()).thenReturn(user);
     }
 }

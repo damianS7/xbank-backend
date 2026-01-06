@@ -4,12 +4,12 @@ import com.damian.xBank.shared.exception.ErrorCodes;
 
 public class BankingCardStatusTransitionException extends BankingCardException {
 
-    public BankingCardStatusTransitionException(String fromStatus, String toStatus) {
-        this(new Object[]{fromStatus, toStatus});
+    public BankingCardStatusTransitionException(Long cardId, String fromStatus, String toStatus) {
+        this(cardId, new Object[]{fromStatus, toStatus});
     }
 
-    public BankingCardStatusTransitionException(Object[] args) {
-        super(ErrorCodes.BANKING_CARD_INVALID_TRANSITION_STATUS, args);
+    public BankingCardStatusTransitionException(Long cardId, Object[] args) {
+        super(ErrorCodes.BANKING_CARD_INVALID_TRANSITION_STATUS, cardId, args);
     }
 
 }

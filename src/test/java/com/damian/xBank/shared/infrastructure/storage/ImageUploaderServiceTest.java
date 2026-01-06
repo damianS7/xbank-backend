@@ -1,10 +1,10 @@
 package com.damian.xBank.shared.infrastructure.storage;
 
-import com.damian.xBank.infrastructure.storage.FileStorageService;
-import com.damian.xBank.infrastructure.storage.ImageUploaderService;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
+import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.utils.ImageTestHelper;
+import com.damian.xBank.shared.utils.UserTestBuilder;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -28,6 +28,17 @@ public class ImageUploaderServiceTest extends AbstractServiceTest {
     @Mock
     private FileStorageService fileStorageService;
 
+    private User customer;
+
+    @BeforeEach
+    void setUp() {
+        customer = UserTestBuilder.aCustomer()
+                                  .withId(1L)
+                                  .withPassword(RAW_PASSWORD)
+                                  .withEmail("customer@demo.com")
+                                  .build();
+    }
+
     @Test
     @DisplayName("Should get upload path")
     void shouldGetUploadPath() {
@@ -40,10 +51,6 @@ public class ImageUploaderServiceTest extends AbstractServiceTest {
     @DisplayName("Should upload image")
     void shouldUploadImage() {
         // given
-        setUpContext(UserAccount.create()
-                                .setId(1L)
-        );
-
         MultipartFile givenMultipart = ImageTestHelper.createDefaultJpg();
         File tempFile = ImageTestHelper.multipartToFile(givenMultipart);
 
@@ -52,7 +59,7 @@ public class ImageUploaderServiceTest extends AbstractServiceTest {
                 .thenReturn(tempFile);
 
         File uploadedImage = imageUploaderService.uploadImage(
-                givenMultipart, "posts", tempFile.getName()
+                givenMultipart, customer.getId(), "posts", tempFile.getName()
         );
 
         // then

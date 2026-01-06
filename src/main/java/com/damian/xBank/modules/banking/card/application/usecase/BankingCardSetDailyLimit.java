@@ -1,0 +1,70 @@
+package com.damian.xBank.modules.banking.card.application.usecase;
+
+import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdateDailyLimitRequest;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoundException;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
+import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
+import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.shared.security.AuthenticationContext;
+import com.damian.xBank.shared.security.PasswordValidator;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+
+@Service
+public class BankingCardSetDailyLimit {
+    private final AuthenticationContext authenticationContext;
+    private final PasswordValidator passwordValidator;
+    private final BankingCardRepository bankingCardRepository;
+
+    public BankingCardSetDailyLimit(
+            AuthenticationContext authenticationContext,
+            PasswordValidator passwordValidator,
+            BankingCardRepository bankingCardRepository
+    ) {
+        this.authenticationContext = authenticationContext;
+        this.passwordValidator = passwordValidator;
+        this.bankingCardRepository = bankingCardRepository;
+    }
+
+
+    /**
+     * Update the daily limit of the card.
+     *
+     * @param bankingCardId the banking card id
+     * @param request       the request with the data needed to perfom the operation
+     * @return BankingCard the updated card
+     */
+    @Transactional
+    public BankingCard execute(
+            Long bankingCardId,
+            BankingCardUpdateDailyLimitRequest request
+    ) {
+        // Current user
+        final User currentUser = authenticationContext.getCurrentUser();
+
+        // Banking card to set limit on
+        final BankingCard bankingCard = bankingCardRepository.findById(bankingCardId).orElseThrow(
+                // Banking card not found
+                () -> new BankingCardNotFoundException(bankingCardId));
+
+        // run validations if not admin
+        if (!currentUser.isAdmin()) {
+
+            bankingCard.assertOwnedBy(currentUser.getId());
+
+            passwordValidator.validatePassword(currentUser, request.password());
+        }
+
+        // we set the limit of the card
+        bankingCard.setDailyLimit(request.dailyLimit());
+
+        // we change the updateAt timestamp field
+        bankingCard.setUpdatedAt(Instant.now());
+
+        // save the data and return BankingCard
+        return bankingCardRepository.save(bankingCard);
+    }
+
+}

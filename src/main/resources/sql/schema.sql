@@ -6,12 +6,12 @@ COMMENT ON SCHEMA public IS 'standard public schema';
 
 -- User tables
 
-CREATE TYPE public."user_account_status_type" AS ENUM (
+CREATE TYPE public."user_status_type" AS ENUM (
 	'PENDING_VERIFICATION',
 	'VERIFIED',
 	'SUSPENDED'
 );
-CREATE CAST (varchar as user_account_status_type) WITH INOUT AS IMPLICIT;
+CREATE CAST (varchar as user_status_type) WITH INOUT AS IMPLICIT;
 
 CREATE TYPE public."user_role_type" AS ENUM (
 	'CUSTOMER',
@@ -24,52 +24,52 @@ CREATE TABLE public.user_accounts (
   email VARCHAR(80) UNIQUE NOT NULL,
   password_hash VARCHAR(60) NOT NULL,
   role public.user_role_type DEFAULT 'CUSTOMER'::user_role_type NOT NULL,
-  account_status public.user_account_status_type DEFAULT 'PENDING_VERIFICATION'::user_account_status_type NOT NULL,
+  status public.user_status_type DEFAULT 'PENDING_VERIFICATION'::user_status_type NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TYPE public."user_account_token_type" AS ENUM (
+CREATE TYPE public."user_token_type" AS ENUM (
 	'ACCOUNT_VERIFICATION',
 	'RESET_PASSWORD'
 );
-CREATE CAST (varchar as user_account_token_type) WITH INOUT AS IMPLICIT;
+CREATE CAST (varchar as user_token_type) WITH INOUT AS IMPLICIT;
 
-CREATE TABLE public.user_account_tokens (
+CREATE TABLE public.user_tokens (
 	id int4 GENERATED ALWAYS AS IDENTITY NOT NULL,
-	user_account_id int4 NOT NULL,
+	user_id int4 NOT NULL,
 	token varchar(100) NOT NULL,
 	used BOOLEAN DEFAULT FALSE,
 	type public."user_token_type" NOT NULL,
 	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
 	expires_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-	CONSTRAINT user_account_token_pkey PRIMARY KEY (id),
-	CONSTRAINT user_account_token_user_account_id_fkey FOREIGN KEY (user_account_id) REFERENCES public.user_accounts(id) ON DELETE CASCADE
+	CONSTRAINT user_token_pkey PRIMARY KEY (id),
+	CONSTRAINT user_token_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.user_accounts(id) ON DELETE CASCADE
 );
 -- Customer
 
-CREATE TYPE public."customer_gender_type" AS ENUM (
+CREATE TYPE public."user_gender_type" AS ENUM (
 	'MALE',
 	'FEMALE'
 );
-CREATE CAST (varchar as customer_gender_type) WITH INOUT AS IMPLICIT;
+CREATE CAST (varchar as user_gender_type) WITH INOUT AS IMPLICIT;
 
-CREATE TABLE public.customers (
+CREATE TABLE public.user_profiles (
 	id int4 GENERATED ALWAYS AS IDENTITY NOT NULL,
-	user_account_id int4 NOT NULL,
+	user_id int4 NOT NULL,
 	first_name varchar(20) NOT NULL,
 	last_name varchar(40) NOT NULL,
 	phone varchar(14) NOT NULL,
 	birthdate date NOT NULL,
-	gender public."customer_gender_type" NOT NULL,
+	gender public."user_gender_type" NOT NULL,
 	photo varchar(100) NULL, -- path to image
 	address varchar(50) NOT NULL,
 	postal_code varchar(8) NOT NULL,
 	country varchar(12) NOT NULL,
 	national_id varchar(12) NOT NULL,
 	updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-	CONSTRAINT customers_pkey PRIMARY KEY (id),
-	CONSTRAINT customers_user_account_id_fkey FOREIGN KEY (user_account_id) REFERENCES public.user_accounts(id) ON DELETE CASCADE
+	CONSTRAINT user_profiles_pkey PRIMARY KEY (id),
+	CONSTRAINT user_profiles_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.user_accounts(id) ON DELETE CASCADE
 );
 
 CREATE TYPE public."notification_type" AS ENUM (
@@ -119,7 +119,7 @@ CREATE CAST (varchar as banking_account_type) WITH INOUT AS IMPLICIT;
 
 CREATE TABLE public.banking_accounts (
 	id int4 GENERATED ALWAYS AS IDENTITY NOT NULL,
-	customer_id int4 NOT NULL,
+	user_id int4 NOT NULL,
 	alias varchar(64) NULL,
 	account_number varchar(32) NOT NULL,
 	balance numeric(15, 2) DEFAULT 0.00 NOT NULL,
@@ -131,7 +131,7 @@ CREATE TABLE public.banking_accounts (
 	updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
 	CONSTRAINT banking_accounts_account_number_key UNIQUE (account_number),
 	CONSTRAINT banking_accounts_pkey PRIMARY KEY (id),
-	CONSTRAINT banking_accounts_customers_fk FOREIGN KEY (customer_id) REFERENCES public.customers(id) ON DELETE CASCADE ON UPDATE CASCADE
+	CONSTRAINT banking_accounts_users_fk FOREIGN KEY (user_id) REFERENCES public.user_accounts(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- Banking Card
@@ -192,6 +192,7 @@ CREATE CAST (varchar as banking_transaction_type) WITH INOUT AS IMPLICIT;
 CREATE TABLE public.banking_transactions (
 	id int4 GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	account_id int4 NOT NULL,
+	transfer_id int4 NULL,
 	card_id int4 NULL,
 	balance_before numeric(15, 2) NOT NULL,
 	balance_after numeric(15, 2) NOT NULL,
@@ -202,9 +203,41 @@ CREATE TABLE public.banking_transactions (
 	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
 	updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
 	CONSTRAINT fk_transactions_account FOREIGN KEY (account_id)
-            REFERENCES public.banking_accounts(id)
-            ON DELETE CASCADE,
-        CONSTRAINT fk_transactions_card FOREIGN KEY (card_id)
-            REFERENCES public.banking_cards(id)
-            ON DELETE SET NULL
+        REFERENCES public.banking_accounts(id)
+        ON DELETE CASCADE,
+    CONSTRAINT fk_transactions_card FOREIGN KEY (card_id)
+        REFERENCES public.banking_cards(id)
+        ON DELETE SET NULL,
+    CONSTRAINT fk_transactions_transfer FOREIGN KEY (transfer_id)
+        REFERENCES public.banking_transfers(id)
+        ON DELETE SET NULL
+);
+
+-- Banking Transfers
+
+CREATE TYPE public."banking_transfer_status_type" AS ENUM (
+  'PENDING',
+  'REJECTED',
+  'CONFIRMED'
+);
+CREATE CAST (varchar as banking_transfer_status_type) WITH INOUT AS IMPLICIT;
+
+CREATE TABLE public.banking_transfers (
+    id int4 GENERATED ALWAYS AS IDENTITY NOT NULL,
+    from_account_id int4 NOT NULL,
+    to_account_id int4 NOT NULL,
+    amount numeric(15, 2) DEFAULT 0.00 NOT NULL,
+    status public."banking_transfer_status_type" DEFAULT 'PENDING'::banking_transfer_status_type NOT NULL,
+    description text NULL,
+    created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+    updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+    CONSTRAINT banking_transfers_pkey PRIMARY KEY (id),
+    CONSTRAINT banking_transfers_from_account_fk
+        FOREIGN KEY (from_account_id)
+        REFERENCES public.banking_accounts(id)
+            ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT banking_transfers_to_account_fk
+        FOREIGN KEY (to_account_id)
+        REFERENCES public.banking_accounts(id)
+        ON DELETE CASCADE ON UPDATE CASCADE
 );

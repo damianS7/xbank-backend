@@ -3,18 +3,17 @@ package com.damian.xBank.shared;
 
 import com.damian.xBank.modules.auth.application.dto.AuthenticationRequest;
 import com.damian.xBank.modules.auth.application.dto.AuthenticationResponse;
-import com.damian.xBank.modules.banking.account.infra.repository.BankingAccountRepository;
+import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
-import com.damian.xBank.modules.notification.infra.repository.NotificationRepository;
-import com.damian.xBank.modules.setting.infrastructure.repository.SettingRepository;
-import com.damian.xBank.modules.user.account.account.domain.entity.UserAccount;
-import com.damian.xBank.modules.user.account.account.domain.enums.UserAccountRole;
-import com.damian.xBank.modules.user.account.account.infra.repository.UserAccountRepository;
-import com.damian.xBank.modules.user.account.token.infra.repository.UserAccountTokenRepository;
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
-import com.damian.xBank.modules.user.customer.infra.repository.CustomerRepository;
-import com.damian.xBank.shared.security.User;
+import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
+import com.damian.xBank.modules.notification.infrastructure.repository.NotificationRepository;
+import com.damian.xBank.modules.setting.infrastructure.persistence.repository.SettingRepository;
+import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
+import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserRole;
+import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
+import com.damian.xBank.shared.security.UserPrincipal;
 import com.damian.xBank.shared.utils.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
@@ -56,7 +55,7 @@ public abstract class AbstractControllerTest {
     protected ObjectMapper objectMapper;
 
     @Autowired
-    protected CustomerRepository customerRepository;
+    protected BankingTransferRepository transferRepository;
 
     @Autowired
     protected BankingTransactionRepository transactionRepository;
@@ -68,10 +67,10 @@ public abstract class AbstractControllerTest {
     protected BankingCardRepository bankingCardRepository;
 
     @Autowired
-    protected UserAccountTokenRepository userAccountTokenRepository;
+    protected UserTokenRepository userTokenRepository;
 
     @Autowired
-    protected UserAccountRepository userAccountRepository;
+    protected UserRepository userRepository;
 
     @Autowired
     protected SettingRepository settingRepository;
@@ -88,20 +87,20 @@ public abstract class AbstractControllerTest {
     void tearDown() {
         notificationRepository.deleteAll();
         settingRepository.deleteAll();
+        transferRepository.deleteAll();
         transactionRepository.deleteAll();
         bankingCardRepository.deleteAll();
         bankingAccountRepository.deleteAll();
-        userAccountTokenRepository.deleteAll();
-        userAccountRepository.deleteAll();
-        customerRepository.deleteAll();
+        userTokenRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     protected void login(String email) throws Exception {
         // given
-        this.login(email, UserAccountRole.CUSTOMER);
+        this.login(email, UserRole.CUSTOMER);
     }
 
-    protected void login(String email, UserAccountRole role) throws Exception {
+    protected void login(String email, UserRole role) throws Exception {
         // given
         final HashMap<String, Object> claims = new HashMap<>();
         claims.put("email", email);
@@ -110,23 +109,19 @@ public abstract class AbstractControllerTest {
         token = jwtUtil.generateToken(claims, email);
     }
 
-    protected void login(UserAccount userAccount) throws Exception {
+    protected void login(User user) throws Exception {
         // given
         final HashMap<String, Object> claims = new HashMap<>();
-        claims.put("email", userAccount.getEmail());
-        claims.put("role", userAccount.getRole());
-        token = jwtUtil.generateToken(claims, userAccount.getEmail());
+        claims.put("email", user.getEmail());
+        claims.put("role", user.getRole());
+        token = jwtUtil.generateToken(claims, user.getEmail());
     }
 
-    protected void login(Customer customer) throws Exception {
-        login(customer.getAccount());
+    protected void login(UserPrincipal user) throws Exception {
+        login(user.getUser());
     }
 
-    protected void login(User user) throws Exception {
-        login(user.getAccount());
-    }
-
-    protected void loginWithPost(UserAccount user) throws Exception {
+    protected void loginWithPost(User user) throws Exception {
         // given
         AuthenticationRequest authenticationRequest = new AuthenticationRequest(
                 user.getEmail(), "123456"

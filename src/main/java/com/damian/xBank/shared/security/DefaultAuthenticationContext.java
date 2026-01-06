@@ -1,6 +1,6 @@
 package com.damian.xBank.shared.security;
 
-import com.damian.xBank.modules.user.customer.domain.entity.Customer;
+import com.damian.xBank.modules.user.user.domain.model.User;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -10,16 +10,12 @@ public class DefaultAuthenticationContext implements AuthenticationContext {
     public DefaultAuthenticationContext() {
     }
 
-    public Customer getCurrentCustomer() {
-        return getUserPrincipal().getCustomer();
-    }
-
     public User getCurrentUser() {
-        return getUserPrincipal();
+        return getUserPrincipal().getUser();
     }
 
-    public User getUserPrincipal() {
-        return (User) SecurityContextHolder
+    public UserPrincipal getUserPrincipal() {
+        return (UserPrincipal) SecurityContextHolder
                 .getContext()
                 .getAuthentication()
                 .getPrincipal();

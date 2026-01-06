@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.banking.card.application.dto.response;
 
-import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
-import com.damian.xBank.modules.banking.card.domain.enums.BankingCardType;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardType;
 
 import java.math.BigDecimal;
 import java.time.Instant;

@@ -1,0 +1,191 @@
+package com.damian.xBank.modules.banking.card.infrastructure.web.controller;
+
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
+import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdateDailyLimitRequest;
+import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdateLockRequest;
+import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdatePinRequest;
+import com.damian.xBank.modules.banking.card.application.dto.response.BankingCardDto;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
+import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserStatus;
+import com.damian.xBank.shared.AbstractControllerTest;
+import com.damian.xBank.shared.utils.UserTestBuilder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MvcResult;
+
+import java.math.BigDecimal;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+public class BankingCardManagementControllerTest extends AbstractControllerTest {
+
+    private User customer;
+    private BankingAccount customerBankingAccount;
+    private BankingCard customerBankingCard;
+
+    @BeforeEach
+    void setUp() {
+        customer = UserTestBuilder.aCustomer()
+                                  .withEmail("customer@demo.com")
+                                  .withStatus(UserStatus.VERIFIED)
+                                  .withPassword(RAW_PASSWORD)
+                                  .build();
+
+        userRepository.save(customer);
+
+        customerBankingAccount = BankingAccount
+                .create(customer)
+                .setCurrency(BankingAccountCurrency.EUR)
+                .setType(BankingAccountType.SAVINGS)
+                .setStatus(BankingAccountStatus.ACTIVE)
+                .setBalance(BigDecimal.valueOf(1000))
+                .setAccountNumber("US9900001111112233334444");
+
+
+        customerBankingCard = BankingCard
+                .create(customerBankingAccount)
+                .setStatus(BankingCardStatus.ACTIVE)
+                .setCardNumber("1234123412341234")
+                .setCardCvv("123")
+                .setCardPin("1234");
+
+        customerBankingAccount.addBankingCard(customerBankingCard);
+        bankingAccountRepository.save(customerBankingAccount);
+    }
+
+    @Test
+    @DisplayName("should return 200 OK when update card pin")
+    void postPin_WhenValidRequest_Returns200OK() throws Exception {
+        // given
+        login(customer);
+
+        BankingCardUpdatePinRequest request = new BankingCardUpdatePinRequest("7777", RAW_PASSWORD);
+
+        // when
+        MvcResult result = mockMvc
+                .perform(patch("/api/v1/banking/cards/{id}/pin", customerBankingCard.getId())
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().is(200))
+                .andReturn();
+
+        BankingCardDto cardResponseDto = objectMapper.readValue(
+                result.getResponse().getContentAsString(),
+                BankingCardDto.class
+        );
+
+        // then
+        assertThat(cardResponseDto).isNotNull();
+        assertThat(cardResponseDto.cardPIN()).isEqualTo(request.pin());
+    }
+
+    @Test
+    @DisplayName("should return 200 OK when update card Daily Limit")
+    void postDailyLimit_WhenValidRequest_Returns200OK() throws Exception {
+        // given
+        login(customer);
+
+        BankingCardUpdateDailyLimitRequest request = new BankingCardUpdateDailyLimitRequest(
+                BigDecimal.valueOf(7777),
+                RAW_PASSWORD
+        );
+
+        // when
+        MvcResult result = mockMvc
+                .perform(
+                        patch("/api/v1/banking/cards/{id}/daily-limit", customerBankingCard.getId())
+                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().is(200))
+                .andReturn();
+
+        BankingCardDto cardResponseDto = objectMapper.readValue(
+                result.getResponse().getContentAsString(),
+                BankingCardDto.class
+        );
+
+        // then
+        assertThat(cardResponseDto).isNotNull();
+        assertThat(cardResponseDto.dailyLimit()).isEqualTo(request.dailyLimit());
+    }
+
+    @Test
+    @DisplayName("should return 200 OK when lock card")
+    void postLock_WhenValidRequest_Returns200OK() throws Exception {
+        // given
+        login(customer);
+
+        BankingCardUpdateLockRequest request = new BankingCardUpdateLockRequest(
+                RAW_PASSWORD
+        );
+
+        // when
+        MvcResult result = mockMvc
+                .perform(
+                        patch("/api/v1/banking/cards/{id}/lock", customerBankingCard.getId())
+                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().is(200))
+                .andReturn();
+
+        BankingCardDto cardResponseDto = objectMapper.readValue(
+                result.getResponse().getContentAsString(),
+                BankingCardDto.class
+        );
+
+        // then
+        assertThat(cardResponseDto).isNotNull();
+        assertThat(cardResponseDto.cardStatus()).isEqualTo(BankingCardStatus.LOCKED);
+    }
+
+    @Test
+    @DisplayName("should return 200 OK when unlock card")
+    void postUnlock_WhenValidRequest_Returns200OK() throws Exception {
+        // given
+        login(customer);
+
+        customerBankingCard.setStatus(BankingCardStatus.LOCKED);
+        bankingCardRepository.save(customerBankingCard);
+
+        BankingCardUpdateLockRequest request = new BankingCardUpdateLockRequest(
+                RAW_PASSWORD
+        );
+
+        // when
+        MvcResult result = mockMvc
+                .perform(
+                        patch("/api/v1/banking/cards/{id}/unlock", customerBankingCard.getId())
+                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().is(200))
+                .andReturn();
+
+        BankingCardDto cardResponseDto = objectMapper.readValue(
+                result.getResponse().getContentAsString(),
+                BankingCardDto.class
+        );
+
+        // then
+        assertThat(cardResponseDto).isNotNull();
+        assertThat(cardResponseDto.cardStatus()).isEqualTo(BankingCardStatus.ACTIVE);
+    }
+}

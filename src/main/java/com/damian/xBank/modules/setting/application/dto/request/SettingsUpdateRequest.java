@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.setting.application.dto.request;
 
-import com.damian.xBank.modules.setting.UserSettings;
+import com.damian.xBank.modules.setting.domain.model.UserSettings;
 import jakarta.validation.constraints.NotNull;
 
 /**

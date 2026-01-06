@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.banking.card.infrastructure.repository;
 
-import com.damian.xBank.modules.banking.card.domain.entity.BankingCard;
-import com.damian.xBank.modules.banking.card.domain.enums.BankingCardStatus;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,11 +14,10 @@ import java.util.Set;
 public interface BankingCardRepository extends JpaRepository<BankingCard, Long> {
     Set<BankingCard> findByBankingAccountId(Long bankingAccountId);
 
-    @Query("SELECT cards FROM BankingCard cards WHERE cards.bankingAccount.customer.id = :customerId")
-    Set<BankingCard> findCardsByCustomerId(@Param("customerId") Long customerId);
+    @Query("SELECT cards FROM BankingCard cards WHERE cards.bankingAccount.user.id = :userId")
+    Set<BankingCard> findCardsByUserId(@Param("userId") Long userId);
 
-
-    Set<BankingCard> findByCardStatusNotAndExpiredDateLessThanEqual(
+    Set<BankingCard> findByStatusNotAndExpiredDateLessThanEqual(
             BankingCardStatus status,
             LocalDate expiredDate
     );
