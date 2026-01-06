@@ -1,6 +1,7 @@
 package com.damian.xBank.modules.banking.account.application.usecase;
 
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCreateRequest;
+import com.damian.xBank.modules.banking.account.domain.factory.BankingAccountFactory;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
@@ -38,31 +39,24 @@ public class BankingAccountCreateTest extends AbstractServiceTest {
     @Mock
     private BankingAccountNumberGenerator bankingAccountNumberGenerator;
 
+    @Mock
     private BankingAccountDomainService bankingAccountDomainService;
 
     @InjectMocks
     private BankingAccountCreate bankingAccountCreate;
 
     private User user;
+    private BankingAccount bankingAccount;
 
     @BeforeEach
     void setUp() {
-        // TODO review this injection
-        bankingAccountDomainService =
-                new BankingAccountDomainService(bankingAccountNumberGenerator);
-
-        bankingAccountCreate = new BankingAccountCreate(
-                bankingAccountDomainService,
-                bankingAccountRepository,
-                userRepository,
-                authenticationContext
-        );
-
         user = UserTestBuilder.aCustomer()
                               .withId(1L)
                               .withEmail("customer@demo.com")
                               .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
                               .build();
+
+        bankingAccount = BankingAccountFactory.createFor(user);
     }
 
     @Test
@@ -79,8 +73,11 @@ public class BankingAccountCreateTest extends AbstractServiceTest {
         // when
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 
-        when(bankingAccountNumberGenerator.generate())
-                .thenReturn("US9900001111112233334444");
+        when(bankingAccountDomainService.createAccount(
+                any(User.class),
+                any(BankingAccountType.class),
+                any(BankingAccountCurrency.class)
+        )).thenReturn(bankingAccount);
 
         when(bankingAccountRepository.save(any(BankingAccount.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
@@ -97,8 +94,8 @@ public class BankingAccountCreateTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("should throws exception when customer not found")
-    void accountCreate_WhenCustomerNotFound_ThrowsException() {
+    @DisplayName("should throws exception when user not found")
+    void accountCreate_WhenUserNotFound_ThrowsException() {
         // given
         setUpContext(user);
 
