@@ -55,7 +55,7 @@ public class AuthExceptionHandler {
         log.warn("Failed login attempt. Account is suspended.", e);
 
         ApplicationException ex = new ApplicationException(
-                ErrorCodes.USER_ACCOUNT_SUSPENDED,
+                ErrorCodes.USER_SUSPENDED,
                 null,
                 null
         );
@@ -76,7 +76,7 @@ public class AuthExceptionHandler {
         log.warn("Failed login attempt. Account not verified.", e);
 
         ApplicationException ex = new ApplicationException(
-                ErrorCodes.USER_ACCOUNT_NOT_VERIFIED,
+                ErrorCodes.USER_NOT_VERIFIED,
                 null,
                 null
         );

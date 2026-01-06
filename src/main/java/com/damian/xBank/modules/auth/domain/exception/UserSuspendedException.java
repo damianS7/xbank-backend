@@ -5,10 +5,10 @@ import com.damian.xBank.shared.exception.ErrorCodes;
 
 public class UserSuspendedException extends UserException {
     public UserSuspendedException(Long accountId) {
-        super(ErrorCodes.USER_ACCOUNT_SUSPENDED, accountId);
+        super(ErrorCodes.USER_SUSPENDED, accountId);
     }
 
     public UserSuspendedException(String email) {
-        super(ErrorCodes.USER_ACCOUNT_SUSPENDED, email);
+        super(ErrorCodes.USER_SUSPENDED, email);
     }
 }
