@@ -4,11 +4,11 @@ import com.damian.xBank.shared.infrastructure.mail.EmailSenderService;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserTokenEmailPasswodNotifier implements UserTokenPasswordNotifier {
+public class UserTokenEmailPasswordNotifier implements UserTokenPasswordNotifier {
 
     private final EmailSenderService emailSender;
 
-    public UserTokenEmailPasswodNotifier(EmailSenderService emailSender) {
+    public UserTokenEmailPasswordNotifier(EmailSenderService emailSender) {
         this.emailSender = emailSender;
     }
 
