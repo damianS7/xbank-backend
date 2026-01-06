@@ -1,13 +1,12 @@
 package com.damian.xBank.modules.user.token.infrastructure.web.controller;
 
-import com.damian.xBank.modules.user.token.application.dto.request.UserAccountVerificationResendRequest;
-import com.damian.xBank.modules.user.token.application.dto.request.UserPasswordResetRequest;
-import com.damian.xBank.modules.user.token.application.dto.request.UserPasswordResetSetRequest;
-import com.damian.xBank.modules.user.token.application.usecase.UserTokenPasswordUpdate;
+import com.damian.xBank.modules.user.token.application.dto.request.UserTokenRequestPasswordResetRequest;
+import com.damian.xBank.modules.user.token.application.dto.request.UserTokenResetPasswordRequest;
+import com.damian.xBank.modules.user.token.application.dto.request.UserTokenVerificationRequest;
 import com.damian.xBank.modules.user.token.application.usecase.UserTokenRequestPasswordReset;
-import com.damian.xBank.modules.user.token.application.usecase.UserTokenResendVerification;
-import com.damian.xBank.modules.user.token.application.usecase.UserTokenVerify;
-import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.token.application.usecase.UserTokenRequestVerification;
+import com.damian.xBank.modules.user.token.application.usecase.UserTokenResetPassword;
+import com.damian.xBank.modules.user.token.application.usecase.UserTokenVerifyAccount;
 import com.damian.xBank.shared.dto.ApiResponse;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.HttpStatus;
@@ -19,20 +18,20 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1")
 public class UserTokenController {
     private final UserTokenRequestPasswordReset userTokenRequestPasswordReset;
-    private final UserTokenPasswordUpdate userTokenPasswordUpdate;
-    private final UserTokenVerify userTokenVerify;
-    private final UserTokenResendVerification userTokenResendVerification;
+    private final UserTokenResetPassword userTokenResetPassword;
+    private final UserTokenVerifyAccount userTokenVerifyAccount;
+    private final UserTokenRequestVerification userTokenRequestVerification;
 
     public UserTokenController(
             UserTokenRequestPasswordReset userTokenRequestPasswordReset,
-            UserTokenPasswordUpdate userTokenPasswordUpdate,
-            UserTokenVerify userTokenVerify,
-            UserTokenResendVerification userTokenResendVerification
+            UserTokenResetPassword userTokenResetPassword,
+            UserTokenVerifyAccount userTokenVerifyAccount,
+            UserTokenRequestVerification userTokenRequestVerification
     ) {
         this.userTokenRequestPasswordReset = userTokenRequestPasswordReset;
-        this.userTokenPasswordUpdate = userTokenPasswordUpdate;
-        this.userTokenVerify = userTokenVerify;
-        this.userTokenResendVerification = userTokenResendVerification;
+        this.userTokenResetPassword = userTokenResetPassword;
+        this.userTokenVerifyAccount = userTokenVerifyAccount;
+        this.userTokenRequestVerification = userTokenRequestVerification;
     }
 
     // endpoint for account verification
@@ -42,7 +41,7 @@ public class UserTokenController {
             String token
     ) {
         // verification the account using the provided token
-        User account = userTokenVerify.execute(token);
+        userTokenVerifyAccount.execute(token);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -54,10 +53,10 @@ public class UserTokenController {
     @PostMapping("/accounts/verification/resend")
     public ResponseEntity<?> resendVerification(
             @Validated @RequestBody
-            UserAccountVerificationResendRequest request
+            UserTokenVerificationRequest request
     ) {
         // send the account verification link
-        userTokenResendVerification.execute(request);
+        userTokenRequestVerification.execute(request);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -69,7 +68,7 @@ public class UserTokenController {
     @PostMapping("/accounts/password/reset")
     public ResponseEntity<?> resetPasswordRequest(
             @Validated @RequestBody
-            UserPasswordResetRequest request
+            UserTokenRequestPasswordResetRequest request
     ) {
 
         // send the email with the link to reset the password
@@ -87,10 +86,10 @@ public class UserTokenController {
             @PathVariable @NotBlank
             String token,
             @Validated @RequestBody
-            UserPasswordResetSetRequest request
+            UserTokenResetPasswordRequest request
     ) {
         // update the password using the token
-        userTokenPasswordUpdate.execute(token, request);
+        userTokenResetPassword.execute(token, request);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
