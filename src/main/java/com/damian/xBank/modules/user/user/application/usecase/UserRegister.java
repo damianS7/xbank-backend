@@ -4,8 +4,8 @@ import com.damian.xBank.modules.setting.domain.service.SettingDomainService;
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileException;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
-import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenService;
-import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenVerificationService;
+import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenLinkBuilder;
+import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenVerificationNotifier;
 import com.damian.xBank.modules.user.user.application.dto.request.UserRegistrationRequest;
 import com.damian.xBank.modules.user.user.domain.exception.UserEmailTakenException;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -23,21 +23,21 @@ public class UserRegister {
     private final UserRepository userRepository;
     private final UserDomainService userDomainService;
     private final SettingDomainService settingDomainService;
-    private final UserTokenVerificationService userTokenVerificationService;
-    private final UserTokenService userTokenService;
+    private final UserTokenLinkBuilder userTokenLinkBuilder;
+    private final UserTokenVerificationNotifier userTokenVerificationNotifier;
 
     public UserRegister(
             UserRepository userRepository,
             UserDomainService userDomainService,
             SettingDomainService settingDomainService,
-            UserTokenVerificationService userTokenVerificationService,
-            UserTokenService userTokenService
+            UserTokenLinkBuilder userTokenLinkBuilder,
+            UserTokenVerificationNotifier userTokenVerificationNotifier
     ) {
         this.userRepository = userRepository;
         this.userDomainService = userDomainService;
         this.settingDomainService = settingDomainService;
-        this.userTokenVerificationService = userTokenVerificationService;
-        this.userTokenService = userTokenService;
+        this.userTokenLinkBuilder = userTokenLinkBuilder;
+        this.userTokenVerificationNotifier = userTokenVerificationNotifier;
     }
 
     /**
@@ -79,17 +79,21 @@ public class UserRegister {
         // Create default settings for the new user
         settingDomainService.initializeDefaultSettingsFor(user);
 
-        // TODO usecase
         // settingRepository.save(setting);
 
         User registeredUser = userRepository.save(user);
 
         // Create a token for the account activation
-        UserToken userToken = userTokenService.generateVerificationToken(request.email());
+        UserToken userToken = new UserToken(registeredUser);
+        userToken.generateVerificationToken();
+        // TODO review this
+        //        userTokenRepository.save(userToken);
 
-        // send the account activation link
-        userTokenVerificationService
-                .sendVerificationLinkEmail(request.email(), userToken.getToken());
+        // create the verification link
+        String verificationLink = userTokenLinkBuilder.buildAccountVerificationLink(userToken.getToken());
+
+        // Send email to the user with verification link
+        userTokenVerificationNotifier.sendVerificationToken(request.email(), verificationLink);
 
         log.debug(
                 "user: {} with email:{} registered",
@@ -97,7 +101,6 @@ public class UserRegister {
                 registeredUser.getEmail()
         );
 
-
-        return userRepository.save(user);
+        return registeredUser;
     }
 }
