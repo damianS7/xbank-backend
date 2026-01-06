@@ -1,10 +1,8 @@
 package com.damian.xBank.shared.infrastructure.storage;
 
-import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.utils.ImageTestHelper;
-import com.damian.xBank.shared.utils.UserProfileTestFactory;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,13 +32,10 @@ public class ImageUploaderServiceTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        UserProfile profile = UserProfileTestFactory.aProfile();
-
         customer = UserTestBuilder.aCustomer()
                                   .withId(1L)
-                                  .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                                  .withPassword(RAW_PASSWORD)
                                   .withEmail("customer@demo.com")
-                                  .withProfile(profile)
                                   .build();
     }
 
