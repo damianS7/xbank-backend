@@ -46,7 +46,7 @@ CREATE TABLE public.user_tokens (
 	CONSTRAINT user_token_pkey PRIMARY KEY (id),
 	CONSTRAINT user_token_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.user_accounts(id) ON DELETE CASCADE
 );
--- Customer
+-- User profile
 
 CREATE TYPE public."user_gender_type" AS ENUM (
 	'MALE',
