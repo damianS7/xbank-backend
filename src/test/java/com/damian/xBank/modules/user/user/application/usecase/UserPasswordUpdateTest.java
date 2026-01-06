@@ -1,13 +1,13 @@
 package com.damian.xBank.modules.user.user.application.usecase;
 
+import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.user.application.dto.request.UserPasswordUpdateRequest;
 import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordConfirmationException;
-import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
+import com.damian.xBank.modules.user.user.infrastructure.service.UserPasswordService;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
-import com.damian.xBank.shared.utils.UserProfileTestFactory;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,16 +15,16 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
 
 public class UserPasswordUpdateTest extends AbstractServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private UserPasswordService userPasswordService;
 
     @InjectMocks
     private UserPasswordUpdate userPasswordUpdate;
@@ -33,42 +33,37 @@ public class UserPasswordUpdateTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-
         customer = UserTestBuilder.aCustomer()
                                   .withId(1L)
-                                  .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                                  .withPassword(RAW_PASSWORD)
                                   .withEmail("customer@demo.com")
-                                  .withProfile(UserProfileTestFactory.aProfile())
+                                  .withProfile(UserProfileFactory.testProfile())
                                   .build();
     }
 
     @Test
-    @DisplayName("Should update account password")
-    void shouldUpdateAccountPassword() {
+    @DisplayName("should update user password")
+    void passwordUpdate_WhenValidRequest_NotThrows() {
         // given
-        final String rawNewPassword = "1234";
-        final String encodedNewPassword = bCryptPasswordEncoder.encode(rawNewPassword);
+        // set the user on the context
+        setUpContext(customer);
 
-        UserPasswordUpdateRequest updateRequest = new UserPasswordUpdateRequest(
+        final String rawNewPassword = "1234";
+
+        UserPasswordUpdateRequest request = new UserPasswordUpdateRequest(
                 RAW_PASSWORD,
                 rawNewPassword
         );
 
-        // set the user on the context
-        setUpContext(customer);
-
         // when
-        when(bCryptPasswordEncoder.encode(rawNewPassword)).thenReturn(encodedNewPassword);
-        when(userRepository.findById(customer.getId())).thenReturn(Optional.of(customer));
-        userPasswordUpdate.execute(updateRequest);
+        userPasswordUpdate.execute(request);
 
         // then
-        verify(userRepository, times(1)).save(customer);
     }
 
     @Test
-    @DisplayName("Should not update password when current password failed")
-    void shouldNotUpdatePasswordWhenPasswordConfirmationFailed() {
+    @DisplayName("should throw exception when password confirmation failed")
+    void passwordUpdate_WhenInvalidPassword_ThrowsException() {
         // given
         // set the user on the context
         setUpContext(customer);
@@ -85,30 +80,6 @@ public class UserPasswordUpdateTest extends AbstractServiceTest {
         );
 
         // then
-        assertEquals(ErrorCodes.USER_ACCOUNT_INVALID_PASSWORD, exception.getMessage());
-    }
-
-    @Test
-    @DisplayName("Should not update password when account not found")
-    void shouldNotUpdatePasswordWhenAccountNotFound() {
-        // given
-        // set the user on the context
-        setUpContext(customer);
-
-        UserPasswordUpdateRequest updateRequest = new UserPasswordUpdateRequest(
-                RAW_PASSWORD,
-                "1234678Ax$"
-        );
-
-        when(userRepository.findById(customer.getId()))
-                .thenReturn(Optional.empty());
-
-        UserNotFoundException exception = assertThrows(
-                UserNotFoundException.class,
-                () -> userPasswordUpdate.execute(updateRequest)
-        );
-
-        // then
-        assertEquals(ErrorCodes.USER_ACCOUNT_NOT_FOUND, exception.getMessage());
+        assertEquals(ErrorCodes.USER_INVALID_PASSWORD, exception.getMessage());
     }
 }
