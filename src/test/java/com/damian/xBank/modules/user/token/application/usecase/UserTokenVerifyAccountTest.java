@@ -82,7 +82,7 @@ public class UserTokenVerifyAccountTest extends AbstractServiceTest {
     @DisplayName("should throw exception when user is suspended")
     void verifyAccount_WhenUserIsSuspended_ThrowsException() {
         // given
-        User user = UserTestFactory.customer().setStatus(UserStatus.PENDING_VERIFICATION);
+        User user = UserTestFactory.customer().setStatus(UserStatus.SUSPENDED);
 
         UserToken token = new UserToken(user);
         token.generateVerificationToken();
