@@ -31,12 +31,12 @@ public class BankingAccountTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        admin = customer = UserTestBuilder.aCustomer()
-                                          .withId(2L)
-                                          .withEmail("admin@demo.com")
-                                          .withRole(UserRole.ADMIN)
-                                          .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                          .build();
+        admin = UserTestBuilder.aCustomer()
+                               .withId(2L)
+                               .withEmail("admin@demo.com")
+                               .withRole(UserRole.ADMIN)
+                               .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+                               .build();
 
         customer = UserTestBuilder.aCustomer()
                                   .withId(1L)
@@ -198,7 +198,6 @@ public class BankingAccountTest extends AbstractServiceTest {
                 () -> bankingAccount.assertNotSuspended()
         );
     }
-
 
     @Test
     @DisplayName("assertNotClosed: should pass when account is not closed")
