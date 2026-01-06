@@ -164,7 +164,7 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
                 .isNotNull()
                 .extracting(ApiResponse::getErrorCode)
                 .isEqualTo(
-                        ErrorCodes.USER_ACCOUNT_SUSPENDED
+                        ErrorCodes.USER_SUSPENDED
                 );
 
         // undo changes
@@ -205,7 +205,7 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
                 .isNotNull()
                 .extracting(ApiResponse::getErrorCode)
                 .isEqualTo(
-                        ErrorCodes.USER_ACCOUNT_NOT_VERIFIED
+                        ErrorCodes.USER_NOT_VERIFIED
                 );
 
         // undo changes to customer

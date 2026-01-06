@@ -369,7 +369,7 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().is(403))
                 .andExpect(jsonPath("$.errorCode")
-                        .value(ErrorCodes.USER_ACCOUNT_INVALID_PASSWORD));
+                        .value(ErrorCodes.USER_INVALID_PASSWORD));
 
     }
 

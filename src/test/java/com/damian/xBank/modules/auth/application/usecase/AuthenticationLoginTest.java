@@ -123,7 +123,7 @@ public class AuthenticationLoginTest extends AbstractServiceTest {
         );
 
         // Then
-        assertEquals(ErrorCodes.USER_ACCOUNT_SUSPENDED, exception.getMessage());
+        assertEquals(ErrorCodes.USER_SUSPENDED, exception.getMessage());
     }
 
     @Test
@@ -146,6 +146,6 @@ public class AuthenticationLoginTest extends AbstractServiceTest {
         );
 
         // Then
-        assertEquals(ErrorCodes.USER_ACCOUNT_NOT_VERIFIED, exception.getMessage());
+        assertEquals(ErrorCodes.USER_NOT_VERIFIED, exception.getMessage());
     }
 }

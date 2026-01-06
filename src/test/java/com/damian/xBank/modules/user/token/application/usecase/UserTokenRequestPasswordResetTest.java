@@ -91,6 +91,6 @@ public class UserTokenRequestPasswordResetTest extends AbstractServiceTest {
         verify(userRepository, times(1)).findByEmail(anyString());
         assertThat(exception)
                 .isNotNull()
-                .hasMessage(ErrorCodes.USER_ACCOUNT_NOT_FOUND);
+                .hasMessage(ErrorCodes.USER_NOT_FOUND);
     }
 }

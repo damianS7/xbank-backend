@@ -146,7 +146,7 @@ public class UserProfileUpdateTest extends AbstractServiceTest {
         );
 
         // Then
-        assertEquals(ErrorCodes.USER_ACCOUNT_INVALID_PASSWORD, exception.getMessage());
+        assertEquals(ErrorCodes.USER_INVALID_PASSWORD, exception.getMessage());
     }
 
     @Test
@@ -206,6 +206,6 @@ public class UserProfileUpdateTest extends AbstractServiceTest {
         );
 
         // Then
-        assertEquals(ErrorCodes.PROFILE_UPDATE_FAILED, exception.getMessage());
+        assertEquals(ErrorCodes.PROFILE_NOT_OWNER, exception.getMessage());
     }
 }

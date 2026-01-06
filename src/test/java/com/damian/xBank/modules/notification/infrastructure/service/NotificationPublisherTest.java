@@ -99,7 +99,7 @@ public class NotificationPublisherTest extends AbstractServiceTest {
                 () -> notificationPublisher.publish(event)
         );
 
-        assertEquals(ErrorCodes.USER_ACCOUNT_NOT_FOUND, exception.getMessage());
+        assertEquals(ErrorCodes.USER_NOT_FOUND, exception.getMessage());
         verify(notificationRepository, never()).save(any());
     }
 }

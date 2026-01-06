@@ -92,7 +92,7 @@ public class UserProfileImageGetTest extends AbstractServiceTest {
 
         // then
         assertNotNull(exception);
-        assertEquals(ErrorCodes.USER_ACCOUNT_NOT_FOUND, exception.getMessage());
+        assertEquals(ErrorCodes.USER_NOT_FOUND, exception.getMessage());
     }
 
     @Test

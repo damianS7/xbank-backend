@@ -4,6 +4,6 @@ import com.damian.xBank.shared.exception.ErrorCodes;
 
 public class UserInvalidPasswordConfirmationException extends UserException {
     public UserInvalidPasswordConfirmationException(Long accountId) {
-        super(ErrorCodes.USER_ACCOUNT_INVALID_PASSWORD, accountId);
+        super(ErrorCodes.USER_INVALID_PASSWORD, accountId);
     }
 }

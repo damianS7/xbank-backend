@@ -116,7 +116,7 @@ public class BankingAccountCreateTest extends AbstractServiceTest {
         );
 
         // then
-        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.USER_ACCOUNT_NOT_FOUND);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.USER_NOT_FOUND);
         verify(bankingAccountRepository, times(0)).save(any(BankingAccount.class));
     }
 }
