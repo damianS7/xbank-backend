@@ -1,8 +1,11 @@
 package com.damian.xBank.modules.user.user.application.usecase;
 
-import com.damian.xBank.modules.setting.domain.service.SettingDomainService;
+import com.damian.xBank.modules.setting.domain.factory.SettingFactory;
+import com.damian.xBank.modules.setting.domain.model.Setting;
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileException;
+import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
+import com.damian.xBank.modules.user.token.domain.factory.UserTokenFactory;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenLinkBuilder;
 import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenVerificationNotifier;
@@ -14,6 +17,7 @@ import com.damian.xBank.modules.user.user.domain.service.UserDomainService;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,22 +26,28 @@ public class UserRegister {
     private static final Logger log = LoggerFactory.getLogger(UserRegister.class);
     private final UserRepository userRepository;
     private final UserDomainService userDomainService;
-    private final SettingDomainService settingDomainService;
     private final UserTokenLinkBuilder userTokenLinkBuilder;
     private final UserTokenVerificationNotifier userTokenVerificationNotifier;
+    private final UserProfileFactory userProfileFactory;
+    private final UserTokenFactory userTokenFactory;
+    private final SettingFactory settingFactory;
 
     public UserRegister(
             UserRepository userRepository,
             UserDomainService userDomainService,
-            SettingDomainService settingDomainService,
             UserTokenLinkBuilder userTokenLinkBuilder,
-            UserTokenVerificationNotifier userTokenVerificationNotifier
+            UserTokenVerificationNotifier userTokenVerificationNotifier,
+            UserProfileFactory userProfileFactory,
+            UserTokenFactory userTokenFactory,
+            SettingFactory settingFactory
     ) {
         this.userRepository = userRepository;
         this.userDomainService = userDomainService;
-        this.settingDomainService = settingDomainService;
         this.userTokenLinkBuilder = userTokenLinkBuilder;
         this.userTokenVerificationNotifier = userTokenVerificationNotifier;
+        this.userProfileFactory = userProfileFactory;
+        this.userTokenFactory = userTokenFactory;
+        this.settingFactory = settingFactory;
     }
 
     /**
@@ -54,40 +64,27 @@ public class UserRegister {
             throw new UserEmailTakenException(request.email());
         }
 
-        User user = userDomainService.createUserAccount(
+        // Create the user
+        User user = userDomainService.createUser(
                 request.email(),
                 request.password(),
                 UserRole.CUSTOMER
         );
 
-        // we create the user and assign the data
-        UserProfile profile = UserProfile.create()
-                                         .setUser(user)
-                                         .setNationalId(request.nationalId())
-                                         .setFirstName(request.firstName())
-                                         .setLastName(request.lastName())
-                                         .setPhone(request.phoneNumber())
-                                         .setGender(request.gender())
-                                         .setBirthdate(request.birthdate())
-                                         .setCountry(request.country())
-                                         .setAddress(request.address())
-                                         .setPostalCode(request.zipCode())
-                                         .setPhotoPath("avatar.jpg");
-
+        // create the user profile
+        UserProfile profile = userProfileFactory.create(request);
         user.setProfile(profile);
 
         // Create default settings for the new user
-        settingDomainService.initializeDefaultSettingsFor(user);
-
-        // settingRepository.save(setting);
-
-        User registeredUser = userRepository.save(user);
+        Setting userSettings = settingFactory.createDefault();
+        user.setSettings(userSettings);
 
         // Create a token for the account activation
-        UserToken userToken = new UserToken(registeredUser);
-        userToken.generateVerificationToken();
-        // TODO review this
-        //        userTokenRepository.save(userToken);
+        UserToken userToken = userTokenFactory.verificationToken();
+        user.setToken(userToken);
+
+        // save (cascade)
+        userRepository.save(user);
 
         // create the verification link
         String verificationLink = userTokenLinkBuilder.buildAccountVerificationLink(userToken.getToken());
@@ -97,10 +94,20 @@ public class UserRegister {
 
         log.debug(
                 "user: {} with email:{} registered",
-                registeredUser.getId(),
-                registeredUser.getEmail()
+                user.getId(),
+                user.getEmail()
         );
 
-        return registeredUser;
+        return user;
+    }
+
+    @Async  // ← No bloquea ni causa rollback si falla
+    private void sendVerificationEmailAsync(User user) {
+        try {
+            //            userTokenVerificationNotifier.sendVerificationToken(request.email(), verificationLink);
+        } catch (Exception e) {
+            log.error("Failed to send verification email to {}", user.getEmail(), e);
+            // Podría publicar evento para retry
+        }
     }
 }
