@@ -2,6 +2,7 @@ package com.damian.xBank.modules.user.user.domain.model;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
+import com.damian.xBank.modules.user.user.domain.exception.UserVerificationNotPendingException;
 import jakarta.persistence.*;
 
 import java.time.Instant;
@@ -27,7 +28,7 @@ public class User {
     @Column
     private String passwordHash;
 
-    @Column(name = "account_status")
+    @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private UserStatus status;
 
@@ -87,6 +88,11 @@ public class User {
     public User setPassword(String password) {
         this.passwordHash = password;
         return this;
+    }
+
+    public void changePassword(String newHashedPassword) {
+        this.passwordHash = newHashedPassword;
+        this.updatedAt = Instant.now();
     }
 
     public Set<BankingAccount> getBankingAccounts() {
@@ -179,5 +185,18 @@ public class User {
 
         this.profile.setUser(this);
         return this;
+    }
+
+    public void assertAwaitingVerification() {
+        if (this.getStatus() != UserStatus.PENDING_VERIFICATION) {
+            throw new UserVerificationNotPendingException(getId());
+        }
+    }
+
+    public void verifyAccount() {
+        assertAwaitingVerification();
+        setStatus(UserStatus.VERIFIED);
+        //        this.status = UserStatus.VERIFIED;
+        this.updatedAt = Instant.now();
     }
 }

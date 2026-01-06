@@ -1,5 +1,7 @@
 package com.damian.xBank.modules.user.token.domain.model;
 
+import com.damian.xBank.modules.user.token.domain.exception.UserTokenExpiredException;
+import com.damian.xBank.modules.user.token.domain.exception.UserTokenUsedException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import jakarta.persistence.*;
 
@@ -8,7 +10,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 @Entity
-@Table(name = "user_account_tokens")
+@Table(name = "user_tokens")
 public class UserToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -115,6 +117,36 @@ public class UserToken {
     }
 
     public String generateToken() {
+        this.createdAt = Instant.now();
+        this.expiresAt = Instant.now().plus(1, ChronoUnit.DAYS);
         return UUID.randomUUID().toString();
+    }
+
+    public void generateVerificationToken() {
+        this.type = UserTokenType.ACCOUNT_VERIFICATION;
+        this.token = generateToken();
+    }
+
+    public void generateResetPasswordToken() {
+        this.type = UserTokenType.RESET_PASSWORD;
+        this.token = generateToken();
+    }
+
+    public void assertNotUsed() {
+        // check if token is already used
+        if (this.isUsed()) {
+            throw new UserTokenUsedException(this.getUser().getId(), token);
+        }
+    }
+
+    public void assertNotExpired() {
+        // check expiration
+        if (!this.getExpiresAt().isAfter(Instant.now())) {
+            throw new UserTokenExpiredException(this.getUser().getId(), token);
+        }
+    }
+
+    public void markAsUsed() {
+        this.used = true;
     }
 }

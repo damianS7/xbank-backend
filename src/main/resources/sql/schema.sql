@@ -6,12 +6,12 @@ COMMENT ON SCHEMA public IS 'standard public schema';
 
 -- User tables
 
-CREATE TYPE public."user_account_status_type" AS ENUM (
+CREATE TYPE public."user_status_type" AS ENUM (
 	'PENDING_VERIFICATION',
 	'VERIFIED',
 	'SUSPENDED'
 );
-CREATE CAST (varchar as user_account_status_type) WITH INOUT AS IMPLICIT;
+CREATE CAST (varchar as user_status_type) WITH INOUT AS IMPLICIT;
 
 CREATE TYPE public."user_role_type" AS ENUM (
 	'CUSTOMER',
@@ -24,27 +24,27 @@ CREATE TABLE public.user_accounts (
   email VARCHAR(80) UNIQUE NOT NULL,
   password_hash VARCHAR(60) NOT NULL,
   role public.user_role_type DEFAULT 'CUSTOMER'::user_role_type NOT NULL,
-  account_status public.user_account_status_type DEFAULT 'PENDING_VERIFICATION'::user_account_status_type NOT NULL,
+  status public.user_status_type DEFAULT 'PENDING_VERIFICATION'::user_status_type NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TYPE public."user_account_token_type" AS ENUM (
+CREATE TYPE public."user_token_type" AS ENUM (
 	'ACCOUNT_VERIFICATION',
 	'RESET_PASSWORD'
 );
-CREATE CAST (varchar as user_account_token_type) WITH INOUT AS IMPLICIT;
+CREATE CAST (varchar as user_token_type) WITH INOUT AS IMPLICIT;
 
-CREATE TABLE public.user_account_tokens (
+CREATE TABLE public.user_tokens (
 	id int4 GENERATED ALWAYS AS IDENTITY NOT NULL,
-	user_account_id int4 NOT NULL,
+	user_id int4 NOT NULL,
 	token varchar(100) NOT NULL,
 	used BOOLEAN DEFAULT FALSE,
 	type public."user_token_type" NOT NULL,
 	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
 	expires_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-	CONSTRAINT user_account_token_pkey PRIMARY KEY (id),
-	CONSTRAINT user_account_token_user_account_id_fkey FOREIGN KEY (user_account_id) REFERENCES public.user_accounts(id) ON DELETE CASCADE
+	CONSTRAINT user_token_pkey PRIMARY KEY (id),
+	CONSTRAINT user_token_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.user_accounts(id) ON DELETE CASCADE
 );
 -- Customer
 
