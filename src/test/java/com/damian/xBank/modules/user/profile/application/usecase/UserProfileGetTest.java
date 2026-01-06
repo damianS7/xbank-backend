@@ -1,13 +1,13 @@
 package com.damian.xBank.modules.user.profile.application.usecase;
 
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileNotFoundException;
+import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import com.damian.xBank.modules.user.profile.infrastructure.repository.UserProfileRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
-import com.damian.xBank.shared.utils.UserProfileTestFactory;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -36,7 +36,7 @@ public class UserProfileGetTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        UserProfile profile = UserProfileTestFactory.aProfile();
+        UserProfile profile = UserProfileFactory.testProfile();
 
         customer = UserTestBuilder.aCustomer()
                                   .withId(1L)

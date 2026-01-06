@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.user.token.application.usecase;
 
+import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
 import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenService;
@@ -10,7 +11,6 @@ import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
-import com.damian.xBank.shared.utils.UserProfileTestFactory;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import com.damian.xBank.shared.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,7 +51,7 @@ public class UserTokenVerifyAccountTest extends AbstractServiceTest {
                                   .withId(1L)
                                   .withPassword(RAW_PASSWORD)
                                   .withEmail("customer@demo.com")
-                                  .withProfile(UserProfileTestFactory.aProfile())
+                                  .withProfile(UserProfileFactory.testProfile())
                                   .build();
     }
 

@@ -2,6 +2,7 @@ package com.damian.xBank.modules.user.profile.infrastructure.controller;
 
 import com.damian.xBank.modules.user.profile.application.dto.request.UserProfileUpdateRequest;
 import com.damian.xBank.modules.user.profile.application.dto.response.UserProfileDetailDto;
+import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.profile.domain.model.UserGender;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -9,7 +10,6 @@ import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.utils.JsonHelper;
-import com.damian.xBank.shared.utils.UserProfileTestFactory;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -35,7 +35,7 @@ public class UserProfileControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setUp() {
-        UserProfile profile = UserProfileTestFactory.aProfile();
+        UserProfile profile = UserProfileFactory.testProfile();
 
         customer = UserTestBuilder
                 .aCustomer()
@@ -51,7 +51,7 @@ public class UserProfileControllerTest extends AbstractControllerTest {
 
     @Test
     @DisplayName("should return current user profile")
-    void getProfile_WhenValidRequest_ReturnsUserProfile() throws Exception {
+    void getProfile_WhenValidRequest_Returns200Ok() throws Exception {
         // given
         login(customer);
 

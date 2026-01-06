@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.user.token.application.usecase;
 
+import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.token.application.dto.request.UserTokenResetPasswordRequest;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
@@ -9,7 +10,6 @@ import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.modules.user.user.infrastructure.service.UserPasswordService;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.utils.UserProfileTestFactory;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -48,7 +48,7 @@ public class UserTokenResetPasswordTest extends AbstractServiceTest {
                                   .withId(1L)
                                   .withPassword(RAW_PASSWORD)
                                   .withEmail("customer@demo.com")
-                                  .withProfile(UserProfileTestFactory.aProfile())
+                                  .withProfile(UserProfileFactory.testProfile())
                                   .build();
     }
 

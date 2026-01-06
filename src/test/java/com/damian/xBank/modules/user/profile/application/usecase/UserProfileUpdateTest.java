@@ -4,6 +4,7 @@ import com.damian.xBank.modules.user.profile.application.dto.request.UserProfile
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileNotFoundException;
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileNotOwnerException;
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileUpdateException;
+import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import com.damian.xBank.modules.user.profile.infrastructure.repository.UserProfileRepository;
 import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordConfirmationException;
@@ -11,7 +12,6 @@ import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
-import com.damian.xBank.shared.utils.UserProfileTestFactory;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -43,7 +43,7 @@ public class UserProfileUpdateTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        UserProfile profile = UserProfileTestFactory.aProfile();
+        UserProfile profile = UserProfileFactory.testProfile();
 
         customer = UserTestBuilder.aCustomer()
                                   .withId(1L)
@@ -186,7 +186,7 @@ public class UserProfileUpdateTest extends AbstractServiceTest {
                 fields
         );
 
-        UserProfile profile = UserProfileTestFactory.aProfile();
+        UserProfile profile = UserProfileFactory.testProfile();
 
         User givenCustomer = UserTestBuilder.aCustomer()
                                             .withId(5L)
@@ -196,7 +196,7 @@ public class UserProfileUpdateTest extends AbstractServiceTest {
                                             .withProfile(profile)
                                             .build();
 
-        // when TODO: review this
+        // when
         when(userProfileRepository.findByUserId(customer.getId()))
                 .thenReturn(Optional.of(givenCustomer.getProfile()));
 

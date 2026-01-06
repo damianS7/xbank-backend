@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.user.profile.infrastructure.controller;
 
+import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
@@ -9,7 +10,6 @@ import com.damian.xBank.shared.infrastructure.storage.FileStorageService;
 import com.damian.xBank.shared.infrastructure.storage.ImageUploaderService;
 import com.damian.xBank.shared.infrastructure.storage.exception.FileStorageNotFoundException;
 import com.damian.xBank.shared.utils.ImageTestHelper;
-import com.damian.xBank.shared.utils.UserProfileTestFactory;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -48,7 +48,7 @@ public class UserProfileImageControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setUp() {
-        UserProfile profile = UserProfileTestFactory.aProfile();
+        UserProfile profile = UserProfileFactory.testProfile();
 
         customer = UserTestBuilder
                 .aCustomer()

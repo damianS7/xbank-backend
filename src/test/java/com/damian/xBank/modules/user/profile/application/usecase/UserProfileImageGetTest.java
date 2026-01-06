@@ -1,6 +1,7 @@
 package com.damian.xBank.modules.user.profile.application.usecase;
 
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileImageNotFoundException;
+import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import com.damian.xBank.modules.user.profile.infrastructure.service.UserProfileImageService;
 import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException;
@@ -9,7 +10,6 @@ import com.damian.xBank.modules.user.user.infrastructure.repository.UserReposito
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.ImageTestHelper;
-import com.damian.xBank.shared.utils.UserProfileTestFactory;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,7 +40,7 @@ public class UserProfileImageGetTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        UserProfile profile = UserProfileTestFactory.aProfile();
+        UserProfile profile = UserProfileFactory.testProfile();
 
         customer = UserTestBuilder.aCustomer()
                                   .withId(1L)
