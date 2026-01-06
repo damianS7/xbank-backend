@@ -1,9 +1,10 @@
 package com.damian.xBank.modules.user.user.infrastructure.web.controller;
 
-import com.damian.xBank.modules.user.profile.application.dto.response.UserProfileDetailDto;
 import com.damian.xBank.modules.user.profile.domain.model.UserGender;
 import com.damian.xBank.modules.user.user.application.dto.request.UserRegistrationRequest;
+import com.damian.xBank.modules.user.user.application.dto.response.UserDto;
 import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.dto.ApiResponse;
 import com.damian.xBank.shared.exception.ErrorCodes;
@@ -25,8 +26,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 public class UserRegistrationControllerTest extends AbstractControllerTest {
 
     @Test
-    @DisplayName("Should register a customer")
-    void shouldRegisterCustomer() throws Exception {
+    @DisplayName("should register a new user")
+    void postRegisterUser_WhenValidRequest_Returns201() throws Exception {
         // given
         UserRegistrationRequest request = new UserRegistrationRequest(
                 "customer@test.com",
@@ -44,7 +45,7 @@ public class UserRegistrationControllerTest extends AbstractControllerTest {
 
         // when
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders
-                                          .post("/api/v1/customers/register")
+                                          .post("/api/v1/users/register")
                                           .contentType(MediaType.APPLICATION_JSON)
                                           .content(JsonHelper.toJson(request)))
                                   .andDo(print())
@@ -53,34 +54,26 @@ public class UserRegistrationControllerTest extends AbstractControllerTest {
                                   .andReturn();
 
         // then
-        UserProfileDetailDto customerDto = JsonHelper.fromJson(
+        UserDto customerDto = JsonHelper.fromJson(
                 result.getResponse().getContentAsString(),
-                UserProfileDetailDto.class
+                UserDto.class
         );
 
         // then
         assertThat(customerDto)
                 .isNotNull()
                 .extracting(
-                        UserProfileDetailDto::email,
-                        UserProfileDetailDto::firstName,
-                        UserProfileDetailDto::lastName,
-                        UserProfileDetailDto::phone,
-                        UserProfileDetailDto::birthdate,
-                        UserProfileDetailDto::gender
+                        UserDto::email,
+                        UserDto::role
                 ).containsExactly(
                         request.email(),
-                        request.firstName(),
-                        request.lastName(),
-                        request.phoneNumber(),
-                        request.birthdate(),
-                        request.gender()
+                        UserRole.CUSTOMER
                 );
     }
 
     @Test
     @DisplayName("Should not register customer when missing fields")
-    void shouldNotRegisterCustomerWhenMissingFields() throws Exception {
+    void postRegisterUser_WhenMissingFields_Returns400() throws Exception {
         // given
         UserRegistrationRequest request = new UserRegistrationRequest(
                 "customer@test.com",
@@ -97,7 +90,7 @@ public class UserRegistrationControllerTest extends AbstractControllerTest {
         );
 
         // then
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/customers/register")
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users/register")
                                                                  .contentType(MediaType.APPLICATION_JSON)
                                                                  .content(JsonHelper.toJson(request)))
                                   .andDo(print())
@@ -139,7 +132,7 @@ public class UserRegistrationControllerTest extends AbstractControllerTest {
         );
 
         // then
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/customers/register")
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users/register")
                                                                  .contentType(MediaType.APPLICATION_JSON)
                                                                  .content(JsonHelper.toJson(request)))
                                   .andDo(print())
@@ -193,7 +186,7 @@ public class UserRegistrationControllerTest extends AbstractControllerTest {
 
         // when
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders
-                                          .post("/api/v1/customers/register")
+                                          .post("/api/v1/users/register")
                                           .contentType(MediaType.APPLICATION_JSON)
                                           .content(JsonHelper.toJson(request)))
                                   .andDo(print())
@@ -213,7 +206,7 @@ public class UserRegistrationControllerTest extends AbstractControllerTest {
                 .isNotNull()
                 .extracting(ApiResponse::getErrorCode)
                 .asString()
-                .isEqualTo(ErrorCodes.USER_ACCOUNT_EMAIL_TAKEN);
+                .isEqualTo(ErrorCodes.USER_EMAIL_TAKEN);
 
     }
 
@@ -237,7 +230,7 @@ public class UserRegistrationControllerTest extends AbstractControllerTest {
 
         // when
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders
-                                          .post("/api/v1/customers/register")
+                                          .post("/api/v1/users/register")
                                           .contentType(MediaType.APPLICATION_JSON)
                                           .content(JsonHelper.toJson(request)))
                                   .andDo(print())
