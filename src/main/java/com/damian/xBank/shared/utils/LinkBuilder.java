@@ -13,6 +13,10 @@ public class LinkBuilder {
     }
 
     public String build(String path) {
+        if (path.startsWith("/")) {
+            path = path.substring(1);
+        }
+
         String host = env.getProperty("app.frontend.host", "localhost");
         String port = env.getProperty("app.frontend.port", "3000");
         return String.format("http://%s:%s/%s", host, port, path);
