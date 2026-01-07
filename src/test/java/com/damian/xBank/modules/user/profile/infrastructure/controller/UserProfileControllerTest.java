@@ -2,6 +2,7 @@ package com.damian.xBank.modules.user.profile.infrastructure.controller;
 
 import com.damian.xBank.modules.user.profile.application.dto.request.UserProfileUpdateRequest;
 import com.damian.xBank.modules.user.profile.application.dto.response.UserProfileDetailDto;
+import com.damian.xBank.modules.user.profile.application.dto.response.UserProfileDto;
 import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.profile.domain.model.UserGender;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
@@ -107,19 +108,19 @@ public class UserProfileControllerTest extends AbstractControllerTest {
                 .andReturn();
 
         // then
-        UserProfileDetailDto customerDto = JsonHelper.fromJson(
+        UserProfileDto customerDto = JsonHelper.fromJson(
                 result.getResponse().getContentAsString(),
-                UserProfileDetailDto.class
+                UserProfileDto.class
         );
 
         assertThat(customerDto)
                 .isNotNull()
                 .extracting(
-                        UserProfileDetailDto::firstName,
-                        UserProfileDetailDto::lastName,
-                        UserProfileDetailDto::phone,
-                        UserProfileDetailDto::birthdate,
-                        UserProfileDetailDto::gender
+                        UserProfileDto::firstName,
+                        UserProfileDto::lastName,
+                        UserProfileDto::phone,
+                        UserProfileDto::birthdate,
+                        UserProfileDto::gender
                 ).containsExactly(
                         givenRequest.fieldsToUpdate().get("firstName"),
                         givenRequest.fieldsToUpdate().get("lastName"),
