@@ -38,7 +38,7 @@ public class UserController {
     }
 
     // endpoint to modify current user email
-    @PatchMapping("/accounts/email")
+    @PatchMapping("/users/email")
     public ResponseEntity<UserDto> updateEmail(
             @Validated @RequestBody
             UserEmailUpdateRequest request
