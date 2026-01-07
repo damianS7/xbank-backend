@@ -59,7 +59,7 @@ CREATE TABLE public.user_profiles (
 	user_id int4 NOT NULL,
 	first_name varchar(20) NOT NULL,
 	last_name varchar(40) NOT NULL,
-	phone varchar(14) NOT NULL,
+	phone_number varchar(14) NOT NULL,
 	birthdate date NOT NULL,
 	gender public."user_gender_type" NOT NULL,
 	photo varchar(100) NULL, -- path to image

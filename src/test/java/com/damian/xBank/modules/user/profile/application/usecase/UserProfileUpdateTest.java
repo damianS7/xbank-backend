@@ -85,7 +85,7 @@ public class UserProfileUpdateTest extends AbstractServiceTest {
         assertThat(result).isNotNull();
         assertThat(result.getFirstName()).isEqualTo(givenRequest.fieldsToUpdate().get("firstName"));
         assertThat(result.getLastName()).isEqualTo(givenRequest.fieldsToUpdate().get("lastName"));
-        assertThat(result.getPhone()).isEqualTo(givenRequest.fieldsToUpdate().get("phoneNumber"));
+        assertThat(result.getPhoneNumber()).isEqualTo(givenRequest.fieldsToUpdate().get("phoneNumber"));
         assertThat(result.getBirthdate().toString()).isEqualTo(givenRequest.fieldsToUpdate().get("birthdate"));
         assertThat(result.getGender().toString()).isEqualTo(givenRequest.fieldsToUpdate().get("gender"));
         verify(userProfileRepository, times(1)).save(any(UserProfile.class));

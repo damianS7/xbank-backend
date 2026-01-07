@@ -72,7 +72,7 @@ public class UserProfileUpdate {
             switch (key) {
                 case "firstName" -> profile.setFirstName((String) value);
                 case "lastName" -> profile.setLastName((String) value);
-                case "phoneNumber" -> profile.setPhone((String) value);
+                case "phoneNumber" -> profile.setPhoneNumber((String) value);
                 case "country" -> profile.setCountry((String) value);
                 case "zipCode" -> profile.setPostalCode((String) value);
                 case "address" -> profile.setAddress((String) value);

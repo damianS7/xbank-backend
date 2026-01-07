@@ -26,7 +26,7 @@ public class UserProfile {
     private String lastName;
 
     @Column
-    private String phone;
+    private String phoneNumber;
 
     @Column
     private LocalDate birthdate;
@@ -106,12 +106,12 @@ public class UserProfile {
         return this;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
-    public UserProfile setPhone(String phone) {
-        this.phone = phone;
+    public UserProfile setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
         return this;
     }
 
@@ -175,7 +175,7 @@ public class UserProfile {
                "id=" + id +
                ", firstName='" + firstName + '\'' +
                ", lastName='" + lastName + '\'' +
-               ", phoneNumber='" + phone + '\'' +
+               ", phoneNumber='" + phoneNumber + '\'' +
                ", birthdate=" + birthdate +
                ", photo='" + photo + '\'' +
                ", address='" + address + '\'' +
