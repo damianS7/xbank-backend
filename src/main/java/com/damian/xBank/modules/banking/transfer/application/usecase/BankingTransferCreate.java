@@ -68,6 +68,8 @@ public class BankingTransferCreate {
                 request.description()
         );
 
+        bankingTransferRepository.save(transfer);
+
         // Notify fromAccount
         notificationPublisher.publish(
                 new NotificationEvent(
@@ -82,7 +84,7 @@ public class BankingTransferCreate {
                 )
         );
 
-        return bankingTransferRepository.save(transfer);
+        return transfer;
     }
 
 }
