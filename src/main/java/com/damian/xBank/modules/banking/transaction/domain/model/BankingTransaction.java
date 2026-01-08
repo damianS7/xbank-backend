@@ -231,6 +231,8 @@ public class BankingTransaction {
     }
 
     public void complete() {
+        this.balanceBefore = bankingAccount.getBalance();
+        this.balanceAfter = calcBalanceAfter();
         this.setStatus(BankingTransactionStatus.COMPLETED);
         this.updatedAt = Instant.now();
     }

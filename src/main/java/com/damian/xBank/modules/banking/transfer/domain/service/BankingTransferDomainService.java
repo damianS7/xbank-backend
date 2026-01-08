@@ -81,6 +81,9 @@ public class BankingTransferDomainService {
         // assert that the transfer belongs to userId
         transfer.assertOwnedBy(userId);
 
+        // Confirm transactions
+        transfer.getTransactions().forEach(BankingTransaction::complete);
+
         // deduct balance
         BankingAccount fromAccount = transfer.getFromAccount();
         fromAccount.subtractBalance(transfer.getAmount());
@@ -91,9 +94,6 @@ public class BankingTransferDomainService {
 
         // confirm transfer
         transfer.confirm();
-
-        // Confirm transactions
-        transfer.getTransactions().forEach(BankingTransaction::complete);
 
         return transfer;
     }
