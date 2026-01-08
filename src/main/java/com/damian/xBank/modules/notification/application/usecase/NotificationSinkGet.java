@@ -6,9 +6,12 @@ import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
+
+import java.time.Duration;
 
 @Service
 public class NotificationSinkGet {
@@ -30,7 +33,7 @@ public class NotificationSinkGet {
      *
      * @return Flux<NotificationEvent> a stream of notifications
      */
-    public Flux<NotificationEvent> execute() {
+    public Flux<NotificationEvent> execute2() {
         // Current user
         final User currentUser = authenticationContext.getCurrentUser();
 
@@ -44,4 +47,30 @@ public class NotificationSinkGet {
         });
     }
 
+    public Flux<ServerSentEvent<NotificationEvent>> execute() {
+
+        User currentUser = authenticationContext.getCurrentUser();
+
+        Sinks.Many<NotificationEvent> sink =
+                notificationSinkRegistry.getSinkForUserOrCreate(currentUser.getId());
+
+        Flux<ServerSentEvent<NotificationEvent>> notifications =
+                sink.asFlux()
+                    .map(event ->
+                            ServerSentEvent.builder(event)
+                                           .event("notification")
+                                           .id(event.toUserId().toString())
+                                           .build()
+                    );
+
+        Flux<ServerSentEvent<NotificationEvent>> heartbeat =
+                Flux.interval(Duration.ofSeconds(25))
+                    .map(i -> ServerSentEvent.<NotificationEvent>builder()
+                                             .comment("ping")
+                                             .build()
+                    );
+
+        return Flux.merge(notifications, heartbeat)
+                   .doOnCancel(() -> notificationSinkRegistry.removeSink(currentUser.getId()));
+    }
 }
