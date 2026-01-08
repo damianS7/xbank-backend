@@ -5,6 +5,9 @@ import com.damian.xBank.modules.banking.transfer.application.dto.response.Bankin
 import com.damian.xBank.modules.banking.transfer.application.dto.response.BankingTransferDto;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 public class BankingTransferDtoMapper {
     public static BankingTransferDto toBankingTransferDto(BankingTransfer bankingTransfer) {
 
@@ -33,5 +36,12 @@ public class BankingTransferDtoMapper {
                 bankingTransfer.getCreatedAt(),
                 bankingTransfer.getUpdatedAt()
         );
+    }
+
+    public static Set<BankingTransferDto> toBankingTransferDtoSet(Set<BankingTransfer> transfers) {
+
+        return transfers.stream()
+                        .map(BankingTransferDtoMapper::toBankingTransferDto)
+                        .collect(Collectors.toSet());
     }
 }

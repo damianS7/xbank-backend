@@ -8,6 +8,7 @@ import com.damian.xBank.modules.banking.transfer.application.dto.response.Bankin
 import com.damian.xBank.modules.banking.transfer.application.mapper.BankingTransferDtoMapper;
 import com.damian.xBank.modules.banking.transfer.application.usecase.BankingTransferConfirm;
 import com.damian.xBank.modules.banking.transfer.application.usecase.BankingTransferCreate;
+import com.damian.xBank.modules.banking.transfer.application.usecase.BankingTransferGetAll;
 import com.damian.xBank.modules.banking.transfer.application.usecase.BankingTransferReject;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import jakarta.validation.constraints.Positive;
@@ -16,21 +17,38 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Set;
+
 @RequestMapping("/api/v1")
 @RestController
 public class BankingTransferController {
+    private final BankingTransferGetAll bankingTransferGetAll;
     private final BankingTransferCreate bankingTransferCreate;
     private final BankingTransferConfirm bankingTransferConfirm;
     private final BankingTransferReject bankingTransferReject;
 
     public BankingTransferController(
+            BankingTransferGetAll bankingTransferGetAll,
             BankingTransferCreate bankingTransferCreate,
             BankingTransferConfirm bankingTransferConfirm,
             BankingTransferReject bankingTransferReject
     ) {
+        this.bankingTransferGetAll = bankingTransferGetAll;
         this.bankingTransferCreate = bankingTransferCreate;
         this.bankingTransferConfirm = bankingTransferConfirm;
         this.bankingTransferReject = bankingTransferReject;
+    }
+
+    // endpoint to get all transfers from current user
+    @GetMapping("/banking/transfers")
+    public ResponseEntity<?> getTransfers() {
+        Set<BankingTransfer> transfers = bankingTransferGetAll.execute();
+        Set<BankingTransferDto> transferDtoSetDto = BankingTransferDtoMapper
+                .toBankingTransferDtoSet(transfers);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(transferDtoSetDto);
     }
 
     // endpoint to submit a transfer request
