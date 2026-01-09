@@ -59,7 +59,7 @@ public class NotificationFactory {
 
     public NotificationEvent transferSent(BankingTransfer transfer) {
         return new NotificationEvent(
-                transfer.getToAccount().getOwner().getId(),
+                transfer.getFromAccount().getOwner().getId(),
                 NotificationType.TRANSFER,
                 Map.of(
                         "transactionId", transfer.getFromTransaction().getId(),
