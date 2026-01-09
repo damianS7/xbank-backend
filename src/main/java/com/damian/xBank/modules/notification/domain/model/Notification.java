@@ -29,6 +29,9 @@ public class Notification {
     private Map<String, Object> metadata = new HashMap<>();
 
     @Column
+    private String templateKey;
+
+    @Column
     private Instant createdAt;
 
     public Notification() {
@@ -116,5 +119,13 @@ public class Notification {
         if (!isOwnedBy(userId)) {
             throw new NotificationNotOwnerException(getId(), userId);
         }
+    }
+
+    public String getTemplateKey() {
+        return templateKey;
+    }
+
+    public void setTemplateKey(String templateKey) {
+        this.templateKey = templateKey;
     }
 }

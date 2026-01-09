@@ -73,7 +73,12 @@ CREATE TABLE public.user_profiles (
 );
 
 CREATE TYPE public."notification_type" AS ENUM (
-	'MESSAGE', 'INFO', 'TRANSACTION'
+    'TRANSACTION',
+    'TRANSFER',
+    'CARD',
+    'ACCOUNT',
+    'SECURITY',
+    'SYSTEM'
 );
 CREATE CAST (varchar as notification_type) WITH INOUT AS IMPLICIT;
 
@@ -82,6 +87,7 @@ CREATE TABLE public.user_notifications (
 	user_id int4 NOT NULL,
 	type public."notification_type" NOT NULL,
 	metadata jsonb NOT NULL,
+	template_key VARCHAR NOT NULL,
     created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
 	CONSTRAINT user_notifications_pkey PRIMARY KEY (id),
     CONSTRAINT user_notifications_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.user_accounts(id) ON DELETE CASCADE

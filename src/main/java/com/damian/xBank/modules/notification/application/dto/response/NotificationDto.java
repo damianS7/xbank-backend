@@ -8,6 +8,7 @@ public record NotificationDto(
         Long id,
         NotificationType type,
         Map<String, Object> metadata,
+        String templateKey,
         String createdAt
 ) {
 }
