@@ -1,22 +1,16 @@
 package com.damian.xBank.modules.banking.transfer.application.usecase;
 
-import com.damian.xBank.modules.banking.transaction.application.mapper.BankingTransactionDtoMapper;
 import com.damian.xBank.modules.banking.transfer.application.dto.request.BankingTransferRejectRequest;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferNotFoundException;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.domain.service.BankingTransferDomainService;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
-import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
-import com.damian.xBank.modules.notification.domain.model.NotificationType;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import com.damian.xBank.shared.security.PasswordValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.Instant;
-import java.util.Map;
 
 @Service
 public class BankingTransferReject {
@@ -74,20 +68,6 @@ public class BankingTransferReject {
 
         // Save
         // transferRepository.save(transfer);
-
-        // Notify receive
-        notificationPublisher.publish(
-                new NotificationEvent(
-                        transfer.getToAccount().getOwner().getId(),
-                        NotificationType.TRANSACTION,
-                        Map.of(
-                                "transaction",
-                                BankingTransactionDtoMapper
-                                        .toBankingTransactionDto(transfer.getToTransaction())
-                        ),
-                        Instant.now().toString()
-                )
-        );
 
         return transfer;
     }
