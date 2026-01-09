@@ -4,13 +4,11 @@ import com.damian.xBank.modules.banking.card.application.dto.request.BankingCard
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoundException;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
-import com.damian.xBank.modules.banking.transaction.application.mapper.BankingTransactionDtoMapper;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.infrastructure.service.BankingTransactionPersistenceService;
-import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
-import com.damian.xBank.modules.notification.domain.model.NotificationType;
+import com.damian.xBank.modules.notification.domain.factory.NotificationFactory;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
@@ -18,13 +16,11 @@ import com.damian.xBank.shared.security.PasswordValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.util.Map;
-
 @Service
 public class BankingCardSpend {
     private final AuthenticationContext authenticationContext;
     private final PasswordValidator passwordValidator;
+    private final NotificationFactory notificationFactory;
     private final NotificationPublisher notificationPublisher;
     private final BankingCardRepository bankingCardRepository;
     private final BankingTransactionPersistenceService bankingTransactionPersistenceService;
@@ -32,12 +28,14 @@ public class BankingCardSpend {
     public BankingCardSpend(
             AuthenticationContext authenticationContext,
             PasswordValidator passwordValidator,
+            NotificationFactory notificationFactory,
             NotificationPublisher notificationPublisher,
             BankingCardRepository bankingCardRepository,
             BankingTransactionPersistenceService bankingTransactionPersistenceService
     ) {
         this.authenticationContext = authenticationContext;
         this.passwordValidator = passwordValidator;
+        this.notificationFactory = notificationFactory;
         this.bankingTransactionPersistenceService = bankingTransactionPersistenceService;
         this.notificationPublisher = notificationPublisher;
         this.bankingCardRepository = bankingCardRepository;
@@ -80,14 +78,7 @@ public class BankingCardSpend {
 
         // Notify the user
         notificationPublisher.publish(
-                new NotificationEvent(
-                        currentUser.getId(),
-                        NotificationType.TRANSACTION,
-                        Map.of(
-                                "transaction", BankingTransactionDtoMapper.toBankingTransactionDto(transaction)
-                        ),
-                        Instant.now().toString()
-                )
+                notificationFactory.cardPaymentCompleted(transaction)
         );
 
         return transaction;

@@ -5,37 +5,36 @@ import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountD
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
-import com.damian.xBank.modules.banking.transaction.application.mapper.BankingTransactionDtoMapper;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.infrastructure.service.BankingTransactionPersistenceService;
-import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
-import com.damian.xBank.modules.notification.domain.model.NotificationType;
+import com.damian.xBank.modules.notification.domain.factory.NotificationFactory;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.time.Instant;
-import java.util.Map;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class BankingAccountDeposit {
     private static final Logger log = LoggerFactory.getLogger(BankingAccountDeposit.class);
+    private final NotificationFactory notificationFactory;
     private final BankingAccountRepository bankingAccountRepository;
     private final AuthenticationContext authenticationContext;
     private final BankingTransactionPersistenceService bankingTransactionPersistenceService;
     private final NotificationPublisher notificationPublisher;
 
     public BankingAccountDeposit(
+            NotificationFactory notificationFactory,
             BankingAccountRepository bankingAccountRepository,
             AuthenticationContext authenticationContext,
             BankingTransactionPersistenceService bankingTransactionPersistenceService,
             NotificationPublisher notificationPublisher
     ) {
+        this.notificationFactory = notificationFactory;
         this.bankingTransactionPersistenceService = bankingTransactionPersistenceService;
         this.notificationPublisher = notificationPublisher;
         this.bankingAccountRepository = bankingAccountRepository;
@@ -49,6 +48,7 @@ public class BankingAccountDeposit {
      * @param request
      * @return BankingTransaction
      */
+    @Transactional
     public BankingTransaction execute(
             Long bankingAccountId,
             BankingAccountDepositRequest request
@@ -93,14 +93,7 @@ public class BankingAccountDeposit {
 
         // Notify receiver
         notificationPublisher.publish(
-                new NotificationEvent(
-                        bankingAccount.getOwner().getId(),
-                        NotificationType.TRANSACTION,
-                        Map.of(
-                                "transaction", BankingTransactionDtoMapper.toBankingTransactionDto(transaction)
-                        ),
-                        Instant.now().toString()
-                )
+                notificationFactory.depositCompleted(transaction)
         );
 
         log.debug(
