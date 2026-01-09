@@ -1,23 +1,18 @@
 package com.damian.xBank.modules.banking.transfer.application.usecase;
 
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
-import com.damian.xBank.modules.banking.transaction.application.mapper.BankingTransactionDtoMapper;
 import com.damian.xBank.modules.banking.transfer.application.dto.request.BankingTransferConfirmRequest;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferNotFoundException;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.domain.service.BankingTransferDomainService;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
-import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
-import com.damian.xBank.modules.notification.domain.model.NotificationType;
+import com.damian.xBank.modules.notification.domain.factory.NotificationFactory;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import com.damian.xBank.shared.security.PasswordValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.Instant;
-import java.util.Map;
 
 @Service
 public class BankingTransferConfirm {
@@ -27,6 +22,7 @@ public class BankingTransferConfirm {
     private final AuthenticationContext authenticationContext;
     private final PasswordValidator passwordValidator;
     private final BankingTransferRepository bankingTransferRepository;
+    private final NotificationFactory notificationFactory;
 
     public BankingTransferConfirm(
             NotificationPublisher notificationPublisher,
@@ -34,7 +30,8 @@ public class BankingTransferConfirm {
             BankingTransferDomainService bankingTransferDomainService,
             AuthenticationContext authenticationContext,
             PasswordValidator passwordValidator,
-            BankingTransferRepository bankingTransferRepository
+            BankingTransferRepository bankingTransferRepository,
+            NotificationFactory notificationFactory
     ) {
         this.notificationPublisher = notificationPublisher;
         this.bankingAccountRepository = bankingAccountRepository;
@@ -42,6 +39,7 @@ public class BankingTransferConfirm {
         this.authenticationContext = authenticationContext;
         this.passwordValidator = passwordValidator;
         this.bankingTransferRepository = bankingTransferRepository;
+        this.notificationFactory = notificationFactory;
     }
 
     @Transactional
@@ -70,18 +68,14 @@ public class BankingTransferConfirm {
         // Save transfer
         bankingTransferRepository.save(transfer);
 
-        // Notify receive
+        // Notify sender
         notificationPublisher.publish(
-                new NotificationEvent(
-                        transfer.getToAccount().getOwner().getId(),
-                        NotificationType.TRANSACTION,
-                        Map.of(
-                                "transaction",
-                                BankingTransactionDtoMapper
-                                        .toBankingTransactionDto(transfer.getToTransaction())
-                        ),
-                        Instant.now().toString()
-                )
+                notificationFactory.transferSent(transfer)
+        );
+
+        // Notify recipient
+        notificationPublisher.publish(
+                notificationFactory.transferReceived(transfer)
         );
 
         return transfer;
