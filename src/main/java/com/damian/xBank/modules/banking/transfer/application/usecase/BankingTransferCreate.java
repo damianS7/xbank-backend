@@ -3,21 +3,15 @@ package com.damian.xBank.modules.banking.transfer.application.usecase;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
-import com.damian.xBank.modules.banking.transaction.application.mapper.BankingTransactionDtoMapper;
 import com.damian.xBank.modules.banking.transfer.application.dto.request.BankingTransferRequest;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.domain.service.BankingTransferDomainService;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
-import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
-import com.damian.xBank.modules.notification.domain.model.NotificationType;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.Instant;
-import java.util.Map;
 
 @Service
 public class BankingTransferCreate {
@@ -69,20 +63,6 @@ public class BankingTransferCreate {
         );
 
         bankingTransferRepository.save(transfer);
-
-        // Notify fromAccount
-        notificationPublisher.publish(
-                new NotificationEvent(
-                        toAccount.getOwner().getId(),
-                        NotificationType.TRANSACTION,
-                        Map.of(
-                                "transaction",
-                                BankingTransactionDtoMapper
-                                        .toBankingTransactionDto(transfer.getToTransaction())
-                        ),
-                        Instant.now().toString()
-                )
-        );
 
         return transfer;
     }
