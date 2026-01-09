@@ -4,8 +4,8 @@ import com.damian.xBank.modules.notification.domain.model.Notification;
 import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
 import com.damian.xBank.modules.notification.infrastructure.repository.NotificationRepository;
 import com.damian.xBank.modules.notification.infrastructure.sink.NotificationSinkRegistry;
-import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException;
+import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +48,7 @@ public class NotificationPublisher {
         // create and save notification to the database
         Notification notification = Notification
                 .create(recipient)
-                .setMetadata(notificationEvent.metadata())
+                .setMetadata(notificationEvent.payload())
                 .setType(notificationEvent.type());
         notificationRepository.save(notification);
 
