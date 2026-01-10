@@ -49,7 +49,9 @@ public class NotificationPublisher {
         Notification notification = Notification
                 .create(recipient)
                 .setMetadata(notificationEvent.payload())
-                .setType(notificationEvent.type());
+                .setType(notificationEvent.type())
+                .setTemplateKey(notificationEvent.templateKey());
+        
         notificationRepository.save(notification);
 
         // emit event to the recipient if connected

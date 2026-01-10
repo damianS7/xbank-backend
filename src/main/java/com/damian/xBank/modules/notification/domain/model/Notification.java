@@ -125,7 +125,8 @@ public class Notification {
         return templateKey;
     }
 
-    public void setTemplateKey(String templateKey) {
+    public Notification setTemplateKey(String templateKey) {
         this.templateKey = templateKey;
+        return this;
     }
 }
