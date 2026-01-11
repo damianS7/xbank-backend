@@ -14,7 +14,7 @@ public class NotificationEventFactory {
     public NotificationEvent cardPaymentCompleted(BankingTransaction transaction) {
         return new NotificationEvent(
                 transaction.getBankingCard().getOwner().getId(),
-                NotificationType.CARD,
+                NotificationType.TRANSACTION,
                 Map.of(
                         "transactionId", transaction.getId(),
                         "shopName", transaction.getDescription(),
@@ -29,7 +29,7 @@ public class NotificationEventFactory {
     public NotificationEvent depositCompleted(BankingTransaction transaction) {
         return new NotificationEvent(
                 transaction.getBankingCard().getOwner().getId(),
-                NotificationType.ACCOUNT,
+                NotificationType.TRANSACTION,
                 Map.of(
                         "transactionId", transaction.getId(),
                         "toUser", transaction.getBankingCard().getOwner().getProfile().getFullName(),
@@ -44,7 +44,7 @@ public class NotificationEventFactory {
     public NotificationEvent withdrawCompleted(BankingTransaction transaction) {
         return new NotificationEvent(
                 transaction.getBankingCard().getOwner().getId(),
-                NotificationType.CARD,
+                NotificationType.TRANSACTION,
                 Map.of(
                         "transactionId", transaction.getId(),
                         "toUser", transaction.getBankingCard().getOwner().getProfile().getFullName(),
@@ -59,7 +59,7 @@ public class NotificationEventFactory {
     public NotificationEvent transferSent(BankingTransfer transfer) {
         return new NotificationEvent(
                 transfer.getFromAccount().getOwner().getId(),
-                NotificationType.TRANSFER,
+                NotificationType.TRANSACTION,
                 Map.of(
                         "transactionId", transfer.getFromTransaction().getId(),
                         "toUser", transfer.getToAccount().getOwner().getProfile().getFullName(),
@@ -74,7 +74,7 @@ public class NotificationEventFactory {
     public NotificationEvent transferReceived(BankingTransfer transfer) {
         return new NotificationEvent(
                 transfer.getToAccount().getOwner().getId(),
-                NotificationType.TRANSFER,
+                NotificationType.TRANSACTION,
                 Map.of(
                         "transactionId", transfer.getToTransaction().getId(),
                         "fromUser", transfer.getFromAccount().getOwner().getProfile().getFullName(),
