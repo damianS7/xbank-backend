@@ -6,12 +6,9 @@ import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
-
-import java.time.Duration;
 
 @Service
 public class NotificationSinkGet {
@@ -32,38 +29,20 @@ public class NotificationSinkGet {
      *
      * @return Flux<NotificationEvent> a stream of notifications
      */
-    public Flux<ServerSentEvent<?>> execute() {
+    public Flux<NotificationDto> execute() {
         // Current user
         final User currentUser = authenticationContext.getCurrentUser();
 
         Sinks.Many<NotificationDto> sink =
                 notificationSinkRegistry.getSinkForUserOrCreate(currentUser.getId());
 
-        Flux<ServerSentEvent<NotificationDto>> notifications =
-                sink.asFlux()
-                    .map(dto ->
-                            ServerSentEvent.builder(dto)
-                                           .event("notification")
-                                           .data(dto)
-                                           .build()
-                    );
-
-        Flux<ServerSentEvent<?>> heartbeat = Flux
-                .interval(Duration.ofSeconds(10))
-                .map(tick -> ServerSentEvent.builder()
-                                            .event("heartbeat")
-                                            .comment("ping")
-                                            .data("ping")
-                                            .build()
-                );
-
-        return Flux.merge(notifications, heartbeat)
+        return sink.asFlux()
                    .doOnSubscribe(subscription ->
                            log.debug("✅ User {} subscribed to SSE stream", currentUser.getId()))
                    .doOnNext(event ->
                            log.debug(
                                    "📤 Sending SSE event: {} to user {}",
-                                   event.data(), currentUser.getId()
+                                   event.toString(), currentUser.getId()
                            ))
                    .doOnError(error ->
                            log.error(

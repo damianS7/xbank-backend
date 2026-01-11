@@ -19,7 +19,6 @@ public class NotificationSinkRegistry {
     }
 
     public Sinks.Many<NotificationDto> getSinkForUser(Long userId) {
-
         return userSinks.get(userId);
     }
 
