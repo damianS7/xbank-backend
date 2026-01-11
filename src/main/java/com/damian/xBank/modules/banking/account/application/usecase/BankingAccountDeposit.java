@@ -9,7 +9,7 @@ import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransact
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.infrastructure.service.BankingTransactionPersistenceService;
-import com.damian.xBank.modules.notification.domain.factory.NotificationFactory;
+import com.damian.xBank.modules.notification.domain.factory.NotificationEventFactory;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
@@ -21,20 +21,20 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class BankingAccountDeposit {
     private static final Logger log = LoggerFactory.getLogger(BankingAccountDeposit.class);
-    private final NotificationFactory notificationFactory;
+    private final NotificationEventFactory notificationEventFactory;
     private final BankingAccountRepository bankingAccountRepository;
     private final AuthenticationContext authenticationContext;
     private final BankingTransactionPersistenceService bankingTransactionPersistenceService;
     private final NotificationPublisher notificationPublisher;
 
     public BankingAccountDeposit(
-            NotificationFactory notificationFactory,
+            NotificationEventFactory notificationEventFactory,
             BankingAccountRepository bankingAccountRepository,
             AuthenticationContext authenticationContext,
             BankingTransactionPersistenceService bankingTransactionPersistenceService,
             NotificationPublisher notificationPublisher
     ) {
-        this.notificationFactory = notificationFactory;
+        this.notificationEventFactory = notificationEventFactory;
         this.bankingTransactionPersistenceService = bankingTransactionPersistenceService;
         this.notificationPublisher = notificationPublisher;
         this.bankingAccountRepository = bankingAccountRepository;
@@ -93,7 +93,7 @@ public class BankingAccountDeposit {
 
         // Notify receiver
         notificationPublisher.publish(
-                notificationFactory.depositCompleted(transaction)
+                notificationEventFactory.depositCompleted(transaction)
         );
 
         log.debug(

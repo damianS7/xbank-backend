@@ -6,7 +6,7 @@ import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransfe
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.domain.service.BankingTransferDomainService;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
-import com.damian.xBank.modules.notification.domain.factory.NotificationFactory;
+import com.damian.xBank.modules.notification.domain.factory.NotificationEventFactory;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
@@ -22,7 +22,7 @@ public class BankingTransferConfirm {
     private final AuthenticationContext authenticationContext;
     private final PasswordValidator passwordValidator;
     private final BankingTransferRepository bankingTransferRepository;
-    private final NotificationFactory notificationFactory;
+    private final NotificationEventFactory notificationEventFactory;
 
     public BankingTransferConfirm(
             NotificationPublisher notificationPublisher,
@@ -31,7 +31,7 @@ public class BankingTransferConfirm {
             AuthenticationContext authenticationContext,
             PasswordValidator passwordValidator,
             BankingTransferRepository bankingTransferRepository,
-            NotificationFactory notificationFactory
+            NotificationEventFactory notificationEventFactory
     ) {
         this.notificationPublisher = notificationPublisher;
         this.bankingAccountRepository = bankingAccountRepository;
@@ -39,7 +39,7 @@ public class BankingTransferConfirm {
         this.authenticationContext = authenticationContext;
         this.passwordValidator = passwordValidator;
         this.bankingTransferRepository = bankingTransferRepository;
-        this.notificationFactory = notificationFactory;
+        this.notificationEventFactory = notificationEventFactory;
     }
 
     @Transactional
@@ -70,12 +70,12 @@ public class BankingTransferConfirm {
 
         // Notify sender
         notificationPublisher.publish(
-                notificationFactory.transferSent(transfer)
+                notificationEventFactory.transferSent(transfer)
         );
 
         // Notify recipient
         notificationPublisher.publish(
-                notificationFactory.transferReceived(transfer)
+                notificationEventFactory.transferReceived(transfer)
         );
 
         return transfer;

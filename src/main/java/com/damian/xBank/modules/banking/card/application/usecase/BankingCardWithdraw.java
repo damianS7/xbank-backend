@@ -8,7 +8,7 @@ import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransact
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.infrastructure.service.BankingTransactionPersistenceService;
-import com.damian.xBank.modules.notification.domain.factory.NotificationFactory;
+import com.damian.xBank.modules.notification.domain.factory.NotificationEventFactory;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
@@ -20,20 +20,20 @@ public class BankingCardWithdraw {
     private final AuthenticationContext authenticationContext;
     private final BankingCardRepository bankingCardRepository;
     private final NotificationPublisher notificationPublisher;
-    private final NotificationFactory notificationFactory;
+    private final NotificationEventFactory notificationEventFactory;
     private final BankingTransactionPersistenceService bankingTransactionPersistenceService;
 
     public BankingCardWithdraw(
             AuthenticationContext authenticationContext,
             BankingCardRepository bankingCardRepository,
             NotificationPublisher notificationPublisher,
-            NotificationFactory notificationFactory,
+            NotificationEventFactory notificationEventFactory,
             BankingTransactionPersistenceService bankingTransactionPersistenceService
     ) {
         this.authenticationContext = authenticationContext;
         this.bankingCardRepository = bankingCardRepository;
         this.notificationPublisher = notificationPublisher;
-        this.notificationFactory = notificationFactory;
+        this.notificationEventFactory = notificationEventFactory;
         this.bankingTransactionPersistenceService = bankingTransactionPersistenceService;
     }
 
@@ -73,7 +73,7 @@ public class BankingCardWithdraw {
 
         // Notify the user
         notificationPublisher.publish(
-                notificationFactory.withdrawCompleted(transaction)
+                notificationEventFactory.withdrawCompleted(transaction)
         );
 
         return transaction;

@@ -8,7 +8,7 @@ import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransact
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.infrastructure.service.BankingTransactionPersistenceService;
-import com.damian.xBank.modules.notification.domain.factory.NotificationFactory;
+import com.damian.xBank.modules.notification.domain.factory.NotificationEventFactory;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class BankingCardSpend {
     private final AuthenticationContext authenticationContext;
     private final PasswordValidator passwordValidator;
-    private final NotificationFactory notificationFactory;
+    private final NotificationEventFactory notificationEventFactory;
     private final NotificationPublisher notificationPublisher;
     private final BankingCardRepository bankingCardRepository;
     private final BankingTransactionPersistenceService bankingTransactionPersistenceService;
@@ -28,14 +28,14 @@ public class BankingCardSpend {
     public BankingCardSpend(
             AuthenticationContext authenticationContext,
             PasswordValidator passwordValidator,
-            NotificationFactory notificationFactory,
+            NotificationEventFactory notificationEventFactory,
             NotificationPublisher notificationPublisher,
             BankingCardRepository bankingCardRepository,
             BankingTransactionPersistenceService bankingTransactionPersistenceService
     ) {
         this.authenticationContext = authenticationContext;
         this.passwordValidator = passwordValidator;
-        this.notificationFactory = notificationFactory;
+        this.notificationEventFactory = notificationEventFactory;
         this.bankingTransactionPersistenceService = bankingTransactionPersistenceService;
         this.notificationPublisher = notificationPublisher;
         this.bankingCardRepository = bankingCardRepository;
@@ -78,7 +78,7 @@ public class BankingCardSpend {
 
         // Notify the user
         notificationPublisher.publish(
-                notificationFactory.cardPaymentCompleted(transaction)
+                notificationEventFactory.cardPaymentCompleted(transaction)
         );
 
         return transaction;
