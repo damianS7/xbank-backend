@@ -2,6 +2,7 @@ package com.damian.xBank.modules.notification.application.usecase;
 
 import com.damian.xBank.modules.notification.domain.exception.NotificationNotOwnerException;
 import com.damian.xBank.modules.notification.domain.model.Notification;
+import com.damian.xBank.modules.notification.domain.model.NotificationType;
 import com.damian.xBank.modules.notification.infrastructure.repository.NotificationRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,9 +46,18 @@ public class NotificationDeleteTest extends AbstractServiceTest {
         // given
         setUpContext(customer);
 
-        Notification givenNotification = Notification.create(customer)
-                                                     .setId(1L)
-                                                     .setMessage("Hello world!");
+        Notification givenNotification = Notification
+                .create(customer)
+                .setId(1L)
+                .setType(NotificationType.TRANSFER)
+                .setMetadata(
+                        Map.of(
+                                "transactionId", 1L,
+                                "toUser", 1L,
+                                "amount", 100L,
+                                "currency", "EUR"
+                        )
+                );
 
         // when
         when(notificationRepository.findById(anyLong()))
@@ -70,9 +81,18 @@ public class NotificationDeleteTest extends AbstractServiceTest {
                                               .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
                                               .build();
 
-        Notification givenNotification = Notification.create(anotherCustomer)
-                                                     .setId(1L)
-                                                     .setMessage("Hello world!");
+        Notification givenNotification = Notification
+                .create(anotherCustomer)
+                .setId(1L)
+                .setType(NotificationType.TRANSFER)
+                .setMetadata(
+                        Map.of(
+                                "transactionId", 1L,
+                                "toUser", 1L,
+                                "amount", 100L,
+                                "currency", "EUR"
+                        )
+                );
 
         // when
         when(notificationRepository.findById(anyLong()))
