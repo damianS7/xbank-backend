@@ -70,7 +70,8 @@ public class Notification {
         return "Notification{" +
                "id=" + id +
                ",type=" + (getType() != null ? getType() : "null") +
-               ",message=" + (getMessage() != null ? getMessage() : "null") +
+               ",metadata=" + (getMetadata() != null ? getMetadata() : "null") +
+               ",templateKey=" + (getTemplateKey() != null ? getTemplateKey() : "null") +
                ",createdAt=" + createdAt +
                "}";
     }
@@ -90,15 +91,6 @@ public class Notification {
 
     public Notification setType(NotificationType type) {
         this.type = type;
-        return this;
-    }
-
-    public String getMessage() {
-        return metadata.get("message") != null ? metadata.get("message").toString() : null;
-    }
-
-    public Notification setMessage(String message) {
-        metadata.put("message", message);
         return this;
     }
 
