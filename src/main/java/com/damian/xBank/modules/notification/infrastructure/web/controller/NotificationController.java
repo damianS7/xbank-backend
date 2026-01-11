@@ -8,8 +8,6 @@ import com.damian.xBank.modules.notification.application.usecase.NotificationDel
 import com.damian.xBank.modules.notification.application.usecase.NotificationGet;
 import com.damian.xBank.modules.notification.application.usecase.NotificationSinkGet;
 import com.damian.xBank.modules.notification.domain.model.Notification;
-import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
-import com.damian.xBank.modules.notification.domain.model.NotificationType;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import jakarta.validation.constraints.Positive;
 import org.springframework.data.domain.Page;
@@ -25,8 +23,6 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
 import java.time.Duration;
-import java.time.Instant;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -62,30 +58,6 @@ public class NotificationController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(notificationsDto);
-    }
-
-    // endpoint to delete a batch of notifications by its id
-    @GetMapping("/notifications/fake")
-    public ResponseEntity<?> fake(
-    ) {
-        notificationPublisher.publish(
-                new NotificationEvent(
-                        1L,
-                        NotificationType.TRANSFER,
-                        Map.of(
-                                "transactionId", 1L,
-                                "toUser", 1L,
-                                "amount", 100L,
-                                "currency", "EUR"
-                        ),
-                        "notification.transfer.sent",
-                        Instant.now()
-                )
-        );
-
-        return ResponseEntity
-                .noContent()
-                .build();
     }
 
     // endpoint to delete a batch of notifications by its id
