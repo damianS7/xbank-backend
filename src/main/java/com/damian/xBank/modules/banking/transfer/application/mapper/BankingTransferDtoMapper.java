@@ -5,7 +5,6 @@ import com.damian.xBank.modules.banking.transfer.application.dto.response.Bankin
 import com.damian.xBank.modules.banking.transfer.application.dto.response.BankingTransferDto;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -48,11 +47,6 @@ public class BankingTransferDtoMapper {
     }
 
     public static Page<BankingTransferDto> toBankingTransferDtoPage(Page<BankingTransfer> transfers) {
-
-        return new PageImpl<>(
-                transfers.stream().map(
-                        BankingTransferDtoMapper::toBankingTransferDto
-                ).collect(Collectors.toList())
-        );
+        return transfers.map(BankingTransferDtoMapper::toBankingTransferDto);
     }
 }

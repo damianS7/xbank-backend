@@ -44,7 +44,7 @@ public class BankingTransferController {
     // endpoint to get all transfers from current user
     @GetMapping("/banking/transfers")
     public ResponseEntity<?> getTransfers(
-            @PageableDefault(size = 2, sort = "createdAt", direction = Sort.Direction.DESC)
+            @PageableDefault(size = 6, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
         Page<BankingTransfer> transfers = bankingTransferGetAll.execute(pageable);
