@@ -12,12 +12,14 @@ import com.damian.xBank.modules.banking.transfer.application.usecase.BankingTran
 import com.damian.xBank.modules.banking.transfer.application.usecase.BankingTransferReject;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import jakarta.validation.constraints.Positive;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Set;
 
 @RequestMapping("/api/v1")
 @RestController
@@ -41,14 +43,17 @@ public class BankingTransferController {
 
     // endpoint to get all transfers from current user
     @GetMapping("/banking/transfers")
-    public ResponseEntity<?> getTransfers() {
-        Set<BankingTransfer> transfers = bankingTransferGetAll.execute();
-        Set<BankingTransferDto> transferDtoSetDto = BankingTransferDtoMapper
-                .toBankingTransferDtoSet(transfers);
+    public ResponseEntity<?> getTransfers(
+            @PageableDefault(size = 2, sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable
+    ) {
+        Page<BankingTransfer> transfers = bankingTransferGetAll.execute(pageable);
+        Page<BankingTransferDto> transferDtoPage = BankingTransferDtoMapper
+                .toBankingTransferDtoPage(transfers);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(transferDtoSetDto);
+                .body(transferDtoPage);
     }
 
     // endpoint to submit a transfer request
