@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.banking.transaction.infrastructure.web.controller;
 
+import com.damian.xBank.modules.banking.transaction.application.dto.response.BankingTransactionDetailDto;
 import com.damian.xBank.modules.banking.transaction.application.dto.response.BankingTransactionDto;
 import com.damian.xBank.modules.banking.transaction.application.mapper.BankingTransactionDtoMapper;
 import com.damian.xBank.modules.banking.transaction.application.usecase.BankingTransactionAccountGet;
@@ -49,8 +50,8 @@ public class BankingTransactionController {
             Long id
     ) {
         BankingTransaction transaction = bankingTransactionGet.execute(id);
-        BankingTransactionDto transactionDto = BankingTransactionDtoMapper
-                .toBankingTransactionDto(transaction);
+        BankingTransactionDetailDto transactionDto = BankingTransactionDtoMapper
+                .toBankingTransactionDetailDto(transaction);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
