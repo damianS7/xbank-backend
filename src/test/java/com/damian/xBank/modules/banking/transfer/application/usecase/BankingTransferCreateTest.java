@@ -12,7 +12,6 @@ import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferStatus;
 import com.damian.xBank.modules.banking.transfer.domain.service.BankingTransferDomainService;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
-import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
@@ -120,8 +119,6 @@ public class BankingTransferCreateTest extends AbstractServiceTest {
 
         when(bankingAccountRepository.findByAccountNumber(toAccount.getAccountNumber())).thenReturn(
                 Optional.of(toAccount));
-
-        doNothing().when(notificationPublisher).publish(any(NotificationEvent.class));
 
         when(bankingTransferDomainService.createTransfer(
                 anyLong(),

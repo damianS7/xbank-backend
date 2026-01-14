@@ -14,7 +14,7 @@ import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferStatus;
 import com.damian.xBank.modules.banking.transfer.domain.service.BankingTransferDomainService;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
-import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
+import com.damian.xBank.modules.notification.domain.factory.NotificationEventFactory;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -39,6 +39,9 @@ public class BankingTransferConfirmTest extends AbstractServiceTest {
 
     @InjectMocks
     private BankingTransferConfirm bankingTransferConfirm;
+
+    @Mock
+    private NotificationEventFactory notificationEventFactory;
 
     @Mock
     private BankingTransferDomainService bankingTransferDomainService;
@@ -141,8 +144,6 @@ public class BankingTransferConfirmTest extends AbstractServiceTest {
 
         //        when(bankingTransferRepository.save(any(BankingTransfer.class)))
         //                .thenAnswer(i -> i.getArgument(0));
-
-        doNothing().when(notificationPublisher).publish(any(NotificationEvent.class));
 
         // then
         bankingTransferConfirm

@@ -28,11 +28,11 @@ public class NotificationEventFactory {
 
     public NotificationEvent depositCompleted(BankingTransaction transaction) {
         return new NotificationEvent(
-                transaction.getBankingCard().getOwner().getId(),
+                transaction.getBankingAccount().getOwner().getId(),
                 NotificationType.TRANSACTION,
                 Map.of(
                         "transactionId", transaction.getId(),
-                        "toUser", transaction.getBankingCard().getOwner().getProfile().getFullName(),
+                        "depositor", transaction.getBankingAccount().getOwner().getProfile().getFullName(),
                         "amount", transaction.getAmount(),
                         "currency", transaction.getBankingAccount().getCurrency()
                 ),
