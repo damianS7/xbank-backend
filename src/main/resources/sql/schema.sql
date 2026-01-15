@@ -15,6 +15,7 @@ CREATE CAST (varchar as user_status_type) WITH INOUT AS IMPLICIT;
 
 CREATE TYPE public."user_role_type" AS ENUM (
 	'CUSTOMER',
+	'MANAGER',
 	'ADMIN'
 );
 CREATE CAST (varchar as user_role_type) WITH INOUT AS IMPLICIT;
@@ -176,6 +177,35 @@ CREATE TABLE public.banking_cards (
 	    ON DELETE CASCADE
 );
 
+-- Banking Transfers
+
+CREATE TYPE public."banking_transfer_status_type" AS ENUM (
+  'PENDING',
+  'REJECTED',
+  'CONFIRMED'
+);
+CREATE CAST (varchar as banking_transfer_status_type) WITH INOUT AS IMPLICIT;
+
+CREATE TABLE public.banking_transfers (
+                                          id int4 GENERATED ALWAYS AS IDENTITY NOT NULL,
+                                          from_account_id int4 NOT NULL,
+                                          to_account_id int4 NOT NULL,
+                                          amount numeric(15, 2) DEFAULT 0.00 NOT NULL,
+                                          status public."banking_transfer_status_type" DEFAULT 'PENDING'::banking_transfer_status_type NOT NULL,
+                                          description text NULL,
+                                          created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+                                          updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+                                          CONSTRAINT banking_transfers_pkey PRIMARY KEY (id),
+                                          CONSTRAINT banking_transfers_from_account_fk
+                                              FOREIGN KEY (from_account_id)
+                                                  REFERENCES public.banking_accounts(id)
+                                                  ON DELETE CASCADE ON UPDATE CASCADE,
+                                          CONSTRAINT banking_transfers_to_account_fk
+                                              FOREIGN KEY (to_account_id)
+                                                  REFERENCES public.banking_accounts(id)
+                                                  ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 -- Banking transactions
 
 CREATE TYPE public."banking_transaction_status_type" AS ENUM (
@@ -217,33 +247,4 @@ CREATE TABLE public.banking_transactions (
     CONSTRAINT fk_transactions_transfer FOREIGN KEY (transfer_id)
         REFERENCES public.banking_transfers(id)
         ON DELETE SET NULL
-);
-
--- Banking Transfers
-
-CREATE TYPE public."banking_transfer_status_type" AS ENUM (
-  'PENDING',
-  'REJECTED',
-  'CONFIRMED'
-);
-CREATE CAST (varchar as banking_transfer_status_type) WITH INOUT AS IMPLICIT;
-
-CREATE TABLE public.banking_transfers (
-    id int4 GENERATED ALWAYS AS IDENTITY NOT NULL,
-    from_account_id int4 NOT NULL,
-    to_account_id int4 NOT NULL,
-    amount numeric(15, 2) DEFAULT 0.00 NOT NULL,
-    status public."banking_transfer_status_type" DEFAULT 'PENDING'::banking_transfer_status_type NOT NULL,
-    description text NULL,
-    created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-    updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-    CONSTRAINT banking_transfers_pkey PRIMARY KEY (id),
-    CONSTRAINT banking_transfers_from_account_fk
-        FOREIGN KEY (from_account_id)
-        REFERENCES public.banking_accounts(id)
-            ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT banking_transfers_to_account_fk
-        FOREIGN KEY (to_account_id)
-        REFERENCES public.banking_accounts(id)
-        ON DELETE CASCADE ON UPDATE CASCADE
 );
