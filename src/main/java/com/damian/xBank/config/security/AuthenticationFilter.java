@@ -146,7 +146,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             }
         }
 
-        log.debug("No jwt token found.");
+        //        log.debug("No jwt token found.");
         return null; // no token found
     }
 }

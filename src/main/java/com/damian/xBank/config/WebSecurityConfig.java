@@ -54,10 +54,14 @@ public class WebSecurityConfig {
                                 "/api/v1/users/register",
                                 "/api/v1/accounts/verification/**",
                                 "/api/v1/accounts/password/reset/**",
+                                "/payments/**",
                                 "/ws/**"
-                        ).permitAll()
-                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
-                        .anyRequest().authenticated()
+                        )
+                        .permitAll()
+                        .requestMatchers("/api/v1/admin/**")
+                        .hasRole("ADMIN")
+                        .anyRequest()
+                        .authenticated()
                 )
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(entryPoint))
                 .authenticationProvider(authenticationProvider)
