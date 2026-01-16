@@ -1,6 +1,7 @@
-package com.damian.xBank.shared.exception;
+package com.damian.xBank.shared.infrastructure.web.exception;
 
 import com.damian.xBank.shared.dto.ApiResponse;
+import com.damian.xBank.shared.exception.ErrorCodes;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
