@@ -1,19 +1,24 @@
 <!-- Payment status -->
-<div th:fragment="status(invoiceId, merchant, amount, currency, status)">
-    <p class="text-gray-700">
+<div th:fragment="status(invoiceId, merchant, amount, currency, status)" class="flex flex-col gap-4">
+    <p class="flex justify-between items-center text-gray-700">
         <span class="font-semibold">Invoice Id:</span>
         <span th:text="${invoiceId}"></span>
     </p>
-    <p class="text-gray-700">
+    
+    <p class="flex justify-between items-center text-gray-700">
         <span class="font-semibold">Merchant:</span>
         <span th:text="${merchant}"></span>
     </p>
-    <p class="text-gray-700">
+
+    <p class="flex justify-between items-center text-gray-700">
         <span class="font-semibold">Amount:</span>
-        <span th:text="${amount}"></span>
-        <span th:text="${currency}"></span>
+        <span>
+            <span th:text="${amount}"></span>
+            <span th:text="${currency}"></span>
+        </span>
     </p>
-    <p class="text-gray-700">
+
+    <p class="flex justify-between items-center text-gray-700">
         <span class="font-semibold">Status:</span>
         <span th:text="${status}"></span>
     </p>
