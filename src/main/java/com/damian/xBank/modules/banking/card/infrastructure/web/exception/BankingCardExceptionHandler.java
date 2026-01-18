@@ -53,6 +53,14 @@ public class BankingCardExceptionHandler {
                              .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
     }
 
+    @ExceptionHandler(BankingCardInvalidCvvException.class)
+    public ResponseEntity<ApiResponse<String>> handleInvalidPin(BankingCardInvalidCvvException ex) {
+        log.warn("Banking card: {} cvv is invalid.", ex.getResourceId());
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                             .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
+    }
+
     @ExceptionHandler(BankingCardInsufficientFundsException.class)
     public ResponseEntity<ApiResponse<String>> handleInsufficientFunds(BankingCardInsufficientFundsException ex) {
         log.warn("Banking card: {} has insufficient funds.", ex.getResourceId());

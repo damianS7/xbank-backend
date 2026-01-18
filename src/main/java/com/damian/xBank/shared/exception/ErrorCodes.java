@@ -47,6 +47,7 @@ public class ErrorCodes {
     public static final String BANKING_CARD_INVALID_TRANSITION_STATUS = "banking.card.invalid_transition_status";
     public static final String BANKING_CARD_LOCKED = "banking.card.locked";
     public static final String BANKING_CARD_INVALID_PIN = "banking.card.invalid_pin";
+    public static final String BANKING_CARD_INVALID_CVV = "banking.card.invalid_cvv";
     public static final String BANKING_CARD_DISABLED = "banking.card.disabled";
     public static final String BANKING_CARD_INSUFFICIENT_FUNDS = "banking.card.insufficient_funds";
 
@@ -65,6 +66,9 @@ public class ErrorCodes {
             = "banking.transfer.invalid_transition_status";
     public static final String BANKING_TRANSFER_SAME_ACCOUNT = "banking.transfer.same_destination";
     public static final String BANKING_TRANSFER_DIFFERENT_CURRENCY = "banking.transfer.different_currency";
+
+    // Payments
+    public static final String BANKING_PAYMENT_NOT_FOUND = "banking.payment.not_found";
 
     // Notification
     public static final String NOTIFICATION_NOT_FOUND = "notification.not_found";
