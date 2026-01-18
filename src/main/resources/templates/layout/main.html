@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8"/>
+    <title>Payment</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex justify-center items-center min-h-screen p-6">
+<div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+    <h2 class="text-3xl font-bold text-center mb-6 text-gray-800">Payment</h2>
+
+    <div th:replace="~{fragments/payment-status :: status(
+    ${invoiceId},
+    ${merchant},
+    ${amount},
+    ${currency},
+    ${status})}">
+    </div>
+
+    <th:block th:if="${isPending}">
+        <div th:replace="~{fragments/payment-form :: form}"></div>
+    </th:block>
+
+    <div th:if="${error}" class="bg-red-100 p-4 rounded">
+        <p th:text="${error}"></p>
+    </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!-- Form -->
+<form th:fragment="form" th:object="${form}" th:action="@{/payments}" method="post" class="space-y-6">
+    <input type="hidden" th:field="*{paymentId}"/>
+    <!-- Card -->
+    <div>
+        <label for="cardNumber" class="block text-sm font-medium text-gray-700 mb-1">Card number</label>
+        <input type="text" th:field="*{cardNumber}" placeholder="1234 5678 9012 3456" maxlength="16" required
+               class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400"/>
+    </div>
+
+    <!-- CVV y PIN en una fila -->
+    <div class="grid grid-cols-2 gap-4">
+        <div>
+            <label for="cvv" class="block text-sm font-medium text-gray-700 mb-1">CVV</label>
+            <input type="text" th:field="*{cvv}" placeholder="123" maxlength="3" required
+                   class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400"/>
+        </div>
+        <div>
+            <label for="cardPin" class="block text-sm font-medium text-gray-700 mb-1">PIN</label>
+            <input type="password" th:field="*{cardPin}" placeholder="••••" maxlength="4" required
+                   class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400"/>
+        </div>
+    </div>
+
+    <button type="submit"
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition duration-200">
+        Submit
+    </button>
+</form>

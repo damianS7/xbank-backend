@@ -1,0 +1,21 @@
+<!-- Payment status -->
+<div th:fragment="status(invoiceId, merchant, amount, currency, status)">
+    <p class="text-gray-700">
+        <span class="font-semibold">Invoice Id:</span>
+        <span th:text="${invoiceId}"></span>
+    </p>
+    <p class="text-gray-700">
+        <span class="font-semibold">Merchant:</span>
+        <span th:text="${merchant}"></span>
+    </p>
+    <p class="text-gray-700">
+        <span class="font-semibold">Amount:</span>
+        <span th:text="${amount}"></span>
+        <span th:text="${currency}"></span>
+    </p>
+    <p class="text-gray-700">
+        <span class="font-semibold">Status:</span>
+        <span th:text="${status}"></span>
+    </p>
+</div>
+
