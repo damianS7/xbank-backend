@@ -270,6 +270,22 @@ public class BankingCard {
     }
 
     /**
+     * Assert the card cvv matches.
+     *
+     * @return the current validator instance for chaining
+     * @throws BankingCardInvalidCvvException if the card CVV does not equals to the given CVV
+     */
+    public BankingCard assertCorrectCvv(String cvv) {
+
+        // check card pin
+        if (!Objects.equals(getCardCvv(), cvv)) {
+            throw new BankingCardInvalidCvvException(getId());
+        }
+
+        return this;
+    }
+
+    /**
      * Assert card is not DISABLED.
      *
      * @return the current validator instance for chaining
