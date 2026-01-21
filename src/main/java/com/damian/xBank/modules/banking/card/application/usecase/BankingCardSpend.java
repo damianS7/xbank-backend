@@ -16,6 +16,9 @@ import com.damian.xBank.shared.security.PasswordValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * This class its used by the payment-gateway to check if the card its valid.
+ */
 @Service
 public class BankingCardSpend {
     private final AuthenticationContext authenticationContext;
@@ -56,7 +59,6 @@ public class BankingCardSpend {
         BankingCard bankingCard = bankingCardRepository.findById(bankingCardId).orElseThrow(
                 () -> new BankingCardNotFoundException(bankingCardId)
         );
-
 
         // run validations for the card and throw exception
         bankingCard.assertCanSpend(currentUser, request.amount(), request.cardPIN());

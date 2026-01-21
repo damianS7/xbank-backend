@@ -46,7 +46,7 @@ public class BankingCardOperationController {
                 .body(transactionDto);
     }
 
-    // endpoint for logged customer to withdraw from card
+    // endpoint for logged customer to spend from card
     @PostMapping("/banking/cards/{id}/spend")
     public ResponseEntity<?> spend(
             @PathVariable @NotNull @Positive

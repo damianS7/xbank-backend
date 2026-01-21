@@ -1,14 +1,15 @@
 package com.damian.xBank.modules.banking.card.infrastructure.web.controller;
 
+import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardAuthorizeRequest;
 import com.damian.xBank.modules.banking.card.application.dto.response.BankingCardDto;
 import com.damian.xBank.modules.banking.card.application.mapper.BankingCardDtoMapper;
+import com.damian.xBank.modules.banking.card.application.usecase.BankingCardAuthorize;
 import com.damian.xBank.modules.banking.card.application.usecase.BankingCardGetAll;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
 
@@ -16,11 +17,14 @@ import java.util.Set;
 @RestController
 public class BankingCardController {
     private final BankingCardGetAll bankingCardGetAll;
+    private final BankingCardAuthorize bankingCardAuthorize;
 
     public BankingCardController(
-            BankingCardGetAll bankingCardGetAll
+            BankingCardGetAll bankingCardGetAll,
+            BankingCardAuthorize bankingCardAuthorize
     ) {
         this.bankingCardGetAll = bankingCardGetAll;
+        this.bankingCardAuthorize = bankingCardAuthorize;
     }
 
     // endpoint to fetch all cards of logged customer
@@ -32,5 +36,18 @@ public class BankingCardController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(bankingCardsDto);
+    }
+
+    // endpoint for card authorization
+    @PostMapping("/banking/cards/authorize")
+    public ResponseEntity<?> authorizeCard(
+            @Validated @RequestBody
+            BankingCardAuthorizeRequest request
+    ) {
+        bankingCardAuthorize.execute(request);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .build();
     }
 }
