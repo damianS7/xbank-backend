@@ -1,14 +1,14 @@
-package com.damian.xBank.modules.banking.payment.application.dto.response;
+package com.damian.xBank.modules.payment.intent.application.dto.response;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
-import com.damian.xBank.modules.banking.payment.domain.model.PaymentStatus;
+import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntentStatus;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 
-public record PaymentDto(
+public record PaymentOrderDto(
         Long id,
-        PaymentStatus status,
+        PaymentIntentStatus status,
         String merchant,
         BigDecimal amount,
         BankingAccountCurrency currency,
