@@ -94,6 +94,13 @@ public class PaymentIntent {
         this.updatedAt = Instant.now();
     }
 
+    public void assertIsPending() {
+        if (this.status != PaymentIntentStatus.PENDING) {
+            // todo create custom exception
+            throw new IllegalStateException("Payment is not pending");
+        }
+    }
+
     @Override
     public String toString() {
         return "Payment{"
