@@ -5,13 +5,14 @@ import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoun
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
-import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.infrastructure.service.BankingTransactionPersistenceService;
+import com.damian.xBank.modules.payment.network.application.dto.response.PaymentAuthorizationResponse;
+import com.damian.xBank.modules.payment.network.domain.PaymentAuthorizationStatus;
 import org.springframework.stereotype.Service;
 
 /**
- * This usecase its used by the payment-gateway to check if the card its authorized to
+ * This is used by the payment-gateway to check if the card is authorized to
  * carry the operation.
  */
 @Service
@@ -31,7 +32,7 @@ public class AuthorizeCardPayment {
      *
      * @param request
      */
-    public void execute(AuthorizeCardPaymentRequest request) {
+    public PaymentAuthorizationResponse execute(AuthorizeCardPaymentRequest request) {
         // check card exists
         BankingCard bankingCard = bankingCardRepository
                 .findByCardNumber(request.cardNumber())
@@ -55,11 +56,17 @@ public class AuthorizeCardPayment {
                         request.amount()
                 )
                 .setBankingCard(bankingCard)
-                .setStatus(BankingTransactionStatus.PENDING) // TODO> AUTHORIZED?
                 .setDescription(request.merchantName());
-        // TODO add FK to paymentId?
 
-        // store here the transaction as PENDING
-        bankingTransactionPersistenceService.record(transaction);
+        transaction.authorize();
+
+        // store here the transaction as AUTHORIZED
+        transaction = bankingTransactionPersistenceService.record(transaction);
+
+        return new PaymentAuthorizationResponse(
+                PaymentAuthorizationStatus.AUTHORIZED,
+                transaction.getId().toString(),
+                null
+        );
     }
 }
