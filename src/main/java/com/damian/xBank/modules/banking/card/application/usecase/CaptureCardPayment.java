@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Merchant use this to capture his authorized funds
+ * Payment network will use this to capture merchant authorized funds
  */
 @Service
 public class CaptureCardPayment {
