@@ -55,6 +55,7 @@ public class ErrorCodes {
 
     // Transactions
     public static final String BANKING_TRANSACTION_NOT_FOUND = "banking.transaction.not_found";
+    public static final String BANKING_TRANSACTION_NOT_AUTHORIZED = "banking.transaction.not_authorized";
     public static final String BANKING_TRANSACTION_NOT_OWNER = "banking.transaction.not_owner";
     public static final String
             BANKING_TRANSACTION_INVALID_TRANSITION_STATUS
