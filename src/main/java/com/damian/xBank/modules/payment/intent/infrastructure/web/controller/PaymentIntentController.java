@@ -24,9 +24,14 @@ public class PaymentIntentController {
         this.createPaymentIntent = createPaymentIntent;
     }
 
-    // TODO
+    /**
+     * Endpoint for merchants to create payment intents
+     *
+     * @param request
+     * @return the created payment intent
+     */
     @PostMapping("/payments")
-    public ResponseEntity<?> transfer(
+    public ResponseEntity<?> createPaymentIntent(
             @RequestBody @Validated
             CreatePaymentIntentRequest request
     ) {
