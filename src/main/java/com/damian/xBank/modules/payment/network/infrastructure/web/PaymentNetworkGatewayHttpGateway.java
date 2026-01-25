@@ -3,6 +3,7 @@ package com.damian.xBank.modules.payment.network.infrastructure.web;
 import com.damian.xBank.modules.payment.network.application.PaymentNetworkGateway;
 import com.damian.xBank.modules.payment.network.application.dto.request.PaymentAuthorizationRequest;
 import com.damian.xBank.modules.payment.network.application.dto.response.PaymentAuthorizationResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -12,9 +13,15 @@ import java.math.BigDecimal;
 public class PaymentNetworkGatewayHttpGateway implements PaymentNetworkGateway {
     private final WebClient webClient;
 
+    @Value("${payment-network.base-url}")
+    private String paymentNetworkBaseUrl;
+
+    @Value("${payment-network.endpoint}")
+    private String paymentNetworkEndpoint;
+
     public PaymentNetworkGatewayHttpGateway(WebClient.Builder builder) {
         this.webClient = builder
-                .baseUrl("http://localhost:8079/")
+                .baseUrl(paymentNetworkBaseUrl)
                 .build();
     }
 
@@ -33,7 +40,7 @@ public class PaymentNetworkGatewayHttpGateway implements PaymentNetworkGateway {
 
         return webClient
                 .post()
-                .uri("/api/v1/cards/authorize")
+                .uri(paymentNetworkEndpoint)
                 .bodyValue(request)
                 .retrieve()
                 .bodyToMono(PaymentAuthorizationResponse.class)
