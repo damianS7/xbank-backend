@@ -31,7 +31,7 @@ public class PaymentCheckoutController {
         this.paymentGatewayConfirm = paymentCheckoutSubmit;
     }
 
-    @GetMapping("/payments/{id}")
+    @GetMapping("/payments/{id}/checkout")
     public String showPaymentForm(
             @PathVariable Long id,
             Model model
@@ -54,7 +54,7 @@ public class PaymentCheckoutController {
         return "layout/main";
     }
 
-    @PostMapping("/payments")
+    @PostMapping("/payments/{id}/checkout")
     public String processPayment(PaymentCheckoutForm form, Model model) {
         if (form.getPaymentId() == null) {
             return "layout/main";
@@ -76,7 +76,6 @@ public class PaymentCheckoutController {
 
         // read only fields
         model.addAttribute("paymentId", paymentIntent.getId());
-        model.addAttribute("invoiceId", paymentIntent.getMerchantName());
         model.addAttribute("isPending", false);
         model.addAttribute("status", paymentIntent.getStatus().toString());
         model.addAttribute("merchant", paymentIntent.getMerchantName());
