@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.banking.card.application.dto.request;
+package com.damian.xBank.modules.payment.network.application.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Positive;
 
 import java.math.BigDecimal;
 
-public record BankingCardAuthorizeRequest(
+public record PaymentAuthorizationRequest(
 
         //        @NotBlank
         //        String paymentId,
