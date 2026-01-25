@@ -1,8 +1,8 @@
-package com.damian.xBank.modules.banking.payment.domain.model;
+package com.damian.xBank.modules.payment.checkout.domain;
 
 import java.math.BigDecimal;
 
-public class PaymentForm {
+public class PaymentCheckoutForm {
     private Long paymentId;
     private Long invoiceId;
     private boolean isPending;
