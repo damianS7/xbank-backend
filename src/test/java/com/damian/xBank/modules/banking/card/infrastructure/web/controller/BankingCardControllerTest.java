@@ -4,7 +4,7 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
-import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardAuthorizeRequest;
+import com.damian.xBank.modules.banking.card.application.dto.request.AuthorizeCardPaymentRequest;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
@@ -78,7 +78,7 @@ public class BankingCardControllerTest extends AbstractControllerTest {
         // given
         login(customer);
 
-        BankingCardAuthorizeRequest request = new BankingCardAuthorizeRequest(
+        AuthorizeCardPaymentRequest request = new AuthorizeCardPaymentRequest(
                 "Amazon.com",
                 customerBankingCard.getCardNumber(),
                 12,

@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.banking.card.application.usecase;
 
-import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardAuthorizeRequest;
+import com.damian.xBank.modules.banking.card.application.dto.request.AuthorizeCardPaymentRequest;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoundException;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
@@ -15,11 +15,11 @@ import org.springframework.stereotype.Service;
  * carry the operation.
  */
 @Service
-public class BankingCardAuthorize {
+public class AuthorizeCardPayment {
     private final BankingCardRepository bankingCardRepository;
     private final BankingTransactionPersistenceService bankingTransactionPersistenceService;
 
-    public BankingCardAuthorize(
+    public AuthorizeCardPayment(
             BankingCardRepository bankingCardRepository,
             BankingTransactionPersistenceService bankingTransactionPersistenceService
     ) {
@@ -28,12 +28,10 @@ public class BankingCardAuthorize {
     }
 
     /**
-     * Spend money from a card
      *
-     * @param request the request with the data needed to perfom the operation
-     * @return the created transaction
+     * @param request
      */
-    public void execute(BankingCardAuthorizeRequest request) {
+    public void execute(AuthorizeCardPaymentRequest request) {
         // check card exists
         BankingCard bankingCard = bankingCardRepository
                 .findByCardNumber(request.cardNumber())
@@ -41,16 +39,14 @@ public class BankingCardAuthorize {
                         () -> new BankingCardNotFoundException(request.cardNumber())
                 );
 
-        // its active
-        bankingCard.assertUsable();
-
-        // has funds
-        bankingCard.assertSufficientFunds(request.amount());
-
         // check security
-        // TODO assertExpiryDates assertExpiration
-        bankingCard.assertCorrectPin(request.pin());
-        bankingCard.assertCorrectCvv(request.cvv());
+        bankingCard.authorizePayment(
+                request.amount(),
+                request.expiryMonth(),
+                request.expiryYear(),
+                request.pin(),
+                request.cvv()
+        );
 
         BankingTransaction transaction = BankingTransaction
                 .create(
@@ -59,8 +55,9 @@ public class BankingCardAuthorize {
                         request.amount()
                 )
                 .setBankingCard(bankingCard)
-                .setStatus(BankingTransactionStatus.PENDING)
+                .setStatus(BankingTransactionStatus.PENDING) // TODO> AUTHORIZED?
                 .setDescription(request.merchantName());
+        // TODO add FK to paymentId?
 
         // store here the transaction as PENDING
         bankingTransactionPersistenceService.record(transaction);

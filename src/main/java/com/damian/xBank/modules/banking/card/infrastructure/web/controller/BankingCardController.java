@@ -1,9 +1,9 @@
 package com.damian.xBank.modules.banking.card.infrastructure.web.controller;
 
-import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardAuthorizeRequest;
+import com.damian.xBank.modules.banking.card.application.dto.request.AuthorizeCardPaymentRequest;
 import com.damian.xBank.modules.banking.card.application.dto.response.BankingCardDto;
 import com.damian.xBank.modules.banking.card.application.mapper.BankingCardDtoMapper;
-import com.damian.xBank.modules.banking.card.application.usecase.BankingCardAuthorize;
+import com.damian.xBank.modules.banking.card.application.usecase.AuthorizeCardPayment;
 import com.damian.xBank.modules.banking.card.application.usecase.BankingCardGetAll;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import org.springframework.http.HttpStatus;
@@ -17,14 +17,14 @@ import java.util.Set;
 @RestController
 public class BankingCardController {
     private final BankingCardGetAll bankingCardGetAll;
-    private final BankingCardAuthorize bankingCardAuthorize;
+    private final AuthorizeCardPayment authorizeCardPayment;
 
     public BankingCardController(
             BankingCardGetAll bankingCardGetAll,
-            BankingCardAuthorize bankingCardAuthorize
+            AuthorizeCardPayment authorizeCardPayment
     ) {
         this.bankingCardGetAll = bankingCardGetAll;
-        this.bankingCardAuthorize = bankingCardAuthorize;
+        this.authorizeCardPayment = authorizeCardPayment;
     }
 
     // endpoint to fetch all cards of logged customer
@@ -42,9 +42,9 @@ public class BankingCardController {
     @PostMapping("/banking/cards/authorize")
     public ResponseEntity<?> authorizeCard(
             @Validated @RequestBody
-            BankingCardAuthorizeRequest request
+            AuthorizeCardPaymentRequest request
     ) {
-        bankingCardAuthorize.execute(request);
+        authorizeCardPayment.execute(request);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

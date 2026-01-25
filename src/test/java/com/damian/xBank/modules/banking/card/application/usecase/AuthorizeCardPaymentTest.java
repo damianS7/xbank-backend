@@ -3,7 +3,7 @@ package com.damian.xBank.modules.banking.card.application.usecase;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
-import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardAuthorizeRequest;
+import com.damian.xBank.modules.banking.card.application.dto.request.AuthorizeCardPaymentRequest;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
@@ -25,7 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-public class BankingCardAuthorizeTest extends AbstractServiceTest {
+public class AuthorizeCardPaymentTest extends AbstractServiceTest {
     @Mock
     private BankingCardRepository bankingCardRepository;
 
@@ -33,7 +33,7 @@ public class BankingCardAuthorizeTest extends AbstractServiceTest {
     private BankingTransactionPersistenceService bankingTransactionPersistenceService;
 
     @InjectMocks
-    private BankingCardAuthorize cardAuthorize;
+    private AuthorizeCardPayment cardAuthorize;
 
     private User customer;
     private BankingAccount bankingAccount;
@@ -69,7 +69,7 @@ public class BankingCardAuthorizeTest extends AbstractServiceTest {
     @DisplayName("should authorize")
     void authorize_WhenValidRequest() {
         // given
-        BankingCardAuthorizeRequest request = new BankingCardAuthorizeRequest(
+        AuthorizeCardPaymentRequest request = new AuthorizeCardPaymentRequest(
                 "Amazon.com",
                 bankingCard.getCardNumber(),
                 12,
