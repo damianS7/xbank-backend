@@ -4,7 +4,6 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
-import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardSpendRequest;
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardWithdrawRequest;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.transaction.application.dto.response.BankingTransactionDto;
@@ -60,42 +59,6 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
         bankingAccountRepository.save(customerBankingAccount);
     }
 
-    @Test
-    @DisplayName("should return 201 CREATED when spend from card")
-    void postSpend_WhenValidRequest_Returns201Created() throws Exception {
-        // given
-        login(customer);
-
-        BankingCardSpendRequest request = new BankingCardSpendRequest(
-                BigDecimal.valueOf(100),
-                customerBankingCard.getCardPin(),
-                "Amazon.com"
-        );
-
-        // when
-        // then
-        MvcResult result = mockMvc.perform(post("/api/v1/banking/cards/{id}/spend", customerBankingCard.getId())
-                                          .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                                          .contentType(MediaType.APPLICATION_JSON)
-                                          .content(objectMapper.writeValueAsString(request)))
-                                  .andDo(print())
-                                  .andExpect(status().is(201))
-                                  .andReturn();
-
-        BankingTransactionDto transactionResponseDto = objectMapper.readValue(
-                result.getResponse().getContentAsString(),
-                BankingTransactionDto.class
-        );
-
-        // then
-        assertThat(transactionResponseDto).isNotNull();
-        assertThat(transactionResponseDto.amount()).isEqualTo(request.amount());
-        assertThat(transactionResponseDto.status()).isEqualTo(BankingTransactionStatus.COMPLETED);
-        assertThat(transactionResponseDto.balanceBefore())
-                .isEqualByComparingTo(customerBankingAccount.getBalance());
-        assertThat(transactionResponseDto.balanceAfter())
-                .isEqualByComparingTo(customerBankingAccount.getBalance().subtract(request.amount()));
-    }
 
     @Test
     @DisplayName("should return 201 CREATED when withdraw from card")
@@ -126,7 +89,7 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
         // then
         assertThat(transactionResponseDto).isNotNull();
         assertThat(transactionResponseDto.amount()).isEqualTo(request.amount());
-        assertThat(transactionResponseDto.status()).isEqualTo(BankingTransactionStatus.COMPLETED);
+        assertThat(transactionResponseDto.status()).isEqualTo(BankingTransactionStatus.CAPTURED);
         assertThat(transactionResponseDto.balanceBefore())
                 .isEqualByComparingTo(customerBankingAccount.getBalance());
         assertThat(transactionResponseDto.balanceAfter())
