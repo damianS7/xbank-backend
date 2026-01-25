@@ -32,8 +32,8 @@ public class PaymentIntentControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("should return payment intent")
-    void createPaymentIntent_WhenValidRequest_Returns201Created() throws Exception {
+    @DisplayName("should return created payment intent")
+    void postPaymentIntent_WhenValidRequest_Returns201Created() throws Exception {
         // given
         login(customer);
 
@@ -50,7 +50,5 @@ public class PaymentIntentControllerTest extends AbstractControllerTest {
                        .content(objectMapper.writeValueAsString(request)))
                .andDo(print())
                .andExpect(status().is(201));
-
-        // TODO check response
     }
 }
