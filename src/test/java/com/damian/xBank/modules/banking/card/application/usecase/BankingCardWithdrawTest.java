@@ -36,7 +36,7 @@ public class BankingCardWithdrawTest extends AbstractServiceTest {
 
     @Mock
     private NotificationEventFactory notificationEventFactory;
-    
+
     @Mock
     private NotificationPublisher notificationPublisher;
 
@@ -107,7 +107,7 @@ public class BankingCardWithdrawTest extends AbstractServiceTest {
         // then
         assertThat(transaction).isNotNull();
         assertThat(transaction.getType()).isEqualTo(givenBankingTransaction.getType());
-        assertThat(transaction.getStatus()).isEqualTo(BankingTransactionStatus.COMPLETED);
+        assertThat(transaction.getStatus()).isEqualTo(BankingTransactionStatus.CAPTURED);
         assertThat(bankingAccount.getBalance()).isEqualTo(BigDecimal.ZERO);
     }
 

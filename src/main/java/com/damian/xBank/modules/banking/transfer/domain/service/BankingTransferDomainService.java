@@ -82,7 +82,7 @@ public class BankingTransferDomainService {
         transfer.assertOwnedBy(userId);
 
         // Confirm transactions
-        transfer.getTransactions().forEach(BankingTransaction::complete);
+        transfer.getTransactions().forEach(BankingTransaction::capture);
 
         // deduct balance
         BankingAccount fromAccount = transfer.getFromAccount();
@@ -113,7 +113,7 @@ public class BankingTransferDomainService {
         transfer.reject();
 
         // reject transactions
-        transfer.getTransactions().forEach(BankingTransaction::reject);
+        transfer.getTransactions().forEach(BankingTransaction::decline);
 
         return transfer;
     }

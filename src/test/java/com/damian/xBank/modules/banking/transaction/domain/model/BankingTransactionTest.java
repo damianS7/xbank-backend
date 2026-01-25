@@ -193,7 +193,7 @@ public class BankingTransactionTest {
 
     @Test
     @DisplayName("Should confirm a transaction")
-    void complete_WhenPendingTransaction_ChangesStatusToCompleted() {
+    void capture_WhenPendingTransaction_ChangesStatusToCompleted() {
         // given
         BankingTransaction givenTransaction = BankingTransaction
                 .create(
@@ -206,15 +206,15 @@ public class BankingTransactionTest {
                 .setDescription("Deposit transaction");
 
         // when
-        givenTransaction.complete();
+        givenTransaction.capture();
 
         // then
-        Assertions.assertThat(givenTransaction.getStatus()).isEqualTo(BankingTransactionStatus.COMPLETED);
+        Assertions.assertThat(givenTransaction.getStatus()).isEqualTo(BankingTransactionStatus.CAPTURED);
     }
 
     @Test
     @DisplayName("Should reject a transaction")
-    void rejectTransaction_WhenPendingTransaction_ChangesStatusToRejected() {
+    void declineTransaction_WhenPendingTransaction_ChangesStatusToRejected() {
         // given
         BankingTransaction givenTransaction = BankingTransaction
                 .create(
@@ -227,7 +227,7 @@ public class BankingTransactionTest {
                 .setDescription("Deposit transaction");
 
         // when
-        givenTransaction.reject();
+        givenTransaction.decline();
 
         // then
         Assertions.assertThat(givenTransaction).isNotNull();
