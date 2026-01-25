@@ -17,7 +17,8 @@ CREATE CAST (varchar as user_status_type) WITH INOUT AS IMPLICIT;
 CREATE TYPE public."user_role_type" AS ENUM (
 	'CUSTOMER',
 	'MANAGER',
-	'ADMIN'
+	'ADMIN',
+    'MERCHANT'
 );
 CREATE CAST (varchar as user_role_type) WITH INOUT AS IMPLICIT;
 
@@ -266,14 +267,16 @@ CREATE TYPE public."payment_status_type" AS ENUM (
 
 CREATE CAST (varchar as payment_status_type) WITH INOUT AS IMPLICIT;
 
-CREATE TABLE public.banking_payments
+CREATE TABLE public.payment_intents
 (
     id         int4 GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    invoice_id int4 NOT NULL,
-    merchant   varchar(255) NULL,
-    status     public."payment_status_type" DEFAULT 'PENDING'::payment_status_type NOT NULL,
+    user_id    int4           NOT NULL,
+    status public."payment_status_type" DEFAULT 'PENDING'::payment_status_type NOT NULL,
     amount     numeric(15, 2) NOT NULL,
-    currency   public."banking_account_currency_type" DEFAULT 'USD'::banking_account_currency_type NOT NULL,
+    currency public."banking_account_currency_type" DEFAULT 'USD'::banking_account_currency_type NOT NULL,
     created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-    updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL
+    updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+    CONSTRAINT fk_users_accounts FOREIGN KEY (user_id)
+        REFERENCES public.user_accounts (id)
+        ON DELETE SET NULL
 );
