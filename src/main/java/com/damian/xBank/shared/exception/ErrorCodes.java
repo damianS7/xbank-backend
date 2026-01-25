@@ -49,6 +49,8 @@ public class ErrorCodes {
     public static final String BANKING_CARD_INVALID_PIN = "banking.card.invalid_pin";
     public static final String BANKING_CARD_INVALID_CVV = "banking.card.invalid_cvv";
     public static final String BANKING_CARD_DISABLED = "banking.card.disabled";
+    public static final String BANKING_CARD_INVALID_EXPIRATION_YEAR = "banking.card.invalid_expiration_year";
+    public static final String BANKING_CARD_INVALID_EXPIRATION_MONTH = "banking.card.invalid_expiration_month";
     public static final String BANKING_CARD_INSUFFICIENT_FUNDS = "banking.card.insufficient_funds";
 
     // Transactions

@@ -353,4 +353,50 @@ public class BankingCard {
 
         return this;
     }
+
+    /**
+     * Validate input year equals to the card expiration year
+     *
+     * @param year
+     */
+    public void validateExpirationYear(int year) {
+        if (this.getExpiredDate().getYear() != year) {
+            throw new BankingCardInvalidExpirationYearException(this.id);
+        }
+    }
+
+    /**
+     * Validate input year equals to the card expiration month
+     *
+     * @param month
+     */
+    public void validateExpirationMonth(int month) {
+        if (this.getExpiredDate().getMonth().getValue() != month) {
+            throw new BankingCardInvalidExpirationMonthException(this.id);
+        }
+    }
+
+    /**
+     * Authorize a payment.
+     *
+     * @param amount
+     * @param expiryMonth
+     * @param expiryYear
+     * @param pin
+     * @param cvv
+     */
+    public void authorizePayment(
+            BigDecimal amount,
+            Integer expiryMonth,
+            Integer expiryYear,
+            String pin,
+            String cvv
+    ) {
+        assertUsable();
+        assertSufficientFunds(amount);
+        validateExpirationYear(expiryYear);
+        validateExpirationMonth(expiryMonth);
+        assertCorrectPin(pin);
+        assertCorrectCvv(cvv);
+    }
 }
