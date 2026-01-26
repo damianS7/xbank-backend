@@ -382,21 +382,18 @@ public class BankingCard {
      * @param amount
      * @param expiryMonth
      * @param expiryYear
-     * @param pin
      * @param cvv
      */
     public void authorizePayment(
             BigDecimal amount,
             Integer expiryMonth,
             Integer expiryYear,
-            String pin,
             String cvv
     ) {
         assertUsable();
         assertSufficientFunds(amount);
         validateExpirationYear(expiryYear);
         validateExpirationMonth(expiryMonth);
-        assertCorrectPin(pin);
         assertCorrectCvv(cvv);
     }
 }

@@ -80,11 +80,11 @@ public class BankingCardControllerTest extends AbstractControllerTest {
 
         AuthorizeCardPaymentRequest request = new AuthorizeCardPaymentRequest(
                 "Amazon.com",
+                "",
                 customerBankingCard.getCardNumber(),
                 12,
                 2025,
                 customerBankingCard.getCardCvv(),
-                customerBankingCard.getCardPin(),
                 BigDecimal.valueOf(100)
         );
 

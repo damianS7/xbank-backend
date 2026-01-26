@@ -116,11 +116,11 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
         // given
         AuthorizeCardPaymentRequest request = new AuthorizeCardPaymentRequest(
                 "Amazon.com",
+                "",
                 customerBankingCard.getCardNumber(),
                 customerBankingCard.getExpiredDate().getMonthValue(),
                 customerBankingCard.getExpiredDate().getYear(),
                 customerBankingCard.getCardCvv(),
-                customerBankingCard.getCardPin(),
                 BigDecimal.valueOf(100)
         );
 

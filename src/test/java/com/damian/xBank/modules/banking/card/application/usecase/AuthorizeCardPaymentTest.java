@@ -83,11 +83,11 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
         // given
         AuthorizeCardPaymentRequest request = new AuthorizeCardPaymentRequest(
                 "Amazon.com",
+                "",
                 bankingCard.getCardNumber(),
                 bankingCard.getExpiredDate().getMonthValue(),
                 bankingCard.getExpiredDate().getYear(),
                 bankingCard.getCardCvv(),
-                bankingCard.getCardPin(),
                 BigDecimal.valueOf(100)
         );
 
@@ -96,7 +96,7 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
         givenBankingTransaction.setBankingCard(bankingCard);
         givenBankingTransaction.setType(BankingTransactionType.CARD_CHARGE);
         givenBankingTransaction.setAmount(request.amount());
-        givenBankingTransaction.setDescription(request.merchantName());
+        givenBankingTransaction.setDescription(request.merchant());
 
         when(bankingCardRepository.findByCardNumber(anyString()))
                 .thenReturn(Optional.of(bankingCard));
@@ -126,11 +126,11 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
         // given
         AuthorizeCardPaymentRequest request = new AuthorizeCardPaymentRequest(
                 "Amazon.com",
+                "",
                 bankingCard.getCardNumber(),
                 bankingCard.getExpiredDate().getMonthValue(),
                 bankingCard.getExpiredDate().getYear(),
                 bankingCard.getCardCvv(),
-                bankingCard.getCardPin(),
                 BigDecimal.valueOf(100)
         );
 
@@ -138,7 +138,7 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
         givenBankingTransaction.setId(1L);
         givenBankingTransaction.setType(BankingTransactionType.CARD_CHARGE);
         givenBankingTransaction.setAmount(request.amount());
-        givenBankingTransaction.setDescription(request.merchantName());
+        givenBankingTransaction.setDescription(request.merchant());
 
         when(bankingCardRepository.findByCardNumber(anyString())).thenReturn(Optional.empty());
 
@@ -160,11 +160,11 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
 
         AuthorizeCardPaymentRequest request = new AuthorizeCardPaymentRequest(
                 "Amazon.com",
+                "",
                 bankingCard.getCardNumber(),
                 bankingCard.getExpiredDate().getMonthValue(),
                 bankingCard.getExpiredDate().getYear(),
                 bankingCard.getCardCvv(),
-                bankingCard.getCardPin(),
                 BigDecimal.valueOf(100)
         );
 
@@ -172,7 +172,7 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
         givenBankingTransaction.setId(1L);
         givenBankingTransaction.setType(BankingTransactionType.CARD_CHARGE);
         givenBankingTransaction.setAmount(request.amount());
-        givenBankingTransaction.setDescription(request.merchantName());
+        givenBankingTransaction.setDescription(request.merchant());
 
         when(bankingCardRepository.findByCardNumber(anyString())).thenReturn(Optional.of(bankingCard));
 
@@ -195,11 +195,11 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
 
         AuthorizeCardPaymentRequest request = new AuthorizeCardPaymentRequest(
                 "Amazon.com",
+                "",
                 bankingCard.getCardNumber(),
                 bankingCard.getExpiredDate().getMonthValue(),
                 bankingCard.getExpiredDate().getYear(),
                 bankingCard.getCardCvv(),
-                bankingCard.getCardPin(),
                 BigDecimal.valueOf(100)
         );
 
@@ -207,7 +207,7 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
         givenBankingTransaction.setId(1L);
         givenBankingTransaction.setType(BankingTransactionType.CARD_CHARGE);
         givenBankingTransaction.setAmount(request.amount());
-        givenBankingTransaction.setDescription(request.merchantName());
+        givenBankingTransaction.setDescription(request.merchant());
 
         when(bankingCardRepository.findByCardNumber(anyString())).thenReturn(Optional.of(bankingCard));
 
@@ -228,11 +228,11 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
         bankingAccount.setBalance(BigDecimal.valueOf(0));
         AuthorizeCardPaymentRequest request = new AuthorizeCardPaymentRequest(
                 "Amazon.com",
+                "",
                 bankingCard.getCardNumber(),
                 bankingCard.getExpiredDate().getMonthValue(),
                 bankingCard.getExpiredDate().getYear(),
                 bankingCard.getCardCvv(),
-                bankingCard.getCardPin(),
                 BigDecimal.valueOf(100)
         );
 
@@ -240,7 +240,7 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
         givenBankingTransaction.setId(1L);
         givenBankingTransaction.setType(BankingTransactionType.CARD_CHARGE);
         givenBankingTransaction.setAmount(request.amount());
-        givenBankingTransaction.setDescription(request.merchantName());
+        givenBankingTransaction.setDescription(request.merchant());
 
         when(bankingCardRepository.findByCardNumber(anyString())).thenReturn(Optional.of(bankingCard));
 

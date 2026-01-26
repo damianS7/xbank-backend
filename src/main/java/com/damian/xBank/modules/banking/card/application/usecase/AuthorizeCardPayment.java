@@ -45,7 +45,6 @@ public class AuthorizeCardPayment {
                 request.amount(),
                 request.expiryMonth(),
                 request.expiryYear(),
-                request.pin(),
                 request.cvv()
         );
 
@@ -56,7 +55,7 @@ public class AuthorizeCardPayment {
                         request.amount()
                 )
                 .setBankingCard(bankingCard)
-                .setDescription(request.merchantName());
+                .setDescription(request.merchant());
 
         transaction.authorize();
 
