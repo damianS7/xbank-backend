@@ -54,6 +54,7 @@ public class WebSecurityConfig {
                                 "/api/v1/users/register",
                                 "/api/v1/accounts/verification/**",
                                 "/api/v1/accounts/password/reset/**",
+                                "/api/v1/banking/cards/authorize",
                                 "/payments/**",
                                 "/ws/**"
                         )
