@@ -297,7 +297,7 @@ public class BankingTransferDomainServiceTest extends AbstractServiceTest {
                         fromAccount,
                         givenTransferAmount
                 )
-                .setStatus(BankingTransactionStatus.AUTHORIZED)
+                .setStatus(BankingTransactionStatus.PENDING)
                 .setDescription(givenTransfer.getDescription());
 
         BankingTransaction toTransaction = BankingTransaction
@@ -306,7 +306,7 @@ public class BankingTransferDomainServiceTest extends AbstractServiceTest {
                         toAccount,
                         givenTransferAmount
                 )
-                .setStatus(BankingTransactionStatus.AUTHORIZED)
+                .setStatus(BankingTransactionStatus.PENDING)
                 .setDescription(givenTransfer.getDescription());
 
         givenTransfer.addTransaction(fromTransaction);
@@ -360,7 +360,7 @@ public class BankingTransferDomainServiceTest extends AbstractServiceTest {
                 )
                 .containsExactly(
                         BankingTransactionType.TRANSFER_TO,
-                        BankingTransactionStatus.CAPTURED,
+                        BankingTransactionStatus.COMPLETED,
                         fromTransaction.getBalanceBefore(),
                         fromTransaction.getAmount(),
                         fromTransaction.getBalanceAfter()

@@ -244,6 +244,13 @@ public class BankingTransaction {
         this.updatedAt = Instant.now();
     }
 
+    public void complete() {
+        this.balanceBefore = bankingAccount.getBalance();
+        this.balanceAfter = calcBalanceAfter();
+        this.setStatus(BankingTransactionStatus.COMPLETED);
+        this.updatedAt = Instant.now();
+    }
+
     public void decline() {
         this.setStatus(BankingTransactionStatus.DECLINED);
         this.updatedAt = Instant.now();

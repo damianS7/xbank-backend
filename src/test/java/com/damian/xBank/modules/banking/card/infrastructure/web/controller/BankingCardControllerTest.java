@@ -18,6 +18,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -50,6 +51,7 @@ public class BankingCardControllerTest extends AbstractControllerTest {
 
         customerBankingCard = BankingCard
                 .create(customerBankingAccount)
+                .setExpiredDate(LocalDate.now().plusYears(1))
                 .setCardNumber("1234123412341234")
                 .setCardCvv("123")
                 .setCardPin("1234");
@@ -82,8 +84,8 @@ public class BankingCardControllerTest extends AbstractControllerTest {
                 "Amazon.com",
                 "John",
                 customerBankingCard.getCardNumber(),
-                12,
-                2025,
+                customerBankingCard.getExpiredDate().getMonthValue(),
+                customerBankingCard.getExpiredDate().getYear(),
                 customerBankingCard.getCardCvv(),
                 BigDecimal.valueOf(100)
         );
