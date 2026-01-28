@@ -14,7 +14,9 @@ import java.util.Set;
 @Repository
 public interface BankingCardRepository extends JpaRepository<BankingCard, Long> {
     Optional<BankingCard> findByCardNumber(String cardNumber);
-    
+
+    boolean existsByCardNumber(String cardNumber);
+
     Set<BankingCard> findByBankingAccountId(Long bankingAccountId);
 
     @Query("SELECT cards FROM BankingCard cards WHERE cards.bankingAccount.user.id = :userId")

@@ -2,7 +2,7 @@ package com.damian.xBank.modules.banking.transaction.domain.model;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
-import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotAuthorizedException;
+import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotAuthorizedStatusException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotOwnerException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionStatusTransitionException;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
@@ -251,7 +251,7 @@ public class BankingTransaction {
 
     public void assertAuthorized() {
         if (status != BankingTransactionStatus.AUTHORIZED) {
-            throw new BankingTransactionNotAuthorizedException(this.id);
+            throw new BankingTransactionNotAuthorizedStatusException(this.id);
         }
     }
 

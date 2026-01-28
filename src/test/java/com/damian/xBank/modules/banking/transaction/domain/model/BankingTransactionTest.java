@@ -193,7 +193,7 @@ public class BankingTransactionTest {
 
     @Test
     @DisplayName("Should confirm a transaction")
-    void capture_WhenPendingTransaction_ChangesStatusToCompleted() {
+    void capture_WhenAuthorizedTransaction_ChangesStatusToCaptured() {
         // given
         BankingTransaction givenTransaction = BankingTransaction
                 .create(
@@ -202,7 +202,7 @@ public class BankingTransactionTest {
                         BigDecimal.valueOf(100)
                 )
                 .setId(1L)
-                .setStatus(BankingTransactionStatus.PENDING)
+                .setStatus(BankingTransactionStatus.AUTHORIZED)
                 .setDescription("Deposit transaction");
 
         // when

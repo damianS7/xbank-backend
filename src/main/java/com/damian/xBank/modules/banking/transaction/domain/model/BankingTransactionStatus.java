@@ -8,6 +8,8 @@ public enum BankingTransactionStatus {
     COMPLETED(Set.of()),
     AUTHORIZED(Set.of(CAPTURED, DECLINED)), // From AUTHORIZED no transitions are allowed
     PENDING(Set.of(
+            COMPLETED,
+            CAPTURED,
             AUTHORIZED,
             DECLINED
     )); // From PENDING transitions to AUTHORIZED, DECLINED and CAPTURED are allowed
