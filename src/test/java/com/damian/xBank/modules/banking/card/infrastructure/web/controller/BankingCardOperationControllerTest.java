@@ -9,7 +9,9 @@ import com.damian.xBank.modules.banking.card.application.dto.request.BankingCard
 import com.damian.xBank.modules.banking.card.application.dto.request.CaptureCardPaymentRequest;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.transaction.application.dto.response.BankingTransactionDto;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.payment.network.application.PaymentNetworkGateway;
 import com.damian.xBank.modules.payment.network.application.dto.response.PaymentAuthorizationResponse;
 import com.damian.xBank.modules.payment.network.domain.PaymentAuthorizationStatus;
@@ -146,19 +148,28 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("should return 201 CREATED when spend from card")
-    void capturePayment_WhenValidRequest_Returns201Created() throws Exception {
+    @DisplayName("should return 200 OK when capture payment from card")
+    void capturePayment_WhenValidRequest_Returns200Created() throws Exception {
         // given
         login(customer);
 
+        BigDecimal initialBalance = customerBankingAccount.getBalance();
+
+        BankingTransaction transaction = BankingTransaction.create(
+                BankingTransactionType.CARD_CHARGE,
+                customerBankingCard,
+                BigDecimal.valueOf(100)
+        );
+        transaction.setStatus(BankingTransactionStatus.AUTHORIZED);
+        bankingTransactionRepository.save(transaction);
+
         CaptureCardPaymentRequest request = new CaptureCardPaymentRequest(
-                1L
+                transaction.getId()
         );
 
         // when
         // then
         MvcResult result = mockMvc.perform(post("/api/v1/banking/cards/capture", customerBankingCard.getId())
-                                          //                                          .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                                           .contentType(MediaType.APPLICATION_JSON)
                                           .content(objectMapper.writeValueAsString(request)))
                                   .andDo(print())
@@ -170,13 +181,18 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
                 BankingTransactionDto.class
         );
 
+        System.out.println(initialBalance);
+        System.out.println(transaction.getBalanceBefore());
+        System.out.println(transaction.getBalanceAfter());
+
+        System.out.println(transactionResponseDto.balanceBefore());
+        System.out.println(transactionResponseDto.balanceAfter());
         // then
         assertThat(transactionResponseDto).isNotNull();
-        //        assertThat(transactionResponseDto.amount()).isEqualTo(request.amount());
-        assertThat(transactionResponseDto.status()).isEqualTo(BankingTransactionStatus.COMPLETED);
+        assertThat(transactionResponseDto.status()).isEqualTo(BankingTransactionStatus.CAPTURED);
         assertThat(transactionResponseDto.balanceBefore())
-                .isEqualByComparingTo(customerBankingAccount.getBalance());
-        //        assertThat(transactionResponseDto.balanceAfter())
-        //                .isEqualByComparingTo(customerBankingAccount.getBalance().subtract(request.amount()));
+                .isEqualByComparingTo(initialBalance);
+        assertThat(transactionResponseDto.balanceAfter())
+                .isEqualByComparingTo(initialBalance.subtract(transaction.getAmount()));
     }
 }

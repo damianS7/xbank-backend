@@ -70,6 +70,7 @@ public class BankingTransaction {
 
     public BankingTransaction(BankingCard bankingCard) {
         this(bankingCard.getBankingAccount());
+        this.bankingCard = bankingCard;
     }
 
     public static BankingTransaction create(
@@ -91,7 +92,9 @@ public class BankingTransaction {
             BankingCard card,
             BigDecimal amount
     ) {
-        return create(type, card.getBankingAccount(), amount);
+        BankingTransaction t = create(type, card.getBankingAccount(), amount);
+        t.setBankingCard(card);
+        return t;
     }
 
     public boolean isOwnedBy(Long userId) {

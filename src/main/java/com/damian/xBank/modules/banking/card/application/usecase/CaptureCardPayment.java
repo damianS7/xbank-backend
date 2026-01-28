@@ -22,12 +22,10 @@ public class CaptureCardPayment {
     }
 
     /**
-     * TODO
-     *
      * @param request
      */
     @Transactional
-    public void execute(CaptureCardPaymentRequest request) {
+    public BankingTransaction execute(CaptureCardPaymentRequest request) {
         // check transaction exists
         BankingTransaction transaction = bankingTransactionRepository
                 .findById(request.authorizationId())
@@ -47,6 +45,6 @@ public class CaptureCardPayment {
         //                notificationEventFactory.cardPaymentCompleted(transaction)
         //        );
 
-        bankingTransactionRepository.save(transaction);
+        return bankingTransactionRepository.save(transaction);
     }
 }

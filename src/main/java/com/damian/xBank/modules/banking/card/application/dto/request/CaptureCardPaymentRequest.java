@@ -1,9 +1,9 @@
 package com.damian.xBank.modules.banking.card.application.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 
 public record CaptureCardPaymentRequest(
-        @NotBlank
+        @Positive
         Long authorizationId
 ) {
 }
