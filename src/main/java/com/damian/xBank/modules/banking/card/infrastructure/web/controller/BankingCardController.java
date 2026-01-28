@@ -51,4 +51,17 @@ public class BankingCardController {
                 .status(HttpStatus.OK)
                 .body(response);
     }
+
+    // endpoint for card authorization
+    @PostMapping("/banking/cards/capture")
+    public ResponseEntity<?> capturePayment(
+            @Validated @RequestBody
+            AuthorizeCardPaymentRequest request
+    ) {
+        PaymentAuthorizationResponse response = authorizeCardPayment.execute(request);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
 }

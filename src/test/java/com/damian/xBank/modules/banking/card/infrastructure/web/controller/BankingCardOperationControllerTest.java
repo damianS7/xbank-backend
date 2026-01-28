@@ -102,21 +102,20 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
         // then
         assertThat(transactionResponseDto).isNotNull();
         assertThat(transactionResponseDto.amount()).isEqualTo(request.amount());
-        assertThat(transactionResponseDto.status()).isEqualTo(BankingTransactionStatus.CAPTURED);
+        assertThat(transactionResponseDto.status()).isEqualTo(BankingTransactionStatus.COMPLETED);
         assertThat(transactionResponseDto.balanceBefore())
                 .isEqualByComparingTo(customerBankingAccount.getBalance());
         assertThat(transactionResponseDto.balanceAfter())
                 .isEqualByComparingTo(customerBankingAccount.getBalance().subtract(request.amount()));
     }
 
-    // TODO pending remove security from endpoint
     @Test
     @DisplayName("should return 200 OK when authorize payment")
     void authorizePayment_WhenValidRequest_Returns200OK() throws Exception {
         // given
         AuthorizeCardPaymentRequest request = new AuthorizeCardPaymentRequest(
                 "Amazon.com",
-                "",
+                "John",
                 customerBankingCard.getCardNumber(),
                 customerBankingCard.getExpiredDate().getMonthValue(),
                 customerBankingCard.getExpiredDate().getYear(),
@@ -138,15 +137,12 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
         ));
 
         // then
-        MvcResult result = mockMvc.perform(post("/api/v1/banking/cards/{id}/authorize", customerBankingCard.getId())
-                                          //                                          .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+        MvcResult result = mockMvc.perform(post("/api/v1/banking/cards/authorize", customerBankingCard.getId())
                                           .contentType(MediaType.APPLICATION_JSON)
                                           .content(objectMapper.writeValueAsString(request)))
                                   .andDo(print())
                                   .andExpect(status().is(200))
                                   .andReturn();
-
-
     }
 
     @Test
@@ -161,7 +157,7 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
 
         // when
         // then
-        MvcResult result = mockMvc.perform(post("/api/v1/banking/cards/{id}/capture", customerBankingCard.getId())
+        MvcResult result = mockMvc.perform(post("/api/v1/banking/cards/capture", customerBankingCard.getId())
                                           //                                          .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                                           .contentType(MediaType.APPLICATION_JSON)
                                           .content(objectMapper.writeValueAsString(request)))
