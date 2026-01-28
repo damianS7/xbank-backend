@@ -6,6 +6,7 @@ import com.damian.xBank.modules.banking.card.application.mapper.BankingCardDtoMa
 import com.damian.xBank.modules.banking.card.application.usecase.AuthorizeCardPayment;
 import com.damian.xBank.modules.banking.card.application.usecase.BankingCardGetAll;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
+import com.damian.xBank.modules.payment.network.application.dto.response.PaymentAuthorizationResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -44,10 +45,10 @@ public class BankingCardController {
             @Validated @RequestBody
             AuthorizeCardPaymentRequest request
     ) {
-        authorizeCardPayment.execute(request);
+        PaymentAuthorizationResponse response = authorizeCardPayment.execute(request);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .build();
+                .body(response);
     }
 }
