@@ -1,7 +1,6 @@
 package com.damian.xBank.modules.banking.card.infrastructure.service;
 
 import com.damian.xBank.shared.AbstractServiceTest;
-import net.datafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,11 +9,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class BankingCardGeneratorTest extends AbstractServiceTest {
 
-    private BankingCardGenerator bankingCardGenerator;
+    private BankingCardGeneratorImpl bankingCardGenerator;
 
     @BeforeEach
     void setUp() {
-        bankingCardGenerator = new BankingCardGeneratorImpl(new Faker());
+        bankingCardGenerator = new BankingCardGeneratorImpl();
     }
 
     @Test

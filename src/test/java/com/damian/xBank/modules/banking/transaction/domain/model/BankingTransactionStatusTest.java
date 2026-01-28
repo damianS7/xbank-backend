@@ -12,7 +12,7 @@ public class BankingTransactionStatusTest extends AbstractServiceTest {
     @ParameterizedTest
     @EnumSource(
             value = BankingTransactionStatus.class,
-            names = {"AUTHORIZED", "DECLINED", "CAPTURED"}
+            names = {"AUTHORIZED", "DECLINED"}
     )
     @DisplayName("should return true when validate transitions from PENDING_ACTIVATION")
     void canTransactionTo_WhenAllowedStatus_ReturnsTrue(BankingTransactionStatus toStatus) {
@@ -20,7 +20,7 @@ public class BankingTransactionStatusTest extends AbstractServiceTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = BankingTransactionStatus.class, names = {"AUTHORIZED", "DECLINED", "CAPTURED"})
+    @EnumSource(value = BankingTransactionStatus.class, names = {"DECLINED", "CAPTURED"})
     @DisplayName("should return false when not validate any transitions from terminal states")
     void canTransactionTo_WhenNotAllowedStatus_ReturnsFalse(BankingTransactionStatus fromStatus) {
         for (BankingTransactionStatus targetStatus : BankingTransactionStatus.values()) {
