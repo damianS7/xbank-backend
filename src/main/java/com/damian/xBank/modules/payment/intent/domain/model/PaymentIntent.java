@@ -16,7 +16,7 @@ public class PaymentIntent {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "merchant_id", referencedColumnName = "id", nullable = false)
     private User merchant;
 
     @Column(precision = 15, scale = 2)
@@ -29,6 +29,8 @@ public class PaymentIntent {
     @Column
     @Enumerated(EnumType.STRING)
     private PaymentIntentStatus status;
+
+    private String merchantCallbackUrl;
 
     @Column
     private Instant createdAt;
@@ -112,5 +114,13 @@ public class PaymentIntent {
                + ", createdAt=" + createdAt
                + ", updatedAt=" + updatedAt
                + "}";
+    }
+
+    public String getMerchantCallbackUrl() {
+        return merchantCallbackUrl;
+    }
+
+    public void setMerchantCallbackUrl(String merchantCallbackUrl) {
+        this.merchantCallbackUrl = merchantCallbackUrl;
     }
 }

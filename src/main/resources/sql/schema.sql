@@ -269,14 +269,15 @@ CREATE CAST (varchar as payment_status_type) WITH INOUT AS IMPLICIT;
 
 CREATE TABLE public.payment_intents
 (
-    id         int4 GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    user_id    int4           NOT NULL,
-    status public."payment_status_type" DEFAULT 'PENDING'::payment_status_type NOT NULL,
-    amount     numeric(15, 2) NOT NULL,
-    currency public."banking_account_currency_type" DEFAULT 'USD'::banking_account_currency_type NOT NULL,
-    created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-    updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-    CONSTRAINT fk_users_accounts FOREIGN KEY (user_id)
+    id                    int4 GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    merchant_id           int4           NOT NULL,
+    merchant_callback_url varchar(255)   NOT NULL,
+    status                public."payment_status_type" DEFAULT 'PENDING'::payment_status_type NOT NULL,
+    amount                numeric(15, 2) NOT NULL,
+    currency              public."banking_account_currency_type" DEFAULT 'USD'::banking_account_currency_type NOT NULL,
+    created_at            timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+    updated_at            timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+    CONSTRAINT fk_users_accounts FOREIGN KEY (merchant_id)
         REFERENCES public.user_accounts (id)
         ON DELETE SET NULL
 );
