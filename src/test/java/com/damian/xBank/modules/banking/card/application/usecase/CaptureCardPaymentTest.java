@@ -62,9 +62,8 @@ public class CaptureCardPaymentTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("should capture payment")
-        // TODO naming
-    void capturePayment_WhenAuthorized_ReturnsCaptured() {
+    @DisplayName("should capture payment when payment is authorized")
+    void capturePayment_WhenAuthorized_ReturnsTransactionCaptured() {
         // given
         BankingTransaction transaction = new BankingTransaction(bankingAccount);
         transaction.setId(1L);

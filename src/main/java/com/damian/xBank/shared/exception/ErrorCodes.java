@@ -71,7 +71,10 @@ public class ErrorCodes {
     public static final String BANKING_TRANSFER_DIFFERENT_CURRENCY = "banking.transfer.different_currency";
 
     // Payments
-    public static final String BANKING_PAYMENT_NOT_FOUND = "banking.payment.not_found";
+    public static final String PAYMENT_INTENT_NOT_FOUND = "payment_intent.not_found";
+
+    // Payment intents
+    public static final String PAYMENT_INTENT_NOT_PENDING = "payment_intent.not_pending";
 
     // Notification
     public static final String NOTIFICATION_NOT_FOUND = "notification.not_found";

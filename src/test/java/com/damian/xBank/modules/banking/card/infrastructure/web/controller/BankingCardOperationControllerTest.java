@@ -188,6 +188,7 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
         System.out.println(transactionResponseDto.balanceBefore());
         System.out.println(transactionResponseDto.balanceAfter());
         // then
+        // TODO check this
         assertThat(transactionResponseDto).isNotNull();
         assertThat(transactionResponseDto.status()).isEqualTo(BankingTransactionStatus.CAPTURED);
         assertThat(transactionResponseDto.balanceBefore())

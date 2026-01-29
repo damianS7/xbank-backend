@@ -44,7 +44,7 @@ public class PaymentIntentControllerTest extends AbstractControllerTest {
 
         // when
         // then
-        mockMvc.perform(post("/api/v1/payments")
+        mockMvc.perform(post("/api/v1/payment-intents")
                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                        .contentType(MediaType.APPLICATION_JSON)
                        .content(objectMapper.writeValueAsString(request)))

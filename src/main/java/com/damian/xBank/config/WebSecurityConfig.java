@@ -48,15 +48,14 @@ public class WebSecurityConfig {
                         .dispatcherTypeMatchers(DispatcherType.ASYNC) // Avoid Authexception with notifications
                         .permitAll()
                         .requestMatchers(
-                                "/api/v1/auth/**", // TODO review this
-                                "/api/v1/accounts/register",
-                                "/api/v1/customers/register",
+                                "/api/v1/auth/**",
                                 "/api/v1/users/register",
                                 "/api/v1/accounts/verification/**",
                                 "/api/v1/accounts/password/reset/**",
                                 "/api/v1/banking/cards/authorize",
                                 "/api/v1/banking/cards/capture",
-                                "/payments/**",
+                                "/payments/*/checkout",
+                                "/payment-intents",
                                 "/ws/**"
                         )
                         .permitAll()

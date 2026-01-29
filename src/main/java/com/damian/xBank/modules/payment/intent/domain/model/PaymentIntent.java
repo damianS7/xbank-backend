@@ -1,6 +1,7 @@
 package com.damian.xBank.modules.payment.intent.domain.model;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
+import com.damian.xBank.modules.payment.intent.domain.exception.PaymentIntentNotPendingException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import jakarta.persistence.*;
 
@@ -94,10 +95,9 @@ public class PaymentIntent {
         this.updatedAt = Instant.now();
     }
 
-    public void assertIsPending() {
+    public void assertPending() {
         if (this.status != PaymentIntentStatus.PENDING) {
-            // todo create custom exception
-            throw new IllegalStateException("Payment is not pending");
+            throw new PaymentIntentNotPendingException(this.id);
         }
     }
 

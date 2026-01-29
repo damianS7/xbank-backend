@@ -53,7 +53,7 @@ public class PaymentCheckoutSubmit {
         );
 
         // Payment must be pending
-        paymentIntent.assertIsPending();
+        paymentIntent.assertPending();
 
         // Send a request to the payment network to authorize this payment
         PaymentAuthorizationResponse response = paymentNetworkGateway.authorizePayment(

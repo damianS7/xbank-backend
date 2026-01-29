@@ -30,7 +30,7 @@ public class PaymentIntentController {
      * @param request
      * @return the created payment intent
      */
-    @PostMapping("/payments")
+    @PostMapping("/payment-intents")
     public ResponseEntity<?> createPaymentIntent(
             @RequestBody @Validated
             CreatePaymentIntentRequest request
