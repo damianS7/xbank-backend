@@ -1,18 +1,21 @@
 package com.damian.xBank.modules.payment.checkout.domain;
 
+import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntentStatus;
+
 import java.math.BigDecimal;
 
 public class PaymentCheckoutForm {
     private Long paymentId;
-    private Long invoiceId;
     private boolean isPending;
-    private String status;
+    private PaymentIntentStatus status;
     private String merchant;
+    private String merchantCallbackUrl;
     private BigDecimal amount;
-
     private String cardNumber;
     private String cardPin;
     private String cvv;
+    private int expiryMonth;
+    private int expiryYear;
 
     // Getters y setters
     public String getCardNumber() {
@@ -55,14 +58,6 @@ public class PaymentCheckoutForm {
         this.merchant = merchant;
     }
 
-    public Long getInvoiceId() {
-        return invoiceId;
-    }
-
-    public void setInvoiceId(Long invoiceId) {
-        this.invoiceId = invoiceId;
-    }
-
     public boolean isPending() {
         return isPending;
     }
@@ -71,11 +66,11 @@ public class PaymentCheckoutForm {
         isPending = pending;
     }
 
-    public String getStatus() {
+    public PaymentIntentStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(PaymentIntentStatus status) {
         this.status = status;
     }
 
@@ -91,7 +86,6 @@ public class PaymentCheckoutForm {
     public String toString() {
         return "PaymentForm{"
                + "paymentId=" + paymentId
-               + ", invoiceId=" + invoiceId
                + ", status=" + status
                + ", merchant=" + merchant
                + ", amount=" + amount
@@ -99,5 +93,29 @@ public class PaymentCheckoutForm {
                + ", cardPin=" + cardNumber
                + ", cardCvv=" + cvv
                + "}";
+    }
+
+    public String getMerchantCallbackUrl() {
+        return merchantCallbackUrl;
+    }
+
+    public void setMerchantCallbackUrl(String merchantCallbackUrl) {
+        this.merchantCallbackUrl = merchantCallbackUrl;
+    }
+
+    public int getExpiryMonth() {
+        return expiryMonth;
+    }
+
+    public void setExpiryMonth(int expiryMonth) {
+        this.expiryMonth = expiryMonth;
+    }
+
+    public int getExpiryYear() {
+        return expiryYear;
+    }
+
+    public void setExpiryYear(int expiryYear) {
+        this.expiryYear = expiryYear;
     }
 }
