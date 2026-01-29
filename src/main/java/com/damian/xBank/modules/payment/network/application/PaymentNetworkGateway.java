@@ -9,6 +9,8 @@ public interface PaymentNetworkGateway {
             String cardNumber,
             String cardCvv,
             String cardPin,
+            int expiryMonth,
+            int expiryYear,
             BigDecimal amount,
             String merchant
     );

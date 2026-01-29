@@ -5,6 +5,8 @@ public record PaymentCheckoutSubmitRequest(
         String cardNumber,
         String cardCvv,
         String cardPin,
+        int expiryMonth,
+        int expiryYear,
         String redirectToUrl
 ) {
 }

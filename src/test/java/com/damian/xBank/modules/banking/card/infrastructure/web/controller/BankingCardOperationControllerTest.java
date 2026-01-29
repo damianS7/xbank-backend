@@ -31,8 +31,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -130,6 +129,8 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
                 anyString(),
                 anyString(),
                 anyString(),
+                anyInt(),
+                anyInt(),
                 any(BigDecimal.class),
                 anyString()
         )).thenReturn(new PaymentAuthorizationResponse(

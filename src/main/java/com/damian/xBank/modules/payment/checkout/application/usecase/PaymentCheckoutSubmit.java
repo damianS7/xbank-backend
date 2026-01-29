@@ -60,6 +60,8 @@ public class PaymentCheckoutSubmit {
                 request.cardNumber(),
                 request.cardCvv(),
                 request.cardPin(),
+                request.expiryMonth(),
+                request.expiryYear(),
                 paymentIntent.getAmount(),
                 paymentIntent.getMerchantName()
         );
