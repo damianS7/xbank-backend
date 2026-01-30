@@ -25,6 +25,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -147,7 +148,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleContraintViolation(ConstraintViolationException ex) {
         log.warn("Validation error found: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                             .body(ApiResponse.error("Validation error.", HttpStatus.BAD_REQUEST));
+                             .body(ApiResponse.error("Constraint validation error.", HttpStatus.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(HandlerMethodValidationException.class) // 404
+    public ResponseEntity<ApiResponse<String>> handleMethodValidation(HandlerMethodValidationException ex) {
+        log.warn("Validation error found: {}", ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                             .body(ApiResponse.error("Method validation error.", HttpStatus.BAD_REQUEST));
     }
 
     // Conversion from Long to String for example
