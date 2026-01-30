@@ -55,6 +55,7 @@ public class WebSecurityConfig {
                                 "/api/v1/banking/cards/authorize",
                                 "/api/v1/banking/cards/capture",
                                 "/payments/*/checkout",
+                                "/payments/checkout",
                                 "/payments/*/status",
                                 "/payment-intents",
                                 "/ws/**"
