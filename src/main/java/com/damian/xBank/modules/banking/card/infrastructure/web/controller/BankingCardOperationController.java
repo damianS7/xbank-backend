@@ -5,13 +5,14 @@ import com.damian.xBank.modules.banking.card.application.usecase.BankingCardWith
 import com.damian.xBank.modules.banking.transaction.application.dto.response.BankingTransactionDto;
 import com.damian.xBank.modules.banking.transaction.application.mapper.BankingTransactionDtoMapper;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+@Validated
 @RequestMapping("/api/v1")
 @RestController
 public class BankingCardOperationController {
@@ -26,12 +27,11 @@ public class BankingCardOperationController {
     // endpoint for logged customer to withdraw from card
     @PostMapping("/banking/cards/{id}/withdraw")
     public ResponseEntity<?> withdraw(
-            @PathVariable @NotNull @Positive
+            @PathVariable @Positive
             Long id,
-            @Validated @RequestBody
+            @Valid @RequestBody
             BankingCardWithdrawRequest request
     ) {
-
         BankingTransaction transaction = bankingCardWithdraw.execute(id, request);
         BankingTransactionDto transactionDto = BankingTransactionDtoMapper
                 .toBankingTransactionDto(transaction);
