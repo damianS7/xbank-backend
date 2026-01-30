@@ -29,7 +29,7 @@ spring:
 logging:
   level:
     root: INFO
-    org.hibernate.SQL: DEBUG
+    org.hibernate.SQL: INFO
 
 payment-network:
   base-url: http://payment-network-api:8079
