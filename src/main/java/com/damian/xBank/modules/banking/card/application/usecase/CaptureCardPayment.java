@@ -33,12 +33,12 @@ public class CaptureCardPayment {
                         () -> new BankingTransactionNotFoundException(request.authorizationId())
                 );
 
+        // mark as captured
+        transaction.capture();
+
         // deduct from card
         BankingCard card = transaction.getBankingCard();
         card.chargeAmount(transaction.getAmount());
-
-        // mark as captured
-        transaction.capture();
 
         // Notify the user
         //        notificationPublisher.publish(
