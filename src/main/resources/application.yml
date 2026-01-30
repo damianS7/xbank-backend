@@ -9,9 +9,6 @@ server:
   port: 8080
 jwt:
   secret: ${JWT_SECRET_KEY}
-payment-network:
-  base-url: http://localhost:8079/
-  endpoint: /api/v1/card-payments/authorizations
 bank:
   card:
     bin: 777700

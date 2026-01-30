@@ -30,3 +30,7 @@ logging:
   level:
     root: INFO
     org.hibernate.SQL: DEBUG
+
+payment-network:
+  base-url: http://payment-network-api:8079
+  endpoint: /api/v1/card-payments/authorizations

@@ -48,3 +48,6 @@ logging:
     org.hibernate.orm.jdbc.bind: INFO
     org.hibernate.SQL: INFO
     org.hibernate.type.descriptor.sql: TRACE
+payment-network:
+  base-url: http://localhost:8079/
+  endpoint: /api/v1/card-payments/authorizations
