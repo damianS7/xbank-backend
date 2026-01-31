@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
     <meta charset="UTF-8"/>
     <title>Payment</title>
@@ -25,14 +24,10 @@
         <div class="flex justify-center mt-6">
             <a th:href="${merchantCallbackUrl}"
                class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold p-2 rounded-xl shadow-md transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2">
-                Go back to store
+                Go back to merchant
             </a>
         </div>
     </th:block>
-
-    <div th:if="${error}" class="bg-red-100 p-4 rounded">
-        <p th:text="${error}"></p>
-    </div>
 </div>
 </body>
 </html>
