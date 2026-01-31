@@ -6,6 +6,7 @@ import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntent;
 import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntentStatus;
 import com.damian.xBank.modules.payment.intent.infrastructure.repository.PaymentIntentRepository;
 import com.damian.xBank.modules.payment.network.application.PaymentNetworkGateway;
+import com.damian.xBank.modules.payment.network.application.dto.request.PaymentAuthorizationRequest;
 import com.damian.xBank.modules.payment.network.application.dto.response.PaymentAuthorizationResponse;
 import com.damian.xBank.modules.payment.network.domain.PaymentAuthorizationStatus;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -58,6 +59,7 @@ public class PaymentCheckoutSubmitTest extends AbstractServiceTest {
 
         PaymentCheckoutSubmitRequest request = new PaymentCheckoutSubmitRequest(
                 0L,
+                "John Doe",
                 "1234123412341234",
                 "123",
                 "1234",
@@ -76,13 +78,7 @@ public class PaymentCheckoutSubmitTest extends AbstractServiceTest {
         when(paymentIntentRepository.findById(anyLong())).thenReturn(Optional.of(paymentIntent));
 
         when(paymentNetworkGateway.authorizePayment(
-                anyString(),
-                anyString(),
-                anyString(),
-                anyInt(),
-                anyInt(),
-                any(BigDecimal.class),
-                anyString()
+                any(PaymentAuthorizationRequest.class)
         )).thenReturn(response);
 
         when(paymentIntentRepository.save(any(PaymentIntent.class)))

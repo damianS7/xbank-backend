@@ -3,6 +3,7 @@ package com.damian.xBank.modules.payment.checkout.infrastructure.web;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntent;
 import com.damian.xBank.modules.payment.network.application.PaymentNetworkGateway;
+import com.damian.xBank.modules.payment.network.application.dto.request.PaymentAuthorizationRequest;
 import com.damian.xBank.modules.payment.network.application.dto.response.PaymentAuthorizationResponse;
 import com.damian.xBank.modules.payment.network.domain.PaymentAuthorizationStatus;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -16,7 +17,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.math.BigDecimal;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -64,13 +65,7 @@ public class PaymentCheckoutControllerTest extends AbstractControllerTest {
     @DisplayName("should return authorized view when payment is authorized")
     void postPaymentsCheckout_WhenPaymentAuthorized_ReturnsAuthorizedView() throws Exception {
         when(paymentNetworkGateway.authorizePayment(
-                anyString(),
-                anyString(),
-                anyString(),
-                anyInt(),
-                anyInt(),
-                any(BigDecimal.class),
-                anyString()
+                any(PaymentAuthorizationRequest.class)
         )).thenReturn(new PaymentAuthorizationResponse(
                 PaymentAuthorizationStatus.AUTHORIZED,
                 "authorizationId",

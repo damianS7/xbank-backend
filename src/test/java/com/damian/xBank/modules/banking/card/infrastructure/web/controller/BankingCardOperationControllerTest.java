@@ -13,6 +13,7 @@ import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransact
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.payment.network.application.PaymentNetworkGateway;
+import com.damian.xBank.modules.payment.network.application.dto.request.PaymentAuthorizationRequest;
 import com.damian.xBank.modules.payment.network.application.dto.response.PaymentAuthorizationResponse;
 import com.damian.xBank.modules.payment.network.domain.PaymentAuthorizationStatus;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -31,7 +32,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -126,13 +127,7 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
 
         // when
         when(paymentNetworkGateway.authorizePayment(
-                anyString(),
-                anyString(),
-                anyString(),
-                anyInt(),
-                anyInt(),
-                any(BigDecimal.class),
-                anyString()
+                any(PaymentAuthorizationRequest.class)
         )).thenReturn(new PaymentAuthorizationResponse(
                 PaymentAuthorizationStatus.AUTHORIZED,
                 "authorizationId",

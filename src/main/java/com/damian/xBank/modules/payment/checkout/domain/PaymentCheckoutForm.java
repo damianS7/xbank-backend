@@ -11,6 +11,7 @@ public class PaymentCheckoutForm {
     private String merchant;
     private String merchantCallbackUrl;
     private BigDecimal amount;
+    private String cardHolder;
     private String cardNumber;
     private String cardPin;
     private String cvv;
@@ -117,5 +118,13 @@ public class PaymentCheckoutForm {
 
     public void setExpiryYear(int expiryYear) {
         this.expiryYear = expiryYear;
+    }
+
+    public String getCardHolder() {
+        return cardHolder;
+    }
+
+    public void setCardHolder(String cardHolder) {
+        this.cardHolder = cardHolder;
     }
 }

@@ -11,8 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.math.BigDecimal;
-
 @Service
 public class PaymentNetworkGatewayHttpGateway implements PaymentNetworkGateway {
     private static final Logger log = LoggerFactory.getLogger(PaymentNetworkGatewayHttpGateway.class);
@@ -33,19 +31,8 @@ public class PaymentNetworkGatewayHttpGateway implements PaymentNetworkGateway {
 
     @Override
     public PaymentAuthorizationResponse authorizePayment(
-            String cardNumber,
-            String cardCvv,
-            String cardPin,
-            int expiryMonth,
-            int expiryYear,
-            BigDecimal amount,
-            String merchant
+            PaymentAuthorizationRequest request
     ) {
-
-        PaymentAuthorizationRequest request = new PaymentAuthorizationRequest(
-                merchant, cardNumber, expiryMonth, expiryYear, cardCvv, cardPin, amount
-        );
-
         return webClient
                 .post()
                 .uri(paymentNetworkEndpoint)
@@ -54,6 +41,8 @@ public class PaymentNetworkGatewayHttpGateway implements PaymentNetworkGateway {
                 //                .bodyToMono(PaymentAuthorizationResponse.class)
                 //                .block();
                 .exchangeToMono(response -> {
+                    // TODO response ApiResponse???
+                    //                    throw new RuntimeException("Unexpected response from payment network");
                     if (response.statusCode().isError()) {
                         return response.bodyToMono(ApiResponse.class)
                                        .map(body -> new PaymentAuthorizationResponse(
@@ -63,10 +52,6 @@ public class PaymentNetworkGatewayHttpGateway implements PaymentNetworkGateway {
                                        ));
                     }
 
-                    System.out.println(response.statusCode());
-                    System.out.println(response.statusCode());
-                    System.out.println(response.statusCode());
-                    System.out.println(response.statusCode());
                     return response.bodyToMono(PaymentAuthorizationResponse.class);
                 })
                 .block();

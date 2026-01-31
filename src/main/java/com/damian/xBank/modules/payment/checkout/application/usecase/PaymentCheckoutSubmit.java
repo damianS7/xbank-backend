@@ -5,10 +5,12 @@ import com.damian.xBank.modules.banking.transaction.infrastructure.service.Banki
 import com.damian.xBank.modules.notification.domain.factory.NotificationEventFactory;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.payment.checkout.application.dto.request.PaymentCheckoutSubmitRequest;
+import com.damian.xBank.modules.payment.checkout.domain.excepcion.PaymentCheckoutException;
 import com.damian.xBank.modules.payment.intent.domain.exception.PaymentIntentNotFoundException;
 import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntent;
 import com.damian.xBank.modules.payment.intent.infrastructure.repository.PaymentIntentRepository;
 import com.damian.xBank.modules.payment.network.application.PaymentNetworkGateway;
+import com.damian.xBank.modules.payment.network.application.dto.request.PaymentAuthorizationRequest;
 import com.damian.xBank.modules.payment.network.application.dto.response.PaymentAuthorizationResponse;
 import com.damian.xBank.modules.payment.network.domain.PaymentAuthorizationStatus;
 import org.springframework.stereotype.Service;
@@ -44,7 +46,7 @@ public class PaymentCheckoutSubmit {
     /**
      *
      * @param request
-     * @return PaymentIntent
+     * @return PaymentIntent TODO: return another type???
      */
     @Transactional
     public PaymentIntent execute(PaymentCheckoutSubmitRequest request) {
@@ -55,19 +57,23 @@ public class PaymentCheckoutSubmit {
         // Payment must be pending
         paymentIntent.assertPending();
 
-        // Send a request to the payment network to authorize this payment
         PaymentAuthorizationResponse response = paymentNetworkGateway.authorizePayment(
-                request.cardNumber(),
-                request.cardCvv(),
-                request.cardPin(),
-                request.expiryMonth(),
-                request.expiryYear(),
-                paymentIntent.getAmount(),
-                paymentIntent.getMerchantName()
+                new PaymentAuthorizationRequest(
+                        paymentIntent.getMerchantName(),
+                        request.cardHolder(),
+                        request.cardNumber(),
+                        request.expiryMonth(),
+                        request.expiryYear(),
+                        request.cardCvv(),
+                        request.cardPin(),
+                        paymentIntent.getAmount(),
+                        paymentIntent.getCurrency().toString(),
+                        paymentIntent.getDescription()
+                )
         );
 
         if (response.status() != PaymentAuthorizationStatus.AUTHORIZED) {
-            throw new RuntimeException("Payment authorization failed");
+            throw new PaymentCheckoutException(paymentIntent.getId(), response.declineReason());
         }
 
         // If the payment is authorized we should send to the card issuer bank

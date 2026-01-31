@@ -285,6 +285,17 @@ public class BankingCard {
         return this;
     }
 
+    public BankingCard assertActivated() {
+
+        // check card status
+        if (status != BankingCardStatus.ACTIVE) {
+            // TODO: new excepcion NotActiveExcepcion
+            throw new BankingCardDisabledException(getId());
+        }
+
+        return this;
+    }
+
     /**
      * Assert card is not DISABLED.
      *
@@ -326,7 +337,7 @@ public class BankingCard {
      */
     public BankingCard assertUsable() {
 
-        this.assertEnabled()
+        this.assertActivated()
             .assertUnlocked();
 
         return this;

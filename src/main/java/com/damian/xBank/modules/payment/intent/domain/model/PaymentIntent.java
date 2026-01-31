@@ -32,6 +32,8 @@ public class PaymentIntent {
 
     private String merchantCallbackUrl;
 
+    private String description;
+
     @Column
     private Instant createdAt;
 
@@ -122,5 +124,13 @@ public class PaymentIntent {
 
     public void setMerchantCallbackUrl(String merchantCallbackUrl) {
         this.merchantCallbackUrl = merchantCallbackUrl;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

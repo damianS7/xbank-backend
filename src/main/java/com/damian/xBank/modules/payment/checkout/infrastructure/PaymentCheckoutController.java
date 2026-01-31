@@ -83,7 +83,7 @@ public class PaymentCheckoutController {
 
     @PostMapping("/payments/checkout")
     public String paymentCheckoutSubmit(
-            PaymentCheckoutForm form,
+            PaymentCheckoutForm form, // TODO Validate?
             Model model
     ) {
         log.debug("Processing payment with id: {}", form.getPaymentId());
@@ -92,12 +92,11 @@ public class PaymentCheckoutController {
             return "layout/error";
         }
 
-        PaymentIntent paymentIntent;
-
         try {
-            paymentIntent = paymentCheckoutSubmit.execute(
+            paymentCheckoutSubmit.execute(
                     new PaymentCheckoutSubmitRequest(
                             form.getPaymentId(),
+                            form.getCardHolder(),
                             form.getCardNumber(),
                             form.getCvv(),
                             form.getCardPin(),
@@ -110,21 +109,7 @@ public class PaymentCheckoutController {
             throw new PaymentCheckoutException(form.getPaymentId(), exception.getMessage());
         }
 
-        // If payment is authorized send back to merchant
-        if (paymentIntent.getStatus() == PaymentIntentStatus.AUTHORIZED) {
-            return "redirect:" + paymentIntent.getMerchantCallbackUrl();
-        }
-
-        model.addAttribute("paymentId", paymentIntent.getId());
-        model.addAttribute("status", paymentIntent.getStatus());
-        model.addAttribute("PaymentIntentStatus", PaymentIntentStatus.class);
-        model.addAttribute("merchant", paymentIntent.getMerchantName());
-        model.addAttribute("amount", paymentIntent.getAmount());
-        model.addAttribute("currency", paymentIntent.getCurrency());
-        model.addAttribute("merchantCallbackUrl", paymentIntent.getMerchantCallbackUrl());
-        model.addAttribute("form", form);
-        return "layout/main";
-
+        return "redirect:/payments/" + form.getPaymentId() + "/status";
     }
 
     @ExceptionHandler(PaymentCheckoutException.class)
