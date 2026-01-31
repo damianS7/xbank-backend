@@ -1,6 +1,5 @@
 package com.damian.xBank.modules.payment.checkout.application.usecase;
 
-
 import com.damian.xBank.modules.banking.transaction.infrastructure.service.BankingTransactionPersistenceService;
 import com.damian.xBank.modules.notification.domain.factory.NotificationEventFactory;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
@@ -43,13 +42,8 @@ public class PaymentCheckoutSubmit {
         this.notificationPublisher = notificationPublisher;
     }
 
-    /**
-     *
-     * @param request
-     * @return PaymentIntent TODO: return another type???
-     */
     @Transactional
-    public PaymentIntent execute(PaymentCheckoutSubmitRequest request) {
+    public void execute(PaymentCheckoutSubmitRequest request) {
         PaymentIntent paymentIntent = paymentIntentRepository.findById(request.paymentId()).orElseThrow(
                 () -> new PaymentIntentNotFoundException(request.paymentId())
         );
@@ -86,6 +80,6 @@ public class PaymentCheckoutSubmit {
         //        );
 
         // redirect to merchant website
-        return paymentIntentRepository.save(paymentIntent);
+        paymentIntentRepository.save(paymentIntent);
     }
 }

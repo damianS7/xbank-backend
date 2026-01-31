@@ -37,12 +37,8 @@ public class PaymentNetworkGatewayHttpGateway implements PaymentNetworkGateway {
                 .post()
                 .uri(paymentNetworkEndpoint)
                 .bodyValue(request)
-                //                .retrieve()
-                //                .bodyToMono(PaymentAuthorizationResponse.class)
-                //                .block();
                 .exchangeToMono(response -> {
-                    // TODO response ApiResponse???
-                    //                    throw new RuntimeException("Unexpected response from payment network");
+                    // response if error
                     if (response.statusCode().isError()) {
                         return response.bodyToMono(ApiResponse.class)
                                        .map(body -> new PaymentAuthorizationResponse(
@@ -52,6 +48,7 @@ public class PaymentNetworkGatewayHttpGateway implements PaymentNetworkGateway {
                                        ));
                     }
 
+                    // response if success
                     return response.bodyToMono(PaymentAuthorizationResponse.class);
                 })
                 .block();
