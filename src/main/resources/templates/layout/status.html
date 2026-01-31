@@ -1,40 +1,26 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <meta charset="UTF-8"/>
     <title>Payment</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script th:inline="javascript" th:if="${status == PaymentIntentStatus.AUTHORIZED}">
-        /*<![CDATA[*/
-            const merchantUrl = /*[[${merchantCallbackUrl}]]*/ 'default';
-            window.location.href = merchantUrl;
-        /*]]>*/
-    </script>
 </head>
 <body class="bg-gray-100 flex justify-center items-center min-h-screen p-6">
 <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
     <h2 class="text-3xl font-bold text-center mb-6 text-gray-800">Payment</h2>
-
     <div th:replace="~{fragments/payment-summary :: status(
     ${merchant},
     ${amount},
     ${currency},
     ${status})}">
     </div>
-
     <div class="flex justify-center mt-6">
         <a th:href="${merchantCallbackUrl}"
            class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold p-2 rounded-xl shadow-md transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2">
             Go back to store
         </a>
     </div>
-
-    <div th:if="${error}" class="bg-red-100 p-4 rounded">
-        <p th:text="${error}"></p>
-    </div>
-
-    <script th:if="${status == PaymentIntentStatus.PENDING}">
+    <script th:if="${status != PaymentIntentStatus.CAPTURED}">
         setTimeout(function() {
             window.location.reload();
         }, 5000);
