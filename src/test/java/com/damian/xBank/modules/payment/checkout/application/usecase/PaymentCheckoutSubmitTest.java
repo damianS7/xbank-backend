@@ -64,8 +64,7 @@ public class PaymentCheckoutSubmitTest extends AbstractServiceTest {
                 "123",
                 "1234",
                 1,
-                2026,
-                "localhost"
+                2026
         );
 
         PaymentAuthorizationResponse response = new PaymentAuthorizationResponse(
@@ -84,20 +83,10 @@ public class PaymentCheckoutSubmitTest extends AbstractServiceTest {
         when(paymentIntentRepository.save(any(PaymentIntent.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        PaymentIntent result = checkoutSubmit.execute(request);
+        checkoutSubmit.execute(request);
 
         // then
-        assertThat(result)
-                .isNotNull()
-                .extracting(
-                        PaymentIntent::getAmount,
-                        PaymentIntent::getCurrency,
-                        PaymentIntent::getStatus
-                ).containsExactly(
-                        paymentIntent.getAmount(),
-                        paymentIntent.getCurrency(),
-                        PaymentIntentStatus.AUTHORIZED
-                );
+        assertThat(paymentIntent.getStatus()).isEqualTo(PaymentIntentStatus.AUTHORIZED);
 
         verify(paymentIntentRepository, times(1)).save(any(PaymentIntent.class));
     }
