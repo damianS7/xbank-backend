@@ -1,130 +1,48 @@
 package com.damian.xBank.modules.payment.checkout.domain;
 
-import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntentStatus;
+import jakarta.validation.constraints.*;
 
-import java.math.BigDecimal;
+public record PaymentCheckoutForm(
 
-public class PaymentCheckoutForm {
-    private Long paymentId;
-    private boolean isPending;
-    private PaymentIntentStatus status;
-    private String merchant;
-    private String merchantCallbackUrl;
-    private BigDecimal amount;
-    private String cardHolder;
-    private String cardNumber;
-    private String cardPin;
-    private String cvv;
-    private int expiryMonth;
-    private int expiryYear;
+        @NotNull(message = "Payment id is required")
+        @Positive(message = "Payment id must be a positive number")
+        Long paymentId,
 
-    // Getters y setters
-    public String getCardNumber() {
-        return cardNumber;
-    }
+        @NotBlank(message = "Card holder is required")
+        String cardHolder,
 
-    public void setCardNumber(String cardNumber) {
-        this.cardNumber = cardNumber;
-    }
+        @NotBlank(message = "Card number is required")
+        @Pattern(
+                regexp = "\\d{16}",
+                message = "Card number must contain exactly 16 digits"
+        )
+        String cardNumber,
 
-    public String getCardPin() {
-        return cardPin;
-    }
+        @NotBlank(message = "Card PIN is required")
+        @Pattern(
+                regexp = "\\d{4}",
+                message = "Card PIN must contain exactly 4 digits"
+        )
+        String cardPin,
 
-    public void setCardPin(String cardPin) {
-        this.cardPin = cardPin;
-    }
+        @NotBlank(message = "CVV is required")
+        @Pattern(
+                regexp = "\\d{3}",
+                message = "CVV must contain exactly 3 digits"
+        )
+        String cvv,
 
-    public String getCvv() {
-        return cvv;
-    }
+        @NotNull(message = "Expiry month is required")
+        @Min(value = 1, message = "Expiry month must be between 1 and 12")
+        @Max(value = 12, message = "Expiry month must be between 1 and 12")
+        Integer expiryMonth,
 
-    public void setCvv(String cvv) {
-        this.cvv = cvv;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
-
-    public String getMerchant() {
-        return merchant;
-    }
-
-    public void setMerchant(String merchant) {
-        this.merchant = merchant;
-    }
-
-    public boolean isPending() {
-        return isPending;
-    }
-
-    public void setPending(boolean pending) {
-        isPending = pending;
-    }
-
-    public PaymentIntentStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(PaymentIntentStatus status) {
-        this.status = status;
-    }
-
-    public Long getPaymentId() {
-        return paymentId;
-    }
-
-    public void setPaymentId(Long paymentId) {
-        this.paymentId = paymentId;
-    }
-
-    @Override
-    public String toString() {
-        return "PaymentForm{"
-               + "paymentId=" + paymentId
-               + ", status=" + status
-               + ", merchant=" + merchant
-               + ", amount=" + amount
-               + ", cardNumber=" + cardNumber
-               + ", cardPin=" + cardNumber
-               + ", cardCvv=" + cvv
-               + "}";
-    }
-
-    public String getMerchantCallbackUrl() {
-        return merchantCallbackUrl;
-    }
-
-    public void setMerchantCallbackUrl(String merchantCallbackUrl) {
-        this.merchantCallbackUrl = merchantCallbackUrl;
-    }
-
-    public int getExpiryMonth() {
-        return expiryMonth;
-    }
-
-    public void setExpiryMonth(int expiryMonth) {
-        this.expiryMonth = expiryMonth;
-    }
-
-    public int getExpiryYear() {
-        return expiryYear;
-    }
-
-    public void setExpiryYear(int expiryYear) {
-        this.expiryYear = expiryYear;
-    }
-
-    public String getCardHolder() {
-        return cardHolder;
-    }
-
-    public void setCardHolder(String cardHolder) {
-        this.cardHolder = cardHolder;
+        @NotNull(message = "Expiry year is required")
+        @Min(value = 2020, message = "Expiry year must be greater than or equal to 2020")
+        @Max(value = 2999, message = "Expiry year must be less than or equal to 2999")
+        Integer expiryYear
+) {
+    public PaymentCheckoutForm() {
+        this(null, null, null, null, null, null, null);
     }
 }

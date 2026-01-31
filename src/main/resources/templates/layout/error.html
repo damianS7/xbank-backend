@@ -12,7 +12,15 @@
 
     <div th:if="${error}" class="bg-red-100 p-4 rounded">
         <p th:text="${error}"></p>
+
+        <ul th:if="${errors}">
+            <li th:each="entry : ${errors}">
+                <!--                <strong th:text="${entry.key}"></strong>:-->
+                <span th:text="${entry.value}"></span>
+            </li>
+        </ul>
     </div>
+
 
     <div class="flex justify-center mt-6">
         <a th:href="@{/payments/{id}/checkout(id=${paymentId})}"
