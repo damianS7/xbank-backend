@@ -12,6 +12,7 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.card.application.dto.response.BankingCardDto;
 import com.damian.xBank.modules.banking.card.application.mapper.BankingCardDtoMapper;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
 
+@Validated
 @RequestMapping("/api/v1")
 @RestController
 public class BankingAccountController {
@@ -76,7 +78,7 @@ public class BankingAccountController {
     // endpoint for logged customer to request for a new BankingAccount
     @PostMapping("/banking/accounts")
     public ResponseEntity<?> requestBankingAccount(
-            @Validated @RequestBody
+            @Valid @RequestBody
             BankingAccountCreateRequest request
     ) {
         BankingAccount bankingAccount = bankingAccountCreate.execute(request);
@@ -92,7 +94,7 @@ public class BankingAccountController {
     public ResponseEntity<?> closeAccount(
             @PathVariable @NotNull @Positive
             Long id,
-            @Validated @RequestBody
+            @Valid @RequestBody
             BankingAccountCloseRequest request
     ) {
         BankingAccount bankingAccount = bankingAccountClose.execute(id, request);
@@ -108,7 +110,7 @@ public class BankingAccountController {
     public ResponseEntity<?> setAccountAlias(
             @PathVariable @Positive
             Long id,
-            @Validated @RequestBody
+            @Valid @RequestBody
             BankingAccountSetAliasRequest request
     ) {
         BankingAccount bankingAccount = bankingAccountSetAlias.execute(id, request);
@@ -124,7 +126,7 @@ public class BankingAccountController {
     public ResponseEntity<?> requestCard(
             @PathVariable @NotNull @Positive
             Long id,
-            @Validated @RequestBody
+            @Valid @RequestBody
             BankingAccountCardRequest request
     ) {
         BankingCard bankingCard = bankingAccountCardRequest.execute(id, request);

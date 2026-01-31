@@ -5,6 +5,7 @@ import com.damian.xBank.modules.banking.card.application.dto.response.BankingCar
 import com.damian.xBank.modules.banking.card.application.mapper.BankingCardDtoMapper;
 import com.damian.xBank.modules.banking.card.application.usecase.*;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+@Validated
 @RequestMapping("/api/v1")
 @RestController
 public class BankingCardManagementController {
@@ -41,7 +43,7 @@ public class BankingCardManagementController {
     public ResponseEntity<?> updatePin(
             @PathVariable @Positive
             Long id,
-            @Validated @RequestBody
+            @Valid @RequestBody
             BankingCardUpdatePinRequest request
     ) {
         BankingCard bankingCard = bankingCardSetPin.execute(id, request);
@@ -57,7 +59,7 @@ public class BankingCardManagementController {
     public ResponseEntity<?> updateDailyLimit(
             @PathVariable @Positive
             Long id,
-            @Validated @RequestBody
+            @Valid @RequestBody
             BankingCardUpdateDailyLimitRequest request
     ) {
         BankingCard bankingCard = bankingCardSetDailyLimit.execute(id, request);
@@ -73,7 +75,7 @@ public class BankingCardManagementController {
     public ResponseEntity<?> lock(
             @PathVariable @Positive
             Long id,
-            @Validated @RequestBody
+            @Valid @RequestBody
             BankingCardLockRequest request
     ) {
         BankingCard bankingCard = bankingCardLock.execute(id, request);
@@ -89,7 +91,7 @@ public class BankingCardManagementController {
     public ResponseEntity<?> unlock(
             @PathVariable @Positive
             Long id,
-            @Validated @RequestBody
+            @Valid @RequestBody
             BankingCardUnlockRequest request
     ) {
         BankingCard bankingCard = bankingCardUnlock.execute(id, request);
@@ -105,7 +107,7 @@ public class BankingCardManagementController {
     public ResponseEntity<?> activate(
             @PathVariable @Positive
             Long id,
-            @Validated @RequestBody
+            @Valid @RequestBody
             BankingCardActivateRequest request
     ) {
         BankingCard bankingCard = bankingCardActivate.execute(id, request);

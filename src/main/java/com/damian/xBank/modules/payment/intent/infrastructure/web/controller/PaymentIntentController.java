@@ -5,6 +5,7 @@ import com.damian.xBank.modules.payment.intent.application.dto.request.CreatePay
 import com.damian.xBank.modules.payment.intent.application.dto.response.PaymentOrderDto;
 import com.damian.xBank.modules.payment.intent.application.usecase.CreatePaymentIntent;
 import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntent;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Validated
 @RequestMapping("/api/v1")
 @RestController
 public class PaymentIntentController {
@@ -32,7 +34,7 @@ public class PaymentIntentController {
      */
     @PostMapping("/payment-intents")
     public ResponseEntity<?> createPaymentIntent(
-            @RequestBody @Validated
+            @RequestBody @Valid
             CreatePaymentIntentRequest request
     ) {
         PaymentIntent paymentIntent = createPaymentIntent.execute(request);

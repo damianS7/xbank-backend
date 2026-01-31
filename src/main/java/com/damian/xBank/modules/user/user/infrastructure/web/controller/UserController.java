@@ -7,11 +7,13 @@ import com.damian.xBank.modules.user.user.application.dto.response.UserDto;
 import com.damian.xBank.modules.user.user.application.usecase.UserEmailUpdate;
 import com.damian.xBank.modules.user.user.application.usecase.UserGet;
 import com.damian.xBank.modules.user.user.domain.model.User;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+@Validated
 @RestController
 @RequestMapping("/api/v1")
 public class UserController {
@@ -40,7 +42,7 @@ public class UserController {
     // endpoint to modify current user email
     @PatchMapping("/users/email")
     public ResponseEntity<UserDto> updateEmail(
-            @Validated @RequestBody
+            @Valid @RequestBody
             UserEmailUpdateRequest request
     ) {
         User user = userEmailUpdate.execute(request);

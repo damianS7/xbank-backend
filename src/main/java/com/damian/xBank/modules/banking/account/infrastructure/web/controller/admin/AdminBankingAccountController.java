@@ -5,6 +5,7 @@ import com.damian.xBank.modules.banking.account.application.usecase.BankingAccou
 import com.damian.xBank.modules.banking.transaction.application.dto.response.BankingTransactionDto;
 import com.damian.xBank.modules.banking.transaction.application.mapper.BankingTransactionDtoMapper;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+@Validated
 @RestController
 @RequestMapping("/api/v1")
 public class AdminBankingAccountController {
@@ -28,7 +30,7 @@ public class AdminBankingAccountController {
     public ResponseEntity<?> deposit(
             @PathVariable @NotNull @Positive
             Long id,
-            @Validated @RequestBody
+            @Valid @RequestBody
             BankingAccountDepositRequest request
     ) {
 

@@ -5,6 +5,7 @@ import com.damian.xBank.modules.user.user.application.dto.request.UserRegistrati
 import com.damian.xBank.modules.user.user.application.dto.response.UserDto;
 import com.damian.xBank.modules.user.user.application.usecase.UserRegister;
 import com.damian.xBank.modules.user.user.domain.model.User;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Validated
 @RequestMapping("/api/v1")
 @RestController
 public class UserRegistrationController {
@@ -29,7 +31,7 @@ public class UserRegistrationController {
     // endpoint for the current user to upload his profile photo
     @PostMapping("/users/register")
     public ResponseEntity<?> registerCustomer(
-            @Validated @RequestBody
+            @Valid @RequestBody
             UserRegistrationRequest request
     ) {
 

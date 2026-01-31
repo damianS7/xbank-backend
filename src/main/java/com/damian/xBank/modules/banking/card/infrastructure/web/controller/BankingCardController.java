@@ -12,6 +12,7 @@ import com.damian.xBank.modules.banking.transaction.application.dto.response.Ban
 import com.damian.xBank.modules.banking.transaction.application.mapper.BankingTransactionDtoMapper;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.payment.network.application.dto.response.PaymentAuthorizationResponse;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
 
+@Validated
 @RequestMapping("/api/v1")
 @RestController
 public class BankingCardController {
@@ -50,7 +52,7 @@ public class BankingCardController {
     // endpoint for card authorization
     @PostMapping("/banking/cards/authorize")
     public ResponseEntity<?> authorizeCard(
-            @Validated @RequestBody
+            @Valid @RequestBody
             AuthorizeCardPaymentRequest request
     ) {
         PaymentAuthorizationResponse response = authorizeCardPayment.execute(request);
@@ -63,7 +65,7 @@ public class BankingCardController {
     // endpoint for card authorization
     @PostMapping("/banking/cards/capture")
     public ResponseEntity<?> capturePayment(
-            @Validated @RequestBody
+            @Valid @RequestBody
             CaptureCardPaymentRequest request
     ) {
         BankingTransaction transaction = captureCardPayment.execute(request);

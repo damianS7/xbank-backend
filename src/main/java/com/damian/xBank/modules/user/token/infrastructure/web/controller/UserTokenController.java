@@ -8,12 +8,14 @@ import com.damian.xBank.modules.user.token.application.usecase.UserTokenRequestV
 import com.damian.xBank.modules.user.token.application.usecase.UserTokenResetPassword;
 import com.damian.xBank.modules.user.token.application.usecase.UserTokenVerifyAccount;
 import com.damian.xBank.shared.dto.ApiResponse;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+@Validated
 @RestController
 @RequestMapping("/api/v1")
 public class UserTokenController {
@@ -52,7 +54,7 @@ public class UserTokenController {
     // endpoint for account to request for account verification email
     @PostMapping("/accounts/verification/resend")
     public ResponseEntity<?> resendVerification(
-            @Validated @RequestBody
+            @Valid @RequestBody
             UserTokenVerificationRequest request
     ) {
         // send the account verification link
@@ -67,7 +69,7 @@ public class UserTokenController {
     // endpoint to request for a reset password
     @PostMapping("/accounts/password/reset")
     public ResponseEntity<?> resetPasswordRequest(
-            @Validated @RequestBody
+            @Valid @RequestBody
             UserTokenRequestPasswordResetRequest request
     ) {
 
@@ -85,7 +87,7 @@ public class UserTokenController {
     public ResponseEntity<?> resetPassword(
             @PathVariable @NotBlank
             String token,
-            @Validated @RequestBody
+            @Valid @RequestBody
             UserTokenResetPasswordRequest request
     ) {
         // update the password using the token

@@ -11,6 +11,7 @@ import com.damian.xBank.modules.banking.transfer.application.usecase.BankingTran
 import com.damian.xBank.modules.banking.transfer.application.usecase.BankingTransferGetAll;
 import com.damian.xBank.modules.banking.transfer.application.usecase.BankingTransferReject;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+@Validated
 @RequestMapping("/api/v1")
 @RestController
 public class BankingTransferController {
@@ -59,7 +61,7 @@ public class BankingTransferController {
     // endpoint to submit a transfer request
     @PostMapping("/banking/transfers")
     public ResponseEntity<?> transfer(
-            @RequestBody @Validated
+            @RequestBody @Valid
             BankingTransferRequest request
     ) {
         BankingTransfer transfer = bankingTransferCreate.createTransfer(request);
@@ -74,7 +76,7 @@ public class BankingTransferController {
     public ResponseEntity<?> confirm(
             @Positive @PathVariable
             Long id,
-            @RequestBody @Validated
+            @RequestBody @Valid
             BankingTransferConfirmRequest request
     ) {
 
@@ -90,7 +92,7 @@ public class BankingTransferController {
     public ResponseEntity<?> reject(
             @Positive @PathVariable
             Long id,
-            @RequestBody @Validated
+            @RequestBody @Valid
             BankingTransferRejectRequest request
     ) {
 

@@ -9,6 +9,7 @@ import com.damian.xBank.modules.notification.application.usecase.NotificationGet
 import com.damian.xBank.modules.notification.application.usecase.NotificationSinkGet;
 import com.damian.xBank.modules.notification.domain.model.Notification;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +25,7 @@ import reactor.core.publisher.Flux;
 
 import java.time.Duration;
 
+@Validated
 @RestController
 @RequestMapping("/api/v1")
 public class NotificationController {
@@ -63,7 +65,7 @@ public class NotificationController {
     // endpoint to delete a batch of notifications by its id
     @DeleteMapping("/notifications")
     public ResponseEntity<?> deleteNotifications(
-            @Validated @RequestBody
+            @Valid @RequestBody
             NotificationDeleteRequest request
     ) {
         notificationDeleteAll.execute(

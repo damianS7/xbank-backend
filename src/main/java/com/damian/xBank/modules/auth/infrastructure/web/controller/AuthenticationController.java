@@ -3,12 +3,14 @@ package com.damian.xBank.modules.auth.infrastructure.web.controller;
 import com.damian.xBank.modules.auth.application.dto.AuthenticationRequest;
 import com.damian.xBank.modules.auth.application.dto.AuthenticationResponse;
 import com.damian.xBank.modules.auth.application.usecase.AuthenticationLogin;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+@Validated
 @RestController
 @RequestMapping("api/v1")
 public class AuthenticationController {
@@ -23,7 +25,7 @@ public class AuthenticationController {
     // endpoint for login
     @PostMapping("/auth/login")
     public ResponseEntity<?> login(
-            @Validated @RequestBody
+            @Valid @RequestBody
             AuthenticationRequest request
     ) {
         AuthenticationResponse authResponse = authenticationLogin.execute(request);

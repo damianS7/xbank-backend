@@ -17,11 +17,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Validated
 @RequestMapping("/api/v1")
 @RestController
 public class BankingTransactionController {
@@ -76,7 +78,7 @@ public class BankingTransactionController {
     // endpoint for logged customer to get all transactions of a BankingCard
     @GetMapping("/banking/cards/{id}/transactions")
     public ResponseEntity<?> getCardTransactions(
-            @PathVariable @NotNull @Positive
+            @PathVariable @Positive
             Long id,
             @PageableDefault(size = 2, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable
@@ -95,7 +97,7 @@ public class BankingTransactionController {
     // endpoint for logged customer to get all transactions of a BankingAccount
     @GetMapping("/banking/accounts/{id}/transactions")
     public ResponseEntity<?> getAccountTransactions(
-            @PathVariable @NotNull @Positive
+            @PathVariable @Positive
             Long id,
             @PageableDefault(size = 2, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable
