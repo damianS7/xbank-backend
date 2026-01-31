@@ -286,11 +286,9 @@ public class BankingCard {
     }
 
     public BankingCard assertActivated() {
-
         // check card status
         if (status != BankingCardStatus.ACTIVE) {
-            // TODO: new excepcion NotActiveExcepcion
-            throw new BankingCardDisabledException(getId());
+            throw new BankingCardNotActiveException(getId());
         }
 
         return this;
