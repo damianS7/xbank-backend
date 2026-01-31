@@ -125,13 +125,20 @@ public class PaymentCheckoutController {
 
     @ExceptionHandler(PaymentCheckoutException.class)
     public String handleException(PaymentCheckoutException ex, Model model) {
-        model.addAttribute("error", ex.getMessage());
+        String message = messageSource.getMessage(
+                ErrorCodes.VALIDATION_FAILED,
+                null,
+                LocaleContextHolder.getLocale()
+        );
+        log.warn("Payment checkout failed: {}", message);
         model.addAttribute("paymentId", ex.getResourceId());
+        model.addAttribute("error", message);
         return "layout/error";
     }
 
     @ExceptionHandler(WebClientRequestException.class)
     public String handleException(WebClientRequestException ex, Model model) {
+        log.warn("Payment checkout connection failed: {}", ex.getMessage());
         model.addAttribute("error", "Internal server error");
         return "layout/error";
     }
@@ -147,9 +154,13 @@ public class PaymentCheckoutController {
             ConstraintViolationException ex,
             Model model
     ) {
-        log.warn("Validation error found: {}", ex.getMessage(), ex);
-        model.addAttribute("error", ErrorCodes.VALIDATION_FAILED);
-        model.addAttribute("errorCode", ErrorCodes.VALIDATION_FAILED);
+        String message = messageSource.getMessage(
+                ErrorCodes.VALIDATION_FAILED,
+                null,
+                LocaleContextHolder.getLocale()
+        );
+        log.warn("Validation error: {}", ex.getMessage(), ex);
+        model.addAttribute("error", message);
         return "layout/error";
     }
 
@@ -158,9 +169,13 @@ public class PaymentCheckoutController {
             HandlerMethodValidationException ex,
             Model model
     ) {
-        log.warn("Validation error found: {}", ex.getMessage(), ex);
-        model.addAttribute("error", ErrorCodes.VALIDATION_FAILED);
-        model.addAttribute("errorCode", ErrorCodes.VALIDATION_FAILED);
+        String message = messageSource.getMessage(
+                ErrorCodes.VALIDATION_FAILED,
+                null,
+                LocaleContextHolder.getLocale()
+        );
+        log.warn("Validation error: {}", ex.getMessage(), ex);
+        model.addAttribute("error", message);
         return "layout/error";
     }
 
