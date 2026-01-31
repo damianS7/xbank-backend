@@ -7,7 +7,6 @@ public record PaymentCheckoutSubmitRequest(
         String cardCvv,
         String cardPin,
         int expiryMonth,
-        int expiryYear,
-        String redirectToUrl
+        int expiryYear
 ) {
 }
