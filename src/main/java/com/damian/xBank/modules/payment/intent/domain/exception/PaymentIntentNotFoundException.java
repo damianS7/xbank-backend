@@ -7,5 +7,4 @@ public class PaymentIntentNotFoundException extends ApplicationException {
     public PaymentIntentNotFoundException(Long paymentId) {
         super(ErrorCodes.PAYMENT_INTENT_NOT_FOUND, paymentId, new Object[]{});
     }
-
 }
