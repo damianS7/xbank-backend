@@ -104,7 +104,7 @@ public class PaymentCheckoutController {
             return "layout/error";
         }
 
-        try { // TODO Remove try?
+        try {
             paymentCheckoutSubmit.execute(
                     new PaymentCheckoutSubmitRequest(
                             form.paymentId(),
