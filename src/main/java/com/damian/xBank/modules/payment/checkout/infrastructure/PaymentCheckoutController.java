@@ -125,14 +125,9 @@ public class PaymentCheckoutController {
 
     @ExceptionHandler(PaymentCheckoutException.class)
     public String handleException(PaymentCheckoutException ex, Model model) {
-        String message = messageSource.getMessage(
-                ErrorCodes.VALIDATION_FAILED,
-                null,
-                LocaleContextHolder.getLocale()
-        );
-        log.warn("Payment checkout failed: {}", message);
+        log.warn("Payment checkout failed: {}", ex.getMessage());
         model.addAttribute("paymentId", ex.getResourceId());
-        model.addAttribute("error", message);
+        model.addAttribute("error", ex.getMessage());
         return "layout/error";
     }
 
