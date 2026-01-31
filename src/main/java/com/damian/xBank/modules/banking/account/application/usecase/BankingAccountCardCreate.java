@@ -6,6 +6,7 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.service.BankingCardDomainService;
+import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.stereotype.Service;
@@ -16,15 +17,18 @@ public class BankingAccountCardCreate {
     private final BankingAccountRepository bankingAccountRepository;
     private final AuthenticationContext authenticationContext;
     private final BankingCardDomainService bankingCardDomainService;
+    private final BankingCardRepository bankingCardRepository;
 
     public BankingAccountCardCreate(
             BankingAccountRepository bankingAccountRepository,
             AuthenticationContext authenticationContext,
-            BankingCardDomainService bankingCardDomainService
+            BankingCardDomainService bankingCardDomainService,
+            BankingCardRepository bankingCardRepository
     ) {
         this.bankingAccountRepository = bankingAccountRepository;
         this.authenticationContext = authenticationContext;
         this.bankingCardDomainService = bankingCardDomainService;
+        this.bankingCardRepository = bankingCardRepository;
     }
 
     /**
@@ -57,6 +61,11 @@ public class BankingAccountCardCreate {
 
         // create the card and associate to the account and return it.
         BankingCard card = bankingCardDomainService.createBankingCard(bankingAccount, request.type());
+
+        // generate another card if number exists
+        while (bankingCardRepository.existsByCardNumber(card.getCardNumber())) {
+            card = bankingCardDomainService.createBankingCard(bankingAccount, request.type());
+        }
 
         bankingAccount.addBankingCard(card);
 

@@ -3,21 +3,17 @@ package com.damian.xBank.modules.banking.card.infrastructure.service;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardType;
-import net.datafaker.Faker;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.LocalDate;
 
 @Component
 public class BankingCardGeneratorImpl implements BankingCardGenerator {
-    private final Faker faker;
-
-    public BankingCardGeneratorImpl(
-            Faker faker
-    ) {
-        this.faker = faker;
-    }
+    @Value("${bank.card.bin}")
+    private String BIN;
 
     // create a new card and associate to the account
     public BankingCard generate(
@@ -40,16 +36,27 @@ public class BankingCardGeneratorImpl implements BankingCardGenerator {
 
     @Override
     public String generateCardNumber() {
-        return faker.number().digits(16);
+        SecureRandom random = new SecureRandom();
+
+        if (BIN == null) {
+            BIN = String.valueOf(random.nextInt(999999));
+        }
+
+        int digit = random.nextInt(999999999);
+        return BIN + String.format("%010d", digit);
     }
 
     @Override
     public String generateCvv() {
-        return faker.number().digits(3);
+        SecureRandom random = new SecureRandom();
+        int digit = random.nextInt(999);
+        return String.format("%03d", digit);
     }
 
     @Override
     public String generatePin() {
-        return faker.number().digits(4);
+        SecureRandom random = new SecureRandom();
+        int digit = random.nextInt(9999);
+        return String.format("%04d", digit);
     }
 }

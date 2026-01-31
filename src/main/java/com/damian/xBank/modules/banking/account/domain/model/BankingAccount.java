@@ -59,7 +59,7 @@ public class BankingAccount {
     @Column
     private Instant updatedAt;
 
-    private final int MAX_CARDS_PER_ACCOUNT = 5;
+    private static final int MAX_CARDS_PER_ACCOUNT = 5;
 
     public BankingAccount() {
         this.accountTransactions = new HashSet<>();

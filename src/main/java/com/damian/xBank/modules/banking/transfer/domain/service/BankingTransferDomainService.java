@@ -50,7 +50,7 @@ public class BankingTransferDomainService {
                         fromAccount,
                         amount
                 )
-                .setStatus(BankingTransactionStatus.PENDING)
+                .setStatus(BankingTransactionStatus.AUTHORIZED)
                 .setDescription(description);
 
         transfer.addTransaction(fromTransaction);
@@ -62,7 +62,7 @@ public class BankingTransferDomainService {
                         toAccount,
                         amount
                 )
-                .setStatus(BankingTransactionStatus.PENDING)
+                .setStatus(BankingTransactionStatus.AUTHORIZED)
                 .setDescription("Transfer from " + fromAccount.getOwner().getProfile().getFullName());
 
         transfer.addTransaction(toTransaction);
@@ -81,6 +81,9 @@ public class BankingTransferDomainService {
         // assert that the transfer belongs to userId
         transfer.assertOwnedBy(userId);
 
+        // Confirm transactions
+        transfer.getTransactions().forEach(BankingTransaction::complete);
+
         // deduct balance
         BankingAccount fromAccount = transfer.getFromAccount();
         fromAccount.subtractBalance(transfer.getAmount());
@@ -91,9 +94,6 @@ public class BankingTransferDomainService {
 
         // confirm transfer
         transfer.confirm();
-
-        // Confirm transactions
-        transfer.getTransactions().forEach(BankingTransaction::complete);
 
         return transfer;
     }
@@ -113,7 +113,7 @@ public class BankingTransferDomainService {
         transfer.reject();
 
         // reject transactions
-        transfer.getTransactions().forEach(BankingTransaction::reject);
+        transfer.getTransactions().forEach(BankingTransaction::decline);
 
         return transfer;
     }

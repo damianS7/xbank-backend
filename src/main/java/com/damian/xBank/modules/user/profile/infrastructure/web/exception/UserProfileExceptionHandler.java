@@ -26,13 +26,13 @@ public class UserProfileExceptionHandler {
         this.messageSource = messageSource;
     }
 
-    // Customer exceptions
+    // Profile exceptions
     @ExceptionHandler(UserProfileNotOwnerException.class) // 401
-    public ResponseEntity<ApiResponse<String>> handleCustomerUpdateAuthorization(
+    public ResponseEntity<ApiResponse<String>> handleProfileUpdateAuthorization(
             UserProfileNotOwnerException ex
     ) {
         log.warn(
-                "Customer id: {} cannot be updated due authorization violation.",
+                "Profile id: {} cannot be updated due authorization violation.",
                 ex.getResourceId()
         );
 
@@ -41,12 +41,12 @@ public class UserProfileExceptionHandler {
     }
 
     @ExceptionHandler(UserProfileUpdateException.class) // 400
-    public ResponseEntity<ApiResponse<String>> handleCustomerUpdate(
+    public ResponseEntity<ApiResponse<String>> handleProfileUpdate(
             UserProfileUpdateException ex
     ) {
 
         log.warn(
-                "Customer id: {} failed to update field: {} with value: {}.",
+                "Profile id: {} failed to update field: {} with value: {}.",
                 ex.getResourceId(),
                 ex.getArgs()[0],
                 ex.getArgs()[1]
@@ -57,11 +57,11 @@ public class UserProfileExceptionHandler {
     }
 
     @ExceptionHandler(UserProfileNotFoundException.class) // 404
-    public ResponseEntity<ApiResponse<String>> handleCustomerNotFound(
+    public ResponseEntity<ApiResponse<String>> handleProfileNotFound(
             UserProfileNotFoundException ex
     ) {
         log.warn(
-                "Customer id: {} not found.",
+                "Profile id: {} not found.",
                 ex.getResourceId()
         );
 
@@ -70,11 +70,11 @@ public class UserProfileExceptionHandler {
     }
 
     @ExceptionHandler(UserProfileImageNotFoundException.class) // 404
-    public ResponseEntity<ApiResponse<String>> handleCustomerImageNotFound(
+    public ResponseEntity<ApiResponse<String>> handleProfileImageNotFound(
             UserProfileImageNotFoundException ex
     ) {
         log.warn(
-                "Customer id: {} image not found.",
+                "Profile id: {} image not found.",
                 ex.getResourceId()
         );
 

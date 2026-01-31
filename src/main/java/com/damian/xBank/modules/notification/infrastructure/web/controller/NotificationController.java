@@ -8,7 +8,7 @@ import com.damian.xBank.modules.notification.application.usecase.NotificationDel
 import com.damian.xBank.modules.notification.application.usecase.NotificationGet;
 import com.damian.xBank.modules.notification.application.usecase.NotificationSinkGet;
 import com.damian.xBank.modules.notification.domain.model.Notification;
-import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
+import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import jakarta.validation.constraints.Positive;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,9 +17,12 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
+
+import java.time.Duration;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -28,17 +31,19 @@ public class NotificationController {
     private final NotificationDeleteAll notificationDeleteAll;
     private final NotificationGet notificationGet;
     private final NotificationSinkGet notificationSinkGet;
+    private final NotificationPublisher notificationPublisher;
 
     public NotificationController(
             NotificationDelete notificationDelete,
             NotificationDeleteAll notificationDeleteAll,
             NotificationGet notificationGet,
-            NotificationSinkGet notificationSinkGet
+            NotificationSinkGet notificationSinkGet, NotificationPublisher notificationPublisher
     ) {
         this.notificationDelete = notificationDelete;
         this.notificationDeleteAll = notificationDeleteAll;
         this.notificationGet = notificationGet;
         this.notificationSinkGet = notificationSinkGet;
+        this.notificationPublisher = notificationPublisher;
     }
 
     // endpoint to fetch (paginated) notifications from current user
@@ -84,7 +89,22 @@ public class NotificationController {
     }
 
     @GetMapping(value = "/notifications/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<NotificationEvent> streamNotifications() {
-        return notificationSinkGet.execute();
+    public Flux<ServerSentEvent<?>> streamNotifications() {
+        Flux<ServerSentEvent<NotificationDto>> notifications =
+                notificationSinkGet.execute()
+                                   .map(dto -> ServerSentEvent.builder(dto)
+                                                              .event("notification")
+                                                              .build()
+                                   );
+
+        Flux<ServerSentEvent<String>> heartbeat =
+                Flux.interval(Duration.ofSeconds(10))
+                    .map(tick -> ServerSentEvent.<String>builder()
+                                                .event("heartbeat")
+                                                .data("ping")
+                                                .build()
+                    );
+
+        return Flux.merge(notifications, heartbeat);
     }
 }

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8"/>
+    <title>Payment error</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex justify-center items-center min-h-screen p-6">
+<div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+    <h2 class="text-3xl font-bold text-center mb-6 text-gray-800">Payment error</h2>
+
+    <div th:if="${error}" class="bg-red-100 p-4 rounded">
+        <p th:text="${error}"></p>
+
+        <ul th:if="${errors}">
+            <li th:each="entry : ${errors}">
+                <!--                <strong th:text="${entry.key}"></strong>:-->
+                <span th:text="${entry.value}"></span>
+            </li>
+        </ul>
+    </div>
+
+
+    <div class="flex justify-center mt-6">
+        <a th:href="@{/payments/{id}/checkout(id=${paymentId})}"
+           class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold p-2 rounded-xl shadow-md transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2">
+            Go back
+        </a>
+    </div>
+</div>
+</body>
+</html>

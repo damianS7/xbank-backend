@@ -10,7 +10,7 @@ import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransact
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.infrastructure.service.BankingTransactionPersistenceService;
-import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
+import com.damian.xBank.modules.notification.domain.factory.NotificationEventFactory;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
@@ -29,13 +29,15 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 public class BankingAccountDepositTest extends AbstractServiceTest {
 
     @InjectMocks
     private BankingAccountDeposit bankingAccountDeposit;
+
+    @Mock
+    private NotificationEventFactory notificationEventFactory;
 
     @Mock
     private BankingAccountRepository bankingAccountRepository;
@@ -93,8 +95,6 @@ public class BankingAccountDepositTest extends AbstractServiceTest {
         when(bankingTransactionPersistenceService.record(
                 any(BankingTransaction.class)
         )).thenAnswer(i -> i.getArgument(0));
-
-        doNothing().when(notificationPublisher).publish(any(NotificationEvent.class));
 
         // then
         BankingTransaction result = bankingAccountDeposit.execute(

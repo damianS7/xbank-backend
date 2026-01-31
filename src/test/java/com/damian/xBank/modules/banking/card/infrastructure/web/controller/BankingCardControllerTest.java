@@ -4,19 +4,24 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
+import com.damian.xBank.modules.banking.card.application.dto.request.AuthorizeCardPaymentRequest;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
+import com.damian.xBank.shared.utils.JsonHelper;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -46,6 +51,7 @@ public class BankingCardControllerTest extends AbstractControllerTest {
 
         customerBankingCard = BankingCard
                 .create(customerBankingAccount)
+                .setExpiredDate(LocalDate.now().plusYears(1))
                 .setCardNumber("1234123412341234")
                 .setCardCvv("123")
                 .setCardPin("1234");
@@ -64,6 +70,32 @@ public class BankingCardControllerTest extends AbstractControllerTest {
         // then
         mockMvc.perform(get("/api/v1/banking/cards")
                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+               .andDo(print())
+               .andExpect(status().is(200));
+    }
+
+    @Test
+    @DisplayName("should authorize card")
+    void authorizeCard_WhenValidRequest_Returns200OK() throws Exception {
+        // given
+        login(customer);
+
+        AuthorizeCardPaymentRequest request = new AuthorizeCardPaymentRequest(
+                "Amazon.com",
+                "John",
+                customerBankingCard.getCardNumber(),
+                customerBankingCard.getExpiredDate().getMonthValue(),
+                customerBankingCard.getExpiredDate().getYear(),
+                customerBankingCard.getCardCvv(),
+                BigDecimal.valueOf(100)
+        );
+
+        // when
+        // then
+        mockMvc.perform(post("/api/v1/banking/cards/authorize")
+                       .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                       .contentType(MediaType.APPLICATION_JSON)
+                       .content(JsonHelper.toJson(request)))
                .andDo(print())
                .andExpect(status().is(200));
     }

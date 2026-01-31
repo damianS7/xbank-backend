@@ -1,7 +1,9 @@
-package com.damian.xBank.shared.exception;
+package com.damian.xBank.shared.infrastructure.web.exception;
 
 import com.damian.xBank.shared.dto.ApiResponse;
+import com.damian.xBank.shared.exception.ErrorCodes;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +12,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.messaging.handler.annotation.support.MethodArgumentTypeMismatchException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.TransactionSystemException;
@@ -21,6 +24,8 @@ import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +35,42 @@ import java.util.Map;
 public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    // o IllegalStateException
+    @ExceptionHandler(AsyncRequestNotUsableException.class)
+    public ResponseEntity<?> handleAsyncRequestNotUsable(
+            AsyncRequestNotUsableException ex,
+            HttpServletRequest request
+    ) {
+        String accept = request.getHeader("Accept");
+
+        // if SSE
+        if (accept != null && accept.contains("text/event-stream")) {
+            // returns nothing
+            return null;
+        }
+
+        // REST
+        return this.handleUnexpectedExceptions(ex);
+    }
+
+
+    @ExceptionHandler(HttpMessageNotWritableException.class)
+    public ResponseEntity<?> handleHttpMessageNotWritable(
+            HttpMessageNotWritableException ex,
+            HttpServletRequest request
+    ) {
+        String accept = request.getHeader("Accept");
+
+        // If SSE
+        if (accept != null && accept.contains("text/event-stream")) {
+            // dont return nothing
+            return null;
+        }
+
+        // REST
+        return this.handleUnexpectedExceptions(ex);
+    }
+
+    // IllegalStateException
     @ExceptionHandler(IllegalStateException.class) // 500
     public ResponseEntity<ApiResponse<String>> handleIllegalState(IllegalStateException ex) {
         log.warn("Illegal state exception: {}", ex.getMessage(), ex);
@@ -108,7 +148,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleContraintViolation(ConstraintViolationException ex) {
         log.warn("Validation error found: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                             .body(ApiResponse.error("Validation error.", HttpStatus.BAD_REQUEST));
+                             .body(ApiResponse.error("Constraint validation error.", HttpStatus.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(HandlerMethodValidationException.class) // 404
+    public ResponseEntity<ApiResponse<String>> handleMethodValidation(HandlerMethodValidationException ex) {
+        log.warn("Validation error found: {}", ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                             .body(ApiResponse.error("Method validation error.", HttpStatus.BAD_REQUEST));
     }
 
     // Conversion from Long to String for example

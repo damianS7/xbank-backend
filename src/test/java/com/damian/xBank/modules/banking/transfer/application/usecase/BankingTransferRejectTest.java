@@ -12,7 +12,6 @@ import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferStatus;
 import com.damian.xBank.modules.banking.transfer.domain.service.BankingTransferDomainService;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
-import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
@@ -28,7 +27,6 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 public class BankingTransferRejectTest extends AbstractServiceTest {
@@ -129,7 +127,7 @@ public class BankingTransferRejectTest extends AbstractServiceTest {
         //        when(bankingTransferRepository.save(any(BankingTransfer.class)))
         //                .thenAnswer(i -> i.getArgument(0));
 
-        doNothing().when(notificationPublisher).publish(any(NotificationEvent.class));
+        //        doNothing().when(notificationPublisher).publish(any(NotificationEvent.class));
 
         // then
         bankingTransferReject

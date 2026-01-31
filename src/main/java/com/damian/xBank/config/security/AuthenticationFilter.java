@@ -121,7 +121,6 @@ public class AuthenticationFilter extends OncePerRequestFilter {
                     new WebAuthenticationDetailsSource().buildDetails(request)
             );
 
-            log.debug("Configuring context with the jwt token");
             // Finally, set the Authentication object in the SecurityContext.
             SecurityContextHolder.getContext().setAuthentication(authToken);
         }
@@ -131,11 +130,9 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     }
 
     private String extractToken(HttpServletRequest request) {
-        log.debug("Extracting jwt token from request");
         // First find the token in the header
         String header = request.getHeader("Authorization");
         if (header != null && header.startsWith("Bearer ")) {
-            log.debug("jwt token found in header.");
             return header.substring(7);
         }
 
@@ -149,7 +146,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             }
         }
 
-        log.debug("No jwt token found.");
+        //        log.debug("No jwt token found.");
         return null; // no token found
     }
 }

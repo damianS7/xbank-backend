@@ -3,6 +3,7 @@ package com.damian.xBank.modules.user.profile.infrastructure.web.controller;
 import com.damian.xBank.modules.user.profile.application.dto.mapper.UserProfileDtoMapper;
 import com.damian.xBank.modules.user.profile.application.dto.request.UserProfileUpdateRequest;
 import com.damian.xBank.modules.user.profile.application.dto.response.UserProfileDetailDto;
+import com.damian.xBank.modules.user.profile.application.dto.response.UserProfileDto;
 import com.damian.xBank.modules.user.profile.application.usecase.UserProfileGet;
 import com.damian.xBank.modules.user.profile.application.usecase.UserProfileUpdate;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
@@ -40,17 +41,16 @@ public class UserProfileController {
 
     // endpoint to modify current customer profile
     @PatchMapping("/profiles")
-    public ResponseEntity<UserProfileDetailDto> update(
+    public ResponseEntity<UserProfileDto> update(
             @Validated @RequestBody
             UserProfileUpdateRequest request
     ) {
-        UserProfile customer = userProfileUpdate.execute(request);
-        //        CustomerDto customerDto = CustomerDtoMapper.toCustomerDto(customer);
-        UserProfileDetailDto customerDto = UserProfileDtoMapper.toCustomerWithAccountDto(customer);
+        UserProfile profile = userProfileUpdate.execute(request);
+        UserProfileDto profileDto = UserProfileDtoMapper.toUserProfileDto(profile);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(customerDto);
+                .body(profileDto);
     }
 }
 

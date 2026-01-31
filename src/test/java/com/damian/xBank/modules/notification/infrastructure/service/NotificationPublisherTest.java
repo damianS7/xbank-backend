@@ -60,9 +60,10 @@ public class NotificationPublisherTest extends AbstractServiceTest {
 
         NotificationEvent event = new NotificationEvent(
                 customer.getId(),
-                NotificationType.INFO,
+                NotificationType.TRANSFER,
                 metadata,
-                Instant.now().toString()
+                "notification.transfer.sent",
+                Instant.now()
         );
 
         // when
@@ -87,9 +88,10 @@ public class NotificationPublisherTest extends AbstractServiceTest {
 
         NotificationEvent event = new NotificationEvent(
                 customer.getId(),
-                NotificationType.INFO,
+                NotificationType.TRANSFER,
                 metadata,
-                Instant.now().toString()
+                "notification.transfer.sent",
+                Instant.now()
         );
 
         // when

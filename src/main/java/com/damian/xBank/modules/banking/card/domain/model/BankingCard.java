@@ -270,6 +270,31 @@ public class BankingCard {
     }
 
     /**
+     * Assert the card cvv matches.
+     *
+     * @return the current validator instance for chaining
+     * @throws BankingCardInvalidCvvException if the card CVV does not equals to the given CVV
+     */
+    public BankingCard assertCorrectCvv(String cvv) {
+
+        // check card pin
+        if (!Objects.equals(getCardCvv(), cvv)) {
+            throw new BankingCardInvalidCvvException(getId());
+        }
+
+        return this;
+    }
+
+    public BankingCard assertActivated() {
+        // check card status
+        if (status != BankingCardStatus.ACTIVE) {
+            throw new BankingCardNotActiveException(getId());
+        }
+
+        return this;
+    }
+
+    /**
      * Assert card is not DISABLED.
      *
      * @return the current validator instance for chaining
@@ -310,7 +335,7 @@ public class BankingCard {
      */
     public BankingCard assertUsable() {
 
-        this.assertEnabled()
+        this.assertActivated()
             .assertUnlocked();
 
         return this;
@@ -336,5 +361,48 @@ public class BankingCard {
             .assertSufficientFunds(amount);
 
         return this;
+    }
+
+    /**
+     * Validate input year equals to the card expiration year
+     *
+     * @param year
+     */
+    public void validateExpirationYear(int year) {
+        if (this.getExpiredDate().getYear() != year) {
+            throw new BankingCardInvalidExpirationYearException(this.id);
+        }
+    }
+
+    /**
+     * Validate input year equals to the card expiration month
+     *
+     * @param month
+     */
+    public void validateExpirationMonth(int month) {
+        if (this.getExpiredDate().getMonth().getValue() != month) {
+            throw new BankingCardInvalidExpirationMonthException(this.id);
+        }
+    }
+
+    /**
+     * Authorize a payment.
+     *
+     * @param amount
+     * @param expiryMonth
+     * @param expiryYear
+     * @param cvv
+     */
+    public void authorizePayment(
+            BigDecimal amount,
+            Integer expiryMonth,
+            Integer expiryYear,
+            String cvv
+    ) {
+        assertUsable();
+        assertSufficientFunds(amount);
+        validateExpirationYear(expiryYear);
+        validateExpirationMonth(expiryMonth);
+        assertCorrectCvv(cvv);
     }
 }

@@ -1,15 +1,9 @@
 package com.damian.xBank.modules.banking.card.infrastructure.web.controller;
 
-import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardLockRequest;
-import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUnlockRequest;
-import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdateDailyLimitRequest;
-import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardUpdatePinRequest;
+import com.damian.xBank.modules.banking.card.application.dto.request.*;
 import com.damian.xBank.modules.banking.card.application.dto.response.BankingCardDto;
 import com.damian.xBank.modules.banking.card.application.mapper.BankingCardDtoMapper;
-import com.damian.xBank.modules.banking.card.application.usecase.BankingCardLock;
-import com.damian.xBank.modules.banking.card.application.usecase.BankingCardSetDailyLimit;
-import com.damian.xBank.modules.banking.card.application.usecase.BankingCardSetPin;
-import com.damian.xBank.modules.banking.card.application.usecase.BankingCardUnlock;
+import com.damian.xBank.modules.banking.card.application.usecase.*;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import jakarta.validation.constraints.Positive;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,18 +19,21 @@ public class BankingCardManagementController {
     private final BankingCardSetDailyLimit bankingCardSetDailyLimit;
     private final BankingCardLock bankingCardLock;
     private final BankingCardUnlock bankingCardUnlock;
+    private final BankingCardActivate bankingCardActivate;
 
     @Autowired
     public BankingCardManagementController(
             BankingCardSetPin bankingCardSetPin,
             BankingCardSetDailyLimit bankingCardSetDailyLimit,
             BankingCardLock bankingCardLock,
-            BankingCardUnlock bankingCardUnlock
+            BankingCardUnlock bankingCardUnlock,
+            BankingCardActivate bankingCardActivate
     ) {
         this.bankingCardSetPin = bankingCardSetPin;
         this.bankingCardSetDailyLimit = bankingCardSetDailyLimit;
         this.bankingCardLock = bankingCardLock;
         this.bankingCardUnlock = bankingCardUnlock;
+        this.bankingCardActivate = bankingCardActivate;
     }
 
     // endpoint for logged customer to set PIN on a BankingCard
@@ -96,6 +93,22 @@ public class BankingCardManagementController {
             BankingCardUnlockRequest request
     ) {
         BankingCard bankingCard = bankingCardUnlock.execute(id, request);
+        BankingCardDto bankingCardDTO = BankingCardDtoMapper.toBankingCardDto(bankingCard);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(bankingCardDTO);
+    }
+
+    // endpoint for BankingCard activation
+    @PatchMapping("/banking/cards/{id}/activate")
+    public ResponseEntity<?> activate(
+            @PathVariable @Positive
+            Long id,
+            @Validated @RequestBody
+            BankingCardActivateRequest request
+    ) {
+        BankingCard bankingCard = bankingCardActivate.execute(id, request);
         BankingCardDto bankingCardDTO = BankingCardDtoMapper.toBankingCardDto(bankingCard);
 
         return ResponseEntity

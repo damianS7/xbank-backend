@@ -29,6 +29,9 @@ public class Notification {
     private Map<String, Object> metadata = new HashMap<>();
 
     @Column
+    private String templateKey;
+
+    @Column
     private Instant createdAt;
 
     public Notification() {
@@ -67,7 +70,8 @@ public class Notification {
         return "Notification{" +
                "id=" + id +
                ",type=" + (getType() != null ? getType() : "null") +
-               ",message=" + (getMessage() != null ? getMessage() : "null") +
+               ",metadata=" + (getMetadata() != null ? getMetadata() : "null") +
+               ",templateKey=" + (getTemplateKey() != null ? getTemplateKey() : "null") +
                ",createdAt=" + createdAt +
                "}";
     }
@@ -90,15 +94,6 @@ public class Notification {
         return this;
     }
 
-    public String getMessage() {
-        return metadata.get("message") != null ? metadata.get("message").toString() : null;
-    }
-
-    public Notification setMessage(String message) {
-        metadata.put("message", message);
-        return this;
-    }
-
     public Map<String, Object> getMetadata() {
         return metadata;
     }
@@ -116,5 +111,14 @@ public class Notification {
         if (!isOwnedBy(userId)) {
             throw new NotificationNotOwnerException(getId(), userId);
         }
+    }
+
+    public String getTemplateKey() {
+        return templateKey;
+    }
+
+    public Notification setTemplateKey(String templateKey) {
+        this.templateKey = templateKey;
+        return this;
     }
 }

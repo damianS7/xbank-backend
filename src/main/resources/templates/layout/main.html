@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Payment</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex justify-center items-center min-h-screen p-6">
+<div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+    <h2 class="text-3xl font-bold text-center mb-6 text-gray-800">Payment</h2>
+
+    <div th:replace="~{fragments/payment-summary :: status(
+    ${merchant},
+    ${amount},
+    ${currency},
+    ${status})}">
+    </div>
+
+    <th:block th:if="${status == PaymentIntentStatus.PENDING}">
+        <div th:replace="~{fragments/payment-form :: form}"></div>
+    </th:block>
+
+    <th:block th:if="${status == PaymentIntentStatus.AUTHORIZED}">
+        <div class="flex justify-center mt-6">
+            <a th:href="${merchantCallbackUrl}"
+               class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold p-2 rounded-xl shadow-md transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2">
+                Go back to merchant
+            </a>
+        </div>
+    </th:block>
+</div>
+</body>
+</html>

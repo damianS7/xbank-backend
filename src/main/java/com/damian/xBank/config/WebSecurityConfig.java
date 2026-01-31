@@ -2,6 +2,7 @@ package com.damian.xBank.config;
 
 import com.damian.xBank.config.security.AuthenticationFilter;
 import com.damian.xBank.config.security.CustomAuthenticationEntryPoint;
+import jakarta.servlet.DispatcherType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,17 +45,26 @@ public class WebSecurityConfig {
                 .csrf(csrf -> csrf.disable()) // Disabled for jwt
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .dispatcherTypeMatchers(DispatcherType.ASYNC) // Avoid Authexception with notifications
+                        .permitAll()
                         .requestMatchers(
                                 "/api/v1/auth/**",
-                                "/api/v1/accounts/register",
-                                "/api/v1/customers/register",
                                 "/api/v1/users/register",
                                 "/api/v1/accounts/verification/**",
                                 "/api/v1/accounts/password/reset/**",
+                                "/api/v1/banking/cards/authorize",
+                                "/api/v1/banking/cards/capture",
+                                "/payments/*/checkout",
+                                "/payments/checkout",
+                                "/payments/*/status",
+                                "/payment-intents",
                                 "/ws/**"
-                        ).permitAll()
-                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
-                        .anyRequest().authenticated()
+                        )
+                        .permitAll()
+                        .requestMatchers("/api/v1/admin/**")
+                        .hasRole("ADMIN")
+                        .anyRequest()
+                        .authenticated()
                 )
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(entryPoint))
                 .authenticationProvider(authenticationProvider)

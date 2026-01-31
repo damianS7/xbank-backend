@@ -10,7 +10,8 @@ public class NotificationDtoMapper {
                 notification.getId(),
                 notification.getType(),
                 notification.getMetadata(),
-                notification.getCreatedAt().toString()
+                notification.getTemplateKey(),
+                notification.getCreatedAt()
         );
     }
 

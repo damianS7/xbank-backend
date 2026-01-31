@@ -4,6 +4,10 @@ import com.damian.xBank.modules.banking.transaction.application.mapper.BankingTr
 import com.damian.xBank.modules.banking.transfer.application.dto.response.BankingTransferDetailDto;
 import com.damian.xBank.modules.banking.transfer.application.dto.response.BankingTransferDto;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
+import org.springframework.data.domain.Page;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class BankingTransferDtoMapper {
     public static BankingTransferDto toBankingTransferDto(BankingTransfer bankingTransfer) {
@@ -33,5 +37,16 @@ public class BankingTransferDtoMapper {
                 bankingTransfer.getCreatedAt(),
                 bankingTransfer.getUpdatedAt()
         );
+    }
+
+    public static Set<BankingTransferDto> toBankingTransferDtoSet(Set<BankingTransfer> transfers) {
+
+        return transfers.stream()
+                        .map(BankingTransferDtoMapper::toBankingTransferDto)
+                        .collect(Collectors.toSet());
+    }
+
+    public static Page<BankingTransferDto> toBankingTransferDtoPage(Page<BankingTransfer> transfers) {
+        return transfers.map(BankingTransferDtoMapper::toBankingTransferDto);
     }
 }

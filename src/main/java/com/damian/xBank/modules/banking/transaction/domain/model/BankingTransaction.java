@@ -2,6 +2,7 @@ package com.damian.xBank.modules.banking.transaction.domain.model;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
+import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotAuthorizedStatusException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotOwnerException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionStatusTransitionException;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
@@ -69,6 +70,7 @@ public class BankingTransaction {
 
     public BankingTransaction(BankingCard bankingCard) {
         this(bankingCard.getBankingAccount());
+        this.bankingCard = bankingCard;
     }
 
     public static BankingTransaction create(
@@ -90,7 +92,9 @@ public class BankingTransaction {
             BankingCard card,
             BigDecimal amount
     ) {
-        return create(type, card.getBankingAccount(), amount);
+        BankingTransaction t = create(type, card.getBankingAccount(), amount);
+        t.setBankingCard(card);
+        return t;
     }
 
     public boolean isOwnedBy(Long userId) {
@@ -230,14 +234,35 @@ public class BankingTransaction {
         return balanceBefore.subtract(this.amount);
     }
 
+    public void authorize() {
+        this.setStatus(BankingTransactionStatus.AUTHORIZED);
+        this.updatedAt = Instant.now();
+    }
+
+    public void capture() {
+        this.assertAuthorized();
+        this.balanceBefore = bankingAccount.getBalance();
+        this.balanceAfter = calcBalanceAfter();
+        this.setStatus(BankingTransactionStatus.CAPTURED);
+        this.updatedAt = Instant.now();
+    }
+
     public void complete() {
+        this.balanceBefore = bankingAccount.getBalance();
+        this.balanceAfter = calcBalanceAfter();
         this.setStatus(BankingTransactionStatus.COMPLETED);
         this.updatedAt = Instant.now();
     }
 
-    public void reject() {
-        this.setStatus(BankingTransactionStatus.REJECTED);
+    public void decline() {
+        this.setStatus(BankingTransactionStatus.DECLINED);
         this.updatedAt = Instant.now();
+    }
+
+    public void assertAuthorized() {
+        if (status != BankingTransactionStatus.AUTHORIZED) {
+            throw new BankingTransactionNotAuthorizedStatusException(this.id);
+        }
     }
 
     /**

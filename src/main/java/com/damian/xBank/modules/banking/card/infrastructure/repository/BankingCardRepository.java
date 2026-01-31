@@ -8,10 +8,15 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.Set;
 
 @Repository
 public interface BankingCardRepository extends JpaRepository<BankingCard, Long> {
+    Optional<BankingCard> findByCardNumber(String cardNumber);
+
+    boolean existsByCardNumber(String cardNumber);
+
     Set<BankingCard> findByBankingAccountId(Long bankingAccountId);
 
     @Query("SELECT cards FROM BankingCard cards WHERE cards.bankingAccount.user.id = :userId")

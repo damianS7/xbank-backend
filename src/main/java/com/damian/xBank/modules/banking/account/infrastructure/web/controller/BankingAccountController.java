@@ -29,19 +29,35 @@ public class BankingAccountController {
     private final BankingAccountCardCreate bankingAccountCardRequest;
     private final BankingAccountClose bankingAccountClose;
     private final BankingAccountSetAlias bankingAccountSetAlias;
+    private final BankingAccountSummaryByCurrency bankingAccountSummaryByCurrency;
 
     public BankingAccountController(
             BankingAccountGetAll bankingAccountGetAll,
             BankingAccountCreate bankingAccountCreate,
             BankingAccountCardCreate bankingAccountCardRequest,
             BankingAccountClose bankingAccountClose,
-            BankingAccountSetAlias bankingAccountSetAlias
+            BankingAccountSetAlias bankingAccountSetAlias,
+            BankingAccountSummaryByCurrency bankingAccountSummaryByCurrency
     ) {
         this.bankingAccountGetAll = bankingAccountGetAll;
         this.bankingAccountCreate = bankingAccountCreate;
         this.bankingAccountCardRequest = bankingAccountCardRequest;
         this.bankingAccountClose = bankingAccountClose;
         this.bankingAccountSetAlias = bankingAccountSetAlias;
+        this.bankingAccountSummaryByCurrency = bankingAccountSummaryByCurrency;
+    }
+
+    // endpoint to get summary for account currency
+    @GetMapping("/banking/accounts/summary/{currency}")
+    public ResponseEntity<?> accountSummaryByCurrency(
+            @PathVariable @NotNull
+            String currency
+    ) {
+        Set<Object> summary = bankingAccountSummaryByCurrency.execute(currency);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(summary);
     }
 
     // return all the accounts from the logged customer

@@ -15,7 +15,7 @@ public class UserTestBuilder {
     private String password = "$2a$10$7EqJtq98hPqEX7fNZaFWoOa6sK9Pz7RrH9Z4VQe8C7l8bqZkYwF6e";
     private UserStatus status = UserStatus.VERIFIED;
     private UserRole role = UserRole.CUSTOMER;
-    private UserProfile profile;
+    private UserProfile profile = UserProfileTestBuilder.defaultProfile().build();
 
     private UserTestBuilder() {
     }

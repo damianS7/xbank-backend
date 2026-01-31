@@ -53,7 +53,7 @@ public class UserControllerTest extends AbstractControllerTest {
         // when
         MvcResult result = mockMvc
                 .perform(
-                        patch("/api/v1/accounts/email")
+                        patch("/api/v1/users/email")
                                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(JsonHelper.toJson(givenRequest)))

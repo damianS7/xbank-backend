@@ -6,12 +6,16 @@ services:
     ports:
       - "1025:1025" # SMTP
       - "8025:8025" # Web UI
+    networks:
+      - xbank-network-internal
   rabbitmq:
-    image: rabbitmq:3-management
     container_name: xbank-rabbitmq
+    image: rabbitmq:3-management
     ports:
-      - "5672:5672"   # app port (AMQP)
+      - "5672:5672" # app port (AMQP)
       - "15672:15672" # UI web
+    networks:
+      - xbank-network-internal
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
@@ -19,7 +23,7 @@ services:
       - rabbitmq_data:/var/lib/rabbitmq
 
   database:
-    container_name: xbank-database
+    container_name: xbank-db
     build:
       context: .
       dockerfile: Dockerfile.db
@@ -29,12 +33,14 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}
     ports:
-      - "5440:5432"
+      - "5441:5432"
+    networks:
+      - xbank-network-internal
     volumes:
       - pgdata:/var/lib/postgresql/data
 
   backend:
-    container_name: 'xbank-backend'
+    container_name: 'xbank-api'
     build:
       context: .
       dockerfile: Dockerfile.backend
@@ -57,7 +63,15 @@ services:
       SPRING_MAIL_PORT: 1025
     ports:
       - "8080:8080"
+    networks:
+      - shared-network
+      - xbank-network-internal
 
+networks:
+  shared-network:
+    external: true
+  xbank-network-internal:
+    driver: bridge
 volumes:
   pgdata:
   rabbitmq_data:

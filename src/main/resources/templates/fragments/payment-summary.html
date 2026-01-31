@@ -1,0 +1,21 @@
+<!-- Payment status -->
+<div th:fragment="status(merchant, amount, currency, status)" class="flex flex-col gap-4">
+    <p class="flex justify-between items-center text-gray-700">
+        <span class="font-semibold">Merchant:</span>
+        <span th:text="${merchant}"></span>
+    </p>
+
+    <p class="flex justify-between items-center text-gray-700">
+        <span class="font-semibold">Amount:</span>
+        <span>
+            <span th:text="${amount}"></span>
+            <span th:text="${currency}"></span>
+        </span>
+    </p>
+
+    <p class="flex justify-between items-center text-gray-700">
+        <span class="font-semibold">Status:</span>
+        <span th:text="${status}"></span>
+    </p>
+</div>
+
