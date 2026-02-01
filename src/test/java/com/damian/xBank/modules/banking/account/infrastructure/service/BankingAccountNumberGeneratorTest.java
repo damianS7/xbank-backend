@@ -1,7 +1,6 @@
 package com.damian.xBank.modules.banking.account.infrastructure.service;
 
 import com.damian.xBank.shared.AbstractServiceTest;
-import net.datafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,7 +12,7 @@ public class BankingAccountNumberGeneratorTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        generator = new BankingAccountNumberGeneratorImpl(new Faker());
+        generator = new BankingAccountNumberGeneratorImpl("ES880099");
     }
 
     @Test

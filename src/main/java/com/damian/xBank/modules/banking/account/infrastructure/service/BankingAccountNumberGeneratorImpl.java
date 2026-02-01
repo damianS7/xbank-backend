@@ -1,16 +1,19 @@
 package com.damian.xBank.modules.banking.account.infrastructure.service;
 
-import net.datafaker.Faker;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.security.SecureRandom;
 
 @Component
 public class BankingAccountNumberGeneratorImpl implements BankingAccountNumberGenerator {
-    private final Faker faker;
+
+    private final String BIN;
 
     public BankingAccountNumberGeneratorImpl(
-            Faker faker
+            @Value("${bank.account.bin}") String BIN
     ) {
-        this.faker = faker;
+        this.BIN = BIN;
     }
 
     /**
@@ -20,8 +23,13 @@ public class BankingAccountNumberGeneratorImpl implements BankingAccountNumberGe
      */
     @Override
     public String generate() {
-        //ES00 0000 0000 0000 0000 0000
-        String country = faker.country().countryCode2().toUpperCase();
-        return country + faker.number().digits(22);
+        SecureRandom random = new SecureRandom();
+
+        StringBuilder sb = new StringBuilder(16);
+        for (int i = 0; i < 16; i++) {
+            sb.append(random.nextInt(10)); // 0–9
+        }
+
+        return BIN + sb;
     }
 }

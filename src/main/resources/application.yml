@@ -10,5 +10,7 @@ server:
 jwt:
   secret: ${JWT_SECRET_KEY}
 bank:
+  account:
+    bin: ES003199
   card:
     bin: 777700
