@@ -4,9 +4,8 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.card.application.dto.request.AuthorizeCardPaymentRequest;
-import com.damian.xBank.modules.banking.card.domain.exception.BankingCardDisabledException;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardInsufficientFundsException;
-import com.damian.xBank.modules.banking.card.domain.exception.BankingCardLockedException;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotActiveException;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoundException;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
@@ -70,6 +69,7 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
         bankingCard = BankingCard
                 .create(bankingAccount)
                 .setId(11L)
+                .setStatus(BankingCardStatus.ACTIVE)
                 .setCardNumber("1234123412341234")
                 .setExpiredDate(LocalDate.now().plusYears(1))
                 .setCardCvv("123")
@@ -177,13 +177,13 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
         when(bankingCardRepository.findByCardNumber(anyString())).thenReturn(Optional.of(bankingCard));
 
         // then
-        BankingCardDisabledException exception = assertThrows(
-                BankingCardDisabledException.class,
+        BankingCardNotActiveException exception = assertThrows(
+                BankingCardNotActiveException.class,
                 () -> cardAuthorize.execute(request)
         );
 
         // then
-        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.BANKING_CARD_DISABLED);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.BANKING_CARD_NOT_ACTIVE);
     }
 
     @Test
@@ -212,13 +212,13 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
         when(bankingCardRepository.findByCardNumber(anyString())).thenReturn(Optional.of(bankingCard));
 
         // then
-        BankingCardLockedException exception = assertThrows(
-                BankingCardLockedException.class,
+        BankingCardNotActiveException exception = assertThrows(
+                BankingCardNotActiveException.class,
                 () -> cardAuthorize.execute(request)
         );
 
         // then
-        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.BANKING_CARD_LOCKED);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.BANKING_CARD_NOT_ACTIVE);
     }
 
     @Test

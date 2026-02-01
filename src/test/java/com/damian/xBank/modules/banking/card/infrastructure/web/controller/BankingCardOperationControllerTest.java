@@ -8,6 +8,7 @@ import com.damian.xBank.modules.banking.card.application.dto.request.AuthorizeCa
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardWithdrawRequest;
 import com.damian.xBank.modules.banking.card.application.dto.request.CaptureCardPaymentRequest;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
 import com.damian.xBank.modules.banking.transaction.application.dto.response.BankingTransactionDto;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
@@ -66,6 +67,7 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
 
         customerBankingCard = BankingCard
                 .create(customerBankingAccount)
+                .setStatus(BankingCardStatus.ACTIVE)
                 .setExpiredDate(LocalDate.now().plusYears(1))
                 .setCardNumber("1234123412341234")
                 .setCardCvv("123")

@@ -6,6 +6,7 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.card.application.dto.request.BankingCardWithdrawRequest;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardInsufficientFundsException;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
@@ -72,6 +73,7 @@ public class BankingCardWithdrawTest extends AbstractServiceTest {
         bankingCard = BankingCard
                 .create(bankingAccount)
                 .setId(11L)
+                .setStatus(BankingCardStatus.ACTIVE)
                 .setCardNumber("1234123412341234")
                 .setCardCvv("123")
                 .setCardPin("1234");

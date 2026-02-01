@@ -2,6 +2,7 @@ package com.damian.xBank.modules.payment.checkout.infrastructure.web;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntent;
+import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntentStatus;
 import com.damian.xBank.modules.payment.network.application.PaymentNetworkGateway;
 import com.damian.xBank.modules.payment.network.application.dto.request.PaymentAuthorizationRequest;
 import com.damian.xBank.modules.payment.network.application.dto.response.PaymentAuthorizationResponse;
@@ -58,7 +59,7 @@ public class PaymentCheckoutControllerTest extends AbstractControllerTest {
                .andExpect(view().name("layout/main"))
                .andExpect(model().attribute("paymentId", paymentIntent.getId()))
                .andExpect(model().attribute("amount", paymentIntent.getAmount()))
-               .andExpect(model().attribute("status", paymentIntent.getStatus().toString()));
+               .andExpect(model().attribute("status", PaymentIntentStatus.PENDING));
     }
 
     @Test
@@ -72,13 +73,15 @@ public class PaymentCheckoutControllerTest extends AbstractControllerTest {
                 null
         ));
 
-        mockMvc.perform(post("/payments/{id}/checkout", paymentIntent.getId())
+        mockMvc.perform(post("/payments/checkout")
                        .param("paymentId", paymentIntent.getId().toString())
+                       .param("cardHolder", "John doe")
                        .param("cardNumber", "1234123412341234")
                        .param("cvv", "123")
+                       .param("expiryYear", "2029")
+                       .param("expiryMonth", "12")
                        .param("cardPin", "1234"))
-               .andExpect(status().isOk())
-               .andExpect(view().name("layout/main"))
+               .andExpect(status().is(302))
                .andExpect(model().attribute("status", PaymentAuthorizationStatus.AUTHORIZED.toString()));
     }
 }
