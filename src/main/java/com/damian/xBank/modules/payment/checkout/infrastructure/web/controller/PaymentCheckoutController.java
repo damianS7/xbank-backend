@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.payment.checkout.infrastructure;
+package com.damian.xBank.modules.payment.checkout.infrastructure.web.controller;
 
 import com.damian.xBank.modules.payment.checkout.application.dto.request.PaymentCheckoutSubmitRequest;
 import com.damian.xBank.modules.payment.checkout.application.usecase.PaymentCheckoutSubmit;

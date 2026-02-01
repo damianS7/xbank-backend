@@ -1,7 +1,6 @@
 package com.damian.xBank.modules.banking.account.domain.model;
 
 import com.damian.xBank.modules.banking.account.domain.exception.*;
-import com.damian.xBank.modules.banking.card.domain.exception.BankingAccountCardsLimitException;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;

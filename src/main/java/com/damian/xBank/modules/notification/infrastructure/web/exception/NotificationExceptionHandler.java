@@ -2,6 +2,7 @@ package com.damian.xBank.modules.notification.infrastructure.web.exception;
 
 import com.damian.xBank.modules.notification.domain.exception.NotificationException;
 import com.damian.xBank.modules.notification.domain.exception.NotificationNotFoundException;
+import com.damian.xBank.modules.notification.domain.exception.NotificationNotOwnerException;
 import com.damian.xBank.shared.dto.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,14 @@ public class NotificationExceptionHandler {
             MessageSource messageSource
     ) {
         this.messageSource = messageSource;
+    }
+
+    @ExceptionHandler(NotificationNotOwnerException.class)
+    public ResponseEntity<ApiResponse<String>> handleException(NotificationNotOwnerException ex) {
+        log.warn("Notification: {} not owner", ex.getResourceId());
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                             .body(ApiResponse.error(ex, HttpStatus.UNAUTHORIZED, messageSource));
     }
 
     @ExceptionHandler(NotificationNotFoundException.class)

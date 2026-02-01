@@ -52,7 +52,7 @@ public class UserProfileExceptionHandler {
                 ex.getArgs()[1]
         );
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                              .body(ApiResponse.error(ex, HttpStatus.BAD_REQUEST, messageSource));
     }
 
@@ -60,11 +60,7 @@ public class UserProfileExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleProfileNotFound(
             UserProfileNotFoundException ex
     ) {
-        log.warn(
-                "Profile id: {} not found.",
-                ex.getResourceId()
-        );
-
+        log.warn("Profile id: {} not found.", ex.getResourceId());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                              .body(ApiResponse.error(ex, HttpStatus.NOT_FOUND, messageSource));
     }
@@ -73,11 +69,7 @@ public class UserProfileExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleProfileImageNotFound(
             UserProfileImageNotFoundException ex
     ) {
-        log.warn(
-                "Profile id: {} image not found.",
-                ex.getResourceId()
-        );
-
+        log.warn("Profile id: {} image not found.", ex.getResourceId());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                              .body(ApiResponse.error(ex, HttpStatus.NOT_FOUND, messageSource));
     }

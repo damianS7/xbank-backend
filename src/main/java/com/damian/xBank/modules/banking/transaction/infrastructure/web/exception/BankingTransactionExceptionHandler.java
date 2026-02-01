@@ -1,8 +1,6 @@
 package com.damian.xBank.modules.banking.transaction.infrastructure.web.exception;
 
-import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionException;
-import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotFoundException;
-import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotOwnerException;
+import com.damian.xBank.modules.banking.transaction.domain.exception.*;
 import com.damian.xBank.shared.dto.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +19,22 @@ public class BankingTransactionExceptionHandler {
 
     public BankingTransactionExceptionHandler(MessageSource messageSource) {
         this.messageSource = messageSource;
+    }
+
+    @ExceptionHandler(BankingTransactionNotAuthorizedStatusException.class)
+    public ResponseEntity<?> handleException(BankingTransactionNotAuthorizedStatusException ex) {
+        log.warn("Transaction not authorized");
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                             .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
+    }
+
+    @ExceptionHandler(BankingTransactionStatusTransitionException.class)
+    public ResponseEntity<?> handleException(BankingTransactionStatusTransitionException ex) {
+        log.warn("Transaction status transition failed from {} to {}", ex.getArgs()[0], ex.getArgs()[1]);
+
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                             .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
     }
 
     @ExceptionHandler(BankingTransactionNotOwnerException.class)

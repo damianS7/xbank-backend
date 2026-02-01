@@ -45,6 +45,30 @@ public class BankingCardExceptionHandler {
                              .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
     }
 
+    @ExceptionHandler(BankingCardNotActiveException.class)
+    public ResponseEntity<ApiResponse<String>> handleDisabled(BankingCardNotActiveException ex) {
+        log.warn("Banking card: {} is not active.", ex.getResourceId());
+
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                             .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
+    }
+
+    @ExceptionHandler(BankingCardInvalidExpirationMonthException.class)
+    public ResponseEntity<ApiResponse<String>> handleException(BankingCardInvalidExpirationMonthException ex) {
+        log.warn("Banking card: {} expiration month is invalid.", ex.getResourceId());
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                             .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
+    }
+
+    @ExceptionHandler(BankingCardInvalidExpirationYearException.class)
+    public ResponseEntity<ApiResponse<String>> handleException(BankingCardInvalidExpirationYearException ex) {
+        log.warn("Banking card: {} expiration year is invalid.", ex.getResourceId());
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                             .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
+    }
+
     @ExceptionHandler(BankingCardInvalidPinException.class)
     public ResponseEntity<ApiResponse<String>> handleInvalidPin(BankingCardInvalidPinException ex) {
         log.warn("Banking card: {} pin is invalid.", ex.getResourceId());
@@ -96,17 +120,5 @@ public class BankingCardExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                              .body(ApiResponse.error(ex, HttpStatus.INTERNAL_SERVER_ERROR, messageSource));
-    }
-
-    @ExceptionHandler(BankingCardAuthorizationException.class)
-    public ResponseEntity<ApiResponse<String>> handleAuthorizationException(BankingCardAuthorizationException ex) {
-        log.warn(
-                "Unauthorized operation from customer {} on banking card: {}",
-                ex.getCustomerId(),
-                ex.getResourceId()
-        );
-
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                             .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
     }
 }

@@ -1,7 +1,6 @@
 package com.damian.xBank.modules.banking.account.infrastructure.web.exception;
 
 import com.damian.xBank.modules.banking.account.domain.exception.*;
-import com.damian.xBank.modules.banking.card.domain.exception.BankingAccountCardsLimitException;
 import com.damian.xBank.shared.dto.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

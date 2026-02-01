@@ -1,9 +1,6 @@
 package com.damian.xBank.modules.banking.transfer.infrastructure.web.exception;
 
-import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferCurrencyMismatchException;
-import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferNotFoundException;
-import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferSameAccountException;
-import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferStatusTransitionException;
+import com.damian.xBank.modules.banking.transfer.domain.exception.*;
 import com.damian.xBank.shared.dto.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +19,14 @@ public class BankingTransferExceptionHandler {
 
     public BankingTransferExceptionHandler(MessageSource messageSource) {
         this.messageSource = messageSource;
+    }
+
+    @ExceptionHandler(BankingTransferNotOwnerException.class)
+    public ResponseEntity<ApiResponse<String>> handleExcepcion(BankingTransferNotOwnerException ex) {
+        log.warn("Banking transfer: {} not owner", ex.getResourceId());
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                             .body(ApiResponse.error(ex, HttpStatus.UNAUTHORIZED, messageSource));
     }
 
     @ExceptionHandler(BankingTransferStatusTransitionException.class)

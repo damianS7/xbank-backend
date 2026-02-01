@@ -1,10 +1,6 @@
 package com.damian.xBank.modules.banking.account.domain.model;
 
-import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountClosedException;
-import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountInsufficientFundsException;
-import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotOwnerException;
-import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountSuspendedException;
-import com.damian.xBank.modules.banking.card.domain.exception.BankingAccountCardsLimitException;
+import com.damian.xBank.modules.banking.account.domain.exception.*;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
 import com.damian.xBank.modules.user.user.domain.model.User;
