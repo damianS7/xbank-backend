@@ -158,7 +158,7 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
                 customerBankingCard,
                 BigDecimal.valueOf(100)
         );
-        transaction.setStatus(BankingTransactionStatus.AUTHORIZED);
+        transaction.setStatus(BankingTransactionStatus.PENDING);
         bankingTransactionRepository.save(transaction);
 
         CaptureCardPaymentRequest request = new CaptureCardPaymentRequest(
@@ -181,7 +181,7 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
 
         // then
         assertThat(transactionResponseDto).isNotNull();
-        assertThat(transactionResponseDto.status()).isEqualTo(BankingTransactionStatus.CAPTURED);
+        assertThat(transactionResponseDto.status()).isEqualTo(BankingTransactionStatus.COMPLETED);
         assertThat(transactionResponseDto.balanceBefore())
                 .isEqualByComparingTo(initialBalance);
         assertThat(transactionResponseDto.balanceAfter())

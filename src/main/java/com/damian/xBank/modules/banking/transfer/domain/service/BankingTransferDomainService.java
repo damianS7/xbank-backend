@@ -50,7 +50,7 @@ public class BankingTransferDomainService {
                         fromAccount,
                         amount
                 )
-                .setStatus(BankingTransactionStatus.AUTHORIZED)
+                .setStatus(BankingTransactionStatus.PENDING)
                 .setDescription(description);
 
         transfer.addTransaction(fromTransaction);
@@ -62,7 +62,7 @@ public class BankingTransferDomainService {
                         toAccount,
                         amount
                 )
-                .setStatus(BankingTransactionStatus.AUTHORIZED)
+                .setStatus(BankingTransactionStatus.PENDING)
                 .setDescription("Transfer from " + fromAccount.getOwner().getProfile().getFullName());
 
         transfer.addTransaction(toTransaction);

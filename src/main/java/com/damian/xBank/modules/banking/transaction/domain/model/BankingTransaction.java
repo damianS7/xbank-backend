@@ -2,8 +2,8 @@ package com.damian.xBank.modules.banking.transaction.domain.model;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
-import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotAuthorizedStatusException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotOwnerException;
+import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotPendingStatusException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionStatusTransitionException;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import jakarta.persistence.*;
@@ -234,17 +234,9 @@ public class BankingTransaction {
         return balanceBefore.subtract(this.amount);
     }
 
-    public void authorize() {
-        this.setStatus(BankingTransactionStatus.AUTHORIZED);
-        this.updatedAt = Instant.now();
-    }
-
     public void capture() {
-        this.assertAuthorized();
-        this.balanceBefore = bankingAccount.getBalance();
-        this.balanceAfter = calcBalanceAfter();
-        this.setStatus(BankingTransactionStatus.CAPTURED);
-        this.updatedAt = Instant.now();
+        this.assertPending();
+        this.complete();
     }
 
     public void complete() {
@@ -259,9 +251,9 @@ public class BankingTransaction {
         this.updatedAt = Instant.now();
     }
 
-    public void assertAuthorized() {
-        if (status != BankingTransactionStatus.AUTHORIZED) {
-            throw new BankingTransactionNotAuthorizedStatusException(this.id);
+    public void assertPending() {
+        if (status != BankingTransactionStatus.PENDING) {
+            throw new BankingTransactionNotPendingStatusException(this.id);
         }
     }
 

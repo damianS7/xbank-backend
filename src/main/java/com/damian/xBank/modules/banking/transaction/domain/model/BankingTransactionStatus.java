@@ -4,15 +4,11 @@ import java.util.Set;
 
 public enum BankingTransactionStatus {
     DECLINED(Set.of()), // From DECLINED no transitions are allowed
-    CAPTURED(Set.of()), // From CAPTURED no transitions are allowed
     COMPLETED(Set.of()),
-    AUTHORIZED(Set.of(CAPTURED, DECLINED)), // From AUTHORIZED no transitions are allowed
     PENDING(Set.of(
             COMPLETED,
-            CAPTURED,
-            AUTHORIZED,
             DECLINED
-    )); // From PENDING transitions to AUTHORIZED, DECLINED and CAPTURED are allowed
+    )); // From PENDING transitions to DECLINED and COMPLETED are allowed
 
     private final Set<BankingTransactionStatus> allowedTransitions;
 

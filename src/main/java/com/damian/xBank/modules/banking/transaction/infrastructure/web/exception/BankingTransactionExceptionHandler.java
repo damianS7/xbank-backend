@@ -21,8 +21,8 @@ public class BankingTransactionExceptionHandler {
         this.messageSource = messageSource;
     }
 
-    @ExceptionHandler(BankingTransactionNotAuthorizedStatusException.class)
-    public ResponseEntity<?> handleException(BankingTransactionNotAuthorizedStatusException ex) {
+    @ExceptionHandler(BankingTransactionNotPendingStatusException.class)
+    public ResponseEntity<?> handleException(BankingTransactionNotPendingStatusException ex) {
         log.warn("Transaction not authorized");
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN)

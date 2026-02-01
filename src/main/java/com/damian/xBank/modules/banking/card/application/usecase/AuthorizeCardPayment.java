@@ -57,8 +57,6 @@ public class AuthorizeCardPayment {
                 .setBankingCard(bankingCard)
                 .setDescription(request.merchant());
 
-        transaction.authorize();
-
         // store here the transaction as AUTHORIZED
         transaction = bankingTransactionPersistenceService.record(transaction);
 

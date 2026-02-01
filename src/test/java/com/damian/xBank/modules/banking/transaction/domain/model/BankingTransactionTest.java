@@ -193,7 +193,7 @@ public class BankingTransactionTest {
 
     @Test
     @DisplayName("Should confirm a transaction")
-    void capture_WhenAuthorizedTransaction_ChangesStatusToCaptured() {
+    void capture_WhenAuthorizedTransaction_ChangesStatusToCompleted() {
         // given
         BankingTransaction givenTransaction = BankingTransaction
                 .create(
@@ -202,14 +202,14 @@ public class BankingTransactionTest {
                         BigDecimal.valueOf(100)
                 )
                 .setId(1L)
-                .setStatus(BankingTransactionStatus.AUTHORIZED)
+                .setStatus(BankingTransactionStatus.PENDING)
                 .setDescription("Deposit transaction");
 
         // when
         givenTransaction.capture();
 
         // then
-        Assertions.assertThat(givenTransaction.getStatus()).isEqualTo(BankingTransactionStatus.CAPTURED);
+        Assertions.assertThat(givenTransaction.getStatus()).isEqualTo(BankingTransactionStatus.COMPLETED);
     }
 
     @Test

@@ -67,7 +67,6 @@ public class CaptureCardPaymentTest extends AbstractServiceTest {
         // given
         BankingTransaction transaction = new BankingTransaction(bankingAccount);
         transaction.setId(1L);
-        transaction.authorize();
         transaction.setBankingCard(bankingCard);
         transaction.setType(BankingTransactionType.CARD_CHARGE);
         transaction.setAmount(bankingAccount.getBalance());
@@ -84,7 +83,7 @@ public class CaptureCardPaymentTest extends AbstractServiceTest {
         captureCardPayment.execute(request);
 
         assertThat(transaction).isNotNull();
-        assertThat(transaction.getStatus()).isEqualTo(BankingTransactionStatus.CAPTURED);
+        assertThat(transaction.getStatus()).isEqualTo(BankingTransactionStatus.COMPLETED);
         assertThat(bankingAccount.getBalance()).isEqualTo(BigDecimal.ZERO);
     }
 }
