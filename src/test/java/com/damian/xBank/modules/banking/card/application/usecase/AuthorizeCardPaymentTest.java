@@ -13,8 +13,8 @@ import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCa
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.infrastructure.service.BankingTransactionPersistenceService;
-import com.damian.xBank.modules.payment.network.application.dto.response.PaymentAuthorizationResponse;
-import com.damian.xBank.modules.payment.network.domain.PaymentAuthorizationStatus;
+import com.damian.xBank.modules.payment.network.card.application.dto.response.PaymentAuthorizationResponse;
+import com.damian.xBank.modules.payment.network.card.domain.PaymentAuthorizationStatus;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
@@ -52,28 +52,28 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
     @BeforeEach
     void setUp() {
         customer = UserTestBuilder.aCustomer()
-                                  .withId(1L)
-                                  .withEmail("customer@demo.com")
-                                  .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                  .build();
+            .withId(1L)
+            .withEmail("customer@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .build();
 
         bankingAccount = BankingAccount
-                .create(customer)
-                .setId(5L)
-                .setCurrency(BankingAccountCurrency.EUR)
-                .setType(BankingAccountType.SAVINGS)
-                .setBalance(BigDecimal.valueOf(1000))
-                .setAccountNumber("US9900001111112233334444");
+            .create(customer)
+            .setId(5L)
+            .setCurrency(BankingAccountCurrency.EUR)
+            .setType(BankingAccountType.SAVINGS)
+            .setBalance(BigDecimal.valueOf(1000))
+            .setAccountNumber("US9900001111112233334444");
 
 
         bankingCard = BankingCard
-                .create(bankingAccount)
-                .setId(11L)
-                .setStatus(BankingCardStatus.ACTIVE)
-                .setCardNumber("1234123412341234")
-                .setExpiredDate(LocalDate.now().plusYears(1))
-                .setCardCvv("123")
-                .setCardPin("1234");
+            .create(bankingAccount)
+            .setId(11L)
+            .setStatus(BankingCardStatus.ACTIVE)
+            .setCardNumber("1234123412341234")
+            .setExpiredDate(LocalDate.now().plusYears(1))
+            .setCardCvv("123")
+            .setCardPin("1234");
     }
 
 
@@ -82,13 +82,13 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
     void authorizePayment_WhenValidRequest_ReturnsAuthorized() {
         // given
         AuthorizeCardPaymentRequest request = new AuthorizeCardPaymentRequest(
-                "Amazon.com",
-                "",
-                bankingCard.getCardNumber(),
-                bankingCard.getExpiredDate().getMonthValue(),
-                bankingCard.getExpiredDate().getYear(),
-                bankingCard.getCardCvv(),
-                BigDecimal.valueOf(100)
+            "Amazon.com",
+            "",
+            bankingCard.getCardNumber(),
+            bankingCard.getExpiredDate().getMonthValue(),
+            bankingCard.getExpiredDate().getYear(),
+            bankingCard.getCardCvv(),
+            BigDecimal.valueOf(100)
         );
 
         BankingTransaction givenBankingTransaction = new BankingTransaction(bankingAccount);
@@ -99,25 +99,25 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
         givenBankingTransaction.setDescription(request.merchant());
 
         when(bankingCardRepository.findByCardNumber(anyString()))
-                .thenReturn(Optional.of(bankingCard));
+            .thenReturn(Optional.of(bankingCard));
 
         when(bankingTransactionPersistenceService.record(
-                any(BankingTransaction.class)
+            any(BankingTransaction.class)
         )).thenReturn(givenBankingTransaction);
 
         // then
         PaymentAuthorizationResponse response = cardAuthorize.execute(request);
         assertThat(response)
-                .isNotNull()
-                .extracting(
-                        PaymentAuthorizationResponse::status,
-                        PaymentAuthorizationResponse::authorizationId,
-                        PaymentAuthorizationResponse::declineReason
-                ).containsExactly(
-                        PaymentAuthorizationStatus.AUTHORIZED,
-                        givenBankingTransaction.getId().toString(),
-                        null
-                );
+            .isNotNull()
+            .extracting(
+                PaymentAuthorizationResponse::status,
+                PaymentAuthorizationResponse::authorizationId,
+                PaymentAuthorizationResponse::declineReason
+            ).containsExactly(
+                PaymentAuthorizationStatus.AUTHORIZED,
+                givenBankingTransaction.getId().toString(),
+                null
+            );
     }
 
     @Test
@@ -125,13 +125,13 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
     void authorizePayment_WhenCardNotFound_ThrowsException() {
         // given
         AuthorizeCardPaymentRequest request = new AuthorizeCardPaymentRequest(
-                "Amazon.com",
-                "",
-                bankingCard.getCardNumber(),
-                bankingCard.getExpiredDate().getMonthValue(),
-                bankingCard.getExpiredDate().getYear(),
-                bankingCard.getCardCvv(),
-                BigDecimal.valueOf(100)
+            "Amazon.com",
+            "",
+            bankingCard.getCardNumber(),
+            bankingCard.getExpiredDate().getMonthValue(),
+            bankingCard.getExpiredDate().getYear(),
+            bankingCard.getCardCvv(),
+            BigDecimal.valueOf(100)
         );
 
         BankingTransaction givenBankingTransaction = new BankingTransaction(bankingAccount);
@@ -144,8 +144,8 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
 
         // then
         BankingCardNotFoundException exception = assertThrows(
-                BankingCardNotFoundException.class,
-                () -> cardAuthorize.execute(request)
+            BankingCardNotFoundException.class,
+            () -> cardAuthorize.execute(request)
         );
 
         // then
@@ -159,13 +159,13 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
         bankingCard.setStatus(BankingCardStatus.DISABLED);
 
         AuthorizeCardPaymentRequest request = new AuthorizeCardPaymentRequest(
-                "Amazon.com",
-                "",
-                bankingCard.getCardNumber(),
-                bankingCard.getExpiredDate().getMonthValue(),
-                bankingCard.getExpiredDate().getYear(),
-                bankingCard.getCardCvv(),
-                BigDecimal.valueOf(100)
+            "Amazon.com",
+            "",
+            bankingCard.getCardNumber(),
+            bankingCard.getExpiredDate().getMonthValue(),
+            bankingCard.getExpiredDate().getYear(),
+            bankingCard.getCardCvv(),
+            BigDecimal.valueOf(100)
         );
 
         BankingTransaction givenBankingTransaction = new BankingTransaction(bankingAccount);
@@ -178,8 +178,8 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
 
         // then
         BankingCardNotActiveException exception = assertThrows(
-                BankingCardNotActiveException.class,
-                () -> cardAuthorize.execute(request)
+            BankingCardNotActiveException.class,
+            () -> cardAuthorize.execute(request)
         );
 
         // then
@@ -194,13 +194,13 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
         bankingCard.setStatus(BankingCardStatus.LOCKED);
 
         AuthorizeCardPaymentRequest request = new AuthorizeCardPaymentRequest(
-                "Amazon.com",
-                "",
-                bankingCard.getCardNumber(),
-                bankingCard.getExpiredDate().getMonthValue(),
-                bankingCard.getExpiredDate().getYear(),
-                bankingCard.getCardCvv(),
-                BigDecimal.valueOf(100)
+            "Amazon.com",
+            "",
+            bankingCard.getCardNumber(),
+            bankingCard.getExpiredDate().getMonthValue(),
+            bankingCard.getExpiredDate().getYear(),
+            bankingCard.getCardCvv(),
+            BigDecimal.valueOf(100)
         );
 
         BankingTransaction givenBankingTransaction = new BankingTransaction(bankingAccount);
@@ -213,8 +213,8 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
 
         // then
         BankingCardNotActiveException exception = assertThrows(
-                BankingCardNotActiveException.class,
-                () -> cardAuthorize.execute(request)
+            BankingCardNotActiveException.class,
+            () -> cardAuthorize.execute(request)
         );
 
         // then
@@ -227,13 +227,13 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
         // given
         bankingAccount.setBalance(BigDecimal.valueOf(0));
         AuthorizeCardPaymentRequest request = new AuthorizeCardPaymentRequest(
-                "Amazon.com",
-                "",
-                bankingCard.getCardNumber(),
-                bankingCard.getExpiredDate().getMonthValue(),
-                bankingCard.getExpiredDate().getYear(),
-                bankingCard.getCardCvv(),
-                BigDecimal.valueOf(100)
+            "Amazon.com",
+            "",
+            bankingCard.getCardNumber(),
+            bankingCard.getExpiredDate().getMonthValue(),
+            bankingCard.getExpiredDate().getYear(),
+            bankingCard.getCardCvv(),
+            BigDecimal.valueOf(100)
         );
 
         BankingTransaction givenBankingTransaction = new BankingTransaction(bankingAccount);
@@ -246,8 +246,8 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
 
         // then
         BankingCardInsufficientFundsException exception = assertThrows(
-                BankingCardInsufficientFundsException.class,
-                () -> cardAuthorize.execute(request)
+            BankingCardInsufficientFundsException.class,
+            () -> cardAuthorize.execute(request)
         );
 
         // then

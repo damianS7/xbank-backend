@@ -8,10 +8,10 @@ import com.damian.xBank.modules.payment.checkout.domain.excepcion.PaymentCheckou
 import com.damian.xBank.modules.payment.intent.domain.exception.PaymentIntentNotFoundException;
 import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntent;
 import com.damian.xBank.modules.payment.intent.infrastructure.repository.PaymentIntentRepository;
-import com.damian.xBank.modules.payment.network.application.PaymentNetworkGateway;
-import com.damian.xBank.modules.payment.network.application.dto.request.PaymentAuthorizationRequest;
-import com.damian.xBank.modules.payment.network.application.dto.response.PaymentAuthorizationResponse;
-import com.damian.xBank.modules.payment.network.domain.PaymentAuthorizationStatus;
+import com.damian.xBank.modules.payment.network.card.application.PaymentNetworkGateway;
+import com.damian.xBank.modules.payment.network.card.application.dto.request.PaymentAuthorizationRequest;
+import com.damian.xBank.modules.payment.network.card.application.dto.response.PaymentAuthorizationResponse;
+import com.damian.xBank.modules.payment.network.card.domain.PaymentAuthorizationStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,11 +29,11 @@ public class PaymentCheckoutSubmit {
     private final NotificationPublisher notificationPublisher;
 
     public PaymentCheckoutSubmit(
-            NotificationEventFactory notificationEventFactory,
-            BankingTransactionPersistenceService bankingTransactionPersistenceService,
-            PaymentNetworkGateway paymentNetworkGateway,
-            PaymentIntentRepository paymentIntentRepository,
-            NotificationPublisher notificationPublisher
+        NotificationEventFactory notificationEventFactory,
+        BankingTransactionPersistenceService bankingTransactionPersistenceService,
+        PaymentNetworkGateway paymentNetworkGateway,
+        PaymentIntentRepository paymentIntentRepository,
+        NotificationPublisher notificationPublisher
     ) {
         this.notificationEventFactory = notificationEventFactory;
         this.bankingTransactionPersistenceService = bankingTransactionPersistenceService;
@@ -45,25 +45,25 @@ public class PaymentCheckoutSubmit {
     @Transactional
     public void execute(PaymentCheckoutSubmitRequest request) {
         PaymentIntent paymentIntent = paymentIntentRepository.findById(request.paymentId()).orElseThrow(
-                () -> new PaymentIntentNotFoundException(request.paymentId())
+            () -> new PaymentIntentNotFoundException(request.paymentId())
         );
 
         // Payment must be pending
         paymentIntent.assertPending();
 
         PaymentAuthorizationResponse response = paymentNetworkGateway.authorizePayment(
-                new PaymentAuthorizationRequest(
-                        paymentIntent.getMerchantName(),
-                        request.cardHolder(),
-                        request.cardNumber(),
-                        request.expiryMonth(),
-                        request.expiryYear(),
-                        request.cardCvv(),
-                        request.cardPin(),
-                        paymentIntent.getAmount(),
-                        paymentIntent.getCurrency().toString(),
-                        paymentIntent.getDescription()
-                )
+            new PaymentAuthorizationRequest(
+                paymentIntent.getMerchantName(),
+                request.cardHolder(),
+                request.cardNumber(),
+                request.expiryMonth(),
+                request.expiryYear(),
+                request.cardCvv(),
+                request.cardPin(),
+                paymentIntent.getAmount(),
+                paymentIntent.getCurrency().toString(),
+                paymentIntent.getDescription()
+            )
         );
 
         if (response.status() != PaymentAuthorizationStatus.AUTHORIZED) {

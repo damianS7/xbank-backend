@@ -5,10 +5,10 @@ import com.damian.xBank.modules.payment.checkout.application.dto.request.Payment
 import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntent;
 import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntentStatus;
 import com.damian.xBank.modules.payment.intent.infrastructure.repository.PaymentIntentRepository;
-import com.damian.xBank.modules.payment.network.application.PaymentNetworkGateway;
-import com.damian.xBank.modules.payment.network.application.dto.request.PaymentAuthorizationRequest;
-import com.damian.xBank.modules.payment.network.application.dto.response.PaymentAuthorizationResponse;
-import com.damian.xBank.modules.payment.network.domain.PaymentAuthorizationStatus;
+import com.damian.xBank.modules.payment.network.card.application.PaymentNetworkGateway;
+import com.damian.xBank.modules.payment.network.card.application.dto.request.PaymentAuthorizationRequest;
+import com.damian.xBank.modules.payment.network.card.application.dto.response.PaymentAuthorizationResponse;
+import com.damian.xBank.modules.payment.network.card.domain.PaymentAuthorizationStatus;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.utils.UserTestBuilder;
@@ -23,7 +23,10 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class PaymentCheckoutSubmitTest extends AbstractServiceTest {
 
@@ -41,10 +44,10 @@ public class PaymentCheckoutSubmitTest extends AbstractServiceTest {
     @BeforeEach
     void setUp() {
         customer = UserTestBuilder.aCustomer()
-                                  .withId(1L)
-                                  .withEmail("customer@demo.com")
-                                  .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                  .build();
+            .withId(1L)
+            .withEmail("customer@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .build();
     }
 
     @Test
@@ -52,36 +55,36 @@ public class PaymentCheckoutSubmitTest extends AbstractServiceTest {
     void checkoutSubmit_WhenValidRequest_ReturnsAuthorizedPaymentIntent() {
         // given
         PaymentIntent paymentIntent = new PaymentIntent(
-                customer,
-                BigDecimal.valueOf(100),
-                BankingAccountCurrency.EUR
+            customer,
+            BigDecimal.valueOf(100),
+            BankingAccountCurrency.EUR
         );
 
         PaymentCheckoutSubmitRequest request = new PaymentCheckoutSubmitRequest(
-                0L,
-                "John Doe",
-                "1234123412341234",
-                "123",
-                "1234",
-                1,
-                2026
+            0L,
+            "John Doe",
+            "1234123412341234",
+            "123",
+            "1234",
+            1,
+            2026
         );
 
         PaymentAuthorizationResponse response = new PaymentAuthorizationResponse(
-                PaymentAuthorizationStatus.AUTHORIZED,
-                "1234",
-                ""
+            PaymentAuthorizationStatus.AUTHORIZED,
+            "1234",
+            ""
         );
 
         // when
         when(paymentIntentRepository.findById(anyLong())).thenReturn(Optional.of(paymentIntent));
 
         when(paymentNetworkGateway.authorizePayment(
-                any(PaymentAuthorizationRequest.class)
+            any(PaymentAuthorizationRequest.class)
         )).thenReturn(response);
 
         when(paymentIntentRepository.save(any(PaymentIntent.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
+            .thenAnswer(invocation -> invocation.getArgument(0));
 
         checkoutSubmit.execute(request);
 

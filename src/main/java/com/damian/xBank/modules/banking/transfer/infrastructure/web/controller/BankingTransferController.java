@@ -20,7 +20,12 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Validated
 @RequestMapping("/api/v1")
@@ -31,11 +36,12 @@ public class BankingTransferController {
     private final BankingTransferConfirm bankingTransferConfirm;
     private final BankingTransferReject bankingTransferReject;
 
+
     public BankingTransferController(
-            BankingTransferGetAll bankingTransferGetAll,
-            BankingTransferCreate bankingTransferCreate,
-            BankingTransferConfirm bankingTransferConfirm,
-            BankingTransferReject bankingTransferReject
+        BankingTransferGetAll bankingTransferGetAll,
+        BankingTransferCreate bankingTransferCreate,
+        BankingTransferConfirm bankingTransferConfirm,
+        BankingTransferReject bankingTransferReject
     ) {
         this.bankingTransferGetAll = bankingTransferGetAll;
         this.bankingTransferCreate = bankingTransferCreate;
@@ -46,61 +52,59 @@ public class BankingTransferController {
     // endpoint to get all transfers from current user
     @GetMapping("/banking/transfers")
     public ResponseEntity<?> getTransfers(
-            @PageableDefault(size = 6, sort = "createdAt", direction = Sort.Direction.DESC)
-            Pageable pageable
+        @PageableDefault(size = 6, sort = "createdAt", direction = Sort.Direction.DESC)
+        Pageable pageable
     ) {
         Page<BankingTransfer> transfers = bankingTransferGetAll.execute(pageable);
         Page<BankingTransferDto> transferDtoPage = BankingTransferDtoMapper
-                .toBankingTransferDtoPage(transfers);
+            .toBankingTransferDtoPage(transfers);
 
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(transferDtoPage);
+            .status(HttpStatus.OK)
+            .body(transferDtoPage);
     }
 
     // endpoint to submit a transfer request
     @PostMapping("/banking/transfers")
     public ResponseEntity<?> transfer(
-            @RequestBody @Valid
-            BankingTransferRequest request
+        @RequestBody @Valid
+        BankingTransferRequest request
     ) {
         BankingTransfer transfer = bankingTransferCreate.createTransfer(request);
         BankingTransferDetailDto transferDto = BankingTransferDtoMapper.toBankingTransferDetailDto(transfer);
 
         return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(transferDto);
+            .status(HttpStatus.CREATED)
+            .body(transferDto);
     }
 
     @PostMapping("/banking/transfers/{id}/confirm")
     public ResponseEntity<?> confirm(
-            @Positive @PathVariable
-            Long id,
-            @RequestBody @Valid
-            BankingTransferConfirmRequest request
+        @Positive @PathVariable
+        Long id,
+        @RequestBody @Valid
+        BankingTransferConfirmRequest request
     ) {
 
         BankingTransfer transfer = bankingTransferConfirm.execute(id, request);
         BankingTransferDetailDto transferDto = BankingTransferDtoMapper.toBankingTransferDetailDto(transfer);
 
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(transferDto);
+            .status(HttpStatus.OK)
+            .body(transferDto);
     }
 
     @PostMapping("/banking/transfers/{id}/reject")
     public ResponseEntity<?> reject(
-            @Positive @PathVariable
-            Long id,
-            @RequestBody @Valid
-            BankingTransferRejectRequest request
+        @Positive @PathVariable
+        Long id,
+        @RequestBody @Valid
+        BankingTransferRejectRequest request
     ) {
-
         BankingTransfer transfer = bankingTransferReject.execute(id, request);
         BankingTransferDto transferDto = BankingTransferDtoMapper.toBankingTransferDto(transfer);
-
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(transferDto);
+            .status(HttpStatus.OK)
+            .body(transferDto);
     }
 }

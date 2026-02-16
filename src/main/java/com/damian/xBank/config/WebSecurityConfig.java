@@ -29,8 +29,8 @@ public class WebSecurityConfig {
     private String port;
 
     public WebSecurityConfig(
-            AuthenticationFilter jwtAuthFilter,
-            AuthenticationProvider authenticationProvider
+        AuthenticationFilter jwtAuthFilter,
+        AuthenticationProvider authenticationProvider
     ) {
         this.jwtAuthFilter = jwtAuthFilter;
         this.authenticationProvider = authenticationProvider;
@@ -38,38 +38,40 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(
-            HttpSecurity http,
-            CustomAuthenticationEntryPoint entryPoint
+        HttpSecurity http,
+        CustomAuthenticationEntryPoint entryPoint
     ) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Disabled for jwt
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        .dispatcherTypeMatchers(DispatcherType.ASYNC) // Avoid Authexception with notifications
-                        .permitAll()
-                        .requestMatchers(
-                                "/api/v1/auth/**",
-                                "/api/v1/users/register",
-                                "/api/v1/accounts/verification/**",
-                                "/api/v1/accounts/password/reset/**",
-                                "/api/v1/banking/cards/authorize",
-                                "/api/v1/banking/cards/capture",
-                                "/payments/*/checkout",
-                                "/payments/checkout",
-                                "/payments/*/status",
-                                "/payment-intents",
-                                "/ws/**"
-                        )
-                        .permitAll()
-                        .requestMatchers("/api/v1/admin/**")
-                        .hasRole("ADMIN")
-                        .anyRequest()
-                        .authenticated()
+            .csrf(csrf -> csrf.disable()) // Disabled for jwt
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                .dispatcherTypeMatchers(DispatcherType.ASYNC) // Avoid Authexception with notifications
+                .permitAll()
+                .requestMatchers(
+                    "/api/v1/auth/**",
+                    "/api/v1/users/register",
+                    "/api/v1/accounts/verification/**",
+                    "/api/v1/accounts/password/reset/**",
+                    "/api/v1/banking/cards/authorize",
+                    "/api/v1/banking/cards/capture",
+                    "/api/v1/transfers/incoming/authorize",
+                    "/api/v1/transfers/incoming/execute",
+                    "/payments/*/checkout",
+                    "/payments/checkout",
+                    "/payments/*/status",
+                    "/payment-intents",
+                    "/ws/**"
                 )
-                .exceptionHandling(ex -> ex.authenticationEntryPoint(entryPoint))
-                .authenticationProvider(authenticationProvider)
-                .cors(cors -> cors.configurationSource(this.corsConfigurationSource()))
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .permitAll()
+                .requestMatchers("/api/v1/admin/**")
+                .hasRole("ADMIN")
+                .anyRequest()
+                .authenticated()
+            )
+            .exceptionHandling(ex -> ex.authenticationEntryPoint(entryPoint))
+            .authenticationProvider(authenticationProvider)
+            .cors(cors -> cors.configurationSource(this.corsConfigurationSource()))
+            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

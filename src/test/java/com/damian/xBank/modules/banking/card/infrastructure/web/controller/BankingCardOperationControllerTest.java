@@ -13,10 +13,10 @@ import com.damian.xBank.modules.banking.transaction.application.dto.response.Ban
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
-import com.damian.xBank.modules.payment.network.application.PaymentNetworkGateway;
-import com.damian.xBank.modules.payment.network.application.dto.request.PaymentAuthorizationRequest;
-import com.damian.xBank.modules.payment.network.application.dto.response.PaymentAuthorizationResponse;
-import com.damian.xBank.modules.payment.network.domain.PaymentAuthorizationStatus;
+import com.damian.xBank.modules.payment.network.card.application.PaymentNetworkGateway;
+import com.damian.xBank.modules.payment.network.card.application.dto.request.PaymentAuthorizationRequest;
+import com.damian.xBank.modules.payment.network.card.application.dto.response.PaymentAuthorizationResponse;
+import com.damian.xBank.modules.payment.network.card.domain.PaymentAuthorizationStatus;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
@@ -50,28 +50,28 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
     @BeforeEach
     void setUp() {
         customer = UserTestBuilder.aCustomer()
-                                  .withEmail("customer@demo.com")
-                                  .withStatus(UserStatus.VERIFIED)
-                                  .withPassword(passwordEncoder.encode(RAW_PASSWORD))
-                                  .build();
+            .withEmail("customer@demo.com")
+            .withStatus(UserStatus.VERIFIED)
+            .withPassword(passwordEncoder.encode(RAW_PASSWORD))
+            .build();
 
         userRepository.save(customer);
 
         customerBankingAccount = BankingAccount
-                .create(customer)
-                .setCurrency(BankingAccountCurrency.EUR)
-                .setType(BankingAccountType.SAVINGS)
-                .setStatus(BankingAccountStatus.ACTIVE)
-                .setBalance(BigDecimal.valueOf(1000))
-                .setAccountNumber("US9900001111112233334444");
+            .create(customer)
+            .setCurrency(BankingAccountCurrency.EUR)
+            .setType(BankingAccountType.SAVINGS)
+            .setStatus(BankingAccountStatus.ACTIVE)
+            .setBalance(BigDecimal.valueOf(1000))
+            .setAccountNumber("US9900001111112233334444");
 
         customerBankingCard = BankingCard
-                .create(customerBankingAccount)
-                .setStatus(BankingCardStatus.ACTIVE)
-                .setExpiredDate(LocalDate.now().plusYears(1))
-                .setCardNumber("1234123412341234")
-                .setCardCvv("123")
-                .setCardPin("1234");
+            .create(customerBankingAccount)
+            .setStatus(BankingCardStatus.ACTIVE)
+            .setExpiredDate(LocalDate.now().plusYears(1))
+            .setCardNumber("1234123412341234")
+            .setCardCvv("123")
+            .setCardPin("1234");
 
         customerBankingAccount.addBankingCard(customerBankingCard);
         bankingAccountRepository.save(customerBankingAccount);
@@ -84,23 +84,23 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
         login(customer);
 
         BankingCardWithdrawRequest request = new BankingCardWithdrawRequest(
-                BigDecimal.valueOf(100),
-                customerBankingCard.getCardPin()
+            BigDecimal.valueOf(100),
+            customerBankingCard.getCardPin()
         );
 
         // when
         // then
         MvcResult result = mockMvc.perform(post("/api/v1/banking/cards/{id}/withdraw", customerBankingCard.getId())
-                                          .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                                          .contentType(MediaType.APPLICATION_JSON)
-                                          .content(objectMapper.writeValueAsString(request)))
-                                  .andDo(print())
-                                  .andExpect(status().is(201))
-                                  .andReturn();
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+            .andDo(print())
+            .andExpect(status().is(201))
+            .andReturn();
 
         BankingTransactionDto transactionResponseDto = objectMapper.readValue(
-                result.getResponse().getContentAsString(),
-                BankingTransactionDto.class
+            result.getResponse().getContentAsString(),
+            BankingTransactionDto.class
         );
 
         // then
@@ -108,9 +108,9 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
         assertThat(transactionResponseDto.amount()).isEqualTo(request.amount());
         assertThat(transactionResponseDto.status()).isEqualTo(BankingTransactionStatus.COMPLETED);
         assertThat(transactionResponseDto.balanceBefore())
-                .isEqualByComparingTo(customerBankingAccount.getBalance());
+            .isEqualByComparingTo(customerBankingAccount.getBalance());
         assertThat(transactionResponseDto.balanceAfter())
-                .isEqualByComparingTo(customerBankingAccount.getBalance().subtract(request.amount()));
+            .isEqualByComparingTo(customerBankingAccount.getBalance().subtract(request.amount()));
     }
 
     @Test
@@ -118,31 +118,31 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
     void authorizePayment_WhenValidRequest_Returns200OK() throws Exception {
         // given
         AuthorizeCardPaymentRequest request = new AuthorizeCardPaymentRequest(
-                "Amazon.com",
-                "John",
-                customerBankingCard.getCardNumber(),
-                customerBankingCard.getExpiredDate().getMonthValue(),
-                customerBankingCard.getExpiredDate().getYear(),
-                customerBankingCard.getCardCvv(),
-                BigDecimal.valueOf(100)
+            "Amazon.com",
+            "John",
+            customerBankingCard.getCardNumber(),
+            customerBankingCard.getExpiredDate().getMonthValue(),
+            customerBankingCard.getExpiredDate().getYear(),
+            customerBankingCard.getCardCvv(),
+            BigDecimal.valueOf(100)
         );
 
         // when
         when(paymentNetworkGateway.authorizePayment(
-                any(PaymentAuthorizationRequest.class)
+            any(PaymentAuthorizationRequest.class)
         )).thenReturn(new PaymentAuthorizationResponse(
-                PaymentAuthorizationStatus.AUTHORIZED,
-                "authorizationId",
-                null
+            PaymentAuthorizationStatus.AUTHORIZED,
+            "authorizationId",
+            null
         ));
 
         // then
         MvcResult result = mockMvc.perform(post("/api/v1/banking/cards/authorize", customerBankingCard.getId())
-                                          .contentType(MediaType.APPLICATION_JSON)
-                                          .content(objectMapper.writeValueAsString(request)))
-                                  .andDo(print())
-                                  .andExpect(status().is(200))
-                                  .andReturn();
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+            .andDo(print())
+            .andExpect(status().is(200))
+            .andReturn();
     }
 
     @Test
@@ -154,37 +154,37 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
         BigDecimal initialBalance = customerBankingAccount.getBalance();
 
         BankingTransaction transaction = BankingTransaction.create(
-                BankingTransactionType.CARD_CHARGE,
-                customerBankingCard,
-                BigDecimal.valueOf(100)
+            BankingTransactionType.CARD_CHARGE,
+            customerBankingCard,
+            BigDecimal.valueOf(100)
         );
         transaction.setStatus(BankingTransactionStatus.PENDING);
         bankingTransactionRepository.save(transaction);
 
         CaptureCardPaymentRequest request = new CaptureCardPaymentRequest(
-                transaction.getId()
+            transaction.getId()
         );
 
         // when
         // then
         MvcResult result = mockMvc.perform(post("/api/v1/banking/cards/capture", customerBankingCard.getId())
-                                          .contentType(MediaType.APPLICATION_JSON)
-                                          .content(objectMapper.writeValueAsString(request)))
-                                  .andDo(print())
-                                  .andExpect(status().is(200))
-                                  .andReturn();
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+            .andDo(print())
+            .andExpect(status().is(200))
+            .andReturn();
 
         BankingTransactionDto transactionResponseDto = objectMapper.readValue(
-                result.getResponse().getContentAsString(),
-                BankingTransactionDto.class
+            result.getResponse().getContentAsString(),
+            BankingTransactionDto.class
         );
 
         // then
         assertThat(transactionResponseDto).isNotNull();
         assertThat(transactionResponseDto.status()).isEqualTo(BankingTransactionStatus.COMPLETED);
         assertThat(transactionResponseDto.balanceBefore())
-                .isEqualByComparingTo(initialBalance);
+            .isEqualByComparingTo(initialBalance);
         assertThat(transactionResponseDto.balanceAfter())
-                .isEqualByComparingTo(initialBalance.subtract(transaction.getAmount()));
+            .isEqualByComparingTo(initialBalance.subtract(transaction.getAmount()));
     }
 }
