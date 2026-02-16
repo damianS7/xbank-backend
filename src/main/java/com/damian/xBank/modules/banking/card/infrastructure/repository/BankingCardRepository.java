@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Set;
 
@@ -22,9 +21,21 @@ public interface BankingCardRepository extends JpaRepository<BankingCard, Long> 
     @Query("SELECT cards FROM BankingCard cards WHERE cards.bankingAccount.user.id = :userId")
     Set<BankingCard> findCardsByUserId(@Param("userId") Long userId);
 
-    Set<BankingCard> findByStatusNotAndExpiredDateLessThanEqual(
-            BankingCardStatus status,
-            LocalDate expiredDate
+    @Query(
+        """
+                SELECT c
+                FROM BankingCard c
+                WHERE c.status <> :status
+                AND (
+                    c.expiration.year < :year
+                    OR (c.expiration.year = :year AND c.expiration.month <= :month)
+                )
+            """
+    )
+    Set<BankingCard> findExpiredCards(
+        @Param("status") BankingCardStatus status,
+        @Param("year") int year,
+        @Param("month") int month
     );
 }
 

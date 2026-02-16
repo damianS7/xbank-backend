@@ -9,6 +9,7 @@ import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotActi
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoundException;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
+import com.damian.xBank.modules.banking.card.domain.model.CardExpiration;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
@@ -26,7 +27,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -65,17 +65,15 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
             .setBalance(BigDecimal.valueOf(1000))
             .setAccountNumber("US9900001111112233334444");
 
-
         bankingCard = BankingCard
             .create(bankingAccount)
             .setId(11L)
             .setStatus(BankingCardStatus.ACTIVE)
             .setCardNumber("1234123412341234")
-            .setExpiredDate(LocalDate.now().plusYears(1))
+            .setExpiration(CardExpiration.defaultExpiration())
             .setCardCvv("123")
             .setCardPin("1234");
     }
-
 
     @Test
     @DisplayName("should authorize payment and return response")
@@ -85,8 +83,8 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
             "Amazon.com",
             "",
             bankingCard.getCardNumber(),
-            bankingCard.getExpiredDate().getMonthValue(),
-            bankingCard.getExpiredDate().getYear(),
+            bankingCard.getExpiration().getMonth(),
+            bankingCard.getExpiration().getYear(),
             bankingCard.getCardCvv(),
             BigDecimal.valueOf(100)
         );
@@ -128,8 +126,8 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
             "Amazon.com",
             "",
             bankingCard.getCardNumber(),
-            bankingCard.getExpiredDate().getMonthValue(),
-            bankingCard.getExpiredDate().getYear(),
+            bankingCard.getExpiration().getMonth(),
+            bankingCard.getExpiration().getYear(),
             bankingCard.getCardCvv(),
             BigDecimal.valueOf(100)
         );
@@ -162,8 +160,8 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
             "Amazon.com",
             "",
             bankingCard.getCardNumber(),
-            bankingCard.getExpiredDate().getMonthValue(),
-            bankingCard.getExpiredDate().getYear(),
+            bankingCard.getExpiration().getMonth(),
+            bankingCard.getExpiration().getYear(),
             bankingCard.getCardCvv(),
             BigDecimal.valueOf(100)
         );
@@ -197,8 +195,8 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
             "Amazon.com",
             "",
             bankingCard.getCardNumber(),
-            bankingCard.getExpiredDate().getMonthValue(),
-            bankingCard.getExpiredDate().getYear(),
+            bankingCard.getExpiration().getMonth(),
+            bankingCard.getExpiration().getYear(),
             bankingCard.getCardCvv(),
             BigDecimal.valueOf(100)
         );
@@ -230,8 +228,8 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
             "Amazon.com",
             "",
             bankingCard.getCardNumber(),
-            bankingCard.getExpiredDate().getMonthValue(),
-            bankingCard.getExpiredDate().getYear(),
+            bankingCard.getExpiration().getMonth(),
+            bankingCard.getExpiration().getYear(),
             bankingCard.getCardCvv(),
             BigDecimal.valueOf(100)
         );

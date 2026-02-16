@@ -5,20 +5,20 @@ import com.damian.xBank.modules.banking.card.domain.model.BankingCardType;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDate;
 
 public record BankingCardDto(
-        Long id,
-        Long bankingAccountId,
-        String cardHolder,
-        String cardNumber,
-        String cardCVV,
-        String cardPIN,
-        BigDecimal dailyLimit,
-        LocalDate expiredDate,
-        BankingCardType cardType,
-        BankingCardStatus cardStatus,
-        Instant createdAt,
-        Instant updatedAt
+    Long id,
+    Long bankingAccountId,
+    String cardHolder,
+    String cardNumber,
+    String cardCVV,
+    String cardPIN,
+    BigDecimal dailyLimit,
+    int expirationYear,
+    int expirationMonth,
+    BankingCardType cardType,
+    BankingCardStatus cardStatus,
+    Instant createdAt,
+    Instant updatedAt
 ) {
 }

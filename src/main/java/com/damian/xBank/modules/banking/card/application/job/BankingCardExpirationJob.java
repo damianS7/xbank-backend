@@ -21,8 +21,8 @@ public class BankingCardExpirationJob {
     private final BankingCardDomainService bankingCardDomainService;
 
     public BankingCardExpirationJob(
-            BankingCardRepository bankingCardRepository,
-            BankingCardDomainService bankingCardDomainService
+        BankingCardRepository bankingCardRepository,
+        BankingCardDomainService bankingCardDomainService
     ) {
         this.bankingCardRepository = bankingCardRepository;
         this.bankingCardDomainService = bankingCardDomainService;
@@ -37,10 +37,11 @@ public class BankingCardExpirationJob {
     public void disableExpiredCards() {
         log.info("Checking for expired cards...");
         Set<BankingCard> expiredCards =
-                bankingCardRepository.findByStatusNotAndExpiredDateLessThanEqual(
-                        BankingCardStatus.EXPIRED,
-                        LocalDate.now()
-                );
+            bankingCardRepository.findExpiredCards(
+                BankingCardStatus.EXPIRED,
+                LocalDate.now().getYear(),
+                LocalDate.now().getMonthValue()
+            );
 
         if (expiredCards.isEmpty()) {
             log.info("No expired cards found");

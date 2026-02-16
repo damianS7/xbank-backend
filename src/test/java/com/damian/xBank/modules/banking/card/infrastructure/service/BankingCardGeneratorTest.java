@@ -8,12 +8,11 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class BankingCardGeneratorTest extends AbstractServiceTest {
-
     private BankingCardGeneratorImpl bankingCardGenerator;
 
     @BeforeEach
     void setUp() {
-        bankingCardGenerator = new BankingCardGeneratorImpl();
+        bankingCardGenerator = new BankingCardGeneratorImpl("777700");
     }
 
     @Test
@@ -25,8 +24,8 @@ public class BankingCardGeneratorTest extends AbstractServiceTest {
 
         // then
         assertThat(generatedCardNumber)
-                .isNotNull()
-                .matches("\\d{16}");
+            .isNotNull()
+            .matches("\\d{16}");
     }
 
     @Test
@@ -38,8 +37,8 @@ public class BankingCardGeneratorTest extends AbstractServiceTest {
 
         // then
         assertThat(generatedCardPin)
-                .isNotNull()
-                .matches("\\d{4}");
+            .isNotNull()
+            .matches("\\d{4}");
     }
 
     @Test
@@ -51,7 +50,7 @@ public class BankingCardGeneratorTest extends AbstractServiceTest {
 
         // then
         assertThat(generatedCardCvv)
-                .isNotNull()
-                .matches("\\d{3}");
+            .isNotNull()
+            .matches("\\d{3}");
     }
 }

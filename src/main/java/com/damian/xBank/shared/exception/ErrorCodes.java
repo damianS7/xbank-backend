@@ -50,6 +50,7 @@ public class ErrorCodes {
     public static final String BANKING_CARD_INVALID_CVV = "banking.card.invalid_cvv";
     public static final String BANKING_CARD_DISABLED = "banking.card.disabled";
     public static final String BANKING_CARD_NOT_ACTIVE = "banking.card.not_active";
+    public static final String BANKING_CARD_EXPIRED = "banking.card.expired";
     public static final String BANKING_CARD_INVALID_EXPIRATION_YEAR = "banking.card.invalid_expiration_year";
     public static final String BANKING_CARD_INVALID_EXPIRATION_MONTH = "banking.card.invalid_expiration_month";
     public static final String BANKING_CARD_INSUFFICIENT_FUNDS = "banking.card.insufficient_funds";
@@ -59,15 +60,15 @@ public class ErrorCodes {
     public static final String BANKING_TRANSACTION_NOT_AUTHORIZED = "banking.transaction.not_authorized_status";
     public static final String BANKING_TRANSACTION_NOT_OWNER = "banking.transaction.not_owner";
     public static final String
-            BANKING_TRANSACTION_INVALID_TRANSITION_STATUS
-            = "banking.transaction.invalid_transition_status";
+        BANKING_TRANSACTION_INVALID_TRANSITION_STATUS
+        = "banking.transaction.invalid_transition_status";
 
     // Transfers
     public static final String BANKING_TRANSFER_NOT_FOUND = "banking.transfer.not_found";
     public static final String BANKING_TRANSFER_NOT_OWNER = "banking.transfer.not_owner";
     public static final String
-            BANKING_TRANSFER_INVALID_TRANSITION_STATUS
-            = "banking.transfer.invalid_transition_status";
+        BANKING_TRANSFER_INVALID_TRANSITION_STATUS
+        = "banking.transfer.invalid_transition_status";
     public static final String BANKING_TRANSFER_SAME_ACCOUNT = "banking.transfer.same_destination";
     public static final String BANKING_TRANSFER_DIFFERENT_CURRENCY = "banking.transfer.different_currency";
 

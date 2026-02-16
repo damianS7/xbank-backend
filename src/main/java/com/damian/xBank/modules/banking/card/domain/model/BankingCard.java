@@ -1,15 +1,34 @@
 package com.damian.xBank.modules.banking.card.domain.model;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
-import com.damian.xBank.modules.banking.card.domain.exception.*;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardDisabledException;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardExpiredException;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardInsufficientFundsException;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardInvalidCvvException;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardInvalidExpirationMonthException;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardInvalidExpirationYearException;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardInvalidPinException;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardLockedException;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotActiveException;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotOwnerException;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardStatusTransitionException;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
@@ -38,8 +57,8 @@ public class BankingCard {
     @Column(length = 4)
     private String cardPin;
 
-    @Column
-    private LocalDate expiredDate;
+    @Embedded
+    private CardExpiration expiration;
 
     @Enumerated(EnumType.STRING)
     @JdbcType(PostgreSQLEnumJdbcType.class)
@@ -53,6 +72,7 @@ public class BankingCard {
     private Instant updatedAt;
 
     public BankingCard() {
+        this.expiration = CardExpiration.defaultExpiration();
         this.status = BankingCardStatus.PENDING_ACTIVATION;
         this.cardType = BankingCardType.DEBIT;
         this.dailyLimit = BigDecimal.valueOf(3000);
@@ -110,9 +130,9 @@ public class BankingCard {
 
         if (!this.status.canTransitionTo(newStatus)) {
             throw new BankingCardStatusTransitionException(
-                    this.id,
-                    this.status.name(),
-                    newStatus.name()
+                this.id,
+                this.status.name(),
+                newStatus.name()
             );
         }
 
@@ -148,12 +168,12 @@ public class BankingCard {
         return this;
     }
 
-    public LocalDate getExpiredDate() {
-        return expiredDate;
+    public CardExpiration getExpiration() {
+        return expiration;
     }
 
-    public BankingCard setExpiredDate(LocalDate expiredDate) {
-        this.expiredDate = expiredDate;
+    public BankingCard setExpiration(CardExpiration expiration) {
+        this.expiration = expiration;
         return this;
     }
 
@@ -294,6 +314,15 @@ public class BankingCard {
         return this;
     }
 
+    public BankingCard assertNotExpired() {
+        // check card expiration
+        if (expiration.isExpired()) {
+            throw new BankingCardExpiredException(getId());
+        }
+
+        return this;
+    }
+
     /**
      * Assert card is not DISABLED.
      *
@@ -336,6 +365,7 @@ public class BankingCard {
     public BankingCard assertUsable() {
 
         this.assertActivated()
+            .assertNotExpired()
             .assertUnlocked();
 
         return this;
@@ -349,9 +379,9 @@ public class BankingCard {
      * @return the current validator instance for chaining
      */
     public BankingCard assertCanSpend(
-            User actor,
-            BigDecimal amount,
-            String cardPin
+        User actor,
+        BigDecimal amount,
+        String cardPin
     ) {
         // check the account status and see if can be used to operate
         // run validations for the card and throw exception
@@ -369,7 +399,7 @@ public class BankingCard {
      * @param year
      */
     public void validateExpirationYear(int year) {
-        if (this.getExpiredDate().getYear() != year) {
+        if (this.getExpiration().getYear() != year) {
             throw new BankingCardInvalidExpirationYearException(this.id);
         }
     }
@@ -380,7 +410,7 @@ public class BankingCard {
      * @param month
      */
     public void validateExpirationMonth(int month) {
-        if (this.getExpiredDate().getMonth().getValue() != month) {
+        if (this.getExpiration().getMonth() != month) {
             throw new BankingCardInvalidExpirationMonthException(this.id);
         }
     }
@@ -394,10 +424,10 @@ public class BankingCard {
      * @param cvv
      */
     public void authorizePayment(
-            BigDecimal amount,
-            Integer expiryMonth,
-            Integer expiryYear,
-            String cvv
+        BigDecimal amount,
+        Integer expiryMonth,
+        Integer expiryYear,
+        String cvv
     ) {
         assertUsable();
         assertSufficientFunds(amount);

@@ -6,7 +6,5 @@ import com.damian.xBank.modules.payment.network.card.application.dto.response.Pa
 public interface PaymentNetworkGateway {
     PaymentAuthorizationResponse authorizePayment(PaymentAuthorizationRequest request);
 
-    //    void capturePayment();
-
-
+    //    void capturePayment(); TODO
 }

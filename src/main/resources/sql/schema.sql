@@ -168,18 +168,19 @@ CREATE CAST (varchar as banking_card_type) WITH INOUT AS IMPLICIT;
 
 CREATE TABLE public.banking_cards
 (
-    id           int4 GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    account_id   int4                        NOT NULL,
-    card_type public."banking_card_type" NOT NULL,
-    card_status public."banking_card_status_type" DEFAULT 'PENDING_ACTIVATION'::banking_card_status_type NOT NULL,
-    card_number  varchar(32)                 NOT NULL,
-    card_pin     varchar(4)                  NOT NULL,
-    card_cvv     varchar(3)                  NOT NULL,
-    daily_limit  numeric(15, 2) DEFAULT 0.00 NOT NULL,
-    expired_date date                        NOT NULL,
-    notes        text NULL,
-    created_at   timestamp      DEFAULT CURRENT_TIMESTAMP NULL,
-    updated_at   timestamp      DEFAULT CURRENT_TIMESTAMP NULL,
+    id               int4 GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    account_id       int4                        NOT NULL,
+    card_type        public."banking_card_type" NOT NULL,
+    card_status      public."banking_card_status_type" DEFAULT 'PENDING_ACTIVATION'::banking_card_status_type NOT NULL,
+    card_number      varchar(32)                 NOT NULL,
+    card_pin         varchar(4)                  NOT NULL,
+    card_cvv         varchar(3)                  NOT NULL,
+    daily_limit      numeric(15, 2) DEFAULT 0.00 NOT NULL,
+    expiration_year  INT                         NOT NULL,
+    expiration_month INT                         NOT NULL,
+    notes            text NULL,
+    created_at       timestamp      DEFAULT CURRENT_TIMESTAMP NULL,
+    updated_at       timestamp      DEFAULT CURRENT_TIMESTAMP NULL,
     CONSTRAINT banking_cards_card_number_key UNIQUE (card_number),
     CONSTRAINT fk_account_id_fkey FOREIGN KEY (account_id)
         REFERENCES public.banking_accounts (id)
@@ -272,9 +273,9 @@ CREATE TABLE public.payment_intents
     id                    int4 GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     merchant_id           int4           NOT NULL,
     merchant_callback_url varchar(255)   NOT NULL,
-    status                public."payment_status_type" DEFAULT 'PENDING'::payment_status_type NOT NULL,
+    status public."payment_status_type" DEFAULT 'PENDING'::payment_status_type NOT NULL,
     amount                numeric(15, 2) NOT NULL,
-    currency              public."banking_account_currency_type" DEFAULT 'USD'::banking_account_currency_type NOT NULL,
+    currency public."banking_account_currency_type" DEFAULT 'USD'::banking_account_currency_type NOT NULL,
     created_at            timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     updated_at            timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     CONSTRAINT fk_users_accounts FOREIGN KEY (merchant_id)

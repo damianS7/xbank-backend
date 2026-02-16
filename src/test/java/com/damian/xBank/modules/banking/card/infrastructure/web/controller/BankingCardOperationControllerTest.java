@@ -9,6 +9,7 @@ import com.damian.xBank.modules.banking.card.application.dto.request.BankingCard
 import com.damian.xBank.modules.banking.card.application.dto.request.CaptureCardPaymentRequest;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
+import com.damian.xBank.modules.banking.card.domain.model.CardExpiration;
 import com.damian.xBank.modules.banking.transaction.application.dto.response.BankingTransactionDto;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
@@ -30,7 +31,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -68,7 +68,7 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
         customerBankingCard = BankingCard
             .create(customerBankingAccount)
             .setStatus(BankingCardStatus.ACTIVE)
-            .setExpiredDate(LocalDate.now().plusYears(1))
+            .setExpiration(CardExpiration.defaultExpiration())
             .setCardNumber("1234123412341234")
             .setCardCvv("123")
             .setCardPin("1234");
@@ -121,8 +121,8 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
             "Amazon.com",
             "John",
             customerBankingCard.getCardNumber(),
-            customerBankingCard.getExpiredDate().getMonthValue(),
-            customerBankingCard.getExpiredDate().getYear(),
+            customerBankingCard.getExpiration().getMonth(),
+            customerBankingCard.getExpiration().getYear(),
             customerBankingCard.getCardCvv(),
             BigDecimal.valueOf(100)
         );

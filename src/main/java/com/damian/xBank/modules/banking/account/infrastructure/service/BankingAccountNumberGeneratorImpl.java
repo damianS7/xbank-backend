@@ -7,11 +7,10 @@ import java.security.SecureRandom;
 
 @Component
 public class BankingAccountNumberGeneratorImpl implements BankingAccountNumberGenerator {
-
     private final String BIN;
 
     public BankingAccountNumberGeneratorImpl(
-            @Value("${bank.account.bin}") String BIN
+        @Value("${bank.account.bin}") String BIN
     ) {
         this.BIN = BIN;
     }
