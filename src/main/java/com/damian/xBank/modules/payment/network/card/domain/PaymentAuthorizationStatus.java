@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.payment.network.domain;
+package com.damian.xBank.modules.payment.network.card.domain;
 
 public enum PaymentAuthorizationStatus {
     AUTHORIZED,
