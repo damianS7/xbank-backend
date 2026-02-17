@@ -1,0 +1,106 @@
+package com.damian.xBank.modules.payment.network.transfer.application.usecase;
+
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
+import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
+import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
+import com.damian.xBank.modules.payment.network.transfer.application.dto.request.ProcessIncomingTransferRequest;
+import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.shared.AbstractServiceTest;
+import com.damian.xBank.shared.utils.UserTestBuilder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+
+import java.math.BigDecimal;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+public class ProcessIncomingTransferTest extends AbstractServiceTest {
+
+    @Mock
+    private BankingAccountRepository bankingAccountRepository;
+
+    @Mock
+    private BankingTransactionRepository bankingTransactionRepository;
+
+    @InjectMocks
+    private ProcessIncomingTransfer processIncomingTransfer;
+
+    private User customer;
+    private BankingAccount bankingAccount;
+
+    @BeforeEach
+    void setUp() {
+        customer = UserTestBuilder.aCustomer()
+            .withId(1L)
+            .withEmail("customer@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .build();
+
+        bankingAccount = BankingAccount
+            .create(customer)
+            .setId(5L)
+            .setCurrency(BankingAccountCurrency.EUR)
+            .setType(BankingAccountType.SAVINGS)
+            .setAccountNumber("US9900001111112233334444");
+    }
+
+    @Test
+    void processIncomingTransfer_WhenValidRequest_ProcessTransferAndAddBalance() {
+        // given
+        ProcessIncomingTransferRequest request = new ProcessIncomingTransferRequest(
+            "123456789",
+            bankingAccount.getAccountNumber(),
+            bankingAccount.getAccountNumber(),
+            BigDecimal.valueOf(100),
+            "EUR",
+            "JOHN DOE"
+        );
+
+        bankingAccount.setBalance(BigDecimal.valueOf(0));
+
+        ArgumentCaptor<BankingTransaction> captor =
+            ArgumentCaptor.forClass(BankingTransaction.class);
+
+        // when
+        when(bankingAccountRepository.findByAccountNumber(anyString()))
+            .thenReturn(Optional.of(bankingAccount));
+        when(bankingTransactionRepository.save(any(BankingTransaction.class)))
+            .thenAnswer(i -> i.getArgument(0));
+
+        // then
+        processIncomingTransfer.execute(request);
+
+        verify(bankingTransactionRepository).save(captor.capture());
+
+        BankingTransaction savedTransaction = captor.getValue();
+        assertThat(savedTransaction)
+            .isNotNull()
+            .extracting(
+                BankingTransaction::getAmount,
+                BankingTransaction::getBalanceBefore,
+                BankingTransaction::getBalanceAfter
+            ).containsExactly(
+                BigDecimal.valueOf(100),
+                BigDecimal.valueOf(0),
+                BigDecimal.valueOf(100)
+            );
+
+        assertThat(bankingAccount)
+            .extracting(
+                BankingAccount::getBalance
+            ).isEqualTo(
+                BigDecimal.valueOf(100)
+            );
+    }
+}

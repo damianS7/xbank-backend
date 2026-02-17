@@ -1,26 +1,31 @@
-package com.damian.xBank.modules.payment.network.transfer;
+package com.damian.xBank.modules.payment.network.transfer.application.usecase;
 
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
-import com.damian.xBank.modules.payment.network.transfer.application.dto.request.IncomingTransferRequest;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
+import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
+import com.damian.xBank.modules.payment.network.transfer.application.dto.request.ProcessIncomingTransferRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class IncomingTransfer {
+public class ProcessIncomingTransfer {
     private final BankingAccountRepository bankingAccountRepository;
+    private final BankingTransactionRepository bankingTransactionRepository;
 
-    public IncomingTransfer(
-        BankingAccountRepository bankingAccountRepository
+    public ProcessIncomingTransfer(
+        BankingAccountRepository bankingAccountRepository,
+        BankingTransactionRepository bankingTransactionRepository
     ) {
         this.bankingAccountRepository = bankingAccountRepository;
+        this.bankingTransactionRepository = bankingTransactionRepository;
     }
 
     @Transactional
     public void execute(
-        IncomingTransferRequest request
+        ProcessIncomingTransferRequest request
     ) {
         BankingAccount customerAccount = bankingAccountRepository
             .findByAccountNumber(request.toIban())
@@ -29,12 +34,15 @@ public class IncomingTransfer {
             );
 
         BankingTransaction bankingTransaction = new BankingTransaction();
+        bankingTransaction.setType(BankingTransactionType.TRANSFER_FROM);
         bankingTransaction.setBankingAccount(customerAccount);
-        bankingTransaction.setDescription("Incoming transfer");
+        bankingTransaction.setDescription("Incoming transfer. reference: " + request.reference());
         bankingTransaction.setAmount(request.amount());
         bankingTransaction.complete();
 
         customerAccount.addBalance(request.amount());
+
+        bankingTransactionRepository.save(bankingTransaction);
     }
 
 }
