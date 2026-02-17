@@ -57,26 +57,26 @@ public class BankingCardWithdrawTest extends AbstractServiceTest {
     @BeforeEach
     void setUp() {
         customer = UserTestBuilder.aCustomer()
-                                  .withId(1L)
-                                  .withEmail("customer@demo.com")
-                                  .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                  .build();
+            .withId(1L)
+            .withEmail("customer@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .build();
 
         bankingAccount = BankingAccount
-                .create(customer)
-                .setId(5L)
-                .setCurrency(BankingAccountCurrency.EUR)
-                .setType(BankingAccountType.SAVINGS)
-                .setAccountNumber("US9900001111112233334444");
+            .create(customer)
+            .setId(5L)
+            .setCurrency(BankingAccountCurrency.EUR)
+            .setType(BankingAccountType.SAVINGS)
+            .setAccountNumber("US9900001111112233334444");
 
 
         bankingCard = BankingCard
-                .create(bankingAccount)
-                .setId(11L)
-                .setStatus(BankingCardStatus.ACTIVE)
-                .setCardNumber("1234123412341234")
-                .setCardCvv("123")
-                .setCardPin("1234");
+            .create(bankingAccount)
+            .setId(11L)
+            .setStatus(BankingCardStatus.ACTIVE)
+            .setCardNumber("1234123412341234")
+            .setCardCvv("123")
+            .setCardPin("1234");
     }
 
     @Test
@@ -86,8 +86,8 @@ public class BankingCardWithdrawTest extends AbstractServiceTest {
         setUpContext(customer);
 
         BankingCardWithdrawRequest spendRequest = new BankingCardWithdrawRequest(
-                bankingAccount.getBalance(),
-                bankingCard.getCardPin()
+            bankingAccount.getBalance(),
+            bankingCard.getCardPin()
         );
 
         BankingTransaction givenBankingTransaction = new BankingTransaction(bankingAccount);
@@ -97,13 +97,13 @@ public class BankingCardWithdrawTest extends AbstractServiceTest {
         when(bankingCardRepository.findById(anyLong())).thenReturn(Optional.of(bankingCard));
 
         when(bankingTransactionPersistenceService.record(
-                any(BankingTransaction.class)
+            any(BankingTransaction.class)
         )).thenReturn(givenBankingTransaction);
 
         // then
         BankingTransaction transaction = bankingCardWithdraw.execute(
-                bankingCard.getId(),
-                spendRequest
+            bankingCard.getId(),
+            spendRequest
         );
 
         // then
@@ -120,8 +120,8 @@ public class BankingCardWithdrawTest extends AbstractServiceTest {
         setUpContext(customer);
 
         BankingCardWithdrawRequest withdrawRequest = new BankingCardWithdrawRequest(
-                bankingAccount.getBalance().add(BigDecimal.ONE),
-                bankingCard.getCardPin()
+            bankingAccount.getBalance().add(BigDecimal.ONE),
+            bankingCard.getCardPin()
         );
 
         BankingTransaction givenBankingTransaction = new BankingTransaction(bankingAccount);
@@ -133,11 +133,11 @@ public class BankingCardWithdrawTest extends AbstractServiceTest {
 
         // then
         BankingCardInsufficientFundsException exception = assertThrows(
-                BankingCardInsufficientFundsException.class,
-                () -> bankingCardWithdraw.execute(
-                        bankingCard.getId(),
-                        withdrawRequest
-                )
+            BankingCardInsufficientFundsException.class,
+            () -> bankingCardWithdraw.execute(
+                bankingCard.getId(),
+                withdrawRequest
+            )
         );
 
         // then

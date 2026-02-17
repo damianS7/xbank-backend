@@ -1,7 +1,6 @@
 package com.damian.xBank.modules.banking.account.application.usecase;
 
 import com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCreateRequest;
-import com.damian.xBank.modules.banking.account.domain.factory.BankingAccountFactory;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
@@ -13,6 +12,7 @@ import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.utils.BankingAccountTestFactory;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,24 +26,22 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class BankingAccountCreateTest extends AbstractServiceTest {
 
-    @Mock
-    private BankingAccountRepository bankingAccountRepository;
+    @Mock private BankingAccountRepository bankingAccountRepository;
 
-    @Mock
-    private UserRepository userRepository;
+    @Mock private UserRepository userRepository;
 
-    @Mock
-    private BankingAccountNumberGenerator bankingAccountNumberGenerator;
+    @Mock private BankingAccountNumberGenerator bankingAccountNumberGenerator;
 
-    @Mock
-    private BankingAccountDomainService bankingAccountDomainService;
+    @Mock private BankingAccountDomainService bankingAccountDomainService;
 
-    @InjectMocks
-    private BankingAccountCreate bankingAccountCreate;
+    @InjectMocks private BankingAccountCreate bankingAccountCreate;
 
     private User user;
     private BankingAccount bankingAccount;
@@ -51,12 +49,12 @@ public class BankingAccountCreateTest extends AbstractServiceTest {
     @BeforeEach
     void setUp() {
         user = UserTestBuilder.aCustomer()
-                              .withId(1L)
-                              .withEmail("customer@demo.com")
-                              .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                              .build();
+            .withId(1L)
+            .withEmail("customer@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .build();
 
-        bankingAccount = BankingAccountFactory.createFor(user);
+        bankingAccount = BankingAccountTestFactory.defaultAccount(user);
     }
 
     @Test
@@ -66,21 +64,20 @@ public class BankingAccountCreateTest extends AbstractServiceTest {
         setUpContext(user);
 
         BankingAccountCreateRequest request = new BankingAccountCreateRequest(
-                BankingAccountType.SAVINGS,
-                BankingAccountCurrency.EUR
+            BankingAccountType.SAVINGS,
+            BankingAccountCurrency.EUR
         );
 
         // when
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 
         when(bankingAccountDomainService.createAccount(
-                any(User.class),
-                any(BankingAccountType.class),
-                any(BankingAccountCurrency.class)
+            any(User.class),
+            any(BankingAccountType.class),
+            any(BankingAccountCurrency.class)
         )).thenReturn(bankingAccount);
 
-        when(bankingAccountRepository.save(any(BankingAccount.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
+        when(bankingAccountRepository.save(any(BankingAccount.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         BankingAccount result = bankingAccountCreate.execute(request);
 
@@ -100,16 +97,16 @@ public class BankingAccountCreateTest extends AbstractServiceTest {
         setUpContext(user);
 
         BankingAccountCreateRequest request = new BankingAccountCreateRequest(
-                BankingAccountType.SAVINGS,
-                BankingAccountCurrency.EUR
+            BankingAccountType.SAVINGS,
+            BankingAccountCurrency.EUR
         );
 
         // when
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         UserNotFoundException exception = assertThrows(
-                UserNotFoundException.class,
-                () -> bankingAccountCreate.execute(request)
+            UserNotFoundException.class,
+            () -> bankingAccountCreate.execute(request)
         );
 
         // then
