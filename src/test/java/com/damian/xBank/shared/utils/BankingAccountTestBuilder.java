@@ -9,7 +9,6 @@ import com.damian.xBank.modules.user.user.domain.model.User;
 import java.math.BigDecimal;
 
 public class BankingAccountTestBuilder {
-
     private Long id = 1L;
     private User owner;
     private BigDecimal balance = BigDecimal.valueOf(1000);
@@ -17,14 +16,6 @@ public class BankingAccountTestBuilder {
     private BankingAccountType accountType = BankingAccountType.SAVINGS;
     private String accountNumber = "ES9900001111112233334444";
     private BankingAccountStatus status = BankingAccountStatus.ACTIVE;
-
-    public static BankingAccountTestBuilder aDefaultAccount() {
-        return new BankingAccountTestBuilder();
-    }
-
-    public static BankingAccountTestBuilder anAccountWithBalance(BigDecimal balance) {
-        return new BankingAccountTestBuilder().withBalance(balance);
-    }
 
     public BankingAccountTestBuilder withId(Long id) {
         this.id = id;
@@ -63,11 +54,11 @@ public class BankingAccountTestBuilder {
 
     public BankingAccount build() {
         return BankingAccount.create(owner)
-                             .setId(id)
-                             .setBalance(balance)
-                             .setCurrency(currency)
-                             .setType(accountType)
-                             .setAccountNumber(accountNumber)
-                             .setStatus(status);
+            .setId(id)
+            .setBalance(balance)
+            .setCurrency(currency)
+            .setType(accountType)
+            .setAccountNumber(accountNumber)
+            .setStatus(status);
     }
 }
