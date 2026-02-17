@@ -1,9 +1,11 @@
-package com.damian.xBank.modules.payment.network.transfer;
+package com.damian.xBank.modules.payment.network.transfer.application.usecase;
 
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountClosedException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountCurrencyMismatchException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountSuspendedException;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.payment.network.transfer.application.dto.request.IncomingTransferAuthorizationRequest;
 import com.damian.xBank.modules.payment.network.transfer.application.dto.response.IncomingTransferAuthorizationResponse;
@@ -34,11 +36,12 @@ public class AuthorizeIncomingTransfer {
                 );
 
             account.assertActive();
-            // account.assertCurrency
+            account.assertCurrency(BankingAccountCurrency.valueOf(request.currency()));
 
             stauts = IncomingTransferAuthorizationStatus.AUTHORIZED;
         } catch (BankingAccountNotFoundException
                  | BankingAccountClosedException
+                 | BankingAccountCurrencyMismatchException
                  | BankingAccountSuspendedException e) {
             rejectionReason = e.getMessage();
         }
