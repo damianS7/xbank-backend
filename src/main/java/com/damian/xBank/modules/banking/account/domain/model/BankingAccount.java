@@ -1,12 +1,30 @@
 package com.damian.xBank.modules.banking.account.domain.model;
 
-import com.damian.xBank.modules.banking.account.domain.exception.*;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountCardsLimitException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountClosedException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountCurrencyMismatchException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountInsufficientFundsException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotOwnerException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountStatusTransitionException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountSuspendedException;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -147,9 +165,9 @@ public class BankingAccount {
 
         if (!this.status.canTransitionTo(newStatus)) {
             throw new BankingAccountStatusTransitionException(
-                    this.id,
-                    this.status.name(),
-                    newStatus.name()
+                this.id,
+                this.status.name(),
+                newStatus.name()
             );
         }
 
@@ -223,6 +241,14 @@ public class BankingAccount {
     public BankingAccount setAlias(String alias) {
         this.alias = alias;
         return this;
+    }
+
+    public void close() {
+        setStatus(BankingAccountStatus.CLOSED);
+    }
+
+    public void suspend() {
+        setStatus(BankingAccountStatus.SUSPENDED);
     }
 
     // returns true if the operation can be carried
@@ -366,9 +392,15 @@ public class BankingAccount {
      */
     public int countActiveCards() {
         return (int) this
-                .getBankingCards()
-                .stream()
-                .filter(bankingCard -> bankingCard.getStatus().equals(BankingCardStatus.ACTIVE))
-                .count();
+            .getBankingCards()
+            .stream()
+            .filter(bankingCard -> bankingCard.getStatus().equals(BankingCardStatus.ACTIVE))
+            .count();
+    }
+
+    public void assertCurrency(BankingAccountCurrency currency) {
+        if (this.currency != currency) {
+            throw new BankingAccountCurrencyMismatchException(getId());
+        }
     }
 }
