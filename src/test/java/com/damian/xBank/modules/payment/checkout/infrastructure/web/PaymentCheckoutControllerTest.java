@@ -33,7 +33,6 @@ public class PaymentCheckoutControllerTest extends AbstractControllerTest {
     private User customer;
     private PaymentIntent paymentIntent;
 
-
     @BeforeEach
     void setUp() {
         customer = UserTestBuilder.aCustomer()
