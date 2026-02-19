@@ -62,7 +62,7 @@ public class BankingTransferReject {
         transfer.assertOwnedBy(currentUser.getId());
 
         // reject
-        transfer.reject();
+        transfer.reject("Rejected by user.");
 
         // No need for .save
         // Save accounts (.save is optional because of transactional)

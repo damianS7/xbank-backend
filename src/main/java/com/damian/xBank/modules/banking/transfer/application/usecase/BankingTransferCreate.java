@@ -5,6 +5,7 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.transfer.application.dto.request.BankingTransferRequest;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
+import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferType;
 import com.damian.xBank.modules.banking.transfer.domain.service.BankingTransferDomainService;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
@@ -22,11 +23,11 @@ public class BankingTransferCreate {
     private final BankingTransferRepository bankingTransferRepository;
 
     public BankingTransferCreate(
-            BankingAccountRepository bankingAccountRepository,
-            NotificationPublisher notificationPublisher,
-            BankingTransferDomainService bankingTransferDomainService,
-            AuthenticationContext authenticationContext,
-            BankingTransferRepository bankingTransferRepository
+        BankingAccountRepository bankingAccountRepository,
+        NotificationPublisher notificationPublisher,
+        BankingTransferDomainService bankingTransferDomainService,
+        AuthenticationContext authenticationContext,
+        BankingTransferRepository bankingTransferRepository
     ) {
         this.bankingAccountRepository = bankingAccountRepository;
         this.notificationPublisher = notificationPublisher;
@@ -42,29 +43,31 @@ public class BankingTransferCreate {
 
         // Banking account from where funds will be transfered.
         final BankingAccount fromAccount = bankingAccountRepository
-                .findById(request.fromAccountId())
-                .orElseThrow(
-                        () -> new BankingAccountNotFoundException(request.fromAccountId())
-                );
+            .findById(request.fromAccountId())
+            .orElseThrow(
+                () -> new BankingAccountNotFoundException(request.fromAccountId())
+            );
 
         // Banking account to receive funds
         final BankingAccount toAccount = bankingAccountRepository
-                .findByAccountNumber(request.toAccountNumber())
-                .orElseThrow(
-                        () -> new BankingAccountNotFoundException(request.toAccountNumber())
-                );
+            .findByAccountNumber(request.toAccountNumber())
+            .orElse(null);
 
         BankingTransfer transfer = bankingTransferDomainService.createTransfer(
-                currentUser.getId(),
-                fromAccount,
-                toAccount,
-                request.amount(),
-                request.description()
+            currentUser.getId(),
+            fromAccount,
+            toAccount,
+            request.amount(),
+            request.description()
         );
+
+        if (toAccount == null) {
+            transfer.setToAccountIban(request.toAccountNumber());
+            transfer.setType(BankingTransferType.EXTERNAL);
+        }
 
         bankingTransferRepository.save(transfer);
 
         return transfer;
     }
-
 }
