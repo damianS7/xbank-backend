@@ -4,8 +4,8 @@ import com.damian.xBank.shared.exception.ApplicationException;
 import com.damian.xBank.shared.exception.ErrorCodes;
 
 public class BankingTransferNotFoundException extends ApplicationException {
-    public BankingTransferNotFoundException(Long transferId) {
-        super(ErrorCodes.BANKING_TRANSFER_NOT_FOUND, transferId, new Object[]{});
+    public BankingTransferNotFoundException(Object resourceId) {
+        super(ErrorCodes.BANKING_TRANSFER_NOT_FOUND, resourceId, new Object[]{});
     }
 
 }
