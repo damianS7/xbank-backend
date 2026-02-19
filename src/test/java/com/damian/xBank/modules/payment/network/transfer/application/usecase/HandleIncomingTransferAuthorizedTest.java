@@ -6,7 +6,7 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
-import com.damian.xBank.modules.payment.network.transfer.application.dto.request.ProcessIncomingTransferRequest;
+import com.damian.xBank.modules.payment.network.transfer.application.dto.request.IncomingTransferAuthorizedRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.utils.UserTestBuilder;
@@ -25,7 +25,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class ProcessIncomingTransferTest extends AbstractServiceTest {
+public class HandleIncomingTransferAuthorizedTest extends AbstractServiceTest {
 
     @Mock
     private BankingAccountRepository bankingAccountRepository;
@@ -34,7 +34,7 @@ public class ProcessIncomingTransferTest extends AbstractServiceTest {
     private BankingTransactionRepository bankingTransactionRepository;
 
     @InjectMocks
-    private ProcessIncomingTransfer processIncomingTransfer;
+    private HandleIncomingTransferAuthorized handleIncomingTransferAuthorized;
 
     private User customer;
     private BankingAccount bankingAccount;
@@ -58,7 +58,7 @@ public class ProcessIncomingTransferTest extends AbstractServiceTest {
     @Test
     void processIncomingTransfer_WhenValidRequest_ProcessTransferAndAddBalance() {
         // given
-        ProcessIncomingTransferRequest request = new ProcessIncomingTransferRequest(
+        IncomingTransferAuthorizedRequest request = new IncomingTransferAuthorizedRequest(
             "123456789",
             bankingAccount.getAccountNumber(),
             bankingAccount.getAccountNumber(),
@@ -79,7 +79,7 @@ public class ProcessIncomingTransferTest extends AbstractServiceTest {
             .thenAnswer(i -> i.getArgument(0));
 
         // then
-        processIncomingTransfer.execute(request);
+        handleIncomingTransferAuthorized.execute(request);
 
         verify(bankingTransactionRepository).save(captor.capture());
 
