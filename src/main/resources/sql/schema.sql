@@ -188,6 +188,11 @@ CREATE TABLE public.banking_cards
 );
 
 -- Banking Transfers
+CREATE TYPE public."banking_transfer_type" AS ENUM (
+  'INTERNAL',
+  'EXTERNAL'
+);
+CREATE CAST (varchar as banking_transfer_type) WITH INOUT AS IMPLICIT;
 
 CREATE TYPE public."banking_transfer_status_type" AS ENUM (
   'PENDING',
@@ -198,14 +203,17 @@ CREATE CAST (varchar as banking_transfer_status_type) WITH INOUT AS IMPLICIT;
 
 CREATE TABLE public.banking_transfers
 (
-    id              int4 GENERATED ALWAYS AS IDENTITY NOT NULL,
-    from_account_id int4                              NOT NULL,
-    to_account_id   int4                              NOT NULL,
-    amount          numeric(15, 2) DEFAULT 0.00       NOT NULL,
-    status public."banking_transfer_status_type" DEFAULT 'PENDING'::banking_transfer_status_type NOT NULL,
-    description     text NULL,
-    created_at      timestamp      DEFAULT CURRENT_TIMESTAMP NULL,
-    updated_at      timestamp      DEFAULT CURRENT_TIMESTAMP NULL,
+    id                        int4 GENERATED ALWAYS AS IDENTITY NOT NULL,
+    from_account_id           int4                              NOT NULL,
+    to_account_id             int4 NULL,
+    to_account_iban           int4                              NOT NULL,
+    provider_authorization_id int4 NULL,
+    amount                    numeric(15, 2) DEFAULT 0.00       NOT NULL,
+    type public."banking_transfer_type"                         NOT NULL,
+    status                    public."banking_transfer_status_type" DEFAULT 'PENDING'::banking_transfer_status_type NOT NULL,
+    description               text NULL,
+    created_at                timestamp      DEFAULT CURRENT_TIMESTAMP NULL,
+    updated_at                timestamp      DEFAULT CURRENT_TIMESTAMP NULL,
     CONSTRAINT banking_transfers_pkey PRIMARY KEY (id),
     CONSTRAINT banking_transfers_from_account_fk
         FOREIGN KEY (from_account_id)

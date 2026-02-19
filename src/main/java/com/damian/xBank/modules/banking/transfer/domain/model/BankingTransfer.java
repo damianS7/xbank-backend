@@ -6,7 +6,19 @@ import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransfe
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferNotOwnerException;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferSameAccountException;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferStatusTransitionException;
-import jakarta.persistence.*;
+import com.damian.xBank.modules.user.user.domain.model.User;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -26,24 +38,34 @@ public class BankingTransfer {
     @JoinColumn(name = "from_account_id")
     private BankingAccount fromAccount;
 
-    @ManyToOne(optional = false)
+    @ManyToOne
     @JoinColumn(name = "to_account_id")
     private BankingAccount toAccount;
+
+    @Column(nullable = false)
+    private String toAccountIban;
 
     @Column(nullable = false, precision = 15, scale = 2)
     private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    private BankingTransferType type;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private BankingTransferStatus status;
 
-    @Column(length = 255, nullable = false)
+    @Column(name = "provider_authorization_id")
+    private String providerAuthorizationId;
+
+    @Column(nullable = false)
     private String description;
 
     @OneToMany(
-            mappedBy = "transfer",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
+        mappedBy = "transfer",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
     )
     private List<BankingTransaction> transactions = new ArrayList<>();
 
@@ -54,6 +76,7 @@ public class BankingTransfer {
     private Instant updatedAt;
 
     public BankingTransfer() {
+        this.type = BankingTransferType.INTERNAL;
         this.status = BankingTransferStatus.PENDING;
         this.updatedAt = Instant.now();
         this.createdAt = Instant.now();
@@ -61,9 +84,9 @@ public class BankingTransfer {
     }
 
     public static BankingTransfer create(
-            BankingAccount fromAccount,
-            BankingAccount toAccount,
-            BigDecimal amount
+        BankingAccount fromAccount,
+        BankingAccount toAccount,
+        BigDecimal amount
     ) {
         BankingTransfer transfer = new BankingTransfer();
         transfer.setFromAccount(fromAccount);
@@ -93,9 +116,9 @@ public class BankingTransfer {
 
         if (!this.status.canTransitionTo(newStatus)) {
             throw new BankingTransferStatusTransitionException(
-                    this.id,
-                    this.status.name(),
-                    newStatus.name()
+                this.id,
+                this.status.name(),
+                newStatus.name()
             );
         }
 
@@ -168,13 +191,13 @@ public class BankingTransfer {
 
     public BankingTransaction getFromTransaction() {
         return getTransactions().stream().filter(
-                tx -> tx.isOwnedBy(fromAccount.getOwner().getId())
+            tx -> tx.isOwnedBy(fromAccount.getOwner().getId())
         ).findFirst().orElseThrow();
     }
 
     public BankingTransaction getToTransaction() {
         return getTransactions().stream().filter(
-                tx -> tx.isOwnedBy(toAccount.getOwner().getId())
+            tx -> tx.isOwnedBy(toAccount.getOwner().getId())
         ).findFirst().orElseThrow();
     }
 
@@ -202,11 +225,23 @@ public class BankingTransfer {
     }
 
     public void confirm() {
+        // deduct balance from source
+        this.getFromAccount().subtractBalance(getAmount());
+
+        // add balance to source (if internal)
+        if (this.getToAccount() != null) {
+            this.getToAccount().addBalance(getAmount());
+        }
+
+        // Confirm transactions
+        this.getTransactions().forEach(BankingTransaction::complete);
         this.setStatus(BankingTransferStatus.CONFIRMED);
         this.updatedAt = Instant.now();
     }
 
     public void reject() {
+        // reject transactions
+        this.getTransactions().forEach(BankingTransaction::fail);
         this.setStatus(BankingTransferStatus.REJECTED);
         this.updatedAt = Instant.now();
     }
@@ -263,9 +298,35 @@ public class BankingTransfer {
         // check if the source account is active
         fromAccount.assertActive();
 
-        // check if the destiny account is active
-        toAccount.assertActive();
+        if (toAccount != null) {
+            // check if the destiny account is active
+            toAccount.assertActive();
+        }
 
         return this;
+    }
+
+    public BankingTransferType getType() {
+        return type;
+    }
+
+    public void setType(BankingTransferType type) {
+        this.type = type;
+    }
+
+    public String getToAccountIban() {
+        return toAccountIban;
+    }
+
+    public void setToAccountIban(String toAccountIban) {
+        this.toAccountIban = toAccountIban;
+    }
+
+    public String getProviderAuthorizationId() {
+        return providerAuthorizationId;
+    }
+
+    public void setProviderAuthorizationId(String providerAuthorizationId) {
+        this.providerAuthorizationId = providerAuthorizationId;
     }
 }
