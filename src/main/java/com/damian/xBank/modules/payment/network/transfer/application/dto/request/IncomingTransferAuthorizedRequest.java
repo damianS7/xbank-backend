@@ -5,7 +5,12 @@ import jakarta.validation.constraints.Positive;
 
 import java.math.BigDecimal;
 
-public record IncomingTransferAuthorizationRequest(
+public record IncomingTransferAuthorizedRequest(
+    @NotBlank
+    String authorizationId,
+
+    @NotBlank
+    String fromIban,
 
     @NotBlank
     String toIban,
@@ -14,7 +19,9 @@ public record IncomingTransferAuthorizationRequest(
     BigDecimal amount,
 
     @NotBlank
-    String currency
+    String currency,
 
+    @NotBlank
+    String reference
 ) {
 }

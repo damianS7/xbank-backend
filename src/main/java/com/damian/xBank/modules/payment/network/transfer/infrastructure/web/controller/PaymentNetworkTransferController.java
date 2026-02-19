@@ -1,10 +1,12 @@
 package com.damian.xBank.modules.payment.network.transfer.infrastructure.web.controller;
 
-import com.damian.xBank.modules.payment.network.transfer.AuthorizeIncomingTransfer;
-import com.damian.xBank.modules.payment.network.transfer.IncomingTransfer;
-import com.damian.xBank.modules.payment.network.transfer.application.dto.request.IncomingTransferAuthorizationRequest;
-import com.damian.xBank.modules.payment.network.transfer.application.dto.request.IncomingTransferRequest;
-import com.damian.xBank.modules.payment.network.transfer.application.dto.response.IncomingTransferAuthorizationResponse;
+import com.damian.xBank.modules.payment.network.transfer.application.dto.request.AuthorizeIncomingTransferRequest;
+import com.damian.xBank.modules.payment.network.transfer.application.dto.request.IncomingTransferAuthorizedRequest;
+import com.damian.xBank.modules.payment.network.transfer.application.dto.request.OutgoingTransferFailureRequest;
+import com.damian.xBank.modules.payment.network.transfer.application.dto.response.AuthorizeIncomingTransferResponse;
+import com.damian.xBank.modules.payment.network.transfer.application.usecase.AuthorizeIncomingTransfer;
+import com.damian.xBank.modules.payment.network.transfer.application.usecase.HandleIncomingTransferAuthorized;
+import com.damian.xBank.modules.payment.network.transfer.application.usecase.HandleOutgoingTransferFailure;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,44 +21,47 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class PaymentNetworkTransferController {
     private final AuthorizeIncomingTransfer authorizeIncomingTransfer;
-    private final IncomingTransfer incomingTransfer;
+    private final HandleIncomingTransferAuthorized handleIncomingTransferAuthorized;
+    private final HandleOutgoingTransferFailure handleOutgoingTransferFailure;
 
     public PaymentNetworkTransferController(
         AuthorizeIncomingTransfer authorizeIncomingTransfer,
-        IncomingTransfer incomingTransfer
+        HandleIncomingTransferAuthorized handleIncomingTransferAuthorized,
+        HandleOutgoingTransferFailure handleOutgoingTransferFailure
     ) {
         this.authorizeIncomingTransfer = authorizeIncomingTransfer;
-        this.incomingTransfer = incomingTransfer;
+        this.handleIncomingTransferAuthorized = handleIncomingTransferAuthorized;
+        this.handleOutgoingTransferFailure = handleOutgoingTransferFailure;
     }
 
-    @PostMapping("/transfers/incoming/authorize")
+    @PostMapping("/webhooks/transfers/incoming/authorize")
     public ResponseEntity<?> authorizeIncomingTransfer(
         @RequestBody @Valid
-        IncomingTransferAuthorizationRequest request
+        AuthorizeIncomingTransferRequest request
     ) {
-        IncomingTransferAuthorizationResponse response = authorizeIncomingTransfer.execute(request);
+        AuthorizeIncomingTransferResponse response = authorizeIncomingTransfer.execute(request);
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(response);
     }
 
-    @PostMapping("/transfers/incoming/execute")
-    public ResponseEntity<?> incomingTransfer(
+    @PostMapping("/webhooks/transfers/incoming/authorized")
+    public ResponseEntity<?> onIncomingTransferAuthorized(
         @RequestBody @Valid
-        IncomingTransferRequest request
+        IncomingTransferAuthorizedRequest request
     ) {
-        incomingTransfer.execute(request);
+        handleIncomingTransferAuthorized.execute(request);
         return ResponseEntity
             .status(HttpStatus.OK)
             .build();
     }
 
-    @PostMapping("/transfers/incoming/notify")
-    public ResponseEntity<?> notifyFailure(
+    @PostMapping("/webhooks/transfers/outgoing/failed")
+    public ResponseEntity<?> onOutgoingTransferFailure(
         @RequestBody @Valid
-        IncomingTransferRequest request
+        OutgoingTransferFailureRequest request
     ) {
-        incomingTransfer.execute(request);
+        handleOutgoingTransferFailure.execute(request);
         return ResponseEntity
             .status(HttpStatus.OK)
             .build();
