@@ -31,35 +31,35 @@ public class BankingTransferTest {
     @BeforeEach
     void setUp() {
         fromCustomer = UserTestBuilder.aCustomer()
-                                      .withId(1L)
-                                      .build();
+            .withId(1L)
+            .build();
         toCustomer = UserTestBuilder.aCustomer()
-                                    .withId(2L)
-                                    .build();
+            .withId(2L)
+            .build();
 
         fromAccount = BankingAccount.create(fromCustomer)
-                                    .setCurrency(BankingAccountCurrency.EUR);
+            .setCurrency(BankingAccountCurrency.EUR);
 
         toAccount = BankingAccount.create(toCustomer)
-                                  .setId(1L)
-                                  .setCurrency(BankingAccountCurrency.EUR);
+            .setId(1L)
+            .setCurrency(BankingAccountCurrency.EUR);
 
         transfer = BankingTransfer.create(fromAccount, toAccount, BigDecimal.ZERO)
-                                  .setId(2L);
+            .setId(2L);
 
         BankingTransaction fromTx = BankingTransaction
-                .create(
-                        BankingTransactionType.TRANSFER_TO,
-                        fromAccount,
-                        BigDecimal.ZERO
-                );
+            .create(
+                BankingTransactionType.TRANSFER_TO,
+                fromAccount,
+                BigDecimal.ZERO
+            );
 
         BankingTransaction toTx = BankingTransaction
-                .create(
-                        BankingTransactionType.TRANSFER_FROM,
-                        toAccount,
-                        BigDecimal.ZERO
-                );
+            .create(
+                BankingTransactionType.TRANSFER_FROM,
+                toAccount,
+                BigDecimal.ZERO
+            );
 
         transfer.addTransaction(fromTx);
         transfer.addTransaction(toTx);
@@ -116,7 +116,7 @@ public class BankingTransferTest {
 
     @Test
     @DisplayName(
-            "assertOwnedBy throws BankingTransferNotOwnerException when the customer does not own the transaction"
+        "assertOwnedBy throws BankingTransferNotOwnerException when the customer does not own the transaction"
     )
     void assertOwnedBy_WhenInvalidCustomerId_ThrowsException() {
         // given
@@ -124,13 +124,13 @@ public class BankingTransferTest {
 
         // when / then
         BankingTransferNotOwnerException exception = assertThrows(
-                BankingTransferNotOwnerException.class,
-                () -> transfer.assertOwnedBy(otherCustomerId)
+            BankingTransferNotOwnerException.class,
+            () -> transfer.assertOwnedBy(otherCustomerId)
         );
 
         assertThat(exception)
-                .isNotNull()
-                .hasMessage(ErrorCodes.BANKING_TRANSFER_NOT_OWNER);
+            .isNotNull()
+            .hasMessage(ErrorCodes.BANKING_TRANSFER_NOT_OWNER);
     }
 
     @Test
@@ -138,13 +138,13 @@ public class BankingTransferTest {
     void assertOwnedBy_WhenNullCustomerId_ThrowsException() {
         // when / then
         BankingTransferNotOwnerException exception = assertThrows(
-                BankingTransferNotOwnerException.class,
-                () -> transfer.assertOwnedBy(null)
+            BankingTransferNotOwnerException.class,
+            () -> transfer.assertOwnedBy(null)
         );
 
         assertThat(exception)
-                .isNotNull()
-                .hasMessage(ErrorCodes.BANKING_TRANSFER_NOT_OWNER);
+            .isNotNull()
+            .hasMessage(ErrorCodes.BANKING_TRANSFER_NOT_OWNER);
     }
 
     @Test
@@ -183,13 +183,13 @@ public class BankingTransferTest {
 
         // when / then
         BankingTransferStatusTransitionException exception = assertThrows(
-                BankingTransferStatusTransitionException.class,
-                () -> transfer.setStatus(BankingTransferStatus.PENDING)
+            BankingTransferStatusTransitionException.class,
+            () -> transfer.setStatus(BankingTransferStatus.PENDING)
         );
 
         assertThat(exception)
-                .isNotNull()
-                .hasMessage(ErrorCodes.BANKING_TRANSFER_INVALID_TRANSITION_STATUS);
+            .isNotNull()
+            .hasMessage(ErrorCodes.BANKING_TRANSFER_INVALID_TRANSITION_STATUS);
     }
 
     @Test
@@ -201,14 +201,14 @@ public class BankingTransferTest {
 
         // then
         assertThat(tx)
-                .isNotNull()
-                .extracting(
-                        BankingTransaction::getType,
-                        BankingTransaction::getBankingAccount
-                ).containsExactly(
-                        BankingTransactionType.TRANSFER_TO,
-                        fromAccount
-                );
+            .isNotNull()
+            .extracting(
+                BankingTransaction::getType,
+                BankingTransaction::getBankingAccount
+            ).containsExactly(
+                BankingTransactionType.TRANSFER_TO,
+                fromAccount
+            );
 
     }
 
@@ -221,14 +221,14 @@ public class BankingTransferTest {
 
         // then
         assertThat(tx)
-                .isNotNull()
-                .extracting(
-                        BankingTransaction::getType,
-                        BankingTransaction::getBankingAccount
-                ).containsExactly(
-                        BankingTransactionType.TRANSFER_FROM,
-                        toAccount
-                );
+            .isNotNull()
+            .extracting(
+                BankingTransaction::getType,
+                BankingTransaction::getBankingAccount
+            ).containsExactly(
+                BankingTransactionType.TRANSFER_FROM,
+                toAccount
+            );
 
     }
 
@@ -238,22 +238,22 @@ public class BankingTransferTest {
         // given
         // when
         BankingTransaction testTx = BankingTransaction
-                .create(
-                        BankingTransactionType.TRANSFER_FROM,
-                        toAccount,
-                        BigDecimal.ZERO
-                );
+            .create(
+                BankingTransactionType.TRANSFER_FROM,
+                toAccount,
+                BigDecimal.ZERO
+            );
 
         transfer.addTransaction(testTx);
 
         // then
         assertThat(testTx.getTransfer())
-                .isNotNull()
-                .extracting(
-                        BankingTransfer::getId
-                ).isEqualTo(
-                        transfer.getId()
-                );
+            .isNotNull()
+            .extracting(
+                BankingTransfer::getId
+            ).isEqualTo(
+                transfer.getId()
+            );
 
     }
 
@@ -274,7 +274,7 @@ public class BankingTransferTest {
     void reject_WhenValid_RejectsTransfer() {
         // given
         // when
-        transfer.reject();
+        transfer.reject("rejected");
 
         // then
         assertThat(transfer.getStatus()).isEqualTo(BankingTransferStatus.REJECTED);
@@ -306,13 +306,13 @@ public class BankingTransferTest {
 
         // when
         BankingTransferCurrencyMismatchException exception = assertThrows(
-                BankingTransferCurrencyMismatchException.class,
-                transfer::assertCurrenciesMatch
+            BankingTransferCurrencyMismatchException.class,
+            transfer::assertCurrenciesMatch
         );
 
         assertThat(exception)
-                .isNotNull()
-                .hasMessage(ErrorCodes.BANKING_TRANSFER_DIFFERENT_CURRENCY);
+            .isNotNull()
+            .hasMessage(ErrorCodes.BANKING_TRANSFER_DIFFERENT_CURRENCY);
     }
 
     @Test
@@ -338,13 +338,13 @@ public class BankingTransferTest {
 
         // when
         BankingTransferSameAccountException exception = assertThrows(
-                BankingTransferSameAccountException.class,
-                transfer::assertDifferentAccounts
+            BankingTransferSameAccountException.class,
+            transfer::assertDifferentAccounts
         );
 
         assertThat(exception)
-                .isNotNull()
-                .hasMessage(ErrorCodes.BANKING_TRANSFER_SAME_ACCOUNT);
+            .isNotNull()
+            .hasMessage(ErrorCodes.BANKING_TRANSFER_SAME_ACCOUNT);
     }
 
 }

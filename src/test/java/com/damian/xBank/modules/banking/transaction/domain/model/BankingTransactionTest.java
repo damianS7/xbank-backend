@@ -227,7 +227,7 @@ public class BankingTransactionTest {
             .setDescription("Deposit transaction");
 
         // when
-        givenTransaction.fail();
+        givenTransaction.fail("failed");
 
         // then
         Assertions.assertThat(givenTransaction).isNotNull();
