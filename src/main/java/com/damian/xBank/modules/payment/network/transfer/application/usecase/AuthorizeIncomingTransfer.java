@@ -7,8 +7,8 @@ import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountS
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
-import com.damian.xBank.modules.payment.network.transfer.application.dto.request.IncomingTransferAuthorizationRequest;
-import com.damian.xBank.modules.payment.network.transfer.application.dto.response.IncomingTransferAuthorizationResponse;
+import com.damian.xBank.modules.payment.network.transfer.application.dto.request.AuthorizeIncomingTransferRequest;
+import com.damian.xBank.modules.payment.network.transfer.application.dto.response.AuthorizeIncomingTransferResponse;
 import com.damian.xBank.modules.payment.network.transfer.domain.IncomingTransferAuthorizationStatus;
 import org.springframework.stereotype.Service;
 
@@ -22,8 +22,8 @@ public class AuthorizeIncomingTransfer {
         this.bankingAccountRepository = bankingAccountRepository;
     }
 
-    public IncomingTransferAuthorizationResponse execute(
-        IncomingTransferAuthorizationRequest request
+    public AuthorizeIncomingTransferResponse execute(
+        AuthorizeIncomingTransferRequest request
     ) {
         IncomingTransferAuthorizationStatus stauts = IncomingTransferAuthorizationStatus.REJECTED;
         String rejectionReason = null;
@@ -46,7 +46,7 @@ public class AuthorizeIncomingTransfer {
             rejectionReason = e.getMessage();
         }
 
-        return new IncomingTransferAuthorizationResponse(
+        return new AuthorizeIncomingTransferResponse(
             stauts,
             null, //            request.authorizationId(),
             rejectionReason
