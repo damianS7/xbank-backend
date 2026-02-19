@@ -27,11 +27,11 @@ public class BankingTransactionTest {
         customer = User.create().setId(1L);
         account = BankingAccount.create(customer);
         transaction = BankingTransaction
-                .create(
-                        BankingTransactionType.DEPOSIT,
-                        account,
-                        BigDecimal.valueOf(100)
-                );
+            .create(
+                BankingTransactionType.DEPOSIT,
+                account,
+                BigDecimal.valueOf(100)
+            );
     }
 
     @Test
@@ -85,7 +85,7 @@ public class BankingTransactionTest {
 
     @Test
     @DisplayName(
-            "assertOwnedBy throws BankingTransactionNotOwnerException when the customer does not own the transaction"
+        "assertOwnedBy throws BankingTransactionNotOwnerException when the customer does not own the transaction"
     )
     void assertOwnedBy_WhenInvalidCustomerId_ThrowsException() {
         // given
@@ -93,13 +93,13 @@ public class BankingTransactionTest {
 
         // when / then
         BankingTransactionNotOwnerException exception = assertThrows(
-                BankingTransactionNotOwnerException.class,
-                () -> transaction.assertOwnedBy(otherCustomerId)
+            BankingTransactionNotOwnerException.class,
+            () -> transaction.assertOwnedBy(otherCustomerId)
         );
 
         assertThat(exception)
-                .isNotNull()
-                .hasMessage(ErrorCodes.BANKING_TRANSACTION_NOT_OWNER);
+            .isNotNull()
+            .hasMessage(ErrorCodes.BANKING_TRANSACTION_NOT_OWNER);
     }
 
     @Test
@@ -107,13 +107,13 @@ public class BankingTransactionTest {
     void assertOwnedBy_WhenNullCustomerId_ThrowsException() {
         // when / then
         BankingTransactionNotOwnerException exception = assertThrows(
-                BankingTransactionNotOwnerException.class,
-                () -> transaction.assertOwnedBy(null)
+            BankingTransactionNotOwnerException.class,
+            () -> transaction.assertOwnedBy(null)
         );
 
         assertThat(exception)
-                .isNotNull()
-                .hasMessage(ErrorCodes.BANKING_TRANSACTION_NOT_OWNER);
+            .isNotNull()
+            .hasMessage(ErrorCodes.BANKING_TRANSACTION_NOT_OWNER);
     }
 
     @Test
@@ -182,13 +182,13 @@ public class BankingTransactionTest {
 
         // when / then
         BankingTransactionStatusTransitionException exception = assertThrows(
-                BankingTransactionStatusTransitionException.class,
-                () -> transaction.setStatus(BankingTransactionStatus.PENDING)
+            BankingTransactionStatusTransitionException.class,
+            () -> transaction.setStatus(BankingTransactionStatus.PENDING)
         );
 
         assertThat(exception)
-                .isNotNull()
-                .hasMessage(ErrorCodes.BANKING_TRANSACTION_INVALID_TRANSITION_STATUS);
+            .isNotNull()
+            .hasMessage(ErrorCodes.BANKING_TRANSACTION_INVALID_TRANSITION_STATUS);
     }
 
     @Test
@@ -196,14 +196,14 @@ public class BankingTransactionTest {
     void capture_WhenAuthorizedTransaction_ChangesStatusToCompleted() {
         // given
         BankingTransaction givenTransaction = BankingTransaction
-                .create(
-                        BankingTransactionType.DEPOSIT,
-                        account,
-                        BigDecimal.valueOf(100)
-                )
-                .setId(1L)
-                .setStatus(BankingTransactionStatus.PENDING)
-                .setDescription("Deposit transaction");
+            .create(
+                BankingTransactionType.DEPOSIT,
+                account,
+                BigDecimal.valueOf(100)
+            )
+            .setId(1L)
+            .setStatus(BankingTransactionStatus.PENDING)
+            .setDescription("Deposit transaction");
 
         // when
         givenTransaction.capture();
@@ -214,20 +214,20 @@ public class BankingTransactionTest {
 
     @Test
     @DisplayName("Should reject a transaction")
-    void declineTransaction_WhenPendingTransaction_ChangesStatusToRejected() {
+    void failTransaction_WhenPendingTransaction_ChangesStatusToRejected() {
         // given
         BankingTransaction givenTransaction = BankingTransaction
-                .create(
-                        BankingTransactionType.DEPOSIT,
-                        account,
-                        BigDecimal.valueOf(100)
-                )
-                .setId(1L)
-                .setStatus(BankingTransactionStatus.PENDING)
-                .setDescription("Deposit transaction");
+            .create(
+                BankingTransactionType.DEPOSIT,
+                account,
+                BigDecimal.valueOf(100)
+            )
+            .setId(1L)
+            .setStatus(BankingTransactionStatus.PENDING)
+            .setDescription("Deposit transaction");
 
         // when
-        givenTransaction.decline();
+        givenTransaction.fail();
 
         // then
         Assertions.assertThat(givenTransaction).isNotNull();

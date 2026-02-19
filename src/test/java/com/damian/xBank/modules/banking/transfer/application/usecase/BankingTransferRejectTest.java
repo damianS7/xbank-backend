@@ -25,7 +25,6 @@ import org.mockito.Mock;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
@@ -54,32 +53,32 @@ public class BankingTransferRejectTest extends AbstractServiceTest {
     @BeforeEach
     void setUp() {
         fromCustomer = UserTestBuilder.aCustomer()
-                                      .withId(1L)
-                                      .withEmail("fromCustomer@demo.com")
-                                      .withPassword(RAW_PASSWORD)
-                                      .build();
+            .withId(1L)
+            .withEmail("fromCustomer@demo.com")
+            .withPassword(RAW_PASSWORD)
+            .build();
 
         fromAccount = BankingAccount
-                .create(fromCustomer)
-                .setId(1L)
-                .setBalance(BigDecimal.valueOf(1000))
-                .setCurrency(BankingAccountCurrency.EUR)
-                .setType(BankingAccountType.SAVINGS)
-                .setAccountNumber("US9900001111112233334444");
+            .create(fromCustomer)
+            .setId(1L)
+            .setBalance(BigDecimal.valueOf(1000))
+            .setCurrency(BankingAccountCurrency.EUR)
+            .setType(BankingAccountType.SAVINGS)
+            .setAccountNumber("US9900001111112233334444");
 
         toCustomer = UserTestBuilder.aCustomer()
-                                    .withId(2L)
-                                    .withEmail("toCustomer@demo.com")
-                                    .withPassword(RAW_PASSWORD)
-                                    .build();
+            .withId(2L)
+            .withEmail("toCustomer@demo.com")
+            .withPassword(RAW_PASSWORD)
+            .build();
 
         toAccount = BankingAccount
-                .create(toCustomer)
-                .setId(2L)
-                .setBalance(BigDecimal.valueOf(1000))
-                .setCurrency(BankingAccountCurrency.EUR)
-                .setType(BankingAccountType.SAVINGS)
-                .setAccountNumber("US1200001111112233335555");
+            .create(toCustomer)
+            .setId(2L)
+            .setBalance(BigDecimal.valueOf(1000))
+            .setCurrency(BankingAccountCurrency.EUR)
+            .setType(BankingAccountType.SAVINGS)
+            .setAccountNumber("US1200001111112233335555");
     }
 
     @Test
@@ -89,40 +88,38 @@ public class BankingTransferRejectTest extends AbstractServiceTest {
         setUpContext(fromCustomer);
 
         BankingTransfer givenTransfer = BankingTransfer
-                .create(fromAccount, toAccount, BigDecimal.valueOf(100))
-                .setId(1L)
-                .setStatus(BankingTransferStatus.REJECTED)
-                .setDescription("a gift!");
+            .create(fromAccount, toAccount, BigDecimal.valueOf(100))
+            .setId(1L)
+            .setStatus(BankingTransferStatus.REJECTED)
+            .setDescription("a gift!");
 
         BankingTransaction fromTransaction = BankingTransaction
-                .create(
-                        BankingTransactionType.TRANSFER_TO,
-                        fromAccount,
-                        givenTransfer.getAmount()
-                )
-                .setStatus(BankingTransactionStatus.PENDING)
-                .setDescription(givenTransfer.getDescription());
+            .create(
+                BankingTransactionType.TRANSFER_TO,
+                fromAccount,
+                givenTransfer.getAmount()
+            )
+            .setStatus(BankingTransactionStatus.PENDING)
+            .setDescription(givenTransfer.getDescription());
 
         BankingTransaction toTransaction = BankingTransaction
-                .create(
-                        BankingTransactionType.TRANSFER_FROM,
-                        toAccount,
-                        givenTransfer.getAmount()
-                )
-                .setStatus(BankingTransactionStatus.PENDING)
-                .setDescription(givenTransfer.getDescription());
+            .create(
+                BankingTransactionType.TRANSFER_FROM,
+                toAccount,
+                givenTransfer.getAmount()
+            )
+            .setStatus(BankingTransactionStatus.PENDING)
+            .setDescription(givenTransfer.getDescription());
 
         givenTransfer.addTransaction(fromTransaction);
         givenTransfer.addTransaction(toTransaction);
 
         BankingTransferRejectRequest request = new BankingTransferRejectRequest(
-                RAW_PASSWORD
+            RAW_PASSWORD
         );
 
         // when
         when(bankingTransferRepository.findById(anyLong())).thenReturn(Optional.of(givenTransfer));
-
-        when(bankingTransferDomainService.reject(anyLong(), any())).thenReturn(givenTransfer);
 
         //        when(bankingTransferRepository.save(any(BankingTransfer.class)))
         //                .thenAnswer(i -> i.getArgument(0));
@@ -131,7 +128,7 @@ public class BankingTransferRejectTest extends AbstractServiceTest {
 
         // then
         bankingTransferReject
-                .execute(givenTransfer.getId(), request);
+            .execute(givenTransfer.getId(), request);
 
         //        verify(bankingTransferRepository, times(1)).save(any(BankingTransfer.class));
     }

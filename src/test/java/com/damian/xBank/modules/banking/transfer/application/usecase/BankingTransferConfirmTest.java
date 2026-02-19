@@ -33,7 +33,10 @@ import java.util.Optional;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class BankingTransferConfirmTest extends AbstractServiceTest {
 
@@ -69,32 +72,32 @@ public class BankingTransferConfirmTest extends AbstractServiceTest {
     @BeforeEach
     void setUp() {
         fromCustomer = UserTestBuilder.aCustomer()
-                                      .withId(1L)
-                                      .withEmail("fromCustomer@demo.com")
-                                      .withPassword(RAW_PASSWORD)
-                                      .build();
+            .withId(1L)
+            .withEmail("fromCustomer@demo.com")
+            .withPassword(RAW_PASSWORD)
+            .build();
 
         fromAccount = BankingAccount
-                .create(fromCustomer)
-                .setId(1L)
-                .setBalance(BigDecimal.valueOf(1000))
-                .setCurrency(BankingAccountCurrency.EUR)
-                .setType(BankingAccountType.SAVINGS)
-                .setAccountNumber("US9900001111112233334444");
+            .create(fromCustomer)
+            .setId(1L)
+            .setBalance(BigDecimal.valueOf(1000))
+            .setCurrency(BankingAccountCurrency.EUR)
+            .setType(BankingAccountType.SAVINGS)
+            .setAccountNumber("US9900001111112233334444");
 
         toCustomer = UserTestBuilder.aCustomer()
-                                    .withId(2L)
-                                    .withEmail("toCustomer@demo.com")
-                                    .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                    .build();
+            .withId(2L)
+            .withEmail("toCustomer@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .build();
 
         toAccount = BankingAccount
-                .create(toCustomer)
-                .setId(2L)
-                .setBalance(BigDecimal.valueOf(1000))
-                .setCurrency(BankingAccountCurrency.EUR)
-                .setType(BankingAccountType.SAVINGS)
-                .setAccountNumber("US1200001111112233335555");
+            .create(toCustomer)
+            .setId(2L)
+            .setBalance(BigDecimal.valueOf(1000))
+            .setCurrency(BankingAccountCurrency.EUR)
+            .setType(BankingAccountType.SAVINGS)
+            .setAccountNumber("US1200001111112233335555");
     }
 
     @Test
@@ -104,40 +107,38 @@ public class BankingTransferConfirmTest extends AbstractServiceTest {
         setUpContext(fromCustomer);
 
         BankingTransfer givenTransfer = BankingTransfer
-                .create(fromAccount, toAccount, BigDecimal.valueOf(100))
-                .setId(1L)
-                .setStatus(BankingTransferStatus.CONFIRMED)
-                .setDescription("a gift!");
+            .create(fromAccount, toAccount, BigDecimal.valueOf(100))
+            .setId(1L)
+            .setStatus(BankingTransferStatus.CONFIRMED)
+            .setDescription("a gift!");
 
         BankingTransaction fromTransaction = BankingTransaction
-                .create(
-                        BankingTransactionType.TRANSFER_TO,
-                        fromAccount,
-                        givenTransfer.getAmount()
-                )
-                .setStatus(BankingTransactionStatus.PENDING)
-                .setDescription(givenTransfer.getDescription());
+            .create(
+                BankingTransactionType.TRANSFER_TO,
+                fromAccount,
+                givenTransfer.getAmount()
+            )
+            .setStatus(BankingTransactionStatus.PENDING)
+            .setDescription(givenTransfer.getDescription());
 
         BankingTransaction toTransaction = BankingTransaction
-                .create(
-                        BankingTransactionType.TRANSFER_FROM,
-                        toAccount,
-                        givenTransfer.getAmount()
-                )
-                .setStatus(BankingTransactionStatus.PENDING)
-                .setDescription(givenTransfer.getDescription());
+            .create(
+                BankingTransactionType.TRANSFER_FROM,
+                toAccount,
+                givenTransfer.getAmount()
+            )
+            .setStatus(BankingTransactionStatus.PENDING)
+            .setDescription(givenTransfer.getDescription());
 
         givenTransfer.addTransaction(fromTransaction);
         givenTransfer.addTransaction(toTransaction);
 
         BankingTransferConfirmRequest request = new BankingTransferConfirmRequest(
-                RAW_PASSWORD
+            RAW_PASSWORD
         );
 
         // when
         when(bankingTransferRepository.findById(anyLong())).thenReturn(Optional.of(givenTransfer));
-
-        when(bankingTransferDomainService.confirmTransfer(anyLong(), any())).thenReturn(givenTransfer);
 
         //        when(bankingAccountRepository.save(any(BankingAccount.class)))
         //                .thenAnswer(i -> i.getArgument(0));
@@ -147,7 +148,7 @@ public class BankingTransferConfirmTest extends AbstractServiceTest {
 
         // then
         bankingTransferConfirm
-                .execute(givenTransfer.getId(), request);
+            .execute(givenTransfer.getId(), request);
 
         verify(bankingAccountRepository, times(2)).save(any(BankingAccount.class));
         verify(bankingTransferRepository, times(1)).save(any(BankingTransfer.class));
@@ -160,41 +161,41 @@ public class BankingTransferConfirmTest extends AbstractServiceTest {
         setUpContext(fromCustomer);
 
         BankingTransfer givenTransfer = BankingTransfer
-                .create(fromAccount, toAccount, BigDecimal.valueOf(100))
-                .setId(1L)
-                .setStatus(BankingTransferStatus.CONFIRMED)
-                .setDescription("a gift!");
+            .create(fromAccount, toAccount, BigDecimal.valueOf(100))
+            .setId(1L)
+            .setStatus(BankingTransferStatus.CONFIRMED)
+            .setDescription("a gift!");
 
         BankingTransaction fromTransaction = BankingTransaction
-                .create(
-                        BankingTransactionType.TRANSFER_TO,
-                        fromAccount,
-                        givenTransfer.getAmount()
-                )
-                .setStatus(BankingTransactionStatus.PENDING)
-                .setDescription(givenTransfer.getDescription());
+            .create(
+                BankingTransactionType.TRANSFER_TO,
+                fromAccount,
+                givenTransfer.getAmount()
+            )
+            .setStatus(BankingTransactionStatus.PENDING)
+            .setDescription(givenTransfer.getDescription());
 
         BankingTransaction toTransaction = BankingTransaction
-                .create(
-                        BankingTransactionType.TRANSFER_FROM,
-                        toAccount,
-                        givenTransfer.getAmount()
-                )
-                .setStatus(BankingTransactionStatus.PENDING)
-                .setDescription(givenTransfer.getDescription());
+            .create(
+                BankingTransactionType.TRANSFER_FROM,
+                toAccount,
+                givenTransfer.getAmount()
+            )
+            .setStatus(BankingTransactionStatus.PENDING)
+            .setDescription(givenTransfer.getDescription());
 
         givenTransfer.addTransaction(fromTransaction);
         givenTransfer.addTransaction(toTransaction);
 
         BankingTransferConfirmRequest request = new BankingTransferConfirmRequest(
-                "WRONG PASSWORD"
+            "WRONG PASSWORD"
         );
 
         // when
         // then
         UserInvalidPasswordConfirmationException exception = assertThrows(
-                UserInvalidPasswordConfirmationException.class,
-                () -> bankingTransferConfirm.execute(givenTransfer.getId(), request)
+            UserInvalidPasswordConfirmationException.class,
+            () -> bankingTransferConfirm.execute(givenTransfer.getId(), request)
         );
 
         // then

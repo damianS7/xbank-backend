@@ -10,6 +10,7 @@ import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransact
 import com.damian.xBank.modules.banking.transfer.application.dto.request.BankingTransferRequest;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferStatus;
+import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferType;
 import com.damian.xBank.modules.banking.transfer.domain.service.BankingTransferDomainService;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
@@ -28,7 +29,9 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class BankingTransferCreateTest extends AbstractServiceTest {
 
@@ -55,32 +58,32 @@ public class BankingTransferCreateTest extends AbstractServiceTest {
     @BeforeEach
     void setUp() {
         fromCustomer = UserTestBuilder.aCustomer()
-                                      .withId(1L)
-                                      .withEmail("fromCustomer@demo.com")
-                                      .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                      .build();
+            .withId(1L)
+            .withEmail("fromCustomer@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .build();
 
         fromAccount = BankingAccount
-                .create(fromCustomer)
-                .setId(1L)
-                .setBalance(BigDecimal.valueOf(1000))
-                .setCurrency(BankingAccountCurrency.EUR)
-                .setType(BankingAccountType.SAVINGS)
-                .setAccountNumber("US9900001111112233334444");
+            .create(fromCustomer)
+            .setId(1L)
+            .setBalance(BigDecimal.valueOf(1000))
+            .setCurrency(BankingAccountCurrency.EUR)
+            .setType(BankingAccountType.SAVINGS)
+            .setAccountNumber("US9900001111112233334444");
 
         toCustomer = UserTestBuilder.aCustomer()
-                                    .withId(2L)
-                                    .withEmail("toCustomer@demo.com")
-                                    .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                    .build();
+            .withId(2L)
+            .withEmail("toCustomer@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .build();
 
         toAccount = BankingAccount
-                .create(toCustomer)
-                .setId(2L)
-                .setBalance(BigDecimal.valueOf(1000))
-                .setCurrency(BankingAccountCurrency.EUR)
-                .setType(BankingAccountType.SAVINGS)
-                .setAccountNumber("US1200001111112233335555");
+            .create(toCustomer)
+            .setId(2L)
+            .setBalance(BigDecimal.valueOf(1000))
+            .setCurrency(BankingAccountCurrency.EUR)
+            .setType(BankingAccountType.SAVINGS)
+            .setAccountNumber("US1200001111112233335555");
     }
 
     @Test
@@ -90,67 +93,131 @@ public class BankingTransferCreateTest extends AbstractServiceTest {
         setUpContext(fromCustomer);
 
         BankingTransferRequest request = new BankingTransferRequest(
-                fromAccount.getId(),
-                toAccount.getAccountNumber(),
-                "a gift!",
-                BigDecimal.valueOf(100)
+            fromAccount.getId(),
+            toAccount.getAccountNumber(),
+            "a gift!",
+            BigDecimal.valueOf(100)
         );
 
         BankingTransfer givenTransfer = BankingTransfer
-                .create(fromAccount, toAccount, BigDecimal.valueOf(100))
-                .setId(1L)
-                .setStatus(BankingTransferStatus.CONFIRMED)
-                .setDescription("a gift!");
+            .create(fromAccount, toAccount, BigDecimal.valueOf(100))
+            .setId(1L)
+            .setStatus(BankingTransferStatus.CONFIRMED)
+            .setDescription("a gift!");
 
         BankingTransaction toTransaction = BankingTransaction
-                .create(
-                        BankingTransactionType.TRANSFER_FROM,
-                        toAccount,
-                        givenTransfer.getAmount()
-                )
-                .setStatus(BankingTransactionStatus.PENDING)
-                .setDescription(givenTransfer.getDescription());
+            .create(
+                BankingTransactionType.TRANSFER_FROM,
+                toAccount,
+                givenTransfer.getAmount()
+            )
+            .setStatus(BankingTransactionStatus.PENDING)
+            .setDescription(givenTransfer.getDescription());
 
         givenTransfer.addTransaction(toTransaction);
 
         // when
         when(bankingAccountRepository.findById(fromAccount.getId())).thenReturn(
-                Optional.of(fromAccount));
+            Optional.of(fromAccount));
 
         when(bankingAccountRepository.findByAccountNumber(toAccount.getAccountNumber())).thenReturn(
-                Optional.of(toAccount));
+            Optional.of(toAccount));
 
         when(bankingTransferDomainService.createTransfer(
-                anyLong(),
-                any(BankingAccount.class),
-                any(BankingAccount.class),
-                any(BigDecimal.class),
-                any(String.class)
+            anyLong(),
+            any(BankingAccount.class),
+            any(BankingAccount.class),
+            any(BigDecimal.class),
+            any(String.class)
         )).thenReturn(givenTransfer);
 
         when(bankingTransferRepository.save(any(BankingTransfer.class))).thenAnswer(
-                i -> i.getArguments()[0]
+            i -> i.getArguments()[0]
         );
 
         BankingTransfer resultTransfer = bankingTransferCreate.createTransfer(request);
 
         // then
         assertThat(resultTransfer)
-                .isNotNull()
-                .extracting(
-                        BankingTransfer::getId,
-                        BankingTransfer::getAmount,
-                        BankingTransfer::getStatus,
-                        BankingTransfer::getDescription,
-                        BankingTransfer::getCreatedAt
-                )
-                .containsExactly(
-                        resultTransfer.getId(),
-                        request.amount(),
-                        BankingTransferStatus.CONFIRMED,
-                        request.description(),
-                        resultTransfer.getCreatedAt()
-                );
+            .isNotNull()
+            .extracting(
+                BankingTransfer::getId,
+                BankingTransfer::getAmount,
+                BankingTransfer::getStatus,
+                BankingTransfer::getDescription,
+                BankingTransfer::getCreatedAt
+            )
+            .containsExactly(
+                resultTransfer.getId(),
+                request.amount(),
+                BankingTransferStatus.CONFIRMED,
+                request.description(),
+                resultTransfer.getCreatedAt()
+            );
+
+        verify(bankingTransferRepository, times(1)).save(any(BankingTransfer.class));
+    }
+
+    @Test
+    void createTransfer_WhenToAccountNull_ReturnsExternalTransfer() {
+        // given
+        setUpContext(fromCustomer);
+
+        BankingTransferRequest request = new BankingTransferRequest(
+            fromAccount.getId(),
+            toAccount.getAccountNumber(),
+            "a gift!",
+            BigDecimal.valueOf(100)
+        );
+
+        BankingTransfer givenTransfer = BankingTransfer
+            .create(fromAccount, null, BigDecimal.valueOf(100))
+            .setId(1L)
+            .setStatus(BankingTransferStatus.PENDING)
+            .setDescription("a gift!");
+
+        // when
+        when(bankingAccountRepository.findById(fromAccount.getId())).thenReturn(
+            Optional.of(fromAccount));
+
+        when(bankingAccountRepository.findByAccountNumber(toAccount.getAccountNumber()))
+            .thenReturn(Optional.empty());
+
+        when(bankingTransferDomainService.createTransfer(
+            anyLong(),
+            any(BankingAccount.class),
+            any(),
+            any(BigDecimal.class),
+            any(String.class)
+        )).thenReturn(givenTransfer);
+
+        when(bankingTransferRepository.save(any(BankingTransfer.class))).thenAnswer(
+            i -> i.getArguments()[0]
+        );
+
+        BankingTransfer resultTransfer = bankingTransferCreate.createTransfer(request);
+
+        // then
+        assertThat(resultTransfer)
+            .isNotNull()
+            .extracting(
+                BankingTransfer::getId,
+                BankingTransfer::getToAccount,
+                BankingTransfer::getAmount,
+                BankingTransfer::getStatus,
+                BankingTransfer::getType,
+                BankingTransfer::getDescription,
+                BankingTransfer::getCreatedAt
+            )
+            .containsExactly(
+                resultTransfer.getId(),
+                null,
+                request.amount(),
+                BankingTransferStatus.PENDING,
+                BankingTransferType.EXTERNAL,
+                request.description(),
+                resultTransfer.getCreatedAt()
+            );
 
         verify(bankingTransferRepository, times(1)).save(any(BankingTransfer.class));
     }

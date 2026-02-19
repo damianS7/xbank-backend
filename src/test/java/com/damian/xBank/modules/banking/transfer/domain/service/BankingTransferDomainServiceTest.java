@@ -9,7 +9,6 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurre
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
-import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.infrastructure.service.BankingTransactionPersistenceService;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferCurrencyMismatchException;
@@ -48,32 +47,32 @@ public class BankingTransferDomainServiceTest extends AbstractServiceTest {
     @BeforeEach
     void setUp() {
         fromCustomer = UserTestBuilder.aCustomer()
-                                      .withId(1L)
-                                      .withEmail("fromCustomer@demo.com")
-                                      .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                      .build();
+            .withId(1L)
+            .withEmail("fromCustomer@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .build();
 
         fromAccount = BankingAccount
-                .create(fromCustomer)
-                .setId(1L)
-                .setBalance(BigDecimal.valueOf(1000))
-                .setCurrency(BankingAccountCurrency.EUR)
-                .setType(BankingAccountType.SAVINGS)
-                .setAccountNumber("US9900001111112233334444");
+            .create(fromCustomer)
+            .setId(1L)
+            .setBalance(BigDecimal.valueOf(1000))
+            .setCurrency(BankingAccountCurrency.EUR)
+            .setType(BankingAccountType.SAVINGS)
+            .setAccountNumber("US9900001111112233334444");
 
         toCustomer = UserTestBuilder.aCustomer()
-                                    .withId(2L)
-                                    .withEmail("toCustomer@demo.com")
-                                    .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                    .build();
+            .withId(2L)
+            .withEmail("toCustomer@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .build();
 
         toAccount = BankingAccount
-                .create(toCustomer)
-                .setId(2L)
-                .setBalance(BigDecimal.valueOf(1000))
-                .setCurrency(BankingAccountCurrency.EUR)
-                .setType(BankingAccountType.SAVINGS)
-                .setAccountNumber("US1200001111112233335555");
+            .create(toCustomer)
+            .setId(2L)
+            .setBalance(BigDecimal.valueOf(1000))
+            .setCurrency(BankingAccountCurrency.EUR)
+            .setType(BankingAccountType.SAVINGS)
+            .setAccountNumber("US1200001111112233335555");
     }
 
     @Test
@@ -86,43 +85,43 @@ public class BankingTransferDomainServiceTest extends AbstractServiceTest {
         // when
         // then
         BankingTransfer resultTransfer = bankingTransferDomainService.createTransfer(
-                fromCustomer.getId(),
-                fromAccount,
-                toAccount,
-                givenAmount,
-                givenDescription
+            fromCustomer.getId(),
+            fromAccount,
+            toAccount,
+            givenAmount,
+            givenDescription
         );
 
         // then
         assertThat(resultTransfer)
-                .isNotNull()
-                .extracting(
-                        BankingTransfer::getId,
-                        BankingTransfer::getAmount,
-                        BankingTransfer::getStatus,
-                        BankingTransfer::getDescription,
-                        BankingTransfer::getCreatedAt
-                )
-                .containsExactly(
-                        resultTransfer.getId(),
-                        givenAmount,
-                        BankingTransferStatus.PENDING,
-                        givenDescription,
-                        resultTransfer.getCreatedAt()
-                );
+            .isNotNull()
+            .extracting(
+                BankingTransfer::getId,
+                BankingTransfer::getAmount,
+                BankingTransfer::getStatus,
+                BankingTransfer::getDescription,
+                BankingTransfer::getCreatedAt
+            )
+            .containsExactly(
+                resultTransfer.getId(),
+                givenAmount,
+                BankingTransferStatus.PENDING,
+                givenDescription,
+                resultTransfer.getCreatedAt()
+            );
 
         BankingTransaction fromTx = resultTransfer.getTransactions().stream()
-                                                  .filter(tx -> tx.getBankingAccount().equals(fromAccount))
-                                                  .findFirst()
-                                                  .orElseThrow();
+            .filter(tx -> tx.getBankingAccount().equals(fromAccount))
+            .findFirst()
+            .orElseThrow();
         assertEquals(BankingTransactionType.TRANSFER_TO, fromTx.getType());
         assertEquals(givenAmount, fromTx.getAmount());
         assertEquals(fromAccount.getBalance().subtract(givenAmount), fromTx.getBalanceAfter());
 
         BankingTransaction toTx = resultTransfer.getTransactions().stream()
-                                                .filter(tx -> tx.getBankingAccount().equals(toAccount))
-                                                .findFirst()
-                                                .orElseThrow();
+            .filter(tx -> tx.getBankingAccount().equals(toAccount))
+            .findFirst()
+            .orElseThrow();
         assertEquals(BankingTransactionType.TRANSFER_FROM, toTx.getType());
         assertEquals(givenAmount, toTx.getAmount());
         assertEquals(toAccount.getBalance().add(givenAmount), toTx.getBalanceAfter());
@@ -137,20 +136,20 @@ public class BankingTransferDomainServiceTest extends AbstractServiceTest {
         // when
         // then
         BankingAccountNotOwnerException exception = assertThrows(
-                BankingAccountNotOwnerException.class,
-                () -> bankingTransferDomainService.createTransfer(
-                        toCustomer.getId(),
-                        fromAccount,
-                        toAccount,
-                        BigDecimal.valueOf(100),
-                        "a gift!"
-                )
+            BankingAccountNotOwnerException.class,
+            () -> bankingTransferDomainService.createTransfer(
+                toCustomer.getId(),
+                fromAccount,
+                toAccount,
+                BigDecimal.valueOf(100),
+                "a gift!"
+            )
         );
 
         // then
         assertThat(exception)
-                .isNotNull()
-                .hasMessage(ErrorCodes.BANKING_ACCOUNT_NOT_OWNER);
+            .isNotNull()
+            .hasMessage(ErrorCodes.BANKING_ACCOUNT_NOT_OWNER);
     }
 
     @Test
@@ -160,20 +159,20 @@ public class BankingTransferDomainServiceTest extends AbstractServiceTest {
         // when
         // then
         BankingAccountInsufficientFundsException exception = assertThrows(
-                BankingAccountInsufficientFundsException.class,
-                () -> bankingTransferDomainService.createTransfer(
-                        fromCustomer.getId(),
-                        fromAccount,
-                        toAccount,
-                        BigDecimal.valueOf(1000000),
-                        "a gift!"
-                )
+            BankingAccountInsufficientFundsException.class,
+            () -> bankingTransferDomainService.createTransfer(
+                fromCustomer.getId(),
+                fromAccount,
+                toAccount,
+                BigDecimal.valueOf(1000000),
+                "a gift!"
+            )
         );
 
         // then
         assertThat(exception)
-                .isNotNull()
-                .hasMessage(ErrorCodes.BANKING_ACCOUNT_INSUFFICIENT_FUNDS);
+            .isNotNull()
+            .hasMessage(ErrorCodes.BANKING_ACCOUNT_INSUFFICIENT_FUNDS);
     }
 
     @Test
@@ -185,20 +184,20 @@ public class BankingTransferDomainServiceTest extends AbstractServiceTest {
         // when
         // then
         BankingTransferCurrencyMismatchException exception = assertThrows(
-                BankingTransferCurrencyMismatchException.class,
-                () -> bankingTransferDomainService.createTransfer(
-                        fromCustomer.getId(),
-                        fromAccount,
-                        toAccount,
-                        BigDecimal.valueOf(1),
-                        "a gift!"
-                )
+            BankingTransferCurrencyMismatchException.class,
+            () -> bankingTransferDomainService.createTransfer(
+                fromCustomer.getId(),
+                fromAccount,
+                toAccount,
+                BigDecimal.valueOf(1),
+                "a gift!"
+            )
         );
 
         // then
         assertThat(exception)
-                .isNotNull()
-                .hasMessage(ErrorCodes.BANKING_TRANSFER_DIFFERENT_CURRENCY);
+            .isNotNull()
+            .hasMessage(ErrorCodes.BANKING_TRANSFER_DIFFERENT_CURRENCY);
     }
 
     @Test
@@ -210,20 +209,20 @@ public class BankingTransferDomainServiceTest extends AbstractServiceTest {
         // when
         // then
         BankingAccountClosedException exception = assertThrows(
-                BankingAccountClosedException.class,
-                () -> bankingTransferDomainService.createTransfer(
-                        fromCustomer.getId(),
-                        fromAccount,
-                        toAccount,
-                        BigDecimal.valueOf(1),
-                        "a gift!"
-                )
+            BankingAccountClosedException.class,
+            () -> bankingTransferDomainService.createTransfer(
+                fromCustomer.getId(),
+                fromAccount,
+                toAccount,
+                BigDecimal.valueOf(1),
+                "a gift!"
+            )
         );
 
         // then
         assertThat(exception)
-                .isNotNull()
-                .hasMessage(ErrorCodes.BANKING_ACCOUNT_CLOSED);
+            .isNotNull()
+            .hasMessage(ErrorCodes.BANKING_ACCOUNT_CLOSED);
     }
 
     @Test
@@ -235,20 +234,20 @@ public class BankingTransferDomainServiceTest extends AbstractServiceTest {
         // when
         // then
         BankingAccountSuspendedException exception = assertThrows(
-                BankingAccountSuspendedException.class,
-                () -> bankingTransferDomainService.createTransfer(
-                        fromCustomer.getId(),
-                        fromAccount,
-                        toAccount,
-                        BigDecimal.valueOf(1),
-                        "a gift!"
-                )
+            BankingAccountSuspendedException.class,
+            () -> bankingTransferDomainService.createTransfer(
+                fromCustomer.getId(),
+                fromAccount,
+                toAccount,
+                BigDecimal.valueOf(1),
+                "a gift!"
+            )
         );
 
         // then
         assertThat(exception)
-                .isNotNull()
-                .hasMessage(ErrorCodes.BANKING_ACCOUNT_SUSPENDED);
+            .isNotNull()
+            .hasMessage(ErrorCodes.BANKING_ACCOUNT_SUSPENDED);
     }
 
     @Test
@@ -258,133 +257,19 @@ public class BankingTransferDomainServiceTest extends AbstractServiceTest {
         // when
         // then
         BankingTransferSameAccountException exception = assertThrows(
-                BankingTransferSameAccountException.class,
-                () -> bankingTransferDomainService.createTransfer(
-                        fromCustomer.getId(),
-                        fromAccount,
-                        fromAccount,
-                        BigDecimal.valueOf(1),
-                        "a gift!"
-                )
+            BankingTransferSameAccountException.class,
+            () -> bankingTransferDomainService.createTransfer(
+                fromCustomer.getId(),
+                fromAccount,
+                fromAccount,
+                BigDecimal.valueOf(1),
+                "a gift!"
+            )
         );
 
         // then
         assertThat(exception)
-                .isNotNull()
-                .hasMessage(ErrorCodes.BANKING_TRANSFER_SAME_ACCOUNT);
-    }
-
-    @Test
-    @DisplayName("confirmTransfer should successfully confirm a transfer")
-    void confirmTransfer_WhenValid_ReturnsConfirmedTransfer() {
-        // given
-        BigDecimal fromCustomerAccountInitialBalance = BigDecimal.valueOf(1000);
-        fromAccount.setBalance(fromCustomerAccountInitialBalance);
-
-        BigDecimal toCustomerAccountInitialBalance = BigDecimal.valueOf(0);
-        toAccount.setBalance(toCustomerAccountInitialBalance);
-
-        BigDecimal givenTransferAmount = BigDecimal.valueOf(100);
-
-        BankingTransfer givenTransfer = BankingTransfer
-                .create(fromAccount, toAccount, givenTransferAmount)
-                .setId(1L)
-                .setDescription("a gift!");
-
-        BankingTransaction fromTransaction = BankingTransaction
-                .create(
-                        BankingTransactionType.TRANSFER_TO,
-                        fromAccount,
-                        givenTransferAmount
-                )
-                .setStatus(BankingTransactionStatus.PENDING)
-                .setDescription(givenTransfer.getDescription());
-
-        BankingTransaction toTransaction = BankingTransaction
-                .create(
-                        BankingTransactionType.TRANSFER_FROM,
-                        toAccount,
-                        givenTransferAmount
-                )
-                .setStatus(BankingTransactionStatus.PENDING)
-                .setDescription(givenTransfer.getDescription());
-
-        givenTransfer.addTransaction(fromTransaction);
-        givenTransfer.addTransaction(toTransaction);
-
-        // then
-        BankingTransfer resultTransfer = bankingTransferDomainService.confirmTransfer(
-                fromCustomer.getId(),
-                givenTransfer
-        );
-
-        assertThat(resultTransfer)
-                .isNotNull()
-                .extracting(
-                        BankingTransfer::getId,
-                        BankingTransfer::getAmount,
-                        BankingTransfer::getStatus,
-                        BankingTransfer::getDescription,
-                        BankingTransfer::getCreatedAt
-                )
-                .containsExactly(
-                        givenTransfer.getId(),
-                        givenTransferAmount,
-                        BankingTransferStatus.CONFIRMED,
-                        givenTransfer.getDescription(),
-                        givenTransfer.getCreatedAt()
-                );
-
-        assertThat(resultTransfer.getTransactions())
-                .hasSize(2);
-
-        // check balance has been deducted
-        assertThat(fromAccount.getBalance()).isEqualTo(
-                fromCustomerAccountInitialBalance.subtract(givenTransferAmount)
-        );
-
-        // check balance has been added
-        assertThat(toAccount.getBalance()).isEqualTo(
-                toCustomerAccountInitialBalance.add(givenTransferAmount)
-        );
-
-        BankingTransaction fromTx = resultTransfer.getFromTransaction();
-        assertThat(fromTx)
-                .isNotNull()
-                .extracting(
-                        BankingTransaction::getType,
-                        BankingTransaction::getStatus,
-                        BankingTransaction::getBalanceBefore,
-                        BankingTransaction::getAmount,
-                        BankingTransaction::getBalanceAfter
-                )
-                .containsExactly(
-                        BankingTransactionType.TRANSFER_TO,
-                        BankingTransactionStatus.COMPLETED,
-                        fromTransaction.getBalanceBefore(),
-                        fromTransaction.getAmount(),
-                        fromTransaction.getBalanceAfter()
-                );
-
-        BankingTransaction toTx = resultTransfer.getToTransaction();
-        assertThat(toTx)
-                .isNotNull()
-                .extracting(
-                        BankingTransaction::getType,
-                        BankingTransaction::getStatus,
-                        BankingTransaction::getBalanceBefore,
-                        BankingTransaction::getAmount,
-                        BankingTransaction::getBalanceAfter
-                )
-                .containsExactly(
-                        BankingTransactionType.TRANSFER_FROM,
-                        BankingTransactionStatus.COMPLETED,
-                        toTransaction.getBalanceBefore(),
-                        toTransaction.getAmount(),
-                        toTransaction.getBalanceAfter()
-                );
-
-        //        verify(bankingAccountRepository, times(2)).save(any(BankingAccount.class));
-        //        verify(bankingTransferRepository, times(1)).save(any(BankingTransfer.class));
+            .isNotNull()
+            .hasMessage(ErrorCodes.BANKING_TRANSFER_SAME_ACCOUNT);
     }
 }
