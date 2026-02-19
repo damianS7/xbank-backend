@@ -6,7 +6,16 @@ import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTran
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotPendingStatusException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionStatusTransitionException;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -74,9 +83,9 @@ public class BankingTransaction {
     }
 
     public static BankingTransaction create(
-            BankingTransactionType type,
-            BankingAccount account,
-            BigDecimal amount
+        BankingTransactionType type,
+        BankingAccount account,
+        BigDecimal amount
     ) {
         BankingTransaction transaction = new BankingTransaction();
         transaction.setBankingAccount(account);
@@ -88,9 +97,9 @@ public class BankingTransaction {
     }
 
     public static BankingTransaction create(
-            BankingTransactionType type,
-            BankingCard card,
-            BigDecimal amount
+        BankingTransactionType type,
+        BankingCard card,
+        BigDecimal amount
     ) {
         BankingTransaction t = create(type, card.getBankingAccount(), amount);
         t.setBankingCard(card);
@@ -149,9 +158,9 @@ public class BankingTransaction {
 
         if (!this.status.canTransitionTo(newStatus)) {
             throw new BankingTransactionStatusTransitionException(
-                    this.id,
-                    this.status.name(),
-                    newStatus.name()
+                this.id,
+                this.status.name(),
+                newStatus.name()
             );
         }
 
@@ -246,8 +255,8 @@ public class BankingTransaction {
         this.updatedAt = Instant.now();
     }
 
-    public void decline() {
-        this.setStatus(BankingTransactionStatus.DECLINED);
+    public void fail() {
+        this.setStatus(BankingTransactionStatus.FAILED);
         this.updatedAt = Instant.now();
     }
 
