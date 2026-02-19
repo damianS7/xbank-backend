@@ -25,13 +25,13 @@ public class BankingTransferConfirm {
     private final NotificationEventFactory notificationEventFactory;
 
     public BankingTransferConfirm(
-            NotificationPublisher notificationPublisher,
-            BankingAccountRepository bankingAccountRepository,
-            BankingTransferDomainService bankingTransferDomainService,
-            AuthenticationContext authenticationContext,
-            PasswordValidator passwordValidator,
-            BankingTransferRepository bankingTransferRepository,
-            NotificationEventFactory notificationEventFactory
+        NotificationPublisher notificationPublisher,
+        BankingAccountRepository bankingAccountRepository,
+        BankingTransferDomainService bankingTransferDomainService,
+        AuthenticationContext authenticationContext,
+        PasswordValidator passwordValidator,
+        BankingTransferRepository bankingTransferRepository,
+        NotificationEventFactory notificationEventFactory
     ) {
         this.notificationPublisher = notificationPublisher;
         this.bankingAccountRepository = bankingAccountRepository;
@@ -44,8 +44,8 @@ public class BankingTransferConfirm {
 
     @Transactional
     public BankingTransfer execute(
-            Long transferId,
-            BankingTransferConfirmRequest request
+        Long transferId,
+        BankingTransferConfirmRequest request
     ) {
         // Current user
         final User currentUser = authenticationContext.getCurrentUser();
@@ -54,11 +54,14 @@ public class BankingTransferConfirm {
         passwordValidator.validatePassword(currentUser, request.password());
 
         BankingTransfer transfer = bankingTransferRepository.findById(transferId).orElseThrow(
-                () -> new BankingTransferNotFoundException(transferId)
+            () -> new BankingTransferNotFoundException(transferId)
         );
 
+        // assert that the transfer belongs to userId
+        transfer.assertOwnedBy(currentUser.getId());
+
         // confirm transfer
-        bankingTransferDomainService.confirmTransfer(currentUser.getId(), transfer);
+        transfer.confirm();
 
         // Save accounts (.save is optional because of transactional)
         // Saving the accounts also updates the transactions since we are using CASCADE.ALL
@@ -70,12 +73,12 @@ public class BankingTransferConfirm {
 
         // Notify sender
         notificationPublisher.publish(
-                notificationEventFactory.transferSent(transfer)
+            notificationEventFactory.transferSent(transfer)
         );
 
         // Notify recipient
         notificationPublisher.publish(
-                notificationEventFactory.transferReceived(transfer)
+            notificationEventFactory.transferReceived(transfer)
         );
 
         return transfer;

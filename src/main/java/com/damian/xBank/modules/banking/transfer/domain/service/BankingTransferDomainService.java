@@ -26,96 +26,49 @@ public class BankingTransferDomainService {
      * @return the created BankingTransfer
      */
     public BankingTransfer createTransfer(
-            Long userId,
-            BankingAccount fromAccount,
-            BankingAccount toAccount,
-            BigDecimal amount,
-            String description
+        Long userId,
+        BankingAccount fromAccount,
+        BankingAccount toAccount,
+        BigDecimal amount,
+        String description
     ) {
         // assert userId is the owner of fromAccount
         fromAccount.assertOwnedBy(userId);
 
         // Create the transfer
         BankingTransfer transfer = BankingTransfer
-                .create(fromAccount, toAccount, amount)
-                .setDescription(description);
+            .create(fromAccount, toAccount, amount)
+            .setDescription(description);
 
         // validate transfer
         transfer.assertTransferPossible();
 
         // Generate transactions
         BankingTransaction fromTransaction = BankingTransaction
-                .create(
-                        BankingTransactionType.TRANSFER_TO,
-                        fromAccount,
-                        amount
-                )
-                .setStatus(BankingTransactionStatus.PENDING)
-                .setDescription(description);
+            .create(
+                BankingTransactionType.TRANSFER_TO,
+                fromAccount,
+                amount
+            )
+            .setStatus(BankingTransactionStatus.PENDING)
+            .setDescription(description);
 
         transfer.addTransaction(fromTransaction);
 
-        // create transfer transaction for the receiver of the funds
-        BankingTransaction toTransaction = BankingTransaction
+        if (toAccount != null) {
+            // create transfer transaction for the receiver of the funds
+            BankingTransaction toTransaction = BankingTransaction
                 .create(
-                        BankingTransactionType.TRANSFER_FROM,
-                        toAccount,
-                        amount
+                    BankingTransactionType.TRANSFER_FROM,
+                    toAccount,
+                    amount
                 )
                 .setStatus(BankingTransactionStatus.PENDING)
                 .setDescription("Transfer from " + fromAccount.getOwner().getProfile().getFullName());
 
-        transfer.addTransaction(toTransaction);
+            transfer.addTransaction(toTransaction);
+        }
 
         return transfer;
     }
-
-    /**
-     * Confirms a pending transfer.
-     *
-     * @param userId
-     * @param transfer
-     * @return the confirmed transfer
-     */
-    public BankingTransfer confirmTransfer(Long userId, BankingTransfer transfer) {
-        // assert that the transfer belongs to userId
-        transfer.assertOwnedBy(userId);
-
-        // Confirm transactions
-        transfer.getTransactions().forEach(BankingTransaction::complete);
-
-        // deduct balance
-        BankingAccount fromAccount = transfer.getFromAccount();
-        fromAccount.subtractBalance(transfer.getAmount());
-
-        // add balance
-        BankingAccount toAccount = transfer.getToAccount();
-        toAccount.addBalance(transfer.getAmount());
-
-        // confirm transfer
-        transfer.confirm();
-
-        return transfer;
-    }
-
-    /**
-     * Rejects a pending transfer
-     *
-     * @param userId
-     * @param transfer
-     * @return the rejected transfer
-     */
-    public BankingTransfer reject(Long userId, BankingTransfer transfer) {
-        // assert that the transfer belongs to userId
-        transfer.assertOwnedBy(userId);
-
-        // reject transfer
-        transfer.reject();
-
-        // reject transactions
-        transfer.getTransactions().forEach(BankingTransaction::decline);
-
-        return transfer;
-    }
-
 }

@@ -21,11 +21,11 @@ public class BankingTransferReject {
     private final PasswordValidator passwordValidator;
 
     public BankingTransferReject(
-            BankingTransferRepository transferRepository,
-            NotificationPublisher notificationPublisher,
-            BankingTransferDomainService bankingTransferDomainService,
-            AuthenticationContext authenticationContext,
-            PasswordValidator passwordValidator
+        BankingTransferRepository transferRepository,
+        NotificationPublisher notificationPublisher,
+        BankingTransferDomainService bankingTransferDomainService,
+        AuthenticationContext authenticationContext,
+        PasswordValidator passwordValidator
     ) {
         this.transferRepository = transferRepository;
         this.notificationPublisher = notificationPublisher;
@@ -43,8 +43,8 @@ public class BankingTransferReject {
      */
     @Transactional
     public BankingTransfer execute(
-            Long transferId,
-            BankingTransferRejectRequest request
+        Long transferId,
+        BankingTransferRejectRequest request
     ) {
         // Current user
         final User currentUser = authenticationContext.getCurrentUser();
@@ -53,12 +53,16 @@ public class BankingTransferReject {
         passwordValidator.validatePassword(currentUser, request.password());
 
         // find the transfer
-        BankingTransfer transfer = transferRepository.findById(transferId).orElseThrow(
+        BankingTransfer transfer = transferRepository.findById(transferId)
+            .orElseThrow(
                 () -> new BankingTransferNotFoundException(transferId)
-        );
+            );
+
+        // assert owner
+        transfer.assertOwnedBy(currentUser.getId());
 
         // reject
-        bankingTransferDomainService.reject(currentUser.getId(), transfer);
+        transfer.reject();
 
         // No need for .save
         // Save accounts (.save is optional because of transactional)
