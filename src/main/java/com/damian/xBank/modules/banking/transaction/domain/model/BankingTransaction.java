@@ -255,7 +255,8 @@ public class BankingTransaction {
         this.updatedAt = Instant.now();
     }
 
-    public void fail() {
+    public void fail(String failReason) {
+        this.setDescription(failReason);
         this.setStatus(BankingTransactionStatus.FAILED);
         this.updatedAt = Instant.now();
     }

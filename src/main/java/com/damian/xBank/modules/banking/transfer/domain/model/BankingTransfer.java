@@ -239,9 +239,9 @@ public class BankingTransfer {
         this.updatedAt = Instant.now();
     }
 
-    public void reject() {
+    public void reject(String rejectReason) {
         // reject transactions
-        this.getTransactions().forEach(BankingTransaction::fail);
+        this.getTransactions().forEach((tx) -> tx.fail(rejectReason));
         this.setStatus(BankingTransferStatus.REJECTED);
         this.updatedAt = Instant.now();
     }
