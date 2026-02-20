@@ -15,7 +15,7 @@ import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCa
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.domain.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -53,18 +53,18 @@ public class BankingAccountCardRequestTest extends AbstractServiceTest {
     @BeforeEach
     void setUp() {
         customer = UserTestBuilder.aCustomer()
-                                  .withId(1L)
-                                  .withEmail("customer@demo.com")
-                                  .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                  .build();
+            .withId(1L)
+            .withEmail("customer@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .build();
 
         bankingAccount = BankingAccount
-                .create(customer)
-                .setId(1L)
-                .setBalance(BigDecimal.valueOf(1000))
-                .setCurrency(BankingAccountCurrency.EUR)
-                .setType(BankingAccountType.SAVINGS)
-                .setAccountNumber("US9900001111112233334444");
+            .create(customer)
+            .setId(1L)
+            .setBalance(BigDecimal.valueOf(1000))
+            .setCurrency(BankingAccountCurrency.EUR)
+            .setType(BankingAccountType.SAVINGS)
+            .setAccountNumber("US9900001111112233334444");
 
         customer.addBankingAccount(bankingAccount);
     }
@@ -76,25 +76,25 @@ public class BankingAccountCardRequestTest extends AbstractServiceTest {
         setUpContext(customer);
 
         BankingCard givenBankingCard = BankingCard
-                .create(bankingAccount)
-                .setId(11L)
-                .setCardNumber("1234567890123456");
+            .create(bankingAccount)
+            .setId(11L)
+            .setCardNumber("1234567890123456");
 
         com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCardRequest
-                request
-                = new com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCardRequest(
-                BankingCardType.CREDIT);
+            request
+            = new com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCardRequest(
+            BankingCardType.CREDIT);
 
         // when
         when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.of(bankingAccount));
 
         when(bankingCardDomainService
-                .createBankingCard(any(BankingAccount.class), any(BankingCardType.class)))
-                .thenReturn(givenBankingCard);
+            .createBankingCard(any(BankingAccount.class), any(BankingCardType.class)))
+            .thenReturn(givenBankingCard);
 
         BankingCard result = bankingAccountCardCreate.execute(
-                bankingAccount.getId(),
-                request
+            bankingAccount.getId(),
+            request
         );
 
         // then
@@ -110,19 +110,19 @@ public class BankingAccountCardRequestTest extends AbstractServiceTest {
         setUpContext(customer);
 
         com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCardRequest
-                request
-                = new com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCardRequest(
-                BankingCardType.CREDIT);
+            request
+            = new com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCardRequest(
+            BankingCardType.CREDIT);
 
         // when
         when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         BankingAccountNotFoundException exception = assertThrows(
-                BankingAccountNotFoundException.class,
-                () -> bankingAccountCardCreate.execute(
-                        bankingAccount.getId(),
-                        request
-                )
+            BankingAccountNotFoundException.class,
+            () -> bankingAccountCardCreate.execute(
+                bankingAccount.getId(),
+                request
+            )
         );
 
         // then
@@ -134,27 +134,27 @@ public class BankingAccountCardRequestTest extends AbstractServiceTest {
     void cardRequest_WhenAccountNotOwnedByCustomer_ThrowsException() {
         // given
         User customerB = UserTestBuilder.aCustomer()
-                                        .withId(2L)
-                                        .withEmail("customerB@demo.com")
-                                        .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                        .build();
+            .withId(2L)
+            .withEmail("customerB@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .build();
 
         setUpContext(customerB);
 
         com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCardRequest
-                request
-                = new com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCardRequest(
-                BankingCardType.CREDIT);
+            request
+            = new com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCardRequest(
+            BankingCardType.CREDIT);
 
         // when
         when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.of(bankingAccount));
 
         BankingAccountNotOwnerException exception = assertThrows(
-                BankingAccountNotOwnerException.class,
-                () -> bankingAccountCardCreate.execute(
-                        99L,
-                        request
-                )
+            BankingAccountNotOwnerException.class,
+            () -> bankingAccountCardCreate.execute(
+                99L,
+                request
+            )
         );
 
         // then
@@ -166,33 +166,33 @@ public class BankingAccountCardRequestTest extends AbstractServiceTest {
     void cardRequest_WhenAccountNotOwnedByCustomerButItIsAdmin_ReturnsBankingCard() {
         // given
         User admin = UserTestBuilder.aCustomer()
-                                    .withId(5L)
-                                    .withRole(UserRole.ADMIN)
-                                    .withEmail("customer@demo.com")
-                                    .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                    .build();
+            .withId(5L)
+            .withRole(UserRole.ADMIN)
+            .withEmail("customer@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .build();
 
         setUpContext(admin);
 
         BankingCard givenBankingCard = BankingCard
-                .create(bankingAccount)
-                .setId(11L)
-                .setCardNumber("1234567890123456");
+            .create(bankingAccount)
+            .setId(11L)
+            .setCardNumber("1234567890123456");
 
         com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCardRequest
-                request
-                = new com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCardRequest(
-                BankingCardType.CREDIT);
+            request
+            = new com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCardRequest(
+            BankingCardType.CREDIT);
 
         // when
         when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.of(bankingAccount));
 
         when(bankingCardDomainService.createBankingCard(any(BankingAccount.class), any(BankingCardType.class)))
-                .thenReturn(givenBankingCard);
+            .thenReturn(givenBankingCard);
 
         BankingCard result = bankingAccountCardCreate.execute(
-                bankingAccount.getId(),
-                request
+            bankingAccount.getId(),
+            request
         );
 
         // then
@@ -209,24 +209,24 @@ public class BankingAccountCardRequestTest extends AbstractServiceTest {
 
         for (int i = 0; i < bankingAccount.getCardLimit(); i++) {
             bankingAccount.addBankingCard(
-                    BankingCard.create(bankingAccount).setStatus(BankingCardStatus.ACTIVE)
+                BankingCard.create(bankingAccount).setStatus(BankingCardStatus.ACTIVE)
             );
         }
 
         com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCardRequest
-                request
-                = new com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCardRequest(
-                BankingCardType.CREDIT);
+            request
+            = new com.damian.xBank.modules.banking.account.application.dto.request.BankingAccountCardRequest(
+            BankingCardType.CREDIT);
 
         // when
         when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.of(bankingAccount));
 
         BankingAccountCardsLimitException exception = assertThrows(
-                BankingAccountCardsLimitException.class,
-                () -> bankingAccountCardCreate.execute(
-                        bankingAccount.getId(),
-                        request
-                )
+            BankingAccountCardsLimitException.class,
+            () -> bankingAccountCardCreate.execute(
+                bankingAccount.getId(),
+                request
+            )
         );
 
         // then

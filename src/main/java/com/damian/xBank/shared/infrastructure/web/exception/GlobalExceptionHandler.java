@@ -1,7 +1,7 @@
 package com.damian.xBank.shared.infrastructure.web.exception;
 
-import com.damian.xBank.shared.dto.ApiResponse;
-import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.domain.exception.ErrorCodes;
+import com.damian.xBank.shared.infrastructure.web.dto.response.ApiResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
@@ -37,8 +37,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AsyncRequestNotUsableException.class)
     public ResponseEntity<?> handleAsyncRequestNotUsable(
-            AsyncRequestNotUsableException ex,
-            HttpServletRequest request
+        AsyncRequestNotUsableException ex,
+        HttpServletRequest request
     ) {
         String accept = request.getHeader("Accept");
 
@@ -55,8 +55,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotWritableException.class)
     public ResponseEntity<?> handleHttpMessageNotWritable(
-            HttpMessageNotWritableException ex,
-            HttpServletRequest request
+        HttpMessageNotWritableException ex,
+        HttpServletRequest request
     ) {
         String accept = request.getHeader("Accept");
 
@@ -75,7 +75,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleIllegalState(IllegalStateException ex) {
         log.warn("Illegal state exception: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                             .body(ApiResponse.error("Illegal state.", HttpStatus.INTERNAL_SERVER_ERROR));
+            .body(ApiResponse.error("Illegal state.", HttpStatus.INTERNAL_SERVER_ERROR));
     }
 
     // Logic service errors
@@ -83,7 +83,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleIllegalArgument(IllegalArgumentException ex) {
         log.warn("Illegal Argument exception: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                             .body(ApiResponse.error("Illegal argument.", HttpStatus.INTERNAL_SERVER_ERROR));
+            .body(ApiResponse.error("Illegal argument.", HttpStatus.INTERNAL_SERVER_ERROR));
     }
 
     // 	No permissions.
@@ -91,7 +91,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleAccessDenied(AccessDeniedException ex) {
         log.warn("Access denied: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                             .body(ApiResponse.error("Access denied.", HttpStatus.UNAUTHORIZED));
+            .body(ApiResponse.error("Access denied.", HttpStatus.UNAUTHORIZED));
     }
 
     // Media type not supported. Content-type
@@ -99,7 +99,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex) {
         log.warn("Media type not supported: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-                             .body(ApiResponse.error("Media type not supported.", HttpStatus.UNSUPPORTED_MEDIA_TYPE));
+            .body(ApiResponse.error("Media type not supported.", HttpStatus.UNSUPPORTED_MEDIA_TYPE));
     }
 
     // When you call POST and its not allowed
@@ -107,7 +107,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleMethodNotSupported(HttpRequestMethodNotSupportedException ex) {
         log.warn("Method not supported: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
-                             .body(ApiResponse.error("Method not supported.", HttpStatus.METHOD_NOT_ALLOWED));
+            .body(ApiResponse.error("Method not supported.", HttpStatus.METHOD_NOT_ALLOWED));
     }
 
     // Invalid param type. ex Long instead string
@@ -115,7 +115,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleMethodArgTypeMissmatch(MethodArgumentTypeMismatchException ex) {
         log.warn("Invalid param type: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                             .body(ApiResponse.error("Invalid param type.", HttpStatus.BAD_REQUEST));
+            .body(ApiResponse.error("Invalid param type.", HttpStatus.BAD_REQUEST));
     }
 
     // Missing path variable
@@ -123,7 +123,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleMissingPathVariable(MissingPathVariableException ex) {
         log.warn("Missing path variable: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                             .body(ApiResponse.error("Missing path variable.", HttpStatus.BAD_REQUEST));
+            .body(ApiResponse.error("Missing path variable.", HttpStatus.BAD_REQUEST));
     }
 
     // missing param
@@ -131,7 +131,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleMissingParam(MissingServletRequestParameterException ex) {
         log.warn("Missing param error found: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                             .body(ApiResponse.error("Missing param error.", HttpStatus.BAD_REQUEST));
+            .body(ApiResponse.error("Missing param error.", HttpStatus.BAD_REQUEST));
     }
 
     // Invalid json / deserialization error
@@ -139,7 +139,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleSerializationError(HttpMessageNotReadableException ex) {
         log.warn("Serialization error found: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                             .body(ApiResponse.error("Serialization error.", HttpStatus.BAD_REQUEST));
+            .body(ApiResponse.error("Serialization error.", HttpStatus.BAD_REQUEST));
     }
 
     // Validation errors
@@ -148,14 +148,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleContraintViolation(ConstraintViolationException ex) {
         log.warn("Validation error found: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                             .body(ApiResponse.error("Constraint validation error.", HttpStatus.BAD_REQUEST));
+            .body(ApiResponse.error("Constraint validation error.", HttpStatus.BAD_REQUEST));
     }
 
     @ExceptionHandler(HandlerMethodValidationException.class) // 404
     public ResponseEntity<ApiResponse<String>> handleMethodValidation(HandlerMethodValidationException ex) {
         log.warn("Validation error found: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                             .body(ApiResponse.error("Method validation error.", HttpStatus.BAD_REQUEST));
+            .body(ApiResponse.error("Method validation error.", HttpStatus.BAD_REQUEST));
     }
 
     // Conversion from Long to String for example
@@ -163,7 +163,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleBindException(BindException ex) {
         log.warn("Validation error found: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                             .body(ApiResponse.error("Validation error.", HttpStatus.BAD_REQUEST));
+            .body(ApiResponse.error("Validation error.", HttpStatus.BAD_REQUEST));
     }
 
     // For @Valid exceptions
@@ -171,16 +171,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Map<String, String>>> handleValidationErrors(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(error ->
-                errors.put(error.getField(), error.getDefaultMessage())
+            errors.put(error.getField(), error.getDefaultMessage())
         );
 
         log.warn("Validation failed: {} errors -> {}", errors.size(), errors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                             .body(ApiResponse.error(
-                                     ErrorCodes.VALIDATION_FAILED,
-                                     errors,
-                                     HttpStatus.BAD_REQUEST
-                             ));
+            .body(ApiResponse.error(
+                ErrorCodes.VALIDATION_FAILED,
+                errors,
+                HttpStatus.BAD_REQUEST
+            ));
     }
 
     // when you found and not exists in db
@@ -188,7 +188,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleEntityNotFound(EntityNotFoundException ex) {
         log.warn("Entity not found: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body(ApiResponse.error("Entity not found", HttpStatus.NOT_FOUND));
+            .body(ApiResponse.error("Entity not found", HttpStatus.NOT_FOUND));
     }
 
     // when you violates a db constraint
@@ -196,7 +196,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleIntegrityViolation(DataIntegrityViolationException ex) {
         log.warn("Database tata integrity violation : {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                             .body(ApiResponse.error("Integrity violation.", HttpStatus.CONFLICT));
+            .body(ApiResponse.error("Integrity violation.", HttpStatus.CONFLICT));
     }
 
     // when @transaction fails
@@ -204,17 +204,17 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleIntegrityViolation(TransactionSystemException ex) {
         log.warn("Transaction failed : {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body(ApiResponse.error("Transaction failed.", HttpStatus.NOT_FOUND));
+            .body(ApiResponse.error("Transaction failed.", HttpStatus.NOT_FOUND));
     }
 
     @ExceptionHandler(Exception.class) // fallback
     public ResponseEntity<ApiResponse<String>> handleUnexpectedExceptions(Exception ex) {
         log.error("Unexpected error: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                             .body(ApiResponse.error(
-                                     "Unexpected internal server error.",
-                                     HttpStatus.INTERNAL_SERVER_ERROR
-                             ));
+            .body(ApiResponse.error(
+                "Unexpected internal server error.",
+                HttpStatus.INTERNAL_SERVER_ERROR
+            ));
     }
 
 

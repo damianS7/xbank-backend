@@ -15,7 +15,7 @@ import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
-import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.domain.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -44,10 +44,10 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
     @BeforeEach
     void setUp() {
         fromCustomer = UserTestBuilder.aCustomer()
-                                      .withEmail("fromCustomer@demo.com")
-                                      .withPassword(RAW_PASSWORD)
-                                      .withStatus(UserStatus.VERIFIED)
-                                      .build();
+            .withEmail("fromCustomer@demo.com")
+            .withPassword(RAW_PASSWORD)
+            .withStatus(UserStatus.VERIFIED)
+            .build();
 
         userRepository.save(fromCustomer);
 
@@ -60,10 +60,10 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
         bankingAccountRepository.save(fromBankingAccount);
 
         toCustomer = UserTestBuilder.aCustomer()
-                                    .withEmail("toCustomer@demo.com")
-                                    .withPassword(RAW_PASSWORD)
-                                    .withStatus(UserStatus.VERIFIED)
-                                    .build();
+            .withEmail("toCustomer@demo.com")
+            .withPassword(RAW_PASSWORD)
+            .withStatus(UserStatus.VERIFIED)
+            .build();
 
         userRepository.save(toCustomer);
 
@@ -76,31 +76,32 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
         bankingAccountRepository.save(toBankingAccount);
 
         admin = UserTestBuilder.aCustomer()
-                               .withEmail("admin@demo.com")
-                               .withStatus(UserStatus.VERIFIED)
-                               .withRole(UserRole.ADMIN)
-                               .build();
+            .withEmail("admin@demo.com")
+            .withStatus(UserStatus.VERIFIED)
+            .withRole(UserRole.ADMIN)
+            .build();
 
         userRepository.save(admin);
 
         transfer = BankingTransfer
-                .create(fromBankingAccount, toBankingAccount, BigDecimal.valueOf(100))
-                .setDescription("a gift!");
+            .create(fromBankingAccount, toBankingAccount, BigDecimal.valueOf(100))
+            .setToAccountIban(toBankingAccount.getAccountNumber())
+            .setDescription("a gift!");
 
         transfer.addTransaction(
-                BankingTransaction.create(
-                        BankingTransactionType.TRANSFER_TO,
-                        fromBankingAccount,
-                        transfer.getAmount()
-                )
+            BankingTransaction.create(
+                BankingTransactionType.TRANSFER_TO,
+                fromBankingAccount,
+                transfer.getAmount()
+            )
         );
 
         transfer.addTransaction(
-                BankingTransaction.create(
-                        BankingTransactionType.TRANSFER_FROM,
-                        toBankingAccount,
-                        transfer.getAmount()
-                )
+            BankingTransaction.create(
+                BankingTransactionType.TRANSFER_FROM,
+                toBankingAccount,
+                transfer.getAmount()
+            )
         );
 
         transferRepository.save(transfer);
@@ -113,42 +114,42 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
         login(fromCustomer);
 
         BankingTransferRequest request = new BankingTransferRequest(
-                fromBankingAccount.getId(),
-                toBankingAccount.getAccountNumber(),
-                "Enjoy!",
-                BigDecimal.valueOf(100)
+            fromBankingAccount.getId(),
+            toBankingAccount.getAccountNumber(),
+            "Enjoy!",
+            BigDecimal.valueOf(100)
         );
 
         // when
         MvcResult result = mockMvc
-                .perform(post(
-                        "/api/v1/banking/transfers")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andDo(print())
-                .andExpect(status().is(201))
-                .andReturn();
+            .perform(post(
+                "/api/v1/banking/transfers")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+            .andDo(print())
+            .andExpect(status().is(201))
+            .andReturn();
 
         BankingTransferDto transferDto = objectMapper.readValue(
-                result.getResponse().getContentAsString(),
-                BankingTransferDto.class
+            result.getResponse().getContentAsString(),
+            BankingTransferDto.class
         );
 
         // then
         assertThat(transferDto)
-                .isNotNull()
-                .extracting(
-                        BankingTransferDto::id,
-                        BankingTransferDto::amount,
-                        BankingTransferDto::status,
-                        BankingTransferDto::description
-                ).containsExactly(
-                        transferDto.id(),
-                        request.amount(),
-                        BankingTransferStatus.PENDING,
-                        request.description()
-                );
+            .isNotNull()
+            .extracting(
+                BankingTransferDto::id,
+                BankingTransferDto::amount,
+                BankingTransferDto::status,
+                BankingTransferDto::description
+            ).containsExactly(
+                transferDto.id(),
+                request.amount(),
+                BankingTransferStatus.PENDING,
+                request.description()
+            );
     }
 
     @Test
@@ -158,23 +159,23 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
         login(fromCustomer);
 
         BankingTransferRequest request = new BankingTransferRequest(
-                fromBankingAccount.getId(),
-                fromBankingAccount.getAccountNumber(),
-                "Enjoy!",
-                BigDecimal.valueOf(100)
+            fromBankingAccount.getId(),
+            fromBankingAccount.getAccountNumber(),
+            "Enjoy!",
+            BigDecimal.valueOf(100)
         );
 
         // when
         mockMvc
-                .perform(post(
-                        "/api/v1/banking/transfers")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andDo(print())
-                .andExpect(status().is(409))
-                .andExpect(jsonPath("$.errorCode")
-                        .value(ErrorCodes.BANKING_TRANSFER_SAME_ACCOUNT));
+            .perform(post(
+                "/api/v1/banking/transfers")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+            .andDo(print())
+            .andExpect(status().is(409))
+            .andExpect(jsonPath("$.errorCode")
+                .value(ErrorCodes.BANKING_TRANSFER_SAME_ACCOUNT));
 
     }
 
@@ -188,23 +189,23 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
         bankingAccountRepository.save(toBankingAccount);
 
         BankingTransferRequest request = new BankingTransferRequest(
-                fromBankingAccount.getId(),
-                toBankingAccount.getAccountNumber(),
-                "Enjoy!",
-                BigDecimal.valueOf(100)
+            fromBankingAccount.getId(),
+            toBankingAccount.getAccountNumber(),
+            "Enjoy!",
+            BigDecimal.valueOf(100)
         );
 
         // when
         mockMvc
-                .perform(post(
-                        "/api/v1/banking/transfers")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andDo(print())
-                .andExpect(status().is(409))
-                .andExpect(jsonPath("$.errorCode")
-                        .value(ErrorCodes.BANKING_ACCOUNT_CLOSED));
+            .perform(post(
+                "/api/v1/banking/transfers")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+            .andDo(print())
+            .andExpect(status().is(409))
+            .andExpect(jsonPath("$.errorCode")
+                .value(ErrorCodes.BANKING_ACCOUNT_CLOSED));
 
     }
 
@@ -218,23 +219,23 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
         bankingAccountRepository.save(toBankingAccount);
 
         BankingTransferRequest request = new BankingTransferRequest(
-                fromBankingAccount.getId(),
-                toBankingAccount.getAccountNumber(),
-                "Enjoy!",
-                BigDecimal.valueOf(100)
+            fromBankingAccount.getId(),
+            toBankingAccount.getAccountNumber(),
+            "Enjoy!",
+            BigDecimal.valueOf(100)
         );
 
         // when
         mockMvc
-                .perform(post(
-                        "/api/v1/banking/transfers")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andDo(print())
-                .andExpect(status().is(403))
-                .andExpect(jsonPath("$.errorCode")
-                        .value(ErrorCodes.BANKING_ACCOUNT_SUSPENDED));
+            .perform(post(
+                "/api/v1/banking/transfers")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+            .andDo(print())
+            .andExpect(status().is(403))
+            .andExpect(jsonPath("$.errorCode")
+                .value(ErrorCodes.BANKING_ACCOUNT_SUSPENDED));
 
     }
 
@@ -245,23 +246,23 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
         login(fromCustomer);
 
         BankingTransferRequest request = new BankingTransferRequest(
-                fromBankingAccount.getId(),
-                "AA1111222233334444555500",
-                "Enjoy!",
-                BigDecimal.valueOf(100)
+            fromBankingAccount.getId(),
+            "AA1111222233334444555500",
+            "Enjoy!",
+            BigDecimal.valueOf(100)
         );
 
         // when
         mockMvc
-                .perform(post(
-                        "/api/v1/banking/transfers")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andDo(print())
-                .andExpect(status().is(404))
-                .andExpect(jsonPath("$.errorCode")
-                        .value(ErrorCodes.BANKING_ACCOUNT_NOT_FOUND));
+            .perform(post(
+                "/api/v1/banking/transfers")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+            .andDo(print())
+            .andExpect(status().is(404))
+            .andExpect(jsonPath("$.errorCode")
+                .value(ErrorCodes.BANKING_ACCOUNT_NOT_FOUND));
     }
 
     @Test
@@ -271,23 +272,23 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
         login(fromCustomer);
 
         BankingTransferRequest request = new BankingTransferRequest(
-                fromBankingAccount.getId(),
-                "AA1111222233334444555500",
-                "Enjoy!",
-                BigDecimal.valueOf(999999999)
+            fromBankingAccount.getId(),
+            toBankingAccount.getAccountNumber(),
+            "Enjoy!",
+            BigDecimal.valueOf(999999999)
         );
 
         // when
         mockMvc
-                .perform(post(
-                        "/api/v1/banking/transfers")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andDo(print())
-                .andExpect(status().is(404))
-                .andExpect(jsonPath("$.errorCode")
-                        .value(ErrorCodes.BANKING_ACCOUNT_NOT_FOUND));
+            .perform(post(
+                "/api/v1/banking/transfers")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+            .andDo(print())
+            .andExpect(status().is(404))
+            .andExpect(jsonPath("$.errorCode")
+                .value(ErrorCodes.BANKING_ACCOUNT_NOT_FOUND));
     }
 
     @Test
@@ -300,53 +301,53 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
         final BigDecimal toAccountInitialBalance = toBankingAccount.getBalance();
 
         BankingTransferConfirmRequest request = new BankingTransferConfirmRequest(
-                RAW_PASSWORD
+            RAW_PASSWORD
         );
 
         // when
         MvcResult result = mockMvc
-                .perform(post(
-                        "/api/v1/banking/transfers/{id}/confirm", transfer.getId())
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andDo(print())
-                .andExpect(status().is(200))
-                .andReturn();
+            .perform(post(
+                "/api/v1/banking/transfers/{id}/confirm", transfer.getId())
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+            .andDo(print())
+            .andExpect(status().is(200))
+            .andReturn();
 
         BankingTransferDto transferDto = objectMapper.readValue(
-                result.getResponse().getContentAsString(),
-                BankingTransferDto.class
+            result.getResponse().getContentAsString(),
+            BankingTransferDto.class
         );
 
         // then
         assertThat(transferDto)
-                .isNotNull()
-                .extracting(
-                        BankingTransferDto::id,
-                        BankingTransferDto::amount,
-                        BankingTransferDto::status,
-                        BankingTransferDto::description
-                ).containsExactly(
-                        transfer.getId(),
-                        transfer.getAmount().setScale(2),
-                        BankingTransferStatus.CONFIRMED,
-                        transfer.getDescription()
-                );
+            .isNotNull()
+            .extracting(
+                BankingTransferDto::id,
+                BankingTransferDto::amount,
+                BankingTransferDto::status,
+                BankingTransferDto::description
+            ).containsExactly(
+                transfer.getId(),
+                transfer.getAmount().setScale(2),
+                BankingTransferStatus.CONFIRMED,
+                transfer.getDescription()
+            );
 
 
         // check balances
         BankingAccount updatedFromAccount =
-                bankingAccountRepository.findById(fromBankingAccount.getId()).orElseThrow();
+            bankingAccountRepository.findById(fromBankingAccount.getId()).orElseThrow();
 
         BankingAccount updatedToAccount =
-                bankingAccountRepository.findById(toBankingAccount.getId()).orElseThrow();
+            bankingAccountRepository.findById(toBankingAccount.getId()).orElseThrow();
 
         assertThat(updatedFromAccount.getBalance())
-                .isEqualTo(fromAccountInitialBalance.subtract(transfer.getAmount().setScale(2)));
+            .isEqualTo(fromAccountInitialBalance.subtract(transfer.getAmount().setScale(2)));
 
         assertThat(updatedToAccount.getBalance())
-                .isEqualTo(toAccountInitialBalance.add(transfer.getAmount().setScale(2)));
+            .isEqualTo(toAccountInitialBalance.add(transfer.getAmount().setScale(2)));
     }
 
     @Test
@@ -356,20 +357,20 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
         login(fromCustomer);
 
         BankingTransferConfirmRequest request = new BankingTransferConfirmRequest(
-                "BAD_PASSWORD"
+            "BAD_PASSWORD"
         );
 
         // when
         mockMvc
-                .perform(post(
-                        "/api/v1/banking/transfers/{id}/confirm", transfer.getId())
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andDo(print())
-                .andExpect(status().is(403))
-                .andExpect(jsonPath("$.errorCode")
-                        .value(ErrorCodes.USER_INVALID_PASSWORD));
+            .perform(post(
+                "/api/v1/banking/transfers/{id}/confirm", transfer.getId())
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+            .andDo(print())
+            .andExpect(status().is(403))
+            .andExpect(jsonPath("$.errorCode")
+                .value(ErrorCodes.USER_INVALID_PASSWORD));
 
     }
 
@@ -380,39 +381,39 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
         login(fromCustomer);
 
         BankingTransferConfirmRequest request = new BankingTransferConfirmRequest(
-                RAW_PASSWORD
+            RAW_PASSWORD
         );
 
         // when
         MvcResult result = mockMvc
-                .perform(post(
-                        "/api/v1/banking/transfers/{id}/reject", transfer.getId())
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andDo(print())
-                .andExpect(status().is(200))
-                .andReturn();
+            .perform(post(
+                "/api/v1/banking/transfers/{id}/reject", transfer.getId())
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+            .andDo(print())
+            .andExpect(status().is(200))
+            .andReturn();
 
         BankingTransferDto transferDto = objectMapper.readValue(
-                result.getResponse().getContentAsString(),
-                BankingTransferDto.class
+            result.getResponse().getContentAsString(),
+            BankingTransferDto.class
         );
 
         // then
         assertThat(transferDto)
-                .isNotNull()
-                .extracting(
-                        BankingTransferDto::id,
-                        BankingTransferDto::amount,
-                        BankingTransferDto::status,
-                        BankingTransferDto::description
-                ).containsExactly(
-                        transfer.getId(),
-                        transfer.getAmount().setScale(2),
-                        BankingTransferStatus.REJECTED,
-                        transfer.getDescription()
-                );
+            .isNotNull()
+            .extracting(
+                BankingTransferDto::id,
+                BankingTransferDto::amount,
+                BankingTransferDto::status,
+                BankingTransferDto::description
+            ).containsExactly(
+                transfer.getId(),
+                transfer.getAmount().setScale(2),
+                BankingTransferStatus.REJECTED,
+                transfer.getDescription()
+            );
 
     }
 }

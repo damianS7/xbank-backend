@@ -6,7 +6,7 @@ import com.damian.xBank.modules.notification.domain.model.NotificationType;
 import com.damian.xBank.modules.notification.infrastructure.repository.NotificationRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.domain.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,10 +34,10 @@ public class NotificationDeleteTest extends AbstractServiceTest {
     @BeforeEach
     void setUp() {
         customer = UserTestBuilder.aCustomer()
-                                  .withId(1L)
-                                  .withEmail("customer@demo.com")
-                                  .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                  .build();
+            .withId(1L)
+            .withEmail("customer@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .build();
     }
 
     @Test
@@ -47,21 +47,21 @@ public class NotificationDeleteTest extends AbstractServiceTest {
         setUpContext(customer);
 
         Notification givenNotification = Notification
-                .create(customer)
-                .setId(1L)
-                .setType(NotificationType.TRANSFER)
-                .setMetadata(
-                        Map.of(
-                                "transactionId", 1L,
-                                "toUser", 1L,
-                                "amount", 100L,
-                                "currency", "EUR"
-                        )
-                );
+            .create(customer)
+            .setId(1L)
+            .setType(NotificationType.TRANSFER)
+            .setMetadata(
+                Map.of(
+                    "transactionId", 1L,
+                    "toUser", 1L,
+                    "amount", 100L,
+                    "currency", "EUR"
+                )
+            );
 
         // when
         when(notificationRepository.findById(anyLong()))
-                .thenReturn(Optional.of(givenNotification));
+            .thenReturn(Optional.of(givenNotification));
 
         notificationDelete.execute(givenNotification.getId());
 
@@ -76,38 +76,38 @@ public class NotificationDeleteTest extends AbstractServiceTest {
         setUpContext(customer);
 
         User anotherCustomer = UserTestBuilder.aCustomer()
-                                              .withId(99L)
-                                              .withEmail("anotherCustomer@demo.com")
-                                              .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                              .build();
+            .withId(99L)
+            .withEmail("anotherCustomer@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .build();
 
         Notification givenNotification = Notification
-                .create(anotherCustomer)
-                .setId(1L)
-                .setType(NotificationType.TRANSFER)
-                .setMetadata(
-                        Map.of(
-                                "transactionId", 1L,
-                                "toUser", 1L,
-                                "amount", 100L,
-                                "currency", "EUR"
-                        )
-                );
+            .create(anotherCustomer)
+            .setId(1L)
+            .setType(NotificationType.TRANSFER)
+            .setMetadata(
+                Map.of(
+                    "transactionId", 1L,
+                    "toUser", 1L,
+                    "amount", 100L,
+                    "currency", "EUR"
+                )
+            );
 
         // when
         when(notificationRepository.findById(anyLong()))
-                .thenReturn(Optional.of(givenNotification));
+            .thenReturn(Optional.of(givenNotification));
 
         NotificationNotOwnerException exception = assertThrows(
-                NotificationNotOwnerException.class,
-                () -> notificationDelete.execute(givenNotification.getId())
+            NotificationNotOwnerException.class,
+            () -> notificationDelete.execute(givenNotification.getId())
 
         );
 
         // then
         assertThat(exception)
-                .isNotNull()
-                .hasMessage(ErrorCodes.NOTIFICATION_NOT_OWNER);
+            .isNotNull()
+            .hasMessage(ErrorCodes.NOTIFICATION_NOT_OWNER);
         verify(notificationRepository, times(0)).delete(any(Notification.class));
     }
 }

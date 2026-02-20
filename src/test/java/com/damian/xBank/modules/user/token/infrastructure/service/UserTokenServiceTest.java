@@ -8,7 +8,7 @@ import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRe
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.domain.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,10 +40,10 @@ public class UserTokenServiceTest extends AbstractServiceTest {
     @BeforeEach
     void setUp() {
         user = UserTestBuilder.aCustomer()
-                              .withId(1L)
-                              .withPassword(RAW_PASSWORD)
-                              .withEmail("customer@demo.com")
-                              .build();
+            .withId(1L)
+            .withPassword(RAW_PASSWORD)
+            .withEmail("customer@demo.com")
+            .build();
     }
 
     @Test
@@ -55,15 +55,15 @@ public class UserTokenServiceTest extends AbstractServiceTest {
 
         // when
         when(userTokenRepository.findByToken(userToken.getToken()))
-                .thenReturn(Optional.of(userToken));
+            .thenReturn(Optional.of(userToken));
 
         UserToken result = userTokenService.validateToken(userToken.getToken());
 
         // then
         assertThat(result)
-                .isNotNull()
-                .extracting(UserToken::getToken)
-                .isEqualTo(userToken.getToken());
+            .isNotNull()
+            .extracting(UserToken::getToken)
+            .isEqualTo(userToken.getToken());
         verify(userTokenRepository, times(1)).findByToken(userToken.getToken());
     }
 
@@ -75,14 +75,14 @@ public class UserTokenServiceTest extends AbstractServiceTest {
         when(userTokenRepository.findByToken(anyString())).thenReturn(Optional.empty());
 
         UserTokenNotFoundException exception = assertThrows(
-                UserTokenNotFoundException.class,
-                () -> userTokenService.validateToken(anyString())
+            UserTokenNotFoundException.class,
+            () -> userTokenService.validateToken(anyString())
         );
 
         // then
         assertThat(exception)
-                .isNotNull()
-                .hasMessage(ErrorCodes.USER_TOKEN_NOT_FOUND);
+            .isNotNull()
+            .hasMessage(ErrorCodes.USER_TOKEN_NOT_FOUND);
 
         verify(userTokenRepository, times(1)).findByToken(anyString());
     }
@@ -100,14 +100,14 @@ public class UserTokenServiceTest extends AbstractServiceTest {
         when(userTokenRepository.findByToken(anyString())).thenReturn(Optional.of(userToken));
 
         UserTokenExpiredException exception = assertThrows(
-                UserTokenExpiredException.class,
-                () -> userTokenService.validateToken(anyString())
+            UserTokenExpiredException.class,
+            () -> userTokenService.validateToken(anyString())
         );
 
         // then
         assertThat(exception)
-                .isNotNull()
-                .hasMessage(ErrorCodes.USER_TOKEN_EXPIRED);
+            .isNotNull()
+            .hasMessage(ErrorCodes.USER_TOKEN_EXPIRED);
         verify(userTokenRepository, times(1)).findByToken(anyString());
     }
 
@@ -123,14 +123,14 @@ public class UserTokenServiceTest extends AbstractServiceTest {
         when(userTokenRepository.findByToken(anyString())).thenReturn(Optional.of(userToken));
 
         UserTokenUsedException exception = assertThrows(
-                UserTokenUsedException.class,
-                () -> userTokenService.validateToken(anyString())
+            UserTokenUsedException.class,
+            () -> userTokenService.validateToken(anyString())
         );
 
         // then
         assertThat(exception)
-                .isNotNull()
-                .hasMessage(ErrorCodes.USER_TOKEN_USED);
+            .isNotNull()
+            .hasMessage(ErrorCodes.USER_TOKEN_USED);
 
         verify(userTokenRepository, times(1)).findByToken(anyString());
     }

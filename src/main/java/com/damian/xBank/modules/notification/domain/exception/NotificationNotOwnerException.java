@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.notification.domain.exception;
 
-import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.domain.exception.ErrorCodes;
 
 public class NotificationNotOwnerException extends NotificationException {
     public NotificationNotOwnerException(Long notificationId, Long userId) {

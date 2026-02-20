@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.payment.checkout.infrastructure.exception;
 
 import com.damian.xBank.modules.payment.checkout.domain.excepcion.PaymentCheckoutException;
-import com.damian.xBank.shared.dto.ApiResponse;
+import com.damian.xBank.shared.infrastructure.web.dto.response.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
@@ -19,7 +19,7 @@ public class PaymentCheckoutExceptionHandler {
     private final MessageSource messageSource;
 
     public PaymentCheckoutExceptionHandler(
-            MessageSource messageSource
+        MessageSource messageSource
     ) {
         this.messageSource = messageSource;
     }
@@ -28,6 +28,6 @@ public class PaymentCheckoutExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleException(PaymentCheckoutException ex) {
         log.warn("Payment checkout: {} exception.", ex.getResourceId());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                             .body(ApiResponse.error(ex, HttpStatus.INTERNAL_SERVER_ERROR, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.INTERNAL_SERVER_ERROR, messageSource));
     }
 }

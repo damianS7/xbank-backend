@@ -7,7 +7,7 @@ import com.damian.xBank.modules.user.profile.infrastructure.repository.UserProfi
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.domain.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -39,12 +39,12 @@ public class UserProfileGetTest extends AbstractServiceTest {
         UserProfile profile = UserProfileFactory.testProfile();
 
         customer = UserTestBuilder.aCustomer()
-                                  .withId(1L)
-                                  .withEmail("customer@test.com")
-                                  .withPassword(this.bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                  .withRole(UserRole.CUSTOMER)
-                                  .withProfile(profile)
-                                  .build();
+            .withId(1L)
+            .withEmail("customer@test.com")
+            .withPassword(this.bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .withRole(UserRole.CUSTOMER)
+            .withProfile(profile)
+            .build();
     }
 
     @Test
@@ -55,7 +55,7 @@ public class UserProfileGetTest extends AbstractServiceTest {
 
         // when
         when(userProfileRepository.findByUserId(anyLong()))
-                .thenReturn(Optional.of(customer.getProfile()));
+            .thenReturn(Optional.of(customer.getProfile()));
 
         UserProfile result = userProfileGet.execute();
 
@@ -73,11 +73,11 @@ public class UserProfileGetTest extends AbstractServiceTest {
 
         // when
         when(userProfileRepository.findByUserId(anyLong()))
-                .thenReturn(Optional.empty());
+            .thenReturn(Optional.empty());
 
         UserProfileNotFoundException exception = assertThrows(
-                UserProfileNotFoundException.class,
-                () -> userProfileGet.execute()
+            UserProfileNotFoundException.class,
+            () -> userProfileGet.execute()
         );
 
         // then

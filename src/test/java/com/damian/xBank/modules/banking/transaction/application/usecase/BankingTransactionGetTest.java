@@ -12,7 +12,7 @@ import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransact
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.domain.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -48,18 +48,18 @@ public class BankingTransactionGetTest extends AbstractServiceTest {
     @BeforeEach
     void setUp() {
         customer = UserTestBuilder.aCustomer()
-                                  .withId(1L)
-                                  .withEmail("customer@demo.com")
-                                  .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                  .build();
+            .withId(1L)
+            .withEmail("customer@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .build();
 
         customerBankingAccount = BankingAccount
-                .create(customer)
-                .setId(5L)
-                .setBalance(BigDecimal.valueOf(1000))
-                .setCurrency(BankingAccountCurrency.EUR)
-                .setType(BankingAccountType.SAVINGS)
-                .setAccountNumber("US9900001111112233334444");
+            .create(customer)
+            .setId(5L)
+            .setBalance(BigDecimal.valueOf(1000))
+            .setCurrency(BankingAccountCurrency.EUR)
+            .setType(BankingAccountType.SAVINGS)
+            .setAccountNumber("US9900001111112233334444");
     }
 
     @Test
@@ -69,20 +69,20 @@ public class BankingTransactionGetTest extends AbstractServiceTest {
         setUpContext(customer);
 
         BankingTransaction givenTransaction = BankingTransaction
-                .create(
-                        BankingTransactionType.DEPOSIT,
-                        customerBankingAccount,
-                        BigDecimal.valueOf(100)
-                )
-                .setId(1L)
-                .setDescription("Deposit transaction");
+            .create(
+                BankingTransactionType.DEPOSIT,
+                customerBankingAccount,
+                BigDecimal.valueOf(100)
+            )
+            .setId(1L)
+            .setDescription("Deposit transaction");
 
         // when
         when(bankingTransactionRepository.findById(givenTransaction.getId()))
-                .thenReturn(Optional.of(givenTransaction));
+            .thenReturn(Optional.of(givenTransaction));
 
         BankingTransaction retrievedTransaction = bankingTransactionGet
-                .execute(givenTransaction.getId());
+            .execute(givenTransaction.getId());
 
         // then
         assertThat(retrievedTransaction).isNotNull();
@@ -99,17 +99,17 @@ public class BankingTransactionGetTest extends AbstractServiceTest {
 
         // when
         when(bankingTransactionRepository.findById(anyLong()))
-                .thenReturn(Optional.empty());
+            .thenReturn(Optional.empty());
 
         BankingTransactionNotFoundException exception = assertThrows(
-                BankingTransactionNotFoundException.class,
-                () -> bankingTransactionGet.execute(1L)
+            BankingTransactionNotFoundException.class,
+            () -> bankingTransactionGet.execute(1L)
 
         );
         // then
         assertThat(exception)
-                .isNotNull()
-                .hasMessage(ErrorCodes.BANKING_TRANSACTION_NOT_FOUND);
+            .isNotNull()
+            .hasMessage(ErrorCodes.BANKING_TRANSACTION_NOT_FOUND);
     }
 
     @Test
@@ -119,34 +119,34 @@ public class BankingTransactionGetTest extends AbstractServiceTest {
         setUpContext(customer);
 
         User otherCustomer = UserTestBuilder.aCustomer()
-                                            .withId(2L)
-                                            .withEmail("otherCustomer@demo.com")
-                                            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                            .build();
+            .withId(2L)
+            .withEmail("otherCustomer@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .build();
 
         customerBankingAccount.setOwner(otherCustomer);
 
         BankingTransaction givenTransaction = BankingTransaction
-                .create(
-                        BankingTransactionType.DEPOSIT,
-                        customerBankingAccount,
-                        BigDecimal.valueOf(100)
-                )
-                .setId(1L)
-                .setDescription("Deposit transaction");
+            .create(
+                BankingTransactionType.DEPOSIT,
+                customerBankingAccount,
+                BigDecimal.valueOf(100)
+            )
+            .setId(1L)
+            .setDescription("Deposit transaction");
 
         // when
         when(bankingTransactionRepository.findById(anyLong()))
-                .thenReturn(Optional.of(givenTransaction));
+            .thenReturn(Optional.of(givenTransaction));
 
         BankingTransactionNotOwnerException exception = assertThrows(
-                BankingTransactionNotOwnerException.class,
-                () -> bankingTransactionGet.execute(givenTransaction.getId())
+            BankingTransactionNotOwnerException.class,
+            () -> bankingTransactionGet.execute(givenTransaction.getId())
 
         );
         // then
         assertThat(exception)
-                .isNotNull()
-                .hasMessage(ErrorCodes.BANKING_TRANSACTION_NOT_OWNER);
+            .isNotNull()
+            .hasMessage(ErrorCodes.BANKING_TRANSACTION_NOT_OWNER);
     }
 }

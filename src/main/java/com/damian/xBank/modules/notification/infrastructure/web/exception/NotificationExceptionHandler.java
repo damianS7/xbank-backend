@@ -3,7 +3,7 @@ package com.damian.xBank.modules.notification.infrastructure.web.exception;
 import com.damian.xBank.modules.notification.domain.exception.NotificationException;
 import com.damian.xBank.modules.notification.domain.exception.NotificationNotFoundException;
 import com.damian.xBank.modules.notification.domain.exception.NotificationNotOwnerException;
-import com.damian.xBank.shared.dto.ApiResponse;
+import com.damian.xBank.shared.infrastructure.web.dto.response.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
@@ -21,7 +21,7 @@ public class NotificationExceptionHandler {
     private final MessageSource messageSource;
 
     public NotificationExceptionHandler(
-            MessageSource messageSource
+        MessageSource messageSource
     ) {
         this.messageSource = messageSource;
     }
@@ -31,7 +31,7 @@ public class NotificationExceptionHandler {
         log.warn("Notification: {} not owner", ex.getResourceId());
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                             .body(ApiResponse.error(ex, HttpStatus.UNAUTHORIZED, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.UNAUTHORIZED, messageSource));
     }
 
     @ExceptionHandler(NotificationNotFoundException.class)
@@ -39,7 +39,7 @@ public class NotificationExceptionHandler {
         log.warn("Notification: {} not found", ex.getResourceId());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body(ApiResponse.error(ex, HttpStatus.NOT_FOUND, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.NOT_FOUND, messageSource));
     }
 
 
@@ -48,6 +48,6 @@ public class NotificationExceptionHandler {
         log.warn("Notification: {} internal error.", ex.getResourceId());
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                             .body(ApiResponse.error(ex, HttpStatus.INTERNAL_SERVER_ERROR, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.INTERNAL_SERVER_ERROR, messageSource));
     }
 }

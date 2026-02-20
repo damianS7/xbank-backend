@@ -10,7 +10,7 @@ import com.damian.xBank.modules.banking.account.infrastructure.repository.Bankin
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.domain.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -42,18 +42,18 @@ public class BankingAccountActivateTest extends AbstractServiceTest {
     @BeforeEach
     void setUp() {
         customer = UserTestBuilder.aCustomer()
-                                  .withId(1L)
-                                  .withEmail("customer@demo.com")
-                                  .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                  .build();
+            .withId(1L)
+            .withEmail("customer@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .build();
 
         bankingAccount = BankingAccount
-                .create(customer)
-                .setId(1L)
-                .setBalance(BigDecimal.valueOf(1000))
-                .setCurrency(BankingAccountCurrency.EUR)
-                .setType(BankingAccountType.SAVINGS)
-                .setAccountNumber("US9900001111112233334444");
+            .create(customer)
+            .setId(1L)
+            .setBalance(BigDecimal.valueOf(1000))
+            .setCurrency(BankingAccountCurrency.EUR)
+            .setType(BankingAccountType.SAVINGS)
+            .setAccountNumber("US9900001111112233334444");
 
         customer.addBankingAccount(bankingAccount);
     }
@@ -71,18 +71,18 @@ public class BankingAccountActivateTest extends AbstractServiceTest {
 
         // when
         when(bankingAccountRepository.findById(anyLong()))
-                .thenReturn(Optional.of(bankingAccount));
+            .thenReturn(Optional.of(bankingAccount));
 
         when(bankingAccountRepository.save(any(BankingAccount.class)))
-                .thenAnswer(i -> i.getArgument(0));
+            .thenAnswer(i -> i.getArgument(0));
 
         BankingAccount result = bankingAccountActivate.execute(bankingAccount.getId(), request);
 
         // then
         assertThat(result)
-                .isNotNull()
-                .extracting(BankingAccount::getStatus)
-                .isEqualTo(BankingAccountStatus.ACTIVE);
+            .isNotNull()
+            .extracting(BankingAccount::getStatus)
+            .isEqualTo(BankingAccountStatus.ACTIVE);
     }
 
     @Test
@@ -97,18 +97,18 @@ public class BankingAccountActivateTest extends AbstractServiceTest {
 
         // when
         when(bankingAccountRepository.findById(anyLong()))
-                .thenReturn(Optional.of(bankingAccount));
+            .thenReturn(Optional.of(bankingAccount));
 
         when(bankingAccountRepository.save(any(BankingAccount.class)))
-                .thenAnswer(i -> i.getArgument(0));
+            .thenAnswer(i -> i.getArgument(0));
 
         BankingAccount result = bankingAccountActivate.execute(bankingAccount.getId(), request);
 
         // then
         assertThat(result)
-                .isNotNull()
-                .extracting(BankingAccount::getStatus)
-                .isEqualTo(BankingAccountStatus.SUSPENDED);
+            .isNotNull()
+            .extracting(BankingAccount::getStatus)
+            .isEqualTo(BankingAccountStatus.SUSPENDED);
     }
 
     @Test
@@ -124,11 +124,11 @@ public class BankingAccountActivateTest extends AbstractServiceTest {
 
         // when
         when(bankingAccountRepository.findById(anyLong()))
-                .thenReturn(Optional.of(bankingAccount));
+            .thenReturn(Optional.of(bankingAccount));
 
         BankingAccountStatusTransitionException exception = assertThrows(
-                BankingAccountStatusTransitionException.class,
-                () -> bankingAccountActivate.execute(bankingAccount.getId(), request)
+            BankingAccountStatusTransitionException.class,
+            () -> bankingAccountActivate.execute(bankingAccount.getId(), request)
         );
 
         // then

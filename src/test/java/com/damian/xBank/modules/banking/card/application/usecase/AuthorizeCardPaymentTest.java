@@ -18,7 +18,7 @@ import com.damian.xBank.modules.payment.network.card.application.dto.response.Pa
 import com.damian.xBank.modules.payment.network.card.domain.PaymentAuthorizationStatus;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.domain.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.banking.transfer.domain.exception;
 
-import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.domain.exception.ErrorCodes;
 
 public class BankingTransferNotOwnerException extends BankingTransferException {
 

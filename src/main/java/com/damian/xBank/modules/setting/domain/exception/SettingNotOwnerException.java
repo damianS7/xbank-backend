@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.setting.domain.exception;
 
-import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.domain.exception.ErrorCodes;
 
 public class SettingNotOwnerException extends SettingException {
     public SettingNotOwnerException(Long settingId, Long userId) {

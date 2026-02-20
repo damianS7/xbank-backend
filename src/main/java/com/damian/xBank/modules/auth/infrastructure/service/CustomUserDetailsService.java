@@ -2,7 +2,7 @@ package com.damian.xBank.modules.auth.infrastructure.service;
 
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
-import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.domain.exception.ErrorCodes;
 import com.damian.xBank.shared.security.UserPrincipal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,13 +27,13 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     public UserDetails loadUserByEmail(String email) {
         User user = userRepository
-                .findByEmail(email)
-                .orElseThrow(
-                        () -> {
-                            log.debug("Failed to find a user with email: {}", email);
-                            return new BadCredentialsException(ErrorCodes.AUTH_LOGIN_BAD_CREDENTIALS);
-                        }
-                );
+            .findByEmail(email)
+            .orElseThrow(
+                () -> {
+                    log.debug("Failed to find a user with email: {}", email);
+                    return new BadCredentialsException(ErrorCodes.AUTH_LOGIN_BAD_CREDENTIALS);
+                }
+            );
 
         return new UserPrincipal(user);
     }

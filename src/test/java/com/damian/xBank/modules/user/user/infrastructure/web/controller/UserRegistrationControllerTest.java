@@ -6,8 +6,8 @@ import com.damian.xBank.modules.user.user.application.dto.response.UserDto;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.shared.AbstractControllerTest;
-import com.damian.xBank.shared.dto.ApiResponse;
-import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.domain.exception.ErrorCodes;
+import com.damian.xBank.shared.infrastructure.web.dto.response.ApiResponse;
 import com.damian.xBank.shared.utils.JsonHelper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.DisplayName;
@@ -30,45 +30,45 @@ public class UserRegistrationControllerTest extends AbstractControllerTest {
     void postRegisterUser_WhenValidRequest_Returns201() throws Exception {
         // given
         UserRegistrationRequest request = new UserRegistrationRequest(
-                "customer@test.com",
-                "12345689X$$sa",
-                "Customer",
-                "Test",
-                "123 123 123",
-                LocalDate.of(1989, 1, 1),
-                UserGender.MALE,
-                "Fake AV",
-                "50120",
-                "USA",
-                "123123123Z"
+            "customer@test.com",
+            "12345689X$$sa",
+            "Customer",
+            "Test",
+            "123 123 123",
+            LocalDate.of(1989, 1, 1),
+            UserGender.MALE,
+            "Fake AV",
+            "50120",
+            "USA",
+            "123123123Z"
         );
 
         // when
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders
-                                          .post("/api/v1/users/register")
-                                          .contentType(MediaType.APPLICATION_JSON)
-                                          .content(JsonHelper.toJson(request)))
-                                  .andDo(print())
-                                  .andExpect(MockMvcResultMatchers.status().is(HttpStatus.CREATED.value()))
-                                  .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                                  .andReturn();
+                .post("/api/v1/users/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonHelper.toJson(request)))
+            .andDo(print())
+            .andExpect(MockMvcResultMatchers.status().is(HttpStatus.CREATED.value()))
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+            .andReturn();
 
         // then
         UserDto customerDto = JsonHelper.fromJson(
-                result.getResponse().getContentAsString(),
-                UserDto.class
+            result.getResponse().getContentAsString(),
+            UserDto.class
         );
 
         // then
         assertThat(customerDto)
-                .isNotNull()
-                .extracting(
-                        UserDto::email,
-                        UserDto::role
-                ).containsExactly(
-                        request.email(),
-                        UserRole.CUSTOMER
-                );
+            .isNotNull()
+            .extracting(
+                UserDto::email,
+                UserDto::role
+            ).containsExactly(
+                request.email(),
+                UserRole.CUSTOMER
+            );
     }
 
     @Test
@@ -76,41 +76,41 @@ public class UserRegistrationControllerTest extends AbstractControllerTest {
     void postRegisterUser_WhenMissingFields_Returns400() throws Exception {
         // given
         UserRegistrationRequest request = new UserRegistrationRequest(
-                "customer@test.com",
-                "12345689X$$sa",
-                "",
-                "",
-                "123 123 123",
-                LocalDate.of(1989, 1, 1),
-                UserGender.MALE,
-                "Fake AV",
-                "50120",
-                "USA",
-                "123123123Z"
+            "customer@test.com",
+            "12345689X$$sa",
+            "",
+            "",
+            "123 123 123",
+            LocalDate.of(1989, 1, 1),
+            UserGender.MALE,
+            "Fake AV",
+            "50120",
+            "USA",
+            "123123123Z"
         );
 
         // then
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users/register")
-                                                                 .contentType(MediaType.APPLICATION_JSON)
-                                                                 .content(JsonHelper.toJson(request)))
-                                  .andDo(print())
-                                  .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
-                                  .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                                  .andReturn();
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonHelper.toJson(request)))
+            .andDo(print())
+            .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+            .andReturn();
 
         // then
         ApiResponse<?> response = JsonHelper.fromJson(
-                result.getResponse().getContentAsString(),
-                new TypeReference<ApiResponse<?>>() {
-                }
+            result.getResponse().getContentAsString(),
+            new TypeReference<ApiResponse<?>>() {
+            }
         );
 
         // then
         assertThat(response)
-                .isNotNull()
-                .extracting(ApiResponse::getMessage)
-                .asString()
-                .isEqualTo(ErrorCodes.VALIDATION_FAILED);
+            .isNotNull()
+            .extracting(ApiResponse::getMessage)
+            .asString()
+            .isEqualTo(ErrorCodes.VALIDATION_FAILED);
     }
 
     @Test
@@ -118,46 +118,46 @@ public class UserRegistrationControllerTest extends AbstractControllerTest {
     void shouldNotRegisterCustomerWhenEmailIsNotWellFormed() throws Exception {
         // given
         UserRegistrationRequest request = new UserRegistrationRequest(
-                "bad-email.com",
-                "12345689X$$sa",
-                "Customer",
-                "Test",
-                "123 123 123",
-                LocalDate.of(1989, 1, 1),
-                UserGender.MALE,
-                "Fake AV",
-                "50120",
-                "USA",
-                "123123123Z"
+            "bad-email.com",
+            "12345689X$$sa",
+            "Customer",
+            "Test",
+            "123 123 123",
+            LocalDate.of(1989, 1, 1),
+            UserGender.MALE,
+            "Fake AV",
+            "50120",
+            "USA",
+            "123123123Z"
         );
 
         // then
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users/register")
-                                                                 .contentType(MediaType.APPLICATION_JSON)
-                                                                 .content(JsonHelper.toJson(request)))
-                                  .andDo(print())
-                                  .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
-                                  .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                                  .andReturn();
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonHelper.toJson(request)))
+            .andDo(print())
+            .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+            .andReturn();
 
         // then
         ApiResponse<?> response = JsonHelper.fromJson(
-                result.getResponse().getContentAsString(),
-                new TypeReference<ApiResponse<?>>() {
-                }
+            result.getResponse().getContentAsString(),
+            new TypeReference<ApiResponse<?>>() {
+            }
         );
 
         // then
         assertThat(response)
-                .isNotNull()
-                .extracting(
-                        ApiResponse::getMessage
-                ).isEqualTo(
-                        ErrorCodes.VALIDATION_FAILED
-                );
+            .isNotNull()
+            .extracting(
+                ApiResponse::getMessage
+            ).isEqualTo(
+                ErrorCodes.VALIDATION_FAILED
+            );
 
         assertThat(response.getErrors().get("email"))
-                .contains("must be a well-formed email address");
+            .contains("must be a well-formed email address");
     }
 
     @Test
@@ -165,48 +165,48 @@ public class UserRegistrationControllerTest extends AbstractControllerTest {
     void shouldNotRegisterCustomerWhenEmailIsTaken() throws Exception {
         // given
         UserRegistrationRequest request = new UserRegistrationRequest(
-                "customer@test.com",
-                "12345699Xxs$$",
-                "Customer",
-                "Test",
-                "123 123 123",
-                LocalDate.of(1989, 1, 1),
-                UserGender.MALE,
-                "Fake AV",
-                "50120",
-                "USA",
-                "123123123Z"
+            "customer@test.com",
+            "12345699Xxs$$",
+            "Customer",
+            "Test",
+            "123 123 123",
+            LocalDate.of(1989, 1, 1),
+            UserGender.MALE,
+            "Fake AV",
+            "50120",
+            "USA",
+            "123123123Z"
         );
 
         User givenUser = User.create()
-                             .setEmail(request.email())
-                             .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+            .setEmail(request.email())
+            .setPassword(passwordEncoder.encode(RAW_PASSWORD));
         userRepository.save(givenUser);
 
 
         // when
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders
-                                          .post("/api/v1/users/register")
-                                          .contentType(MediaType.APPLICATION_JSON)
-                                          .content(JsonHelper.toJson(request)))
-                                  .andDo(print())
-                                  .andExpect(MockMvcResultMatchers.status().is(HttpStatus.CONFLICT.value()))
-                                  .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                                  .andReturn();
+                .post("/api/v1/users/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonHelper.toJson(request)))
+            .andDo(print())
+            .andExpect(MockMvcResultMatchers.status().is(HttpStatus.CONFLICT.value()))
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+            .andReturn();
 
         // then
         ApiResponse<?> response = JsonHelper.fromJson(
-                result.getResponse().getContentAsString(),
-                new TypeReference<ApiResponse<?>>() {
-                }
+            result.getResponse().getContentAsString(),
+            new TypeReference<ApiResponse<?>>() {
+            }
         );
 
         // then
         assertThat(response)
-                .isNotNull()
-                .extracting(ApiResponse::getErrorCode)
-                .asString()
-                .isEqualTo(ErrorCodes.USER_EMAIL_TAKEN);
+            .isNotNull()
+            .extracting(ApiResponse::getErrorCode)
+            .asString()
+            .isEqualTo(ErrorCodes.USER_EMAIL_TAKEN);
 
     }
 
@@ -215,46 +215,46 @@ public class UserRegistrationControllerTest extends AbstractControllerTest {
     void shouldNotRegisterCustomerWhenPasswordPolicyNotSatisfied() throws Exception {
         // given
         UserRegistrationRequest request = new UserRegistrationRequest(
-                "customer@test.com",
-                "123456",
-                "Customer",
-                "Test",
-                "123 123 123",
-                LocalDate.of(1989, 1, 1),
-                UserGender.MALE,
-                "Fake AV",
-                "50120",
-                "USA",
-                "123123123Z"
+            "customer@test.com",
+            "123456",
+            "Customer",
+            "Test",
+            "123 123 123",
+            LocalDate.of(1989, 1, 1),
+            UserGender.MALE,
+            "Fake AV",
+            "50120",
+            "USA",
+            "123123123Z"
         );
 
         // when
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders
-                                          .post("/api/v1/users/register")
-                                          .contentType(MediaType.APPLICATION_JSON)
-                                          .content(JsonHelper.toJson(request)))
-                                  .andDo(print())
-                                  .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
-                                  .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                                  .andReturn();
+                .post("/api/v1/users/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonHelper.toJson(request)))
+            .andDo(print())
+            .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+            .andReturn();
 
         // then
         ApiResponse<?> response = JsonHelper.fromJson(
-                result.getResponse().getContentAsString(),
-                new TypeReference<ApiResponse<?>>() {
-                }
+            result.getResponse().getContentAsString(),
+            new TypeReference<ApiResponse<?>>() {
+            }
         );
 
         // then
         assertThat(response)
-                .isNotNull()
-                .extracting(
-                        ApiResponse::getMessage
-                ).isEqualTo(
-                        ErrorCodes.VALIDATION_FAILED
-                );
+            .isNotNull()
+            .extracting(
+                ApiResponse::getMessage
+            ).isEqualTo(
+                ErrorCodes.VALIDATION_FAILED
+            );
 
         assertThat(response.getErrors().get("password"))
-                .containsIgnoringCase("password must be at least");
+            .containsIgnoringCase("password must be at least");
     }
 }

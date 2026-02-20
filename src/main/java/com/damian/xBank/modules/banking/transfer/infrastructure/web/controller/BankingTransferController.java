@@ -85,7 +85,6 @@ public class BankingTransferController {
         @RequestBody @Valid
         BankingTransferConfirmRequest request
     ) {
-
         BankingTransfer transfer = bankingTransferConfirm.execute(id, request);
         BankingTransferDetailDto transferDto = BankingTransferDtoMapper.toBankingTransferDetailDto(transfer);
 

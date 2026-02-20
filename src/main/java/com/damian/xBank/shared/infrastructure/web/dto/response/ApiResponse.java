@@ -1,6 +1,6 @@
-package com.damian.xBank.shared.dto;
+package com.damian.xBank.shared.infrastructure.web.dto.response;
 
-import com.damian.xBank.shared.exception.ApplicationException;
+import com.damian.xBank.shared.domain.exception.ApplicationException;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -49,35 +49,35 @@ public class ApiResponse<T> {
     }
 
     public static <T> ApiResponse<T> error(
-            ApplicationException exception,
-            HttpStatus status,
-            MessageSource messageSource
+        ApplicationException exception,
+        HttpStatus status,
+        MessageSource messageSource
     ) {
         ApiResponse<T> response = error(
-                exception.getErrorCode(),
-                exception.getArgs(),
-                status,
-                messageSource
+            exception.getErrorCode(),
+            exception.getArgs(),
+            status,
+            messageSource
         );
         response.setResourceId(exception.getResourceId());
         return response;
     }
 
     public static <T> ApiResponse<T> error(
-            String errorCode,
-            Object[] args,
-            HttpStatus status,
-            MessageSource messageSource
+        String errorCode,
+        Object[] args,
+        HttpStatus status,
+        MessageSource messageSource
     ) {
         ApiResponse<T> response = new ApiResponse<>();
         response.setStatus(status.value());
         response.setErrorCode(errorCode);
         response.setMessage(
-                messageSource.getMessage(
-                        errorCode,
-                        args,
-                        LocaleContextHolder.getLocale()
-                )
+            messageSource.getMessage(
+                errorCode,
+                args,
+                LocaleContextHolder.getLocale()
+            )
         );
 
         return response;

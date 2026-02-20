@@ -4,7 +4,7 @@ import com.damian.xBank.shared.infrastructure.storage.exception.ImageEmptyFileEx
 import com.damian.xBank.shared.infrastructure.storage.exception.ImageTooLargeException;
 import com.damian.xBank.shared.infrastructure.storage.exception.ImageTypeNotSupportedException;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.domain.exception.ErrorCodes;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -24,15 +24,15 @@ public class ImageValidationServiceTest extends AbstractServiceTest {
     void shouldValidateImage() {
         // given
         MultipartFile givenImage = new MockMultipartFile(
-                "file",
-                "photo.jpg",
-                "image/jpeg",
-                new byte[5]
+            "file",
+            "photo.jpg",
+            "image/jpeg",
+            new byte[5]
         );
 
         // when
         imageValidationService.validateImage(
-                givenImage, 5L * 1024 * 1024, new String[]{"image/jpg", "image/jpeg", "image/png"}
+            givenImage, 5L * 1024 * 1024, new String[]{"image/jpg", "image/jpeg", "image/png"}
         );
     }
 
@@ -41,18 +41,18 @@ public class ImageValidationServiceTest extends AbstractServiceTest {
     void shouldNotValidateImageWhenFileIsEmpty() {
         // given
         MultipartFile givenImage = new MockMultipartFile(
-                "file",
-                "photo.jpg",
-                "image/jpeg",
-                new byte[0]
+            "file",
+            "photo.jpg",
+            "image/jpeg",
+            new byte[0]
         );
 
         // when
         ImageEmptyFileException ex = assertThrows(
-                ImageEmptyFileException.class,
-                () -> imageValidationService.validateImage(
-                        givenImage, 5L * 1024 * 1024, new String[]{"image/jpg", "image/jpeg", "image/png"}
-                )
+            ImageEmptyFileException.class,
+            () -> imageValidationService.validateImage(
+                givenImage, 5L * 1024 * 1024, new String[]{"image/jpg", "image/jpeg", "image/png"}
+            )
         );
 
         // then
@@ -64,18 +64,18 @@ public class ImageValidationServiceTest extends AbstractServiceTest {
     void shouldNotValidateImageWhenFileIsNotAValidType() {
         // given
         MultipartFile givenImage = new MockMultipartFile(
-                "file",
-                "photo.jpg",
-                "octet/stream",
-                new byte[5]
+            "file",
+            "photo.jpg",
+            "octet/stream",
+            new byte[5]
         );
 
         // when
         ImageTypeNotSupportedException ex = assertThrows(
-                ImageTypeNotSupportedException.class,
-                () -> imageValidationService.validateImage(
-                        givenImage, 5L * 1024 * 1024, new String[]{"image/jpg", "image/jpeg", "image/png"}
-                )
+            ImageTypeNotSupportedException.class,
+            () -> imageValidationService.validateImage(
+                givenImage, 5L * 1024 * 1024, new String[]{"image/jpg", "image/jpeg", "image/png"}
+            )
         );
 
         // then
@@ -87,18 +87,18 @@ public class ImageValidationServiceTest extends AbstractServiceTest {
     void shouldNotValidateImageWhenSizeExceedsLimit() {
         // given
         MultipartFile givenImage = new MockMultipartFile(
-                "file",
-                "photo.jpg",
-                "image/jpeg",
-                new byte[1024 * 1024 + 1]
+            "file",
+            "photo.jpg",
+            "image/jpeg",
+            new byte[1024 * 1024 + 1]
         );
 
         // when
         ImageTooLargeException ex = assertThrows(
-                ImageTooLargeException.class,
-                () -> imageValidationService.validateImage(
-                        givenImage, 1024 * 1024, new String[]{"image/jpg", "image/jpeg", "image/png"}
-                )
+            ImageTooLargeException.class,
+            () -> imageValidationService.validateImage(
+                givenImage, 1024 * 1024, new String[]{"image/jpg", "image/jpeg", "image/png"}
+            )
         );
 
         // then

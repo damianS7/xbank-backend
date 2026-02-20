@@ -1,6 +1,7 @@
 package com.damian.xBank.shared.dto;
 
-import com.damian.xBank.shared.exception.ApplicationException;
+import com.damian.xBank.shared.domain.exception.ApplicationException;
+import com.damian.xBank.shared.infrastructure.web.dto.response.ApiResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -156,7 +157,7 @@ class ApiResponseTest {
         when(applicationException.getArgs()).thenReturn(args);
         when(applicationException.getResourceId()).thenReturn(resourceId);
         when(messageSource.getMessage(eq(errorCode), eq(args), any(Locale.class)))
-                .thenReturn(translatedMessage);
+            .thenReturn(translatedMessage);
 
         ApiResponse<Void> response = ApiResponse.error(applicationException, HttpStatus.NOT_FOUND, messageSource);
         String json = objectMapper.writeValueAsString(response);

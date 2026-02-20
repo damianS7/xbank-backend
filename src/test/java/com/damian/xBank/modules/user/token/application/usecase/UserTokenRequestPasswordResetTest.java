@@ -9,7 +9,7 @@ import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.domain.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -45,10 +45,10 @@ public class UserTokenRequestPasswordResetTest extends AbstractServiceTest {
     @BeforeEach
     void setUp() {
         user = UserTestBuilder.aCustomer()
-                              .withId(1L)
-                              .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                              .withEmail("customerA@demo.com")
-                              .build();
+            .withId(1L)
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .withEmail("customerA@demo.com")
+            .build();
     }
 
     @Test
@@ -56,14 +56,14 @@ public class UserTokenRequestPasswordResetTest extends AbstractServiceTest {
     void requestPasswordReset_WhenValidRequest_SendsEmail() {
         // given
         UserTokenRequestPasswordResetRequest request = new UserTokenRequestPasswordResetRequest(
-                user.getEmail()
+            user.getEmail()
         );
 
         // when
         when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
 
         when(userTokenRepository.save(any(UserToken.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
+            .thenAnswer(invocation -> invocation.getArgument(0));
 
         userTokenRequestPasswordReset.execute(request);
 
@@ -76,21 +76,21 @@ public class UserTokenRequestPasswordResetTest extends AbstractServiceTest {
     void requestPasswordReset_WhenUserNotFound_ThrowsException() {
         // given
         UserTokenRequestPasswordResetRequest request = new UserTokenRequestPasswordResetRequest(
-                user.getEmail()
+            user.getEmail()
         );
 
         // when
         when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.empty());
 
         UserNotFoundException exception = assertThrows(
-                UserNotFoundException.class,
-                () -> userTokenRequestPasswordReset.execute(request)
+            UserNotFoundException.class,
+            () -> userTokenRequestPasswordReset.execute(request)
         );
 
         // then
         verify(userRepository, times(1)).findByEmail(anyString());
         assertThat(exception)
-                .isNotNull()
-                .hasMessage(ErrorCodes.USER_NOT_FOUND);
+            .isNotNull()
+            .hasMessage(ErrorCodes.USER_NOT_FOUND);
     }
 }

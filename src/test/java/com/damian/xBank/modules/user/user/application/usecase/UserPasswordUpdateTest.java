@@ -7,7 +7,7 @@ import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.modules.user.user.infrastructure.service.UserPasswordService;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.domain.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,11 +34,11 @@ public class UserPasswordUpdateTest extends AbstractServiceTest {
     @BeforeEach
     void setUp() {
         customer = UserTestBuilder.aCustomer()
-                                  .withId(1L)
-                                  .withPassword(RAW_PASSWORD)
-                                  .withEmail("customer@demo.com")
-                                  .withProfile(UserProfileFactory.testProfile())
-                                  .build();
+            .withId(1L)
+            .withPassword(RAW_PASSWORD)
+            .withEmail("customer@demo.com")
+            .withProfile(UserProfileFactory.testProfile())
+            .build();
     }
 
     @Test
@@ -51,8 +51,8 @@ public class UserPasswordUpdateTest extends AbstractServiceTest {
         final String rawNewPassword = "1234";
 
         UserPasswordUpdateRequest request = new UserPasswordUpdateRequest(
-                RAW_PASSWORD,
-                rawNewPassword
+            RAW_PASSWORD,
+            rawNewPassword
         );
 
         // when
@@ -69,14 +69,14 @@ public class UserPasswordUpdateTest extends AbstractServiceTest {
         setUpContext(customer);
 
         UserPasswordUpdateRequest updateRequest = new UserPasswordUpdateRequest(
-                "wrongPassword",
-                "1234"
+            "wrongPassword",
+            "1234"
         );
 
         // when
         UserInvalidPasswordConfirmationException exception = assertThrows(
-                UserInvalidPasswordConfirmationException.class,
-                () -> userPasswordUpdate.execute(updateRequest)
+            UserInvalidPasswordConfirmationException.class,
+            () -> userPasswordUpdate.execute(updateRequest)
         );
 
         // then

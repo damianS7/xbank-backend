@@ -6,7 +6,7 @@ import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.domain.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,25 +28,25 @@ public class BankingAccountTest extends AbstractServiceTest {
     @BeforeEach
     void setUp() {
         admin = UserTestBuilder.aCustomer()
-                               .withId(2L)
-                               .withEmail("admin@demo.com")
-                               .withRole(UserRole.ADMIN)
-                               .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                               .build();
+            .withId(2L)
+            .withEmail("admin@demo.com")
+            .withRole(UserRole.ADMIN)
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .build();
 
         customer = UserTestBuilder.aCustomer()
-                                  .withId(1L)
-                                  .withEmail("customer@demo.com")
-                                  .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                  .build();
+            .withId(1L)
+            .withEmail("customer@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .build();
 
         bankingAccount = BankingAccount
-                .create(customer)
-                .setId(1L)
-                .setBalance(BigDecimal.valueOf(1000))
-                .setCurrency(BankingAccountCurrency.EUR)
-                .setType(BankingAccountType.SAVINGS)
-                .setAccountNumber("US9900001111112233334444");
+            .create(customer)
+            .setId(1L)
+            .setBalance(BigDecimal.valueOf(1000))
+            .setCurrency(BankingAccountCurrency.EUR)
+            .setType(BankingAccountType.SAVINGS)
+            .setAccountNumber("US9900001111112233334444");
 
         customer.addBankingAccount(bankingAccount);
     }
@@ -61,7 +61,7 @@ public class BankingAccountTest extends AbstractServiceTest {
 
         // when / then
         assertThatCode(() -> bankingAccount.assertSufficientFunds(amount))
-                .doesNotThrowAnyException();
+            .doesNotThrowAnyException();
     }
 
     @Test
@@ -74,7 +74,7 @@ public class BankingAccountTest extends AbstractServiceTest {
 
         // when / then
         assertThatCode(() -> bankingAccount.assertSufficientFunds(amount))
-                .doesNotThrowAnyException();
+            .doesNotThrowAnyException();
     }
 
     @Test
@@ -89,14 +89,14 @@ public class BankingAccountTest extends AbstractServiceTest {
 
         // when
         BankingAccountInsufficientFundsException exception =
-                assertThrows(
-                        BankingAccountInsufficientFundsException.class,
-                        () -> account.assertSufficientFunds(amount)
-                );
+            assertThrows(
+                BankingAccountInsufficientFundsException.class,
+                () -> account.assertSufficientFunds(amount)
+            );
 
         // then
         assertThat(exception)
-                .hasMessage(ErrorCodes.BANKING_ACCOUNT_INSUFFICIENT_FUNDS);
+            .hasMessage(ErrorCodes.BANKING_ACCOUNT_INSUFFICIENT_FUNDS);
     }
 
     @Test
@@ -112,7 +112,7 @@ public class BankingAccountTest extends AbstractServiceTest {
 
         // then
         assertThat(bankingAccount.getBalance())
-                .isEqualByComparingTo(BigDecimal.valueOf(300));
+            .isEqualByComparingTo(BigDecimal.valueOf(300));
     }
 
     @Test
@@ -125,8 +125,8 @@ public class BankingAccountTest extends AbstractServiceTest {
 
         // when / then
         assertThrows(
-                BankingAccountInsufficientFundsException.class,
-                () -> bankingAccount.subtractBalance(amount)
+            BankingAccountInsufficientFundsException.class,
+            () -> bankingAccount.subtractBalance(amount)
         );
     }
 
@@ -152,7 +152,7 @@ public class BankingAccountTest extends AbstractServiceTest {
         // given
         // when / then
         assertThatCode(() -> bankingAccount.assertOwnedBy(customer.getId()))
-                .doesNotThrowAnyException();
+            .doesNotThrowAnyException();
     }
 
     @Test
@@ -163,13 +163,13 @@ public class BankingAccountTest extends AbstractServiceTest {
 
         // when / then
         BankingAccountNotOwnerException exception = assertThrows(
-                BankingAccountNotOwnerException.class,
-                () -> bankingAccount.assertOwnedBy(otherCustomerId)
+            BankingAccountNotOwnerException.class,
+            () -> bankingAccount.assertOwnedBy(otherCustomerId)
         );
 
         // optional but nice
         assertThat(exception)
-                .hasMessage(ErrorCodes.BANKING_ACCOUNT_NOT_OWNER);
+            .hasMessage(ErrorCodes.BANKING_ACCOUNT_NOT_OWNER);
     }
 
     @Test
@@ -190,8 +190,8 @@ public class BankingAccountTest extends AbstractServiceTest {
 
         // when / then
         assertThrows(
-                BankingAccountSuspendedException.class,
-                () -> bankingAccount.assertNotSuspended()
+            BankingAccountSuspendedException.class,
+            () -> bankingAccount.assertNotSuspended()
         );
     }
 
@@ -213,8 +213,8 @@ public class BankingAccountTest extends AbstractServiceTest {
 
         // when / then
         assertThrows(
-                BankingAccountClosedException.class,
-                () -> bankingAccount.assertNotClosed()
+            BankingAccountClosedException.class,
+            () -> bankingAccount.assertNotClosed()
         );
     }
 
@@ -229,7 +229,7 @@ public class BankingAccountTest extends AbstractServiceTest {
 
         // then
         assertThat(bankingAccount.getStatus())
-                .isEqualTo(BankingAccountStatus.ACTIVE);
+            .isEqualTo(BankingAccountStatus.ACTIVE);
     }
 
     @Test
@@ -243,7 +243,7 @@ public class BankingAccountTest extends AbstractServiceTest {
 
         // then
         assertThat(bankingAccount.getStatus())
-                .isEqualTo(BankingAccountStatus.SUSPENDED);
+            .isEqualTo(BankingAccountStatus.SUSPENDED);
     }
 
     @Test
@@ -257,7 +257,7 @@ public class BankingAccountTest extends AbstractServiceTest {
 
         // then
         assertThat(bankingAccount.getStatus())
-                .isEqualTo(BankingAccountStatus.CLOSED);
+            .isEqualTo(BankingAccountStatus.CLOSED);
     }
 
     @Test
@@ -271,7 +271,7 @@ public class BankingAccountTest extends AbstractServiceTest {
 
         // then
         assertThat(bankingAccount.getStatus())
-                .isEqualTo(BankingAccountStatus.ACTIVE);
+            .isEqualTo(BankingAccountStatus.ACTIVE);
     }
 
     @Test
@@ -287,7 +287,7 @@ public class BankingAccountTest extends AbstractServiceTest {
 
         // when / then
         assertThatCode(bankingAccount::assertCanAddCard)
-                .doesNotThrowAnyException();
+            .doesNotThrowAnyException();
     }
 
     @Test
@@ -303,8 +303,8 @@ public class BankingAccountTest extends AbstractServiceTest {
 
         // when / then
         assertThrows(
-                BankingAccountCardsLimitException.class,
-                bankingAccount::assertCanAddCard
+            BankingAccountCardsLimitException.class,
+            bankingAccount::assertCanAddCard
         );
     }
 

@@ -6,7 +6,7 @@ import com.damian.xBank.modules.setting.domain.model.*;
 import com.damian.xBank.modules.setting.infrastructure.persistence.repository.SettingRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.domain.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,16 +34,16 @@ public class SettingUpdateTest extends AbstractServiceTest {
     @BeforeEach
     void setUp() {
         customerA = UserTestBuilder.aCustomer()
-                                   .withId(1L)
-                                   .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                   .withEmail("customerA@demo.com")
-                                   .build();
+            .withId(1L)
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .withEmail("customerA@demo.com")
+            .build();
 
         customerB = UserTestBuilder.aCustomer()
-                                   .withId(2L)
-                                   .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                   .withEmail("customerB@demo.com")
-                                   .build();
+            .withId(2L)
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .withEmail("customerB@demo.com")
+            .build();
     }
 
     @Test
@@ -53,56 +53,56 @@ public class SettingUpdateTest extends AbstractServiceTest {
         setUpContext(customerA);
 
         UserSettings customerCurrentSettings = new UserSettings(
-                true,
-                false,
-                false,
-                false,
-                "",
-                60,
-                SettingMultifactor.EMAIL,
-                SettingLanguage.EN,
-                SettingTheme.LIGHT
+            true,
+            false,
+            false,
+            false,
+            "",
+            60,
+            SettingMultifactor.EMAIL,
+            SettingLanguage.EN,
+            SettingTheme.LIGHT
         );
 
         Setting givenSettings = Setting.create(customerA)
-                                       .setSettings(customerCurrentSettings);
+            .setSettings(customerCurrentSettings);
 
         UserSettings newUserSettings = new UserSettings(
-                true,
-                true,
-                false,
-                false,
-                "",
-                60,
-                SettingMultifactor.EMAIL,
-                SettingLanguage.ES,
-                SettingTheme.LIGHT
+            true,
+            true,
+            false,
+            false,
+            "",
+            60,
+            SettingMultifactor.EMAIL,
+            SettingLanguage.ES,
+            SettingTheme.LIGHT
         );
 
         SettingsUpdateRequest request = new SettingsUpdateRequest(
-                newUserSettings
+            newUserSettings
         );
 
         // when
         when(settingRepository.findByUser_Id(anyLong()))
-                .thenReturn(Optional.of(givenSettings));
+            .thenReturn(Optional.of(givenSettings));
 
         when(settingRepository.save(any(Setting.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
+            .thenAnswer(invocation -> invocation.getArgument(0));
 
         Setting result = settingUpdate.execute(request);
 
         // then
         assertThat(result)
-                .isNotNull()
-                .extracting(
-                        r -> r.getSettings().language(),
-                        r -> r.getSettings().emailNotifications()
-                )
-                .containsExactly(
-                        newUserSettings.language(),
-                        newUserSettings.emailNotifications()
-                );
+            .isNotNull()
+            .extracting(
+                r -> r.getSettings().language(),
+                r -> r.getSettings().emailNotifications()
+            )
+            .containsExactly(
+                newUserSettings.language(),
+                newUserSettings.emailNotifications()
+            );
         verify(settingRepository, times(1)).findByUser_Id(customerA.getId());
         verify(settingRepository, times(1)).save(any(Setting.class));
     }
@@ -114,50 +114,50 @@ public class SettingUpdateTest extends AbstractServiceTest {
         setUpContext(customerA);
 
         UserSettings customerCurrentSettings = new UserSettings(
-                true,
-                false,
-                false,
-                false,
-                "",
-                60,
-                SettingMultifactor.EMAIL,
-                SettingLanguage.EN,
-                SettingTheme.LIGHT
+            true,
+            false,
+            false,
+            false,
+            "",
+            60,
+            SettingMultifactor.EMAIL,
+            SettingLanguage.EN,
+            SettingTheme.LIGHT
         );
 
         Setting givenSettings = Setting.create(customerB)
-                                       .setSettings(customerCurrentSettings);
+            .setSettings(customerCurrentSettings);
 
         UserSettings newUserSettings = new UserSettings(
-                true,
-                true,
-                false,
-                false,
-                "",
-                60,
-                SettingMultifactor.EMAIL,
-                SettingLanguage.ES,
-                SettingTheme.LIGHT
+            true,
+            true,
+            false,
+            false,
+            "",
+            60,
+            SettingMultifactor.EMAIL,
+            SettingLanguage.ES,
+            SettingTheme.LIGHT
         );
 
         SettingsUpdateRequest request = new SettingsUpdateRequest(
-                newUserSettings
+            newUserSettings
         );
 
         // when
         when(settingRepository.findByUser_Id(anyLong()))
-                .thenReturn(Optional.of(givenSettings));
+            .thenReturn(Optional.of(givenSettings));
 
         // when
         SettingNotOwnerException exception =
-                assertThrows(
-                        SettingNotOwnerException.class,
-                        () -> settingUpdate.execute(request)
-                );
+            assertThrows(
+                SettingNotOwnerException.class,
+                () -> settingUpdate.execute(request)
+            );
 
         // then
         assertThat(exception)
-                .isNotNull()
-                .hasMessage(ErrorCodes.SETTING_NOT_OWNER);
+            .isNotNull()
+            .hasMessage(ErrorCodes.SETTING_NOT_OWNER);
     }
 }

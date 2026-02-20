@@ -7,7 +7,7 @@ import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordCo
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.domain.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -37,11 +37,11 @@ public class UserEmailUpdateTest extends AbstractServiceTest {
     @BeforeEach
     void setUp() {
         customer = UserTestBuilder.aCustomer()
-                                  .withId(1L)
-                                  .withPassword(RAW_PASSWORD)
-                                  .withEmail("customer@demo.com")
-                                  .withProfile(UserProfileFactory.testProfile())
-                                  .build();
+            .withId(1L)
+            .withPassword(RAW_PASSWORD)
+            .withEmail("customer@demo.com")
+            .withProfile(UserProfileFactory.testProfile())
+            .build();
     }
 
     @Test
@@ -52,27 +52,27 @@ public class UserEmailUpdateTest extends AbstractServiceTest {
         setUpContext(customer);
 
         UserEmailUpdateRequest updateRequest = new UserEmailUpdateRequest(
-                RAW_PASSWORD,
-                "david@test.com"
+            RAW_PASSWORD,
+            "david@test.com"
         );
 
         // when
         when(userRepository.findById(customer.getId())).thenReturn(Optional.of(customer));
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(userRepository.save(any(User.class))).thenAnswer(
-                invocation -> invocation.getArgument(0)
+            invocation -> invocation.getArgument(0)
         );
 
         User updatedAccount = userEmailUpdate.execute(updateRequest);
 
         // then
         assertThat(updatedAccount)
-                .isNotNull()
-                .extracting(
-                        User::getEmail
-                ).isEqualTo(
-                        updateRequest.newEmail()
-                );
+            .isNotNull()
+            .extracting(
+                User::getEmail
+            ).isEqualTo(
+                updateRequest.newEmail()
+            );
 
         verify(userRepository, times(1)).save(any(User.class));
     }
@@ -86,8 +86,8 @@ public class UserEmailUpdateTest extends AbstractServiceTest {
         setUpContext(customer);
 
         UserEmailUpdateRequest updateRequest = new UserEmailUpdateRequest(
-                RAW_PASSWORD,
-                "david2@test.com"
+            RAW_PASSWORD,
+            "david2@test.com"
         );
 
         // when
@@ -95,8 +95,8 @@ public class UserEmailUpdateTest extends AbstractServiceTest {
         when(userRepository.existsByEmail(updateRequest.newEmail())).thenReturn(true);
 
         UserEmailTakenException exception = assertThrows(
-                UserEmailTakenException.class,
-                () -> userEmailUpdate.execute(updateRequest)
+            UserEmailTakenException.class,
+            () -> userEmailUpdate.execute(updateRequest)
         );
 
         // then
@@ -111,15 +111,15 @@ public class UserEmailUpdateTest extends AbstractServiceTest {
         setUpContext(customer);
 
         UserEmailUpdateRequest updateRequest = new UserEmailUpdateRequest(
-                "wrong password",
-                "david@test.com"
+            "wrong password",
+            "david@test.com"
         );
 
         // when
         when(userRepository.findById(customer.getId())).thenReturn(Optional.of(customer));
         UserInvalidPasswordConfirmationException exception = assertThrows(
-                UserInvalidPasswordConfirmationException.class,
-                () -> userEmailUpdate.execute(updateRequest)
+            UserInvalidPasswordConfirmationException.class,
+            () -> userEmailUpdate.execute(updateRequest)
         );
 
         // then

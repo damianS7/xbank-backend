@@ -2,7 +2,7 @@ package com.damian.xBank.modules.setting.infrastructure.web.exception;
 
 import com.damian.xBank.modules.setting.domain.exception.SettingNotFoundException;
 import com.damian.xBank.modules.setting.domain.exception.SettingNotOwnerException;
-import com.damian.xBank.shared.dto.ApiResponse;
+import com.damian.xBank.shared.infrastructure.web.dto.response.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
@@ -19,7 +19,7 @@ public class SettingExceptionHandler {
     private final MessageSource messageSource;
 
     public SettingExceptionHandler(
-            MessageSource messageSource
+        MessageSource messageSource
     ) {
         this.messageSource = messageSource;
     }
@@ -29,7 +29,7 @@ public class SettingExceptionHandler {
         log.warn("Attempt to access someone else settings. userId: {}", ex.getResourceId(), ex);
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                             .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
     }
 
     @ExceptionHandler(SettingNotFoundException.class) // 404
@@ -37,6 +37,6 @@ public class SettingExceptionHandler {
         log.warn("Attempt to access non existing. settingId: {}", ex.getResourceId(), ex);
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body(ApiResponse.error(ex, HttpStatus.NOT_FOUND, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.NOT_FOUND, messageSource));
     }
 }

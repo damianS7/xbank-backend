@@ -81,6 +81,8 @@ public class BankingTransferConfirm {
             notificationEventFactory.transferReceived(transfer)
         );
 
+        // TODO when confirmed transaction send to RabbitMq queue
+
         return transfer;
     }
 

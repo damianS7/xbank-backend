@@ -1,7 +1,15 @@
 package com.damian.xBank.modules.banking.account.infrastructure.web.exception;
 
-import com.damian.xBank.modules.banking.account.domain.exception.*;
-import com.damian.xBank.shared.dto.ApiResponse;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountCardsLimitException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountClosedException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountDepositException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountInsufficientFundsException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotOwnerException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountStatusTransitionException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountSuspendedException;
+import com.damian.xBank.shared.infrastructure.web.dto.response.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
@@ -23,17 +31,17 @@ public class BankingAccountExceptionHandler {
 
     @ExceptionHandler(BankingAccountStatusTransitionException.class)
     public ResponseEntity<ApiResponse<String>> handleStatusTransition(
-            BankingAccountStatusTransitionException ex
+        BankingAccountStatusTransitionException ex
     ) {
         log.warn(
-                "Status transition failed from {} to {} on Banking account: {}",
-                ex.getArgs()[0],
-                ex.getArgs()[1],
-                ex.getResourceId()
+            "Status transition failed from {} to {} on Banking account: {}",
+            ex.getArgs()[0],
+            ex.getArgs()[1],
+            ex.getResourceId()
         );
 
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                             .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
     }
 
     @ExceptionHandler(BankingAccountException.class)
@@ -41,17 +49,17 @@ public class BankingAccountExceptionHandler {
         log.warn("Banking account: {} internal error.", ex.getResourceId());
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                             .body(ApiResponse.error(ex, HttpStatus.INTERNAL_SERVER_ERROR, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.INTERNAL_SERVER_ERROR, messageSource));
     }
 
     @ExceptionHandler(BankingAccountSuspendedException.class)
     public ResponseEntity<ApiResponse<String>> handleBankingAccountSuspended(
-            BankingAccountSuspendedException ex
+        BankingAccountSuspendedException ex
     ) {
         log.warn("Banking account: {} is suspended.", ex.getResourceId());
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                             .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
     }
 
     @ExceptionHandler(BankingAccountClosedException.class)
@@ -59,7 +67,7 @@ public class BankingAccountExceptionHandler {
         log.warn("Banking account: {} is closed.", ex.getResourceId());
 
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                             .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
     }
 
     @ExceptionHandler(BankingAccountDepositException.class)
@@ -67,7 +75,7 @@ public class BankingAccountExceptionHandler {
         log.warn("Banking deposit failed into account {}", ex.getResourceId());
 
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                             .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
     }
 
     @ExceptionHandler(BankingAccountNotFoundException.class)
@@ -75,7 +83,7 @@ public class BankingAccountExceptionHandler {
         log.warn("Banking account: {} not found", ex.getResourceId());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body(ApiResponse.error(ex, HttpStatus.NOT_FOUND, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.NOT_FOUND, messageSource));
     }
 
     @ExceptionHandler(BankingAccountInsufficientFundsException.class)
@@ -83,7 +91,7 @@ public class BankingAccountExceptionHandler {
         log.warn("Banking account: {} has insufficient funds.", ex.getResourceId());
 
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                             .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
     }
 
     @ExceptionHandler(BankingAccountCardsLimitException.class)
@@ -91,18 +99,18 @@ public class BankingAccountExceptionHandler {
         log.warn("Banking account: {} card limit per account reached", ex.getResourceId());
 
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                             .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
     }
 
     @ExceptionHandler(BankingAccountNotOwnerException.class)
     public ResponseEntity<ApiResponse<String>> handleNotOwner(BankingAccountNotOwnerException ex) {
         log.warn(
-                "Unauthorized access from user {} on banking account: {}",
-                ex.getResourceId(),
-                ex.getResourceId()
+            "Unauthorized access from user {} on banking account: {}",
+            ex.getResourceId(),
+            ex.getResourceId()
         );
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                             .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
     }
 }

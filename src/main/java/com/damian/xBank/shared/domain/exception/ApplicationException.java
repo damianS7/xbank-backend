@@ -1,4 +1,4 @@
-package com.damian.xBank.shared.exception;
+package com.damian.xBank.shared.domain.exception;
 
 public class ApplicationException extends RuntimeException {
 
@@ -7,9 +7,9 @@ public class ApplicationException extends RuntimeException {
     private final Object[] args;
 
     public ApplicationException(
-            String errorCode,
-            Object resourceId,
-            Object[] args
+        String errorCode,
+        Object resourceId,
+        Object[] args
     ) {
         super(errorCode);
         this.resourceId = resourceId;

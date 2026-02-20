@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 public class BankingAccountTestBuilder {
     private Long id = 1L;
     private User owner;
-    private BigDecimal balance = BigDecimal.valueOf(1000);
+    private BigDecimal balance = BigDecimal.valueOf(0);
     private BankingAccountCurrency currency = BankingAccountCurrency.EUR;
     private BankingAccountType accountType = BankingAccountType.SAVINGS;
     private String accountNumber = "ES9900001111112233334444";

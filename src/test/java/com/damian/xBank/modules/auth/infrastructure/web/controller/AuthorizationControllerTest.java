@@ -5,7 +5,7 @@ import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
-import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.domain.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.JwtUtil;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,12 +37,12 @@ public class AuthorizationControllerTest extends AbstractControllerTest {
     @BeforeEach
     void setUp() {
         customer = UserTestBuilder
-                .aCustomer()
-                .withEmail("customer@demo.com")
-                .withRole(UserRole.CUSTOMER)
-                .withStatus(UserStatus.VERIFIED)
-                .withPassword(passwordEncoder.encode(RAW_PASSWORD))
-                .build();
+            .aCustomer()
+            .withEmail("customer@demo.com")
+            .withRole(UserRole.CUSTOMER)
+            .withStatus(UserStatus.VERIFIED)
+            .withPassword(passwordEncoder.encode(RAW_PASSWORD))
+            .build();
 
         userRepository.save(customer);
     }
@@ -52,16 +52,16 @@ public class AuthorizationControllerTest extends AbstractControllerTest {
     void getCustomers_WithValidToken_Returns200OK() throws Exception {
         // given
         final String givenToken = jwtUtil.generateToken(
-                customer.getEmail(),
-                new Date(System.currentTimeMillis() + 1000 * 60 * 60)
+            customer.getEmail(),
+            new Date(System.currentTimeMillis() + 1000 * 60 * 60)
         );
 
         // when
         mockMvc.perform(MockMvcRequestBuilders
-                       .get("/api/v1/test")
-                       .header(HttpHeaders.AUTHORIZATION, "Bearer " + givenToken))
-               .andDo(print())
-               .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()));
+                .get("/api/v1/test")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + givenToken))
+            .andDo(print())
+            .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()));
     }
 
     @Test
@@ -69,10 +69,10 @@ public class AuthorizationControllerTest extends AbstractControllerTest {
     void getCustomers_WithoutAuthentication_Returns401Unauthorized() throws Exception {
         // when
         mockMvc.perform(MockMvcRequestBuilders
-                       .get("/api/v1/test"))
-               .andDo(print())
-               .andExpect(MockMvcResultMatchers.status().is(HttpStatus.UNAUTHORIZED.value()))
-               .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
+                .get("/api/v1/test"))
+            .andDo(print())
+            .andExpect(MockMvcResultMatchers.status().is(HttpStatus.UNAUTHORIZED.value()))
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -80,8 +80,8 @@ public class AuthorizationControllerTest extends AbstractControllerTest {
     void getCustomers_WithExpiredToken_Returns401Unauthorized() throws Exception {
         // given
         final String expiredToken = jwtUtil.generateToken(
-                customer.getEmail(),
-                new Date(System.currentTimeMillis() - 1000 * 60 * 60)
+            customer.getEmail(),
+            new Date(System.currentTimeMillis() - 1000 * 60 * 60)
         );
 
         // given
@@ -89,22 +89,22 @@ public class AuthorizationControllerTest extends AbstractControllerTest {
         fields.put("firstName", "alice");
 
         UserProfileUpdateRequest request = new UserProfileUpdateRequest(
-                this.RAW_PASSWORD,
-                fields
+            this.RAW_PASSWORD,
+            fields
         );
 
         String jsonRequest = objectMapper.writeValueAsString(request);
 
         // when
         mockMvc.perform(MockMvcRequestBuilders
-                       .get("/api/v1/test")
-                       .contentType(MediaType.APPLICATION_JSON)
-                       .header(HttpHeaders.AUTHORIZATION, "Bearer " + expiredToken)
-                       .content(jsonRequest))
-               .andDo(print())
-               .andExpect(MockMvcResultMatchers.status().is(HttpStatus.UNAUTHORIZED.value()))
-               .andExpect(jsonPath("$.message").value(ErrorCodes.AUTH_JWT_TOKEN_EXPIRED))
-               .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
+                .get("/api/v1/test")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + expiredToken)
+                .content(jsonRequest))
+            .andDo(print())
+            .andExpect(MockMvcResultMatchers.status().is(HttpStatus.UNAUTHORIZED.value()))
+            .andExpect(jsonPath("$.message").value(ErrorCodes.AUTH_JWT_TOKEN_EXPIRED))
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -118,22 +118,22 @@ public class AuthorizationControllerTest extends AbstractControllerTest {
         fields.put("firstName", "alice");
 
         UserProfileUpdateRequest request = new UserProfileUpdateRequest(
-                this.RAW_PASSWORD,
-                fields
+            this.RAW_PASSWORD,
+            fields
         );
 
         String jsonRequest = objectMapper.writeValueAsString(request);
 
         // when
         mockMvc.perform(MockMvcRequestBuilders
-                       .get("/api/v1/test")
-                       .contentType(MediaType.APPLICATION_JSON)
-                       .header(HttpHeaders.AUTHORIZATION, "Bearer " + invalidToken)
-                       .content(jsonRequest))
-               .andDo(print())
-               .andExpect(MockMvcResultMatchers.status().is(HttpStatus.UNAUTHORIZED.value()))
-               .andExpect(jsonPath("$.message").value(ErrorCodes.AUTH_JWT_TOKEN_INVALID))
-               .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
+                .get("/api/v1/test")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + invalidToken)
+                .content(jsonRequest))
+            .andDo(print())
+            .andExpect(MockMvcResultMatchers.status().is(HttpStatus.UNAUTHORIZED.value()))
+            .andExpect(jsonPath("$.message").value(ErrorCodes.AUTH_JWT_TOKEN_INVALID))
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -141,16 +141,16 @@ public class AuthorizationControllerTest extends AbstractControllerTest {
     void getCustomers_WithNonExistingEmailInToken_Returns401Unauthorized() throws Exception {
         // given
         final String token = jwtUtil.generateToken(
-                "fake-email@demo.com",
-                new Date(System.currentTimeMillis() + 1000 * 60 * 60)
+            "fake-email@demo.com",
+            new Date(System.currentTimeMillis() + 1000 * 60 * 60)
         );
 
         // when
         mockMvc.perform(MockMvcRequestBuilders
-                       .get("/api/v1/test")
-                       .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
-               .andDo(print())
-               .andExpect(MockMvcResultMatchers.status().is(HttpStatus.UNAUTHORIZED.value()))
-               .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
+                .get("/api/v1/test")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+            .andDo(print())
+            .andExpect(MockMvcResultMatchers.status().is(HttpStatus.UNAUTHORIZED.value()))
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
     }
 }

@@ -7,7 +7,7 @@ import com.damian.xBank.modules.banking.card.domain.exception.*;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.domain.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,31 +29,31 @@ public class BankingCardTest extends AbstractServiceTest {
     @BeforeEach
     void setUp() {
         admin = UserTestBuilder.aCustomer()
-                               .withId(2L)
-                               .withRole(UserRole.ADMIN)
-                               .withEmail("admin@demo.com")
-                               .withPassword(RAW_PASSWORD)
-                               .build();
+            .withId(2L)
+            .withRole(UserRole.ADMIN)
+            .withEmail("admin@demo.com")
+            .withPassword(RAW_PASSWORD)
+            .build();
 
         user = UserTestBuilder.aCustomer()
-                              .withId(1L)
-                              .withEmail("customer@demo.com")
-                              .withPassword(RAW_PASSWORD)
-                              .build();
+            .withId(1L)
+            .withEmail("customer@demo.com")
+            .withPassword(RAW_PASSWORD)
+            .build();
 
         bankingAccount = BankingAccount
-                .create(user)
-                .setId(1L)
-                .setBalance(BigDecimal.valueOf(1000))
-                .setCurrency(BankingAccountCurrency.EUR)
-                .setType(BankingAccountType.SAVINGS)
-                .setAccountNumber("US9900001111112233334444");
+            .create(user)
+            .setId(1L)
+            .setBalance(BigDecimal.valueOf(1000))
+            .setCurrency(BankingAccountCurrency.EUR)
+            .setType(BankingAccountType.SAVINGS)
+            .setAccountNumber("US9900001111112233334444");
 
         user.addBankingAccount(bankingAccount);
 
         bankingCard = BankingCard
-                .create(bankingAccount)
-                .setCardNumber("1234123412341234");
+            .create(bankingAccount)
+            .setCardNumber("1234123412341234");
     }
 
 
@@ -63,7 +63,7 @@ public class BankingCardTest extends AbstractServiceTest {
         // given
         // when / then
         assertThatCode(() -> bankingCard.assertOwnedBy(user.getId()))
-                .doesNotThrowAnyException();
+            .doesNotThrowAnyException();
     }
 
     @Test
@@ -74,13 +74,13 @@ public class BankingCardTest extends AbstractServiceTest {
 
         // when / then
         BankingCardNotOwnerException exception = assertThrows(
-                BankingCardNotOwnerException.class,
-                () -> bankingCard.assertOwnedBy(otherUserId)
+            BankingCardNotOwnerException.class,
+            () -> bankingCard.assertOwnedBy(otherUserId)
         );
 
         // optional but nice
         assertThat(exception)
-                .hasMessage(ErrorCodes.BANKING_CARD_NOT_OWNER);
+            .hasMessage(ErrorCodes.BANKING_CARD_NOT_OWNER);
     }
 
     @Test
@@ -93,7 +93,7 @@ public class BankingCardTest extends AbstractServiceTest {
 
         // when / then
         assertThatCode(() -> bankingCard.assertSufficientFunds(amount))
-                .doesNotThrowAnyException();
+            .doesNotThrowAnyException();
     }
 
     @Test
@@ -106,7 +106,7 @@ public class BankingCardTest extends AbstractServiceTest {
 
         // when / then
         assertThatCode(() -> bankingCard.assertSufficientFunds(amount))
-                .doesNotThrowAnyException();
+            .doesNotThrowAnyException();
     }
 
     @Test
@@ -119,14 +119,14 @@ public class BankingCardTest extends AbstractServiceTest {
 
         // when
         BankingCardInsufficientFundsException exception =
-                assertThrows(
-                        BankingCardInsufficientFundsException.class,
-                        () -> bankingCard.assertSufficientFunds(amount)
-                );
+            assertThrows(
+                BankingCardInsufficientFundsException.class,
+                () -> bankingCard.assertSufficientFunds(amount)
+            );
 
         // then
         assertThat(exception)
-                .hasMessage(ErrorCodes.BANKING_CARD_INSUFFICIENT_FUNDS);
+            .hasMessage(ErrorCodes.BANKING_CARD_INSUFFICIENT_FUNDS);
     }
 
     @Test
@@ -138,7 +138,7 @@ public class BankingCardTest extends AbstractServiceTest {
 
         // when / then
         assertDoesNotThrow(
-                () -> bankingCard.assertCorrectPin(bankingCard.getCardPin()));
+            () -> bankingCard.assertCorrectPin(bankingCard.getCardPin()));
     }
 
     @Test
@@ -150,8 +150,8 @@ public class BankingCardTest extends AbstractServiceTest {
 
         // when / then
         assertThrows(
-                BankingCardInvalidPinException.class,
-                () -> bankingCard.assertCorrectPin("0000")
+            BankingCardInvalidPinException.class,
+            () -> bankingCard.assertCorrectPin("0000")
         );
     }
 
@@ -174,8 +174,8 @@ public class BankingCardTest extends AbstractServiceTest {
 
         // when / then
         assertThrows(
-                BankingCardDisabledException.class,
-                () -> bankingCard.assertEnabled()
+            BankingCardDisabledException.class,
+            () -> bankingCard.assertEnabled()
         );
     }
 
@@ -198,8 +198,8 @@ public class BankingCardTest extends AbstractServiceTest {
 
         // when / then
         assertThrows(
-                BankingCardLockedException.class,
-                () -> bankingCard.assertUnlocked()
+            BankingCardLockedException.class,
+            () -> bankingCard.assertUnlocked()
         );
     }
 
@@ -213,10 +213,10 @@ public class BankingCardTest extends AbstractServiceTest {
 
         // when / then
         assertDoesNotThrow(
-                () -> bankingCard.assertCanSpend(
-                        user, BigDecimal.valueOf(100),
-                        bankingCard.getCardPin()
-                )
+            () -> bankingCard.assertCanSpend(
+                user, BigDecimal.valueOf(100),
+                bankingCard.getCardPin()
+            )
         );
     }
 }

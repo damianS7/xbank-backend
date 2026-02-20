@@ -4,7 +4,7 @@ import com.damian.xBank.modules.user.profile.domain.exception.UserProfileImageNo
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileNotFoundException;
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileNotOwnerException;
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileUpdateException;
-import com.damian.xBank.shared.dto.ApiResponse;
+import com.damian.xBank.shared.infrastructure.web.dto.response.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
@@ -21,7 +21,7 @@ public class UserProfileExceptionHandler {
     private final MessageSource messageSource;
 
     public UserProfileExceptionHandler(
-            MessageSource messageSource
+        MessageSource messageSource
     ) {
         this.messageSource = messageSource;
     }
@@ -29,48 +29,48 @@ public class UserProfileExceptionHandler {
     // Profile exceptions
     @ExceptionHandler(UserProfileNotOwnerException.class) // 401
     public ResponseEntity<ApiResponse<String>> handleProfileUpdateAuthorization(
-            UserProfileNotOwnerException ex
+        UserProfileNotOwnerException ex
     ) {
         log.warn(
-                "Profile id: {} cannot be updated due authorization violation.",
-                ex.getResourceId()
+            "Profile id: {} cannot be updated due authorization violation.",
+            ex.getResourceId()
         );
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body(ApiResponse.error(ex, HttpStatus.UNAUTHORIZED, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.UNAUTHORIZED, messageSource));
     }
 
     @ExceptionHandler(UserProfileUpdateException.class) // 400
     public ResponseEntity<ApiResponse<String>> handleProfileUpdate(
-            UserProfileUpdateException ex
+        UserProfileUpdateException ex
     ) {
 
         log.warn(
-                "Profile id: {} failed to update field: {} with value: {}.",
-                ex.getResourceId(),
-                ex.getArgs()[0],
-                ex.getArgs()[1]
+            "Profile id: {} failed to update field: {} with value: {}.",
+            ex.getResourceId(),
+            ex.getArgs()[0],
+            ex.getArgs()[1]
         );
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                             .body(ApiResponse.error(ex, HttpStatus.BAD_REQUEST, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.BAD_REQUEST, messageSource));
     }
 
     @ExceptionHandler(UserProfileNotFoundException.class) // 404
     public ResponseEntity<ApiResponse<String>> handleProfileNotFound(
-            UserProfileNotFoundException ex
+        UserProfileNotFoundException ex
     ) {
         log.warn("Profile id: {} not found.", ex.getResourceId());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body(ApiResponse.error(ex, HttpStatus.NOT_FOUND, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.NOT_FOUND, messageSource));
     }
 
     @ExceptionHandler(UserProfileImageNotFoundException.class) // 404
     public ResponseEntity<ApiResponse<String>> handleProfileImageNotFound(
-            UserProfileImageNotFoundException ex
+        UserProfileImageNotFoundException ex
     ) {
         log.warn("Profile id: {} image not found.", ex.getResourceId());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body(ApiResponse.error(ex, HttpStatus.NOT_FOUND, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.NOT_FOUND, messageSource));
     }
 }

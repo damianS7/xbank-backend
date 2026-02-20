@@ -7,7 +7,7 @@ import com.damian.xBank.modules.payment.checkout.domain.excepcion.PaymentCheckou
 import com.damian.xBank.modules.payment.intent.application.usecase.GetPaymentIntent;
 import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntent;
 import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntentStatus;
-import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.domain.exception.ErrorCodes;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -39,9 +39,9 @@ public class PaymentCheckoutController {
     private final MessageSource messageSource;
 
     public PaymentCheckoutController(
-            GetPaymentIntent getPaymentIntent,
-            PaymentCheckoutSubmit paymentCheckoutSubmit,
-            MessageSource messageSource
+        GetPaymentIntent getPaymentIntent,
+        PaymentCheckoutSubmit paymentCheckoutSubmit,
+        MessageSource messageSource
     ) {
         this.getPaymentIntent = getPaymentIntent;
         this.paymentCheckoutSubmit = paymentCheckoutSubmit;
@@ -50,8 +50,8 @@ public class PaymentCheckoutController {
 
     @GetMapping("/payments/{id}/checkout")
     public String paymentCheckout(
-            @PathVariable @Positive Long id,
-            Model model
+        @PathVariable @Positive Long id,
+        Model model
     ) {
         // Get payment
         PaymentIntent paymentIntent = getPaymentIntent.execute(id);
@@ -76,8 +76,8 @@ public class PaymentCheckoutController {
 
     @GetMapping("/payments/{id}/status")
     public String paymentStatus(
-            @PathVariable Long id,
-            Model model
+        @PathVariable Long id,
+        Model model
     ) {
         // Get payment
         PaymentIntent paymentIntent = getPaymentIntent.execute(id);
@@ -95,8 +95,8 @@ public class PaymentCheckoutController {
 
     @PostMapping("/payments/checkout")
     public String paymentCheckoutSubmit(
-            @Valid PaymentCheckoutForm form,
-            Model model
+        @Valid PaymentCheckoutForm form,
+        Model model
     ) {
         log.debug("Processing payment: {}", form.paymentId());
         if (form.paymentId() == null) {
@@ -106,15 +106,15 @@ public class PaymentCheckoutController {
 
         try {
             paymentCheckoutSubmit.execute(
-                    new PaymentCheckoutSubmitRequest(
-                            form.paymentId(),
-                            form.cardHolder(),
-                            form.cardNumber(),
-                            form.cvv(),
-                            form.cardPin(),
-                            form.expiryMonth(),
-                            form.expiryYear()
-                    )
+                new PaymentCheckoutSubmitRequest(
+                    form.paymentId(),
+                    form.cardHolder(),
+                    form.cardNumber(),
+                    form.cvv(),
+                    form.cardPin(),
+                    form.expiryMonth(),
+                    form.expiryYear()
+                )
             );
         } catch (Exception exception) {
             throw new PaymentCheckoutException(form.paymentId(), exception.getMessage());
@@ -146,13 +146,13 @@ public class PaymentCheckoutController {
 
     @ExceptionHandler(ConstraintViolationException.class) // 404
     public String handleException(
-            ConstraintViolationException ex,
-            Model model
+        ConstraintViolationException ex,
+        Model model
     ) {
         String message = messageSource.getMessage(
-                ErrorCodes.VALIDATION_FAILED,
-                null,
-                LocaleContextHolder.getLocale()
+            ErrorCodes.VALIDATION_FAILED,
+            null,
+            LocaleContextHolder.getLocale()
         );
         log.warn("Validation error: {}", ex.getMessage(), ex);
         model.addAttribute("error", message);
@@ -161,13 +161,13 @@ public class PaymentCheckoutController {
 
     @ExceptionHandler(HandlerMethodValidationException.class) // 404
     public String handleException(
-            HandlerMethodValidationException ex,
-            Model model
+        HandlerMethodValidationException ex,
+        Model model
     ) {
         String message = messageSource.getMessage(
-                ErrorCodes.VALIDATION_FAILED,
-                null,
-                LocaleContextHolder.getLocale()
+            ErrorCodes.VALIDATION_FAILED,
+            null,
+            LocaleContextHolder.getLocale()
         );
         log.warn("Validation error: {}", ex.getMessage(), ex);
         model.addAttribute("error", message);
@@ -176,21 +176,21 @@ public class PaymentCheckoutController {
 
     @ExceptionHandler(MethodArgumentNotValidException.class) // 400
     public String handleException(
-            MethodArgumentNotValidException ex,
-            Model model
+        MethodArgumentNotValidException ex,
+        Model model
     ) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(error ->
-                errors.put(error.getField(), error.getDefaultMessage())
+            errors.put(error.getField(), error.getDefaultMessage())
         );
 
         log.warn("Validation failed: {} errors -> {}", errors.size(), errors);
         model.addAttribute(
-                "error", messageSource.getMessage(
-                        ErrorCodes.VALIDATION_FAILED,
-                        null,
-                        LocaleContextHolder.getLocale()
-                )
+            "error", messageSource.getMessage(
+                ErrorCodes.VALIDATION_FAILED,
+                null,
+                LocaleContextHolder.getLocale()
+            )
         );
         model.addAttribute("errors", errors);
         return "layout/error";

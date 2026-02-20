@@ -1,8 +1,8 @@
 package com.damian.xBank.config.security;
 
 import com.damian.xBank.modules.auth.infrastructure.service.CustomUserDetailsService;
-import com.damian.xBank.shared.exception.JwtTokenExpiredException;
-import com.damian.xBank.shared.exception.JwtTokenInvalidException;
+import com.damian.xBank.shared.domain.exception.JwtTokenExpiredException;
+import com.damian.xBank.shared.domain.exception.JwtTokenInvalidException;
 import com.damian.xBank.shared.utils.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -35,9 +35,9 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     private final AuthenticationEntryPoint authenticationEntryPoint;
 
     public AuthenticationFilter(
-            JwtUtil jwtUtil,
-            CustomUserDetailsService customUserDetailsService,
-            AuthenticationEntryPoint authenticationEntryPoint
+        JwtUtil jwtUtil,
+        CustomUserDetailsService customUserDetailsService,
+        AuthenticationEntryPoint authenticationEntryPoint
     ) {
         this.jwtUtil = jwtUtil;
         this.customUserDetailsService = customUserDetailsService;
@@ -54,14 +54,14 @@ public class AuthenticationFilter extends OncePerRequestFilter {
      */
     @Override
     protected void doFilterInternal(
-            @NonNull
-            HttpServletRequest request,
-            @NonNull
-            HttpServletResponse response,
-            @NonNull
-            FilterChain filterChain
+        @NonNull
+        HttpServletRequest request,
+        @NonNull
+        HttpServletResponse response,
+        @NonNull
+        FilterChain filterChain
     )
-            throws ServletException, IOException {
+        throws ServletException, IOException {
         // Get the Authorization header.
         final String jwtToken = this.extractToken(request);
 
@@ -78,7 +78,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             log.debug("Jwt token is invalid.");
             // token is invalid. 401
             authenticationEntryPoint.commence(
-                    request, response, new JwtTokenInvalidException()
+                request, response, new JwtTokenInvalidException()
             );
             return;
         }
@@ -87,7 +87,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             log.debug("Jwt token is expired.");
             // If the token has expired, then we need to send back a 401.
             authenticationEntryPoint.commence(
-                    request, response, new JwtTokenExpiredException()
+                request, response, new JwtTokenExpiredException()
             );
             return;
         }
@@ -111,14 +111,14 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
             // Create an Authentication object.
             var authToken = new UsernamePasswordAuthenticationToken(
-                    userDetails,
-                    null,
-                    userDetails.getAuthorities()
+                userDetails,
+                null,
+                userDetails.getAuthorities()
             );
 
             // Add some extra details to the Authentication object.
             authToken.setDetails(
-                    new WebAuthenticationDetailsSource().buildDetails(request)
+                new WebAuthenticationDetailsSource().buildDetails(request)
             );
 
             // Finally, set the Authentication object in the SecurityContext.

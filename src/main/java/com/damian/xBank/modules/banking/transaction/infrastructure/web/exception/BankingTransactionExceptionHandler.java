@@ -1,7 +1,11 @@
 package com.damian.xBank.modules.banking.transaction.infrastructure.web.exception;
 
-import com.damian.xBank.modules.banking.transaction.domain.exception.*;
-import com.damian.xBank.shared.dto.ApiResponse;
+import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionException;
+import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotFoundException;
+import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotOwnerException;
+import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotPendingStatusException;
+import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionStatusTransitionException;
+import com.damian.xBank.shared.infrastructure.web.dto.response.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
@@ -26,7 +30,7 @@ public class BankingTransactionExceptionHandler {
         log.warn("Transaction not authorized");
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                             .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
     }
 
     @ExceptionHandler(BankingTransactionStatusTransitionException.class)
@@ -34,19 +38,19 @@ public class BankingTransactionExceptionHandler {
         log.warn("Transaction status transition failed from {} to {}", ex.getArgs()[0], ex.getArgs()[1]);
 
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                             .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
     }
 
     @ExceptionHandler(BankingTransactionNotOwnerException.class)
     public ResponseEntity<ApiResponse<String>> handleOwnershipException(BankingTransactionNotOwnerException ex) {
         log.warn(
-                "Unauthorized access to Transaction {} from customer: {}",
-                ex.getResourceId(),
-                ex.getArgs()[0]
+            "Unauthorized access to Transaction {} from customer: {}",
+            ex.getResourceId(),
+            ex.getArgs()[0]
         );
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                             .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
     }
 
     @ExceptionHandler(BankingTransactionNotFoundException.class)
@@ -54,7 +58,7 @@ public class BankingTransactionExceptionHandler {
         log.warn("Transaction: {} not found", ex.getResourceId());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body(ApiResponse.error(ex, HttpStatus.NOT_FOUND, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.NOT_FOUND, messageSource));
     }
 
     @ExceptionHandler(BankingTransactionException.class)
@@ -62,6 +66,6 @@ public class BankingTransactionExceptionHandler {
         log.warn("Transaction: {} internal error.", ex.getResourceId());
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                             .body(ApiResponse.error(ex, HttpStatus.INTERNAL_SERVER_ERROR, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.INTERNAL_SERVER_ERROR, messageSource));
     }
 }

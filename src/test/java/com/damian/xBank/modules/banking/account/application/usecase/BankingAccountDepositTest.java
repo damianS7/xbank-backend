@@ -15,7 +15,7 @@ import com.damian.xBank.modules.notification.infrastructure.service.Notification
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.domain.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -54,18 +54,18 @@ public class BankingAccountDepositTest extends AbstractServiceTest {
     @BeforeEach
     void setUp() {
         customer = UserTestBuilder.aCustomer()
-                                  .withId(1L)
-                                  .withEmail("customer@demo.com")
-                                  .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                  .build();
+            .withId(1L)
+            .withEmail("customer@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .build();
 
         bankingAccount = BankingAccount
-                .create(customer)
-                .setId(1L)
-                .setBalance(BigDecimal.valueOf(1000))
-                .setCurrency(BankingAccountCurrency.EUR)
-                .setType(BankingAccountType.SAVINGS)
-                .setAccountNumber("US9900001111112233334444");
+            .create(customer)
+            .setId(1L)
+            .setBalance(BigDecimal.valueOf(1000))
+            .setCurrency(BankingAccountCurrency.EUR)
+            .setType(BankingAccountType.SAVINGS)
+            .setAccountNumber("US9900001111112233334444");
 
         customer.addBankingAccount(bankingAccount);
     }
@@ -85,40 +85,40 @@ public class BankingAccountDepositTest extends AbstractServiceTest {
         transaction.setAmount(depositAmount);
 
         BankingAccountDepositRequest depositRequest = new BankingAccountDepositRequest(
-                bankingAccount.getAccountNumber(),
-                depositAmount
+            bankingAccount.getAccountNumber(),
+            depositAmount
         );
 
         when(bankingAccountRepository.findById(bankingAccount.getId())).thenReturn(Optional.of(
-                bankingAccount));
+            bankingAccount));
 
         when(bankingTransactionPersistenceService.record(
-                any(BankingTransaction.class)
+            any(BankingTransaction.class)
         )).thenAnswer(i -> i.getArgument(0));
 
         // then
         BankingTransaction result = bankingAccountDeposit.execute(
-                bankingAccount.getId(),
-                depositRequest
+            bankingAccount.getId(),
+            depositRequest
         );
 
         // then
         assertThat(result)
-                .isNotNull()
-                .extracting(
-                        BankingTransaction::getType,
-                        BankingTransaction::getStatus,
-                        BankingTransaction::getAmount,
-                        BankingTransaction::getBalanceBefore,
-                        BankingTransaction::getBalanceAfter
+            .isNotNull()
+            .extracting(
+                BankingTransaction::getType,
+                BankingTransaction::getStatus,
+                BankingTransaction::getAmount,
+                BankingTransaction::getBalanceBefore,
+                BankingTransaction::getBalanceAfter
 
-                ).containsExactly(
-                        BankingTransactionType.DEPOSIT,
-                        BankingTransactionStatus.COMPLETED,
-                        depositAmount,
-                        initialBalance,
-                        initialBalance.add(depositAmount)
-                );
+            ).containsExactly(
+                BankingTransactionType.DEPOSIT,
+                BankingTransactionStatus.COMPLETED,
+                depositAmount,
+                initialBalance,
+                initialBalance.add(depositAmount)
+            );
     }
 
     @Test
@@ -130,22 +130,22 @@ public class BankingAccountDepositTest extends AbstractServiceTest {
         BigDecimal depositAmount = BigDecimal.valueOf(3000);
 
         BankingAccountDepositRequest depositRequest = new BankingAccountDepositRequest(
-                bankingAccount.getAccountNumber(),
-                depositAmount
+            bankingAccount.getAccountNumber(),
+            depositAmount
         );
 
         // then
         BankingAccountDepositNotAdminException exception = assertThrows(
-                BankingAccountDepositNotAdminException.class,
-                () -> bankingAccountDeposit.execute(
-                        bankingAccount.getId(),
-                        depositRequest
-                )
+            BankingAccountDepositNotAdminException.class,
+            () -> bankingAccountDeposit.execute(
+                bankingAccount.getId(),
+                depositRequest
+            )
         );
 
         // then
         assertThat(exception)
-                .isNotNull()
-                .hasMessage(ErrorCodes.BANKING_ACCOUNT_DEPOSIT_NOT_ADMIN);
+            .isNotNull()
+            .hasMessage(ErrorCodes.BANKING_ACCOUNT_DEPOSIT_NOT_ADMIN);
     }
 }

@@ -1,7 +1,11 @@
 package com.damian.xBank.modules.user.user.infrastructure.web.exception;
 
-import com.damian.xBank.modules.user.user.domain.exception.*;
-import com.damian.xBank.shared.dto.ApiResponse;
+import com.damian.xBank.modules.user.user.domain.exception.UserEmailTakenException;
+import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordConfirmationException;
+import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException;
+import com.damian.xBank.modules.user.user.domain.exception.UserUpdateException;
+import com.damian.xBank.modules.user.user.domain.exception.UserVerificationNotPendingException;
+import com.damian.xBank.shared.infrastructure.web.dto.response.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
@@ -18,7 +22,7 @@ public class UserExceptionHandler {
     private final MessageSource messageSource;
 
     public UserExceptionHandler(
-            MessageSource messageSource
+        MessageSource messageSource
     ) {
         this.messageSource = messageSource;
     }
@@ -26,54 +30,54 @@ public class UserExceptionHandler {
     // UserAccount exceptions
     @ExceptionHandler(UserNotFoundException.class) // 404
     public ResponseEntity<ApiResponse<String>> handleUserAccountNotFound(
-            UserNotFoundException ex
+        UserNotFoundException ex
     ) {
         log.warn(
-                "user account: {} not found.",
-                ex.getResourceId()
+            "user account: {} not found.",
+            ex.getResourceId()
         );
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body(ApiResponse.error(ex, HttpStatus.NOT_FOUND, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.NOT_FOUND, messageSource));
     }
 
     @ExceptionHandler(UserEmailTakenException.class) // Handle conflict (409)
     public ResponseEntity<ApiResponse<String>> handleEmailAlreadyTaken(UserEmailTakenException ex) {
         log.warn("email: {} is already taken.", ex.getResourceId(), ex);
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                             .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
     }
 
     @ExceptionHandler(UserVerificationNotPendingException.class) // Handle conflict (409)
     public ResponseEntity<ApiResponse<String>> handleAccountVerificationNotPending(
-            UserVerificationNotPendingException ex
+        UserVerificationNotPendingException ex
     ) {
         log.warn("account: {} is not pending for verification.", ex.getResourceId());
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                             .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
     }
 
 
     @ExceptionHandler(UserInvalidPasswordConfirmationException.class) // 403
     public ResponseEntity<ApiResponse<String>> handlAccountInvalidPasswordConfirmation(
-            UserInvalidPasswordConfirmationException ex
+        UserInvalidPasswordConfirmationException ex
     ) {
         log.warn("user: {} failed to confirm password.", ex.getResourceId());
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                             .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
     }
 
     @ExceptionHandler(UserUpdateException.class) // 400
     public ResponseEntity<ApiResponse<String>> handleUserAccountUpdate(
-            UserUpdateException ex
+        UserUpdateException ex
     ) {
         log.warn(
-                "User id: {} failed to update field: {} with value: {}.",
-                ex.getResourceId(),
-                ex.getKey(),
-                ex.getValue()
+            "User id: {} failed to update field: {} with value: {}.",
+            ex.getResourceId(),
+            ex.getKey(),
+            ex.getValue()
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body(ApiResponse.error(ex, HttpStatus.BAD_REQUEST, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.BAD_REQUEST, messageSource));
     }
 }

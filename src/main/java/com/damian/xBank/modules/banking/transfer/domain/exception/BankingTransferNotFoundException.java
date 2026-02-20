@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.banking.transfer.domain.exception;
 
-import com.damian.xBank.shared.exception.ApplicationException;
-import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.domain.exception.ApplicationException;
+import com.damian.xBank.shared.domain.exception.ErrorCodes;
 
 public class BankingTransferNotFoundException extends ApplicationException {
     public BankingTransferNotFoundException(Object resourceId) {

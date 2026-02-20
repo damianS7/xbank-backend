@@ -12,7 +12,7 @@ import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCa
 import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.domain.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,25 +41,25 @@ public class BankingCardLockTest extends AbstractServiceTest {
     @BeforeEach
     void setUp() {
         customer = UserTestBuilder.aCustomer()
-                                  .withId(1L)
-                                  .withEmail("customer@demo.com")
-                                  .withPassword(RAW_PASSWORD)
-                                  .build();
+            .withId(1L)
+            .withEmail("customer@demo.com")
+            .withPassword(RAW_PASSWORD)
+            .build();
 
         bankingAccount = BankingAccount
-                .create(customer)
-                .setId(5L)
-                .setCurrency(BankingAccountCurrency.EUR)
-                .setType(BankingAccountType.SAVINGS)
-                .setAccountNumber("US9900001111112233334444");
+            .create(customer)
+            .setId(5L)
+            .setCurrency(BankingAccountCurrency.EUR)
+            .setType(BankingAccountType.SAVINGS)
+            .setAccountNumber("US9900001111112233334444");
 
 
         bankingCard = BankingCard
-                .create(bankingAccount)
-                .setId(11L)
-                .setCardNumber("1234123412341234")
-                .setCardCvv("123")
-                .setCardPin("1234");
+            .create(bankingAccount)
+            .setId(11L)
+            .setCardNumber("1234123412341234")
+            .setCardCvv("123")
+            .setCardPin("1234");
     }
 
     @Test
@@ -70,13 +70,13 @@ public class BankingCardLockTest extends AbstractServiceTest {
         setUpContext(customer);
 
         BankingCardLockRequest givenRequest = new BankingCardLockRequest(
-                RAW_PASSWORD
+            RAW_PASSWORD
         );
 
         // when
         when(bankingCardRepository.findById(anyLong())).thenReturn(Optional.of(bankingCard));
         when(bankingCardRepository.save(any(BankingCard.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
+            .thenAnswer(invocation -> invocation.getArgument(0));
 
         bankingCardLock.execute(bankingCard.getId(), givenRequest);
 
@@ -98,8 +98,8 @@ public class BankingCardLockTest extends AbstractServiceTest {
         when(bankingCardRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         BankingCardNotFoundException exception = Assert.assertThrows(
-                BankingCardNotFoundException.class,
-                () -> bankingCardLock.execute(1L, request)
+            BankingCardNotFoundException.class,
+            () -> bankingCardLock.execute(1L, request)
         );
 
         // then
@@ -111,10 +111,10 @@ public class BankingCardLockTest extends AbstractServiceTest {
     void lock_WhenNotOwner_ThrowsException() {
         // given
         User customerNotOwner = UserTestBuilder.aCustomer()
-                                               .withId(2L)
-                                               .withEmail("customerNotOwner@demo.com")
-                                               .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                               .build();
+            .withId(2L)
+            .withEmail("customerNotOwner@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .build();
 
         setUpContext(customerNotOwner);
 
@@ -124,8 +124,8 @@ public class BankingCardLockTest extends AbstractServiceTest {
         when(bankingCardRepository.findById(anyLong())).thenReturn(Optional.of(bankingCard));
 
         BankingCardNotOwnerException exception = Assert.assertThrows(
-                BankingCardNotOwnerException.class,
-                () -> bankingCardLock.execute(bankingCard.getId(), request)
+            BankingCardNotOwnerException.class,
+            () -> bankingCardLock.execute(bankingCard.getId(), request)
         );
 
         // then
@@ -144,8 +144,8 @@ public class BankingCardLockTest extends AbstractServiceTest {
         when(bankingCardRepository.findById(anyLong())).thenReturn(Optional.of(bankingCard));
 
         UserInvalidPasswordConfirmationException exception = Assert.assertThrows(
-                UserInvalidPasswordConfirmationException.class,
-                () -> bankingCardLock.execute(bankingCard.getId(), request)
+            UserInvalidPasswordConfirmationException.class,
+            () -> bankingCardLock.execute(bankingCard.getId(), request)
         );
 
         // then

@@ -1,4 +1,4 @@
-package com.damian.xBank.shared.exception;
+package com.damian.xBank.shared.domain.exception;
 
 public class ErrorCodes {
 
@@ -34,7 +34,6 @@ public class ErrorCodes {
     public static final String BANKING_ACCOUNT_NOT_FOUND = "banking.account.not_found";
     public static final String BANKING_ACCOUNT_SUSPENDED = "banking.account.suspended";
     public static final String BANKING_ACCOUNT_CLOSED = "banking.account.closed";
-    public static final String BANKING_ACCOUNT_DISABLED = "banking.account.disabled";
     public static final String BANKING_ACCOUNT_CARD_LIMIT = "banking.account.card_limit";
     public static final String BANKING_ACCOUNT_INSUFFICIENT_FUNDS = "banking.account.insufficient_funds";
     public static final String BANKING_ACCOUNT_DEPOSIT_NOT_ADMIN = "banking.account.deposit.not_admin";

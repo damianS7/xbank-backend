@@ -60,9 +60,8 @@ public class BankingTransferCreate {
             request.amount(),
             request.description()
         );
-
+        transfer.setToAccountIban(request.toAccountNumber());
         if (toAccount == null) {
-            transfer.setToAccountIban(request.toAccountNumber());
             transfer.setType(BankingTransferType.EXTERNAL);
         }
 

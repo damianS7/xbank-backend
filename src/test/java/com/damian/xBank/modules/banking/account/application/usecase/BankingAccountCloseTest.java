@@ -12,7 +12,7 @@ import com.damian.xBank.modules.banking.account.infrastructure.repository.Bankin
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.domain.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,18 +43,18 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
     @BeforeEach
     void setUp() {
         customer = UserTestBuilder.aCustomer()
-                                  .withId(1L)
-                                  .withEmail("customer@demo.com")
-                                  .withPassword(RAW_PASSWORD)
-                                  .build();
+            .withId(1L)
+            .withEmail("customer@demo.com")
+            .withPassword(RAW_PASSWORD)
+            .build();
 
         bankingAccount = BankingAccount
-                .create(customer)
-                .setId(1L)
-                .setBalance(BigDecimal.valueOf(1000))
-                .setCurrency(BankingAccountCurrency.EUR)
-                .setType(BankingAccountType.SAVINGS)
-                .setAccountNumber("US9900001111112233334444");
+            .create(customer)
+            .setId(1L)
+            .setBalance(BigDecimal.valueOf(1000))
+            .setCurrency(BankingAccountCurrency.EUR)
+            .setType(BankingAccountType.SAVINGS)
+            .setAccountNumber("US9900001111112233334444");
 
         customer.addBankingAccount(bankingAccount);
     }
@@ -66,19 +66,19 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
         setUpContext(customer);
 
         BankingAccountCloseRequest request = new BankingAccountCloseRequest(
-                RAW_PASSWORD
+            RAW_PASSWORD
         );
 
         // when
         when(bankingAccountRepository.findById(anyLong()))
-                .thenReturn(Optional.of(bankingAccount));
+            .thenReturn(Optional.of(bankingAccount));
 
         when(bankingAccountRepository.save(any(BankingAccount.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
+            .thenAnswer(invocation -> invocation.getArgument(0));
 
         bankingAccountClose.execute(
-                bankingAccount.getId(),
-                request
+            bankingAccount.getId(),
+            request
         );
 
         // then
@@ -94,7 +94,7 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
         setUpContext(customer);
 
         BankingAccountCloseRequest request = new BankingAccountCloseRequest(
-                RAW_PASSWORD
+            RAW_PASSWORD
         );
 
         bankingAccount.setStatus(BankingAccountStatus.ACTIVE);
@@ -104,8 +104,8 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
         when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.of(bankingAccount));
 
         BankingAccountSuspendedException exception = assertThrows(
-                BankingAccountSuspendedException.class,
-                () -> bankingAccountClose.execute(bankingAccount.getId(), request)
+            BankingAccountSuspendedException.class,
+            () -> bankingAccountClose.execute(bankingAccount.getId(), request)
         );
 
         // then
@@ -119,15 +119,15 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
         setUpContext(customer);
 
         BankingAccountCloseRequest request = new BankingAccountCloseRequest(
-                RAW_PASSWORD
+            RAW_PASSWORD
         );
 
         // when
         when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         BankingAccountNotFoundException exception = assertThrows(
-                BankingAccountNotFoundException.class,
-                () -> bankingAccountClose.execute(bankingAccount.getId(), request)
+            BankingAccountNotFoundException.class,
+            () -> bankingAccountClose.execute(bankingAccount.getId(), request)
         );
 
         // then
@@ -139,23 +139,23 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
     void closeAccount_WhenAccountNotOwnedByCustomer_ThrowsException() {
         // given
         User customer2 = UserTestBuilder.aCustomer()
-                                        .withId(2L)
-                                        .withEmail("customer2@demo.com")
-                                        .withPassword(RAW_PASSWORD)
-                                        .build();
+            .withId(2L)
+            .withEmail("customer2@demo.com")
+            .withPassword(RAW_PASSWORD)
+            .build();
 
         setUpContext(customer2);
 
         BankingAccountCloseRequest request = new BankingAccountCloseRequest(
-                RAW_PASSWORD
+            RAW_PASSWORD
         );
 
         // when
         when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.of(bankingAccount));
 
         BankingAccountNotOwnerException exception = assertThrows(
-                BankingAccountNotOwnerException.class,
-                () -> bankingAccountClose.execute(bankingAccount.getId(), request)
+            BankingAccountNotOwnerException.class,
+            () -> bankingAccountClose.execute(bankingAccount.getId(), request)
         );
 
         // then
@@ -167,16 +167,16 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
     void closeAccount_WhenAccountNotOwnedByCustomerButItIsAdmin_ThrowsException() {
         // given
         User customerAdmin = UserTestBuilder.aCustomer()
-                                            .withId(2L)
-                                            .withEmail("customerAdmin@demo.com")
-                                            .withRole(UserRole.ADMIN)
-                                            .withPassword(RAW_PASSWORD)
-                                            .build();
+            .withId(2L)
+            .withEmail("customerAdmin@demo.com")
+            .withRole(UserRole.ADMIN)
+            .withPassword(RAW_PASSWORD)
+            .build();
 
         setUpContext(customerAdmin);
 
         BankingAccountCloseRequest request = new BankingAccountCloseRequest(
-                RAW_PASSWORD
+            RAW_PASSWORD
         );
 
         // when
@@ -185,7 +185,7 @@ public class BankingAccountCloseTest extends AbstractServiceTest {
         when(bankingAccountRepository.save(any(BankingAccount.class))).thenReturn(bankingAccount);
 
         BankingAccount result = bankingAccountClose.execute(
-                bankingAccount.getId(), request
+            bankingAccount.getId(), request
         );
 
         // then

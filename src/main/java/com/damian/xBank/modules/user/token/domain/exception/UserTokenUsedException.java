@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.user.token.domain.exception;
 
-import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.domain.exception.ErrorCodes;
 
 public class UserTokenUsedException extends UserTokenException {
     public UserTokenUsedException(Long accountId, String token) {

@@ -3,7 +3,7 @@ package com.damian.xBank.modules.user.token.infrastructure.web.exception;
 import com.damian.xBank.modules.user.token.domain.exception.UserTokenExpiredException;
 import com.damian.xBank.modules.user.token.domain.exception.UserTokenNotFoundException;
 import com.damian.xBank.modules.user.token.domain.exception.UserTokenUsedException;
-import com.damian.xBank.shared.dto.ApiResponse;
+import com.damian.xBank.shared.infrastructure.web.dto.response.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
@@ -26,43 +26,43 @@ public class UserTokenExceptionHandler {
     // Token Exceptions
     @ExceptionHandler(UserTokenNotFoundException.class) // 404
     public ResponseEntity<ApiResponse<String>> handleTokenNotFound(
-            UserTokenNotFoundException ex
+        UserTokenNotFoundException ex
     ) {
         log.warn(
-                "user: {} token: {} not found.",
-                ex.getResourceId(),
-                ex.getArgs()[0]
+            "user: {} token: {} not found.",
+            ex.getResourceId(),
+            ex.getArgs()[0]
         );
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body(ApiResponse.error(ex, HttpStatus.NOT_FOUND, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.NOT_FOUND, messageSource));
     }
 
     @ExceptionHandler(UserTokenUsedException.class) // 403
     public ResponseEntity<ApiResponse<String>> handleVerificationTokenUsed(
-            UserTokenUsedException ex
+        UserTokenUsedException ex
     ) {
         log.warn(
-                "User: {} token: {} is already used.",
-                ex.getResourceId(),
-                ex.getArgs()[0]
+            "User: {} token: {} is already used.",
+            ex.getResourceId(),
+            ex.getArgs()[0]
         );
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                             .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
     }
 
     @ExceptionHandler(UserTokenExpiredException.class) // 410
     public ResponseEntity<ApiResponse<String>> handleVerificationTokenExpired(
-            UserTokenExpiredException ex
+        UserTokenExpiredException ex
     ) {
         log.warn(
-                "user: {} token: {} is expired.",
-                ex.getResourceId(),
-                ex.getArgs()[0]
+            "user: {} token: {} is expired.",
+            ex.getResourceId(),
+            ex.getArgs()[0]
         );
 
         return ResponseEntity.status(HttpStatus.GONE)
-                             .body(ApiResponse.error(ex, HttpStatus.GONE, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.GONE, messageSource));
     }
 }

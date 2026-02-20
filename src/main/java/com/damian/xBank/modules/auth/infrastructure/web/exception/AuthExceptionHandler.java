@@ -2,9 +2,9 @@ package com.damian.xBank.modules.auth.infrastructure.web.exception;
 
 import com.damian.xBank.modules.auth.domain.exception.UserNotVerifiedException;
 import com.damian.xBank.modules.auth.domain.exception.UserSuspendedException;
-import com.damian.xBank.shared.dto.ApiResponse;
-import com.damian.xBank.shared.exception.ApplicationException;
-import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.domain.exception.ApplicationException;
+import com.damian.xBank.shared.domain.exception.ErrorCodes;
+import com.damian.xBank.shared.infrastructure.web.dto.response.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
@@ -32,58 +32,58 @@ public class AuthExceptionHandler {
         log.warn("Failed login attempt. Bad credentials.", e);
 
         ApplicationException ex = new ApplicationException(
-                ErrorCodes.AUTH_LOGIN_BAD_CREDENTIALS,
-                null,
-                null
+            ErrorCodes.AUTH_LOGIN_BAD_CREDENTIALS,
+            null,
+            null
         );
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                             .body(ApiResponse.error(
-                                     ex,
-                                     HttpStatus.UNAUTHORIZED,
-                                     messageSource
-                             ));
+            .body(ApiResponse.error(
+                ex,
+                HttpStatus.UNAUTHORIZED,
+                messageSource
+            ));
     }
 
     @ExceptionHandler(
-            {
-                    LockedException.class,
-                    UserSuspendedException.class
-            }
+        {
+            LockedException.class,
+            UserSuspendedException.class
+        }
     )
     public ResponseEntity<?> handleLocked(RuntimeException e) {
         log.warn("Failed login attempt. Account is suspended.", e);
 
         ApplicationException ex = new ApplicationException(
-                ErrorCodes.USER_SUSPENDED,
-                null,
-                null
+            ErrorCodes.USER_SUSPENDED,
+            null,
+            null
         );
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                             .body(ApiResponse.error(
-                                     ex, HttpStatus.FORBIDDEN, messageSource
-                             ));
+            .body(ApiResponse.error(
+                ex, HttpStatus.FORBIDDEN, messageSource
+            ));
     }
 
     @ExceptionHandler(
-            {
-                    UserNotVerifiedException.class,
-                    DisabledException.class
-            }
+        {
+            UserNotVerifiedException.class,
+            DisabledException.class
+        }
     )
     public ResponseEntity<?> handleDisabled(RuntimeException e) {
         log.warn("Failed login attempt. Account not verified.", e);
 
         ApplicationException ex = new ApplicationException(
-                ErrorCodes.USER_NOT_VERIFIED,
-                null,
-                null
+            ErrorCodes.USER_NOT_VERIFIED,
+            null,
+            null
         );
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                             .body(ApiResponse.error(
-                                     ex, HttpStatus.FORBIDDEN, messageSource
-                             ));
+            .body(ApiResponse.error(
+                ex, HttpStatus.FORBIDDEN, messageSource
+            ));
     }
 }

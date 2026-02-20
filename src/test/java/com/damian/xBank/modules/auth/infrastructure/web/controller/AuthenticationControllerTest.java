@@ -6,8 +6,8 @@ import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
-import com.damian.xBank.shared.dto.ApiResponse;
-import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.domain.exception.ErrorCodes;
+import com.damian.xBank.shared.infrastructure.web.dto.response.ApiResponse;
 import com.damian.xBank.shared.utils.JsonHelper;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -32,12 +32,12 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
     @BeforeEach
     void setUp() {
         customer = UserTestBuilder
-                .aCustomer()
-                .withEmail("customer@demo.com")
-                .withRole(UserRole.CUSTOMER)
-                .withStatus(UserStatus.VERIFIED)
-                .withPassword(RAW_PASSWORD)
-                .build();
+            .aCustomer()
+            .withEmail("customer@demo.com")
+            .withRole(UserRole.CUSTOMER)
+            .withStatus(UserStatus.VERIFIED)
+            .withPassword(RAW_PASSWORD)
+            .build();
 
         userRepository.save(customer);
     }
@@ -47,29 +47,29 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
     void login_WithValidCredentials_Returns200OK() throws Exception {
         // given
         AuthenticationRequest request = new AuthenticationRequest(
-                customer.getEmail(),
-                RAW_PASSWORD
+            customer.getEmail(),
+            RAW_PASSWORD
         );
 
         // when
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders
-                                          .post("/api/v1/auth/login")
-                                          .contentType(MediaType.APPLICATION_JSON)
-                                          .content(JsonHelper.toJson(request)))
-                                  .andDo(print())
-                                  .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
-                                  .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                                  .andReturn();
+                .post("/api/v1/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonHelper.toJson(request)))
+            .andDo(print())
+            .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+            .andReturn();
 
         // json to AuthenticationResponse
         AuthenticationResponse response = JsonHelper.fromJson(
-                result.getResponse().getContentAsString(),
-                AuthenticationResponse.class
+            result.getResponse().getContentAsString(),
+            AuthenticationResponse.class
         );
 
         // then
         assertThat(response)
-                .isNotNull();
+            .isNotNull();
         assertThat(jwtUtil.extractEmail(response.token())).isEqualTo(customer.getEmail());
         assertTrue(jwtUtil.isTokenValid(response.token()));
     }
@@ -79,18 +79,18 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
     void login_WithInvalidCredentials_Returns401Unauthorized() throws Exception {
         // given
         AuthenticationRequest request = new AuthenticationRequest(
-                customer.getEmail(),
-                "badPassword"
+            customer.getEmail(),
+            "badPassword"
         );
 
         // when
         mockMvc.perform(MockMvcRequestBuilders
-                       .post("/api/v1/auth/login")
-                       .contentType(MediaType.APPLICATION_JSON)
-                       .content(JsonHelper.toJson(request)))
-               .andDo(print())
-               .andExpect(MockMvcResultMatchers.status().is(HttpStatus.UNAUTHORIZED.value()))
-               .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
+                .post("/api/v1/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonHelper.toJson(request)))
+            .andDo(print())
+            .andExpect(MockMvcResultMatchers.status().is(HttpStatus.UNAUTHORIZED.value()))
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -98,35 +98,35 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
     void login_WithNonExistingEmail_Returns401Unauthorized() throws Exception {
         // given
         AuthenticationRequest request = new AuthenticationRequest(
-                "nonemail@demo.com",
-                "123456"
+            "nonemail@demo.com",
+            "123456"
         );
 
         // when
         MvcResult result = mockMvc
-                .perform(MockMvcRequestBuilders
-                        .post("/api/v1/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(JsonHelper.toJson(request)))
-                .andDo(print())
-                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.UNAUTHORIZED.value()))
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andReturn();
+            .perform(MockMvcRequestBuilders
+                .post("/api/v1/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonHelper.toJson(request)))
+            .andDo(print())
+            .andExpect(MockMvcResultMatchers.status().is(HttpStatus.UNAUTHORIZED.value()))
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+            .andReturn();
 
         // json to ApiResponse
         ApiResponse<?> response = JsonHelper.fromJson(
-                result.getResponse().getContentAsString(),
-                new TypeReference<ApiResponse<?>>() {
-                }
+            result.getResponse().getContentAsString(),
+            new TypeReference<ApiResponse<?>>() {
+            }
         );
 
         // then
         assertThat(response)
-                .isNotNull()
-                .extracting(ApiResponse::getErrorCode)
-                .isEqualTo(
-                        ErrorCodes.AUTH_LOGIN_BAD_CREDENTIALS
-                );
+            .isNotNull()
+            .extracting(ApiResponse::getErrorCode)
+            .isEqualTo(
+                ErrorCodes.AUTH_LOGIN_BAD_CREDENTIALS
+            );
     }
 
     @Test
@@ -137,35 +137,35 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
         userRepository.save(customer);
 
         AuthenticationRequest request = new AuthenticationRequest(
-                customer.getEmail(),
-                RAW_PASSWORD
+            customer.getEmail(),
+            RAW_PASSWORD
         );
 
         // when
         MvcResult result = mockMvc
-                .perform(MockMvcRequestBuilders
-                        .post("/api/v1/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(JsonHelper.toJson(request)))
-                .andDo(print())
-                .andExpect(MockMvcResultMatchers.status().is(403))
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andReturn();
+            .perform(MockMvcRequestBuilders
+                .post("/api/v1/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonHelper.toJson(request)))
+            .andDo(print())
+            .andExpect(MockMvcResultMatchers.status().is(403))
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+            .andReturn();
 
         // json to ApiResponse
         ApiResponse<?> response = JsonHelper.fromJson(
-                result.getResponse().getContentAsString(),
-                new TypeReference<ApiResponse<?>>() {
-                }
+            result.getResponse().getContentAsString(),
+            new TypeReference<ApiResponse<?>>() {
+            }
         );
 
         // then
         assertThat(response)
-                .isNotNull()
-                .extracting(ApiResponse::getErrorCode)
-                .isEqualTo(
-                        ErrorCodes.USER_SUSPENDED
-                );
+            .isNotNull()
+            .extracting(ApiResponse::getErrorCode)
+            .isEqualTo(
+                ErrorCodes.USER_SUSPENDED
+            );
 
         // undo changes
         customer.setStatus(UserStatus.VERIFIED);
@@ -180,33 +180,33 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
         userRepository.save(customer);
 
         AuthenticationRequest request = new AuthenticationRequest(
-                customer.getEmail(),
-                RAW_PASSWORD
+            customer.getEmail(),
+            RAW_PASSWORD
         );
 
         // when
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders
-                                          .post("/api/v1/auth/login")
-                                          .contentType(MediaType.APPLICATION_JSON)
-                                          .content(JsonHelper.toJson(request)))
-                                  .andDo(print())
-                                  .andExpect(MockMvcResultMatchers.status().is(HttpStatus.FORBIDDEN.value()))
-                                  .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                                  .andReturn();
+                .post("/api/v1/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonHelper.toJson(request)))
+            .andDo(print())
+            .andExpect(MockMvcResultMatchers.status().is(HttpStatus.FORBIDDEN.value()))
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+            .andReturn();
 
         // json to ApiResponse
         ApiResponse<?> response = JsonHelper.fromJson(
-                result.getResponse().getContentAsString(),
-                new TypeReference<ApiResponse<?>>() {
-                }
+            result.getResponse().getContentAsString(),
+            new TypeReference<ApiResponse<?>>() {
+            }
         );
 
         assertThat(response)
-                .isNotNull()
-                .extracting(ApiResponse::getErrorCode)
-                .isEqualTo(
-                        ErrorCodes.USER_NOT_VERIFIED
-                );
+            .isNotNull()
+            .extracting(ApiResponse::getErrorCode)
+            .isEqualTo(
+                ErrorCodes.USER_NOT_VERIFIED
+            );
 
         // undo changes to customer
         customer.setStatus(UserStatus.VERIFIED);
@@ -218,39 +218,39 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
     void login_WithInvalidEmailFormat_Returns400BadRequest() throws Exception {
         // given
         AuthenticationRequest request = new AuthenticationRequest(
-                "thisIsNotAnEmail",
-                "123456"
+            "thisIsNotAnEmail",
+            "123456"
         );
 
         // when
         MvcResult result = mockMvc
-                .perform(MockMvcRequestBuilders
-                        .post("/api/v1/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(JsonHelper.toJson(request)))
-                .andDo(print())
-                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andReturn();
+            .perform(MockMvcRequestBuilders
+                .post("/api/v1/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonHelper.toJson(request)))
+            .andDo(print())
+            .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+            .andReturn();
 
         // json to ApiResponse
         ApiResponse<?> response = JsonHelper.fromJson(
-                result.getResponse().getContentAsString(),
-                new TypeReference<ApiResponse<?>>() {
-                }
+            result.getResponse().getContentAsString(),
+            new TypeReference<ApiResponse<?>>() {
+            }
         );
 
         // then
         assertThat(response)
-                .isNotNull()
-                .extracting(ApiResponse::getMessage)
-                .isEqualTo(
-                        ErrorCodes.VALIDATION_FAILED
-                );
+            .isNotNull()
+            .extracting(ApiResponse::getMessage)
+            .isEqualTo(
+                ErrorCodes.VALIDATION_FAILED
+            );
 
         assertThat(response.getErrors().get("email"))
-                .asString()
-                .contains("must be a well-formed email address");
+            .asString()
+            .contains("must be a well-formed email address");
     }
 
     @Test
@@ -258,42 +258,42 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
     void login_WithNullFields_Returns400BadRequest() throws Exception {
         // Given
         AuthenticationRequest request = new AuthenticationRequest(
-                null,
-                null
+            null,
+            null
         );
 
         // when
         MvcResult result = mockMvc
-                .perform(MockMvcRequestBuilders
-                        .post("/api/v1/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(JsonHelper.toJson(request)))
-                .andDo(print())
-                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andReturn();
+            .perform(MockMvcRequestBuilders
+                .post("/api/v1/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonHelper.toJson(request)))
+            .andDo(print())
+            .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+            .andReturn();
 
         // json to ApiResponse
         ApiResponse<?> response = JsonHelper.fromJson(
-                result.getResponse().getContentAsString(),
-                new TypeReference<ApiResponse<?>>() {
-                }
+            result.getResponse().getContentAsString(),
+            new TypeReference<ApiResponse<?>>() {
+            }
         );
 
         // then
         assertThat(response)
-                .isNotNull()
-                .extracting(ApiResponse::getMessage)
-                .isEqualTo(
-                        ErrorCodes.VALIDATION_FAILED
-                );
+            .isNotNull()
+            .extracting(ApiResponse::getMessage)
+            .isEqualTo(
+                ErrorCodes.VALIDATION_FAILED
+            );
 
         assertThat(response.getErrors().get("password"))
-                .asString()
-                .contains("must not be blank");
+            .asString()
+            .contains("must not be blank");
 
         assertThat(response.getErrors().get("email"))
-                .asString()
-                .contains("must not be blank");
+            .asString()
+            .contains("must not be blank");
     }
 }

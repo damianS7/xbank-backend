@@ -1,7 +1,18 @@
 package com.damian.xBank.modules.banking.card.infrastructure.web.exception;
 
-import com.damian.xBank.modules.banking.card.domain.exception.*;
-import com.damian.xBank.shared.dto.ApiResponse;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardDisabledException;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardException;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardInsufficientFundsException;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardInvalidCvvException;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardInvalidExpirationMonthException;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardInvalidExpirationYearException;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardInvalidPinException;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardLockedException;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotActiveException;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoundException;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotOwnerException;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardStatusTransitionException;
+import com.damian.xBank.shared.infrastructure.web.dto.response.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
@@ -26,7 +37,7 @@ public class BankingCardExceptionHandler {
         log.warn("Banking card: {} status transition failed.", ex.getResourceId());
 
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                             .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
     }
 
     @ExceptionHandler(BankingCardLockedException.class)
@@ -34,7 +45,7 @@ public class BankingCardExceptionHandler {
         log.warn("Banking card: {} is locked.", ex.getResourceId());
 
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                             .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
     }
 
     @ExceptionHandler(BankingCardDisabledException.class)
@@ -42,7 +53,7 @@ public class BankingCardExceptionHandler {
         log.warn("Banking card: {} is disabled.", ex.getResourceId());
 
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                             .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
     }
 
     @ExceptionHandler(BankingCardNotActiveException.class)
@@ -50,7 +61,7 @@ public class BankingCardExceptionHandler {
         log.warn("Banking card: {} is not active.", ex.getResourceId());
 
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                             .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
     }
 
     @ExceptionHandler(BankingCardInvalidExpirationMonthException.class)
@@ -58,7 +69,7 @@ public class BankingCardExceptionHandler {
         log.warn("Banking card: {} expiration month is invalid.", ex.getResourceId());
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                             .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
     }
 
     @ExceptionHandler(BankingCardInvalidExpirationYearException.class)
@@ -66,7 +77,7 @@ public class BankingCardExceptionHandler {
         log.warn("Banking card: {} expiration year is invalid.", ex.getResourceId());
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                             .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
     }
 
     @ExceptionHandler(BankingCardInvalidPinException.class)
@@ -74,7 +85,7 @@ public class BankingCardExceptionHandler {
         log.warn("Banking card: {} pin is invalid.", ex.getResourceId());
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                             .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
     }
 
     @ExceptionHandler(BankingCardInvalidCvvException.class)
@@ -82,7 +93,7 @@ public class BankingCardExceptionHandler {
         log.warn("Banking card: {} cvv is invalid.", ex.getResourceId());
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                             .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
     }
 
     @ExceptionHandler(BankingCardInsufficientFundsException.class)
@@ -90,19 +101,19 @@ public class BankingCardExceptionHandler {
         log.warn("Banking card: {} has insufficient funds.", ex.getResourceId());
 
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                             .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
     }
 
     @ExceptionHandler(BankingCardNotOwnerException.class)
     public ResponseEntity<ApiResponse<String>> handleOwnershipException(BankingCardNotOwnerException ex) {
         log.warn(
-                "Unauthorized access from user {} on banking card: {}",
-                ex.getArgs()[0],
-                ex.getResourceId()
+            "Unauthorized access from user {} on banking card: {}",
+            ex.getArgs()[0],
+            ex.getResourceId()
         );
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                             .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.FORBIDDEN, messageSource));
     }
 
     @ExceptionHandler(BankingCardNotFoundException.class)
@@ -110,7 +121,7 @@ public class BankingCardExceptionHandler {
         log.warn("Banking card: {} not found", ex.getResourceId());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body(ApiResponse.error(ex, HttpStatus.NOT_FOUND, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.NOT_FOUND, messageSource));
     }
 
 
@@ -119,6 +130,6 @@ public class BankingCardExceptionHandler {
         log.warn("Banking card: {} internal error.", ex.getResourceId());
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                             .body(ApiResponse.error(ex, HttpStatus.INTERNAL_SERVER_ERROR, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.INTERNAL_SERVER_ERROR, messageSource));
     }
 }

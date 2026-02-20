@@ -2,7 +2,7 @@ package com.damian.xBank.modules.payment.intent.infrastructure.web.exception;
 
 import com.damian.xBank.modules.payment.intent.domain.exception.PaymentIntentNotFoundException;
 import com.damian.xBank.modules.payment.intent.domain.exception.PaymentIntentNotPendingException;
-import com.damian.xBank.shared.dto.ApiResponse;
+import com.damian.xBank.shared.infrastructure.web.dto.response.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
@@ -26,13 +26,13 @@ public class PaymentIntentExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleException(PaymentIntentNotPendingException ex) {
         log.warn("Payment intent: {} not pending", ex.getResourceId());
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                             .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
     }
 
     @ExceptionHandler(PaymentIntentNotFoundException.class)
     public ResponseEntity<ApiResponse<String>> handleException(PaymentIntentNotFoundException ex) {
         log.warn("Payment intent: {} not found.", ex.getResourceId());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body(ApiResponse.error(ex, HttpStatus.NOT_FOUND, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.NOT_FOUND, messageSource));
     }
 }

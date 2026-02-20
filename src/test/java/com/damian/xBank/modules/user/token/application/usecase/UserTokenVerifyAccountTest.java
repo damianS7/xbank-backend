@@ -10,7 +10,7 @@ import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.domain.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import com.damian.xBank.shared.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,11 +48,11 @@ public class UserTokenVerifyAccountTest extends AbstractServiceTest {
     void setUp() {
 
         customer = UserTestBuilder.aCustomer()
-                                  .withId(1L)
-                                  .withPassword(RAW_PASSWORD)
-                                  .withEmail("customer@demo.com")
-                                  .withProfile(UserProfileFactory.testProfile())
-                                  .build();
+            .withId(1L)
+            .withPassword(RAW_PASSWORD)
+            .withEmail("customer@demo.com")
+            .withProfile(UserProfileFactory.testProfile())
+            .build();
     }
 
     @Test
@@ -91,13 +91,13 @@ public class UserTokenVerifyAccountTest extends AbstractServiceTest {
         when(userTokenService.validateToken(anyString())).thenReturn(token);
 
         UserVerificationNotPendingException exception = assertThrows(
-                UserVerificationNotPendingException.class,
-                () -> userTokenVerifyAccount.execute(token.getToken())
+            UserVerificationNotPendingException.class,
+            () -> userTokenVerifyAccount.execute(token.getToken())
         );
 
         assertThat(exception)
-                .isNotNull()
-                .hasMessage(ErrorCodes.USER_VERIFICATION_NOT_PENDING);
+            .isNotNull()
+            .hasMessage(ErrorCodes.USER_VERIFICATION_NOT_PENDING);
     }
 
     @Test
@@ -112,12 +112,12 @@ public class UserTokenVerifyAccountTest extends AbstractServiceTest {
         // when
         when(userTokenService.validateToken(anyString())).thenReturn(token);
         UserVerificationNotPendingException exception = assertThrows(
-                UserVerificationNotPendingException.class,
-                () -> userTokenVerifyAccount.execute(token.getToken())
+            UserVerificationNotPendingException.class,
+            () -> userTokenVerifyAccount.execute(token.getToken())
         );
 
         assertThat(exception)
-                .isNotNull()
-                .hasMessage(ErrorCodes.USER_VERIFICATION_NOT_PENDING);
+            .isNotNull()
+            .hasMessage(ErrorCodes.USER_VERIFICATION_NOT_PENDING);
     }
 }

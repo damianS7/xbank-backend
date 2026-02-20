@@ -159,6 +159,9 @@ public class BankingTransfer {
 
     public BankingTransfer setToAccount(BankingAccount toAccount) {
         this.toAccount = toAccount;
+        if (this.toAccount != null) {
+            this.toAccountIban = this.toAccount.getAccountNumber();
+        }
         return this;
     }
 
@@ -318,8 +321,9 @@ public class BankingTransfer {
         return toAccountIban;
     }
 
-    public void setToAccountIban(String toAccountIban) {
+    public BankingTransfer setToAccountIban(String toAccountIban) {
         this.toAccountIban = toAccountIban;
+        return this;
     }
 
     public String getProviderAuthorizationId() {
