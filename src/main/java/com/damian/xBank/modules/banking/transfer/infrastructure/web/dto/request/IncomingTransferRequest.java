@@ -5,7 +5,9 @@ import jakarta.validation.constraints.Positive;
 
 import java.math.BigDecimal;
 
-public record TransferNetworkAuthorizationRequest(
+public record IncomingTransferRequest(
+    @NotBlank
+    String authorizationId,
 
     @NotBlank
     String fromIban,
@@ -21,6 +23,5 @@ public record TransferNetworkAuthorizationRequest(
 
     @NotBlank
     String reference
-
 ) {
 }

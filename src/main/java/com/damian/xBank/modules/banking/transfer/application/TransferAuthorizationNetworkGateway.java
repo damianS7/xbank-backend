@@ -1,8 +1,8 @@
 package com.damian.xBank.modules.banking.transfer.application;
 
-import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.request.TransferNetworkAuthorizationRequest;
-import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.response.TransferNetworkAuthorizationResponse;
+import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.request.TransferAuthorizationNetworkRequest;
+import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.response.TransferAuthorizationNetworkResponse;
 
 public interface TransferAuthorizationNetworkGateway {
-    TransferNetworkAuthorizationResponse authorizeTransfer(TransferNetworkAuthorizationRequest request);
+    TransferAuthorizationNetworkResponse authorizeTransfer(TransferAuthorizationNetworkRequest request);
 }

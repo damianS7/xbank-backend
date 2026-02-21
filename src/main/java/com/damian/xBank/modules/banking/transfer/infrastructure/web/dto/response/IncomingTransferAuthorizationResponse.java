@@ -2,7 +2,7 @@ package com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.respons
 
 import com.damian.xBank.modules.banking.transfer.domain.model.TransferAuthorizationStatus;
 
-public record AuthorizeIncomingTransferResponse(
+public record IncomingTransferAuthorizationResponse(
     TransferAuthorizationStatus status,
     String authorizationId,
     String rejectionReason

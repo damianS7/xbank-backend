@@ -7,7 +7,7 @@ import com.damian.xBank.modules.banking.account.infrastructure.repository.Bankin
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.banking.transfer.application.usecase.ProcessIncomingTransfer;
-import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.request.IncomingTransferAuthorizedRequest;
+import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.request.IncomingTransferRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.utils.UserTestBuilder;
@@ -59,7 +59,7 @@ public class ProcessIncomingTransferTest extends AbstractServiceTest {
     @Test
     void processIncomingTransfer_WhenValidRequest_ProcessTransferAndAddBalance() {
         // given
-        IncomingTransferAuthorizedRequest request = new IncomingTransferAuthorizedRequest(
+        IncomingTransferRequest request = new IncomingTransferRequest(
             "123456789",
             bankingAccount.getAccountNumber(),
             bankingAccount.getAccountNumber(),

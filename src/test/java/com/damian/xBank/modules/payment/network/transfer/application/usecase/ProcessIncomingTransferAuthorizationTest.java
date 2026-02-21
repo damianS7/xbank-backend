@@ -6,8 +6,8 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.transfer.application.usecase.ProcessIncomingTransferAuthorization;
 import com.damian.xBank.modules.banking.transfer.domain.model.TransferAuthorizationStatus;
-import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.request.AuthorizeIncomingTransferRequest;
-import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.response.AuthorizeIncomingTransferResponse;
+import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.request.IncomingTransferAuthorizationRequest;
+import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.response.IncomingTransferAuthorizationResponse;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.domain.exception.ErrorCodes;
@@ -54,7 +54,7 @@ public class ProcessIncomingTransferAuthorizationTest extends AbstractServiceTes
     @Test
     void authorizeIncomingTransfer_WhenValidRequest_ReturnsAuthorizedResponse() {
         // given
-        AuthorizeIncomingTransferRequest request = new AuthorizeIncomingTransferRequest(
+        IncomingTransferAuthorizationRequest request = new IncomingTransferAuthorizationRequest(
             bankingAccount.getAccountNumber(),
             BigDecimal.valueOf(100),
             "EUR"
@@ -65,12 +65,12 @@ public class ProcessIncomingTransferAuthorizationTest extends AbstractServiceTes
             .thenReturn(Optional.of(bankingAccount));
 
         // then
-        AuthorizeIncomingTransferResponse response = processIncomingTransferAuthorization.execute(request);
+        IncomingTransferAuthorizationResponse response = processIncomingTransferAuthorization.execute(request);
 
         assertThat(response)
             .isNotNull()
             .extracting(
-                AuthorizeIncomingTransferResponse::status
+                IncomingTransferAuthorizationResponse::status
             ).isEqualTo(
                 TransferAuthorizationStatus.AUTHORIZED
             );
@@ -79,7 +79,7 @@ public class ProcessIncomingTransferAuthorizationTest extends AbstractServiceTes
     @Test
     void authorizeIncomingTransfer_WhenAccountNotFound_ReturnsRejectedResponse() {
         // given
-        AuthorizeIncomingTransferRequest request = new AuthorizeIncomingTransferRequest(
+        IncomingTransferAuthorizationRequest request = new IncomingTransferAuthorizationRequest(
             bankingAccount.getAccountNumber(),
             BigDecimal.valueOf(100),
             "EUR"
@@ -90,13 +90,13 @@ public class ProcessIncomingTransferAuthorizationTest extends AbstractServiceTes
             .thenReturn(Optional.empty());
 
         // then
-        AuthorizeIncomingTransferResponse response = processIncomingTransferAuthorization.execute(request);
+        IncomingTransferAuthorizationResponse response = processIncomingTransferAuthorization.execute(request);
 
         assertThat(response)
             .isNotNull()
             .extracting(
-                AuthorizeIncomingTransferResponse::status,
-                AuthorizeIncomingTransferResponse::rejectionReason
+                IncomingTransferAuthorizationResponse::status,
+                IncomingTransferAuthorizationResponse::rejectionReason
             ).containsExactly(
                 TransferAuthorizationStatus.REJECTED,
                 ErrorCodes.BANKING_ACCOUNT_NOT_FOUND
@@ -106,7 +106,7 @@ public class ProcessIncomingTransferAuthorizationTest extends AbstractServiceTes
     @Test
     void authorizeIncomingTransfer_WhenAccountSuspended_ReturnsRejectedResponse() {
         // given
-        AuthorizeIncomingTransferRequest request = new AuthorizeIncomingTransferRequest(
+        IncomingTransferAuthorizationRequest request = new IncomingTransferAuthorizationRequest(
             bankingAccount.getAccountNumber(),
             BigDecimal.valueOf(100),
             "EUR"
@@ -119,13 +119,13 @@ public class ProcessIncomingTransferAuthorizationTest extends AbstractServiceTes
             .thenReturn(Optional.of(bankingAccount));
 
         // then
-        AuthorizeIncomingTransferResponse response = processIncomingTransferAuthorization.execute(request);
+        IncomingTransferAuthorizationResponse response = processIncomingTransferAuthorization.execute(request);
 
         assertThat(response)
             .isNotNull()
             .extracting(
-                AuthorizeIncomingTransferResponse::status,
-                AuthorizeIncomingTransferResponse::rejectionReason
+                IncomingTransferAuthorizationResponse::status,
+                IncomingTransferAuthorizationResponse::rejectionReason
             ).containsExactly(
                 TransferAuthorizationStatus.REJECTED,
                 ErrorCodes.BANKING_ACCOUNT_SUSPENDED
@@ -135,7 +135,7 @@ public class ProcessIncomingTransferAuthorizationTest extends AbstractServiceTes
     @Test
     void authorizeIncomingTransfer_WhenAccountClosed_ReturnsRejectedResponse() {
         // given
-        AuthorizeIncomingTransferRequest request = new AuthorizeIncomingTransferRequest(
+        IncomingTransferAuthorizationRequest request = new IncomingTransferAuthorizationRequest(
             bankingAccount.getAccountNumber(),
             BigDecimal.valueOf(100),
             "EUR"
@@ -148,13 +148,13 @@ public class ProcessIncomingTransferAuthorizationTest extends AbstractServiceTes
             .thenReturn(Optional.of(bankingAccount));
 
         // then
-        AuthorizeIncomingTransferResponse response = processIncomingTransferAuthorization.execute(request);
+        IncomingTransferAuthorizationResponse response = processIncomingTransferAuthorization.execute(request);
 
         assertThat(response)
             .isNotNull()
             .extracting(
-                AuthorizeIncomingTransferResponse::status,
-                AuthorizeIncomingTransferResponse::rejectionReason
+                IncomingTransferAuthorizationResponse::status,
+                IncomingTransferAuthorizationResponse::rejectionReason
             ).containsExactly(
                 TransferAuthorizationStatus.REJECTED,
                 ErrorCodes.BANKING_ACCOUNT_CLOSED
@@ -166,7 +166,7 @@ public class ProcessIncomingTransferAuthorizationTest extends AbstractServiceTes
         // given
         bankingAccount.setCurrency(BankingAccountCurrency.EUR);
 
-        AuthorizeIncomingTransferRequest request = new AuthorizeIncomingTransferRequest(
+        IncomingTransferAuthorizationRequest request = new IncomingTransferAuthorizationRequest(
             bankingAccount.getAccountNumber(),
             BigDecimal.valueOf(100),
             "USD"
@@ -177,13 +177,13 @@ public class ProcessIncomingTransferAuthorizationTest extends AbstractServiceTes
             .thenReturn(Optional.of(bankingAccount));
 
         // then
-        AuthorizeIncomingTransferResponse response = processIncomingTransferAuthorization.execute(request);
+        IncomingTransferAuthorizationResponse response = processIncomingTransferAuthorization.execute(request);
 
         assertThat(response)
             .isNotNull()
             .extracting(
-                AuthorizeIncomingTransferResponse::status,
-                AuthorizeIncomingTransferResponse::rejectionReason
+                IncomingTransferAuthorizationResponse::status,
+                IncomingTransferAuthorizationResponse::rejectionReason
             ).containsExactly(
                 TransferAuthorizationStatus.REJECTED,
                 ErrorCodes.BANKING_TRANSFER_DIFFERENT_CURRENCY

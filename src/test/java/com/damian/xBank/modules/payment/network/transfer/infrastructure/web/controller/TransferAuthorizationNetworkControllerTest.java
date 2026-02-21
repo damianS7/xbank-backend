@@ -5,8 +5,8 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurre
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.transfer.domain.model.TransferAuthorizationStatus;
-import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.request.AuthorizeIncomingTransferRequest;
-import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.response.AuthorizeIncomingTransferResponse;
+import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.request.IncomingTransferAuthorizationRequest;
+import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.response.IncomingTransferAuthorizationResponse;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
@@ -55,7 +55,7 @@ public class TransferAuthorizationNetworkControllerTest extends AbstractControll
     @DisplayName("")
     void authorizeIncomingTransfer_WhenValidRequest_Returns200OK() throws Exception {
         // given
-        AuthorizeIncomingTransferRequest request = new AuthorizeIncomingTransferRequest(
+        IncomingTransferAuthorizationRequest request = new IncomingTransferAuthorizationRequest(
             customerBankingAccount.getAccountNumber(),
             BigDecimal.valueOf(100),
             "EUR"
@@ -70,16 +70,16 @@ public class TransferAuthorizationNetworkControllerTest extends AbstractControll
             .andExpect(status().is(200))
             .andReturn();
 
-        AuthorizeIncomingTransferResponse response = objectMapper.readValue(
+        IncomingTransferAuthorizationResponse response = objectMapper.readValue(
             result.getResponse().getContentAsString(),
-            AuthorizeIncomingTransferResponse.class
+            IncomingTransferAuthorizationResponse.class
         );
 
         // then
         assertThat(response)
             .isNotNull()
             .extracting(
-                AuthorizeIncomingTransferResponse::status
+                IncomingTransferAuthorizationResponse::status
             ).isEqualTo(
                 TransferAuthorizationStatus.AUTHORIZED
             );

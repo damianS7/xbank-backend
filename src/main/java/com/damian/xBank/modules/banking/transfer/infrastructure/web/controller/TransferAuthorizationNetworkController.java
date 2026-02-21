@@ -3,10 +3,10 @@ package com.damian.xBank.modules.banking.transfer.infrastructure.web.controller;
 import com.damian.xBank.modules.banking.transfer.application.usecase.HandleOutgoingTransferAuthorizationFailure;
 import com.damian.xBank.modules.banking.transfer.application.usecase.ProcessIncomingTransfer;
 import com.damian.xBank.modules.banking.transfer.application.usecase.ProcessIncomingTransferAuthorization;
-import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.request.AuthorizeIncomingTransferRequest;
-import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.request.IncomingTransferAuthorizedRequest;
+import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.request.IncomingTransferAuthorizationRequest;
+import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.request.IncomingTransferRequest;
 import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.request.OutgoingTransferFailureRequest;
-import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.response.AuthorizeIncomingTransferResponse;
+import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.response.IncomingTransferAuthorizationResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,21 +34,21 @@ public class TransferAuthorizationNetworkController {
         this.handleOutgoingTransferAuthorizationFailure = handleOutgoingTransferAuthorizationFailure;
     }
 
-    @PostMapping("/webhooks/transfers/incoming/authorize")
+    @PostMapping("/webhooks/transfers/authorize")
     public ResponseEntity<?> authorizeIncomingTransfer(
         @RequestBody @Valid
-        AuthorizeIncomingTransferRequest request
+        IncomingTransferAuthorizationRequest request
     ) {
-        AuthorizeIncomingTransferResponse response = processIncomingTransferAuthorization.execute(request);
+        IncomingTransferAuthorizationResponse response = processIncomingTransferAuthorization.execute(request);
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(response);
     }
 
-    @PostMapping("/webhooks/transfers/incoming/authorized")
+    @PostMapping("/webhooks/transfers/incoming")
     public ResponseEntity<?> onIncomingTransfer(
         @RequestBody @Valid
-        IncomingTransferAuthorizedRequest request
+        IncomingTransferRequest request
     ) {
         processIncomingTransfer.execute(request);
         return ResponseEntity

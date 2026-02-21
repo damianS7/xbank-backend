@@ -6,7 +6,7 @@ import com.damian.xBank.modules.banking.account.infrastructure.repository.Bankin
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
-import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.request.IncomingTransferAuthorizedRequest;
+import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.request.IncomingTransferRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,9 +24,7 @@ public class ProcessIncomingTransfer {
     }
 
     @Transactional
-    public void execute(
-        IncomingTransferAuthorizedRequest request
-    ) {
+    public void execute(IncomingTransferRequest request) {
         BankingAccount customerAccount = bankingAccountRepository
             .findByAccountNumber(request.toIban())
             .orElseThrow(

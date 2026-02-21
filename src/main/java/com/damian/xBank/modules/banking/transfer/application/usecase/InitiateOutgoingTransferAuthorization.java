@@ -6,8 +6,8 @@ import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
 import com.damian.xBank.modules.banking.transfer.infrastructure.web.controller.TransferAuthorizationNetworkHttpGateway;
 import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.request.InitiateOutgoingTransferRequest;
-import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.request.TransferNetworkAuthorizationRequest;
-import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.response.TransferNetworkAuthorizationResponse;
+import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.request.TransferAuthorizationNetworkRequest;
+import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.response.TransferAuthorizationNetworkResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,8 +36,8 @@ public class InitiateOutgoingTransferAuthorization {
             .findById(request.transferId())
             .orElseThrow();
 
-        TransferNetworkAuthorizationResponse response = transferAuthorizationNetworkHttpGateway.authorizeTransfer(
-            new TransferNetworkAuthorizationRequest(
+        TransferAuthorizationNetworkResponse response = transferAuthorizationNetworkHttpGateway.authorizeTransfer(
+            new TransferAuthorizationNetworkRequest(
                 transfer.getFromAccount().getAccountNumber(),
                 transfer.getToAccount().getAccountNumber(),
                 transfer.getAmount(),

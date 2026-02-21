@@ -1,16 +1,16 @@
 package com.damian.xBank.modules.banking.transfer.infrastructure.web.controller;
 
 import com.damian.xBank.modules.banking.transfer.application.TransferAuthorizationNetworkGateway;
-import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.request.TransferNetworkAuthorizationRequest;
-import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.response.TransferNetworkAuthorizationResponse;
+import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.request.TransferAuthorizationNetworkRequest;
+import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.response.TransferAuthorizationNetworkResponse;
 import com.damian.xBank.shared.infrastructure.web.dto.response.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
-@Service
+@Component
 public class TransferAuthorizationNetworkHttpGateway implements TransferAuthorizationNetworkGateway {
     private static final Logger log = LoggerFactory.getLogger(TransferAuthorizationNetworkHttpGateway.class);
     private final WebClient webClient;
@@ -29,8 +29,8 @@ public class TransferAuthorizationNetworkHttpGateway implements TransferAuthoriz
     }
 
     @Override
-    public TransferNetworkAuthorizationResponse authorizeTransfer(
-        TransferNetworkAuthorizationRequest request
+    public TransferAuthorizationNetworkResponse authorizeTransfer(
+        TransferAuthorizationNetworkRequest request
     ) {
         return webClient
             .post()
@@ -40,7 +40,7 @@ public class TransferAuthorizationNetworkHttpGateway implements TransferAuthoriz
                 // response if error
                 if (response.statusCode().isError()) {
                     return response.bodyToMono(ApiResponse.class)
-                        .map(body -> new TransferNetworkAuthorizationResponse(
+                        .map(body -> new TransferAuthorizationNetworkResponse(
                             null,
                             "FAILED",
                             body.getMessage()
@@ -48,7 +48,7 @@ public class TransferAuthorizationNetworkHttpGateway implements TransferAuthoriz
                 }
 
                 // response if success
-                return response.bodyToMono(TransferNetworkAuthorizationResponse.class);
+                return response.bodyToMono(TransferAuthorizationNetworkResponse.class);
             })
             .block();
     }
