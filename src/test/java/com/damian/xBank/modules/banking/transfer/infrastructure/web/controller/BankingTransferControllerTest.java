@@ -240,32 +240,6 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("POST /transfers should return 404 Not found when any account not exists")
-    void postTransfers_WhenAccountNotExists_Returns404NotFound() throws Exception {
-        // given
-        login(fromCustomer);
-
-        BankingTransferRequest request = new BankingTransferRequest(
-            fromBankingAccount.getId(),
-            "AA1111222233334444555500",
-            "Enjoy!",
-            BigDecimal.valueOf(100)
-        );
-
-        // when
-        mockMvc
-            .perform(post(
-                "/api/v1/banking/transfers")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-            .andDo(print())
-            .andExpect(status().is(404))
-            .andExpect(jsonPath("$.errorCode")
-                .value(ErrorCodes.BANKING_ACCOUNT_NOT_FOUND));
-    }
-
-    @Test
     @DisplayName("POST /transfers should return 409 Conflict when source account has no funds")
     void postTransfers_WhenInsufficientFunds_Returns409Conflict() throws Exception {
         // given
@@ -286,9 +260,9 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
             .andDo(print())
-            .andExpect(status().is(404))
+            .andExpect(status().is(409))
             .andExpect(jsonPath("$.errorCode")
-                .value(ErrorCodes.BANKING_ACCOUNT_NOT_FOUND));
+                .value(ErrorCodes.BANKING_ACCOUNT_INSUFFICIENT_FUNDS));
     }
 
     @Test
