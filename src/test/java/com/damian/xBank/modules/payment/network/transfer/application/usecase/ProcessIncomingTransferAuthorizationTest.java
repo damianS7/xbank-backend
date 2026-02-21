@@ -4,9 +4,10 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
-import com.damian.xBank.modules.payment.network.transfer.application.dto.request.AuthorizeIncomingTransferRequest;
-import com.damian.xBank.modules.payment.network.transfer.application.dto.response.AuthorizeIncomingTransferResponse;
-import com.damian.xBank.modules.payment.network.transfer.domain.IncomingTransferAuthorizationStatus;
+import com.damian.xBank.modules.banking.transfer.application.usecase.ProcessIncomingTransferAuthorization;
+import com.damian.xBank.modules.banking.transfer.domain.model.TransferAuthorizationStatus;
+import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.request.AuthorizeIncomingTransferRequest;
+import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.response.AuthorizeIncomingTransferResponse;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.domain.exception.ErrorCodes;
@@ -23,13 +24,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-public class AuthorizeIncomingTransferTest extends AbstractServiceTest {
+public class ProcessIncomingTransferAuthorizationTest extends AbstractServiceTest {
 
     @Mock
     private BankingAccountRepository bankingAccountRepository;
 
     @InjectMocks
-    private AuthorizeIncomingTransfer authorizeIncomingTransfer;
+    private ProcessIncomingTransferAuthorization processIncomingTransferAuthorization;
 
     private User customer;
     private BankingAccount bankingAccount;
@@ -64,14 +65,14 @@ public class AuthorizeIncomingTransferTest extends AbstractServiceTest {
             .thenReturn(Optional.of(bankingAccount));
 
         // then
-        AuthorizeIncomingTransferResponse response = authorizeIncomingTransfer.execute(request);
+        AuthorizeIncomingTransferResponse response = processIncomingTransferAuthorization.execute(request);
 
         assertThat(response)
             .isNotNull()
             .extracting(
                 AuthorizeIncomingTransferResponse::status
             ).isEqualTo(
-                IncomingTransferAuthorizationStatus.AUTHORIZED
+                TransferAuthorizationStatus.AUTHORIZED
             );
     }
 
@@ -89,7 +90,7 @@ public class AuthorizeIncomingTransferTest extends AbstractServiceTest {
             .thenReturn(Optional.empty());
 
         // then
-        AuthorizeIncomingTransferResponse response = authorizeIncomingTransfer.execute(request);
+        AuthorizeIncomingTransferResponse response = processIncomingTransferAuthorization.execute(request);
 
         assertThat(response)
             .isNotNull()
@@ -97,7 +98,7 @@ public class AuthorizeIncomingTransferTest extends AbstractServiceTest {
                 AuthorizeIncomingTransferResponse::status,
                 AuthorizeIncomingTransferResponse::rejectionReason
             ).containsExactly(
-                IncomingTransferAuthorizationStatus.REJECTED,
+                TransferAuthorizationStatus.REJECTED,
                 ErrorCodes.BANKING_ACCOUNT_NOT_FOUND
             );
     }
@@ -118,7 +119,7 @@ public class AuthorizeIncomingTransferTest extends AbstractServiceTest {
             .thenReturn(Optional.of(bankingAccount));
 
         // then
-        AuthorizeIncomingTransferResponse response = authorizeIncomingTransfer.execute(request);
+        AuthorizeIncomingTransferResponse response = processIncomingTransferAuthorization.execute(request);
 
         assertThat(response)
             .isNotNull()
@@ -126,7 +127,7 @@ public class AuthorizeIncomingTransferTest extends AbstractServiceTest {
                 AuthorizeIncomingTransferResponse::status,
                 AuthorizeIncomingTransferResponse::rejectionReason
             ).containsExactly(
-                IncomingTransferAuthorizationStatus.REJECTED,
+                TransferAuthorizationStatus.REJECTED,
                 ErrorCodes.BANKING_ACCOUNT_SUSPENDED
             );
     }
@@ -147,7 +148,7 @@ public class AuthorizeIncomingTransferTest extends AbstractServiceTest {
             .thenReturn(Optional.of(bankingAccount));
 
         // then
-        AuthorizeIncomingTransferResponse response = authorizeIncomingTransfer.execute(request);
+        AuthorizeIncomingTransferResponse response = processIncomingTransferAuthorization.execute(request);
 
         assertThat(response)
             .isNotNull()
@@ -155,7 +156,7 @@ public class AuthorizeIncomingTransferTest extends AbstractServiceTest {
                 AuthorizeIncomingTransferResponse::status,
                 AuthorizeIncomingTransferResponse::rejectionReason
             ).containsExactly(
-                IncomingTransferAuthorizationStatus.REJECTED,
+                TransferAuthorizationStatus.REJECTED,
                 ErrorCodes.BANKING_ACCOUNT_CLOSED
             );
     }
@@ -176,7 +177,7 @@ public class AuthorizeIncomingTransferTest extends AbstractServiceTest {
             .thenReturn(Optional.of(bankingAccount));
 
         // then
-        AuthorizeIncomingTransferResponse response = authorizeIncomingTransfer.execute(request);
+        AuthorizeIncomingTransferResponse response = processIncomingTransferAuthorization.execute(request);
 
         assertThat(response)
             .isNotNull()
@@ -184,7 +185,7 @@ public class AuthorizeIncomingTransferTest extends AbstractServiceTest {
                 AuthorizeIncomingTransferResponse::status,
                 AuthorizeIncomingTransferResponse::rejectionReason
             ).containsExactly(
-                IncomingTransferAuthorizationStatus.REJECTED,
+                TransferAuthorizationStatus.REJECTED,
                 ErrorCodes.BANKING_TRANSFER_DIFFERENT_CURRENCY
             );
     }

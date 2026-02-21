@@ -1,17 +1,17 @@
-package com.damian.xBank.modules.payment.network.transfer.application.usecase;
+package com.damian.xBank.modules.banking.transfer.application.usecase;
 
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferNotFoundException;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
-import com.damian.xBank.modules.payment.network.transfer.application.dto.request.OutgoingTransferFailureRequest;
+import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.request.OutgoingTransferFailureRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class HandleOutgoingTransferFailure {
+public class HandleOutgoingTransferAuthorizationFailure {
     private final BankingTransferRepository bankingTransferRepository;
 
-    public HandleOutgoingTransferFailure(
+    public HandleOutgoingTransferAuthorizationFailure(
         BankingTransferRepository bankingTransferRepository
     ) {
         this.bankingTransferRepository = bankingTransferRepository;

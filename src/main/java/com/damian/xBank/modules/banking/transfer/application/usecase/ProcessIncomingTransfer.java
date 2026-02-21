@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.payment.network.transfer.application.usecase;
+package com.damian.xBank.modules.banking.transfer.application.usecase;
 
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
@@ -6,16 +6,16 @@ import com.damian.xBank.modules.banking.account.infrastructure.repository.Bankin
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
-import com.damian.xBank.modules.payment.network.transfer.application.dto.request.IncomingTransferAuthorizedRequest;
+import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.request.IncomingTransferAuthorizedRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class HandleIncomingTransferAuthorized {
+public class ProcessIncomingTransfer {
     private final BankingAccountRepository bankingAccountRepository;
     private final BankingTransactionRepository bankingTransactionRepository;
 
-    public HandleIncomingTransferAuthorized(
+    public ProcessIncomingTransfer(
         BankingAccountRepository bankingAccountRepository,
         BankingTransactionRepository bankingTransactionRepository
     ) {

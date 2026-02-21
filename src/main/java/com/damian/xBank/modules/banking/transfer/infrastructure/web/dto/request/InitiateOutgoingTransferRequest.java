@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.payment.network.transfer.application.dto.request;
+package com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.request;
 
 import jakarta.validation.constraints.Positive;
 

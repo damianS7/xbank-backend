@@ -4,9 +4,9 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
-import com.damian.xBank.modules.payment.network.transfer.application.dto.request.AuthorizeIncomingTransferRequest;
-import com.damian.xBank.modules.payment.network.transfer.application.dto.response.AuthorizeIncomingTransferResponse;
-import com.damian.xBank.modules.payment.network.transfer.domain.IncomingTransferAuthorizationStatus;
+import com.damian.xBank.modules.banking.transfer.domain.model.TransferAuthorizationStatus;
+import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.request.AuthorizeIncomingTransferRequest;
+import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.response.AuthorizeIncomingTransferResponse;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class PaymentNetworkTransferControllerTest extends AbstractControllerTest {
+public class TransferAuthorizationNetworkControllerTest extends AbstractControllerTest {
 
     private BankingAccount customerBankingAccount;
     private User customer;
@@ -81,7 +81,7 @@ public class PaymentNetworkTransferControllerTest extends AbstractControllerTest
             .extracting(
                 AuthorizeIncomingTransferResponse::status
             ).isEqualTo(
-                IncomingTransferAuthorizationStatus.AUTHORIZED
+                TransferAuthorizationStatus.AUTHORIZED
             );
     }
 

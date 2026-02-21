@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.payment.network.transfer.application.dto.response;
+package com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.response;
 
 public record TransferNetworkAuthorizationResponse(
     String authorizationId,

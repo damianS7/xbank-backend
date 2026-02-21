@@ -1,8 +1,8 @@
-package com.damian.xBank.modules.payment.network.transfer.domain;
+package com.damian.xBank.modules.banking.transfer.domain.model;
 
 import java.util.Set;
 
-public enum IncomingTransferAuthorizationStatus {
+public enum TransferAuthorizationStatus {
 
     /**
      * Transfer rejected
@@ -18,7 +18,7 @@ public enum IncomingTransferAuthorizationStatus {
      */
     AUTHORIZED;
 
-    private Set<IncomingTransferAuthorizationStatus> allowedTransitions;
+    private Set<TransferAuthorizationStatus> allowedTransitions;
 
     static {
         REJECTED.allowedTransitions = Set.of();
@@ -26,7 +26,7 @@ public enum IncomingTransferAuthorizationStatus {
         AUTHORIZED.allowedTransitions = Set.of();
     }
 
-    public boolean canTransitionTo(IncomingTransferAuthorizationStatus newStatus) {
+    public boolean canTransitionTo(TransferAuthorizationStatus newStatus) {
         return allowedTransitions.contains(newStatus);
     }
 }

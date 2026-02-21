@@ -1,30 +1,31 @@
-package com.damian.xBank.modules.payment.network.transfer.application.usecase;
+package com.damian.xBank.modules.banking.transfer.application.usecase;
 
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionFactory;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
-import com.damian.xBank.modules.payment.network.transfer.application.dto.request.InitiateOutgoingTransferRequest;
-import com.damian.xBank.modules.payment.network.transfer.application.dto.request.TransferNetworkAuthorizationRequest;
-import com.damian.xBank.modules.payment.network.transfer.infrastructure.web.TransferNetworkHttpGateway;
+import com.damian.xBank.modules.banking.transfer.infrastructure.web.controller.TransferAuthorizationNetworkHttpGateway;
+import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.request.InitiateOutgoingTransferRequest;
+import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.request.TransferNetworkAuthorizationRequest;
+import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.response.TransferNetworkAuthorizationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class InitiateOutgoingTransfer {
+public class InitiateOutgoingTransferAuthorization {
     private final BankingTransferRepository bankingTransferRepository;
-    private final TransferNetworkHttpGateway transferNetworkHttpGateway;
+    private final TransferAuthorizationNetworkHttpGateway transferAuthorizationNetworkHttpGateway;
     private final BankingTransactionRepository bankingTransactionRepository;
     private final BankingTransactionFactory bankingTransactionFactory;
 
-    public InitiateOutgoingTransfer(
+    public InitiateOutgoingTransferAuthorization(
         BankingTransferRepository bankingTransferRepository,
-        TransferNetworkHttpGateway transferNetworkHttpGateway,
+        TransferAuthorizationNetworkHttpGateway transferAuthorizationNetworkHttpGateway,
         BankingTransactionRepository bankingTransactionRepository,
         BankingTransactionFactory bankingTransactionFactory
     ) {
         this.bankingTransferRepository = bankingTransferRepository;
-        this.transferNetworkHttpGateway = transferNetworkHttpGateway;
+        this.transferAuthorizationNetworkHttpGateway = transferAuthorizationNetworkHttpGateway;
         this.bankingTransactionRepository = bankingTransactionRepository;
         this.bankingTransactionFactory = bankingTransactionFactory;
     }
@@ -35,7 +36,7 @@ public class InitiateOutgoingTransfer {
             .findById(request.transferId())
             .orElseThrow();
 
-        transferNetworkHttpGateway.authorizeTransfer(
+        TransferNetworkAuthorizationResponse response = transferAuthorizationNetworkHttpGateway.authorizeTransfer(
             new TransferNetworkAuthorizationRequest(
                 transfer.getFromAccount().getAccountNumber(),
                 transfer.getToAccount().getAccountNumber(),
@@ -44,5 +45,7 @@ public class InitiateOutgoingTransfer {
                 transfer.getDescription()
             )
         );
+
+        transfer.setProviderAuthorizationId(response.authorizationId());
     }
 }

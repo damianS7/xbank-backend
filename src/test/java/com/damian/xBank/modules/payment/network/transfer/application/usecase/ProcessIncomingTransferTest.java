@@ -6,7 +6,8 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
-import com.damian.xBank.modules.payment.network.transfer.application.dto.request.IncomingTransferAuthorizedRequest;
+import com.damian.xBank.modules.banking.transfer.application.usecase.ProcessIncomingTransfer;
+import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.request.IncomingTransferAuthorizedRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.utils.UserTestBuilder;
@@ -25,7 +26,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class HandleIncomingTransferAuthorizedTest extends AbstractServiceTest {
+public class ProcessIncomingTransferTest extends AbstractServiceTest {
 
     @Mock
     private BankingAccountRepository bankingAccountRepository;
@@ -34,7 +35,7 @@ public class HandleIncomingTransferAuthorizedTest extends AbstractServiceTest {
     private BankingTransactionRepository bankingTransactionRepository;
 
     @InjectMocks
-    private HandleIncomingTransferAuthorized handleIncomingTransferAuthorized;
+    private ProcessIncomingTransfer processIncomingTransfer;
 
     private User customer;
     private BankingAccount bankingAccount;
@@ -79,7 +80,7 @@ public class HandleIncomingTransferAuthorizedTest extends AbstractServiceTest {
             .thenAnswer(i -> i.getArgument(0));
 
         // then
-        handleIncomingTransferAuthorized.execute(request);
+        processIncomingTransfer.execute(request);
 
         verify(bankingTransactionRepository).save(captor.capture());
 

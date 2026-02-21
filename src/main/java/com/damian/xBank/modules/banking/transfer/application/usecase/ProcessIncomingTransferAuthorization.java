@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.payment.network.transfer.application.usecase;
+package com.damian.xBank.modules.banking.transfer.application.usecase;
 
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountClosedException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountCurrencyMismatchException;
@@ -7,16 +7,16 @@ import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountS
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
-import com.damian.xBank.modules.payment.network.transfer.application.dto.request.AuthorizeIncomingTransferRequest;
-import com.damian.xBank.modules.payment.network.transfer.application.dto.response.AuthorizeIncomingTransferResponse;
-import com.damian.xBank.modules.payment.network.transfer.domain.IncomingTransferAuthorizationStatus;
+import com.damian.xBank.modules.banking.transfer.domain.model.TransferAuthorizationStatus;
+import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.request.AuthorizeIncomingTransferRequest;
+import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.response.AuthorizeIncomingTransferResponse;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AuthorizeIncomingTransfer {
+public class ProcessIncomingTransferAuthorization {
     private final BankingAccountRepository bankingAccountRepository;
 
-    public AuthorizeIncomingTransfer(
+    public ProcessIncomingTransferAuthorization(
         BankingAccountRepository bankingAccountRepository
     ) {
         this.bankingAccountRepository = bankingAccountRepository;
@@ -25,7 +25,7 @@ public class AuthorizeIncomingTransfer {
     public AuthorizeIncomingTransferResponse execute(
         AuthorizeIncomingTransferRequest request
     ) {
-        IncomingTransferAuthorizationStatus stauts = IncomingTransferAuthorizationStatus.REJECTED;
+        TransferAuthorizationStatus stauts = TransferAuthorizationStatus.REJECTED;
         String rejectionReason = null;
 
         try {
@@ -38,7 +38,7 @@ public class AuthorizeIncomingTransfer {
             account.assertActive();
             account.assertCurrency(BankingAccountCurrency.valueOf(request.currency()));
 
-            stauts = IncomingTransferAuthorizationStatus.AUTHORIZED;
+            stauts = TransferAuthorizationStatus.AUTHORIZED;
         } catch (BankingAccountNotFoundException
                  | BankingAccountClosedException
                  | BankingAccountCurrencyMismatchException

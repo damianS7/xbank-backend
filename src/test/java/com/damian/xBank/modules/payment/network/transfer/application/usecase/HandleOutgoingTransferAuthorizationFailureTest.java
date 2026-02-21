@@ -4,10 +4,11 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
+import com.damian.xBank.modules.banking.transfer.application.usecase.HandleOutgoingTransferAuthorizationFailure;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferStatus;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
-import com.damian.xBank.modules.payment.network.transfer.application.dto.request.OutgoingTransferFailureRequest;
+import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.request.OutgoingTransferFailureRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.utils.UserTestBuilder;
@@ -23,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-public class HandleOutgoingTransferFailureTest extends AbstractServiceTest {
+public class HandleOutgoingTransferAuthorizationFailureTest extends AbstractServiceTest {
 
     @Mock
     private BankingAccountRepository bankingAccountRepository;
@@ -32,7 +33,7 @@ public class HandleOutgoingTransferFailureTest extends AbstractServiceTest {
     private BankingTransferRepository bankingTransferRepository;
 
     @InjectMocks
-    private HandleOutgoingTransferFailure handleOutgoingTransferFailure;
+    private HandleOutgoingTransferAuthorizationFailure handleOutgoingTransferAuthorizationFailure;
 
     private User customer;
     private BankingAccount bankingAccount;
@@ -74,7 +75,7 @@ public class HandleOutgoingTransferFailureTest extends AbstractServiceTest {
             .thenReturn(Optional.of(transfer));
 
         // then
-        handleOutgoingTransferFailure.execute(request);
+        handleOutgoingTransferAuthorizationFailure.execute(request);
 
         assertThat(transfer)
             .extracting(
