@@ -2,6 +2,8 @@ package com.damian.xBank.modules.banking.transfer.domain.model;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferCurrencyMismatchException;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferNotOwnerException;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferSameAccountException;
@@ -93,6 +95,63 @@ public class BankingTransfer {
         transfer.setToAccount(toAccount);
         transfer.setAmount(amount);
         return transfer;
+    }
+
+    public static BankingTransfer create(
+        Long userId,
+        BankingAccount fromAccount,
+        BankingAccount toAccount,
+        BigDecimal amount,
+        String description
+    ) {
+        // assert userId is the owner of fromAccount
+        fromAccount.assertOwnedBy(userId);
+
+        BankingTransferType type = toAccount != null
+            ? BankingTransferType.INTERNAL
+            : BankingTransferType.EXTERNAL;
+
+        // Create the transfer
+        BankingTransfer transfer = BankingTransfer
+            .create(fromAccount, toAccount, amount)
+            .setDescription(description)
+            .setType(type);
+
+        // validate transfer
+        transfer.assertTransferPossible();
+
+        // Generate transactions
+        transfer.generateTransactions();
+
+        return transfer;
+    }
+
+    private void generateTransactions() {
+        // Generate transactions
+        BankingTransaction fromTransaction = BankingTransaction
+            .create(
+                BankingTransactionType.TRANSFER_TO,
+                fromAccount,
+                amount
+            )
+            .setStatus(BankingTransactionStatus.PENDING)
+            .setDescription(description);
+
+        addTransaction(fromTransaction);
+
+        if (toAccount != null) {
+            // create transfer transaction for the receiver of the funds
+            BankingTransaction toTransaction = BankingTransaction
+                .create(
+                    BankingTransactionType.TRANSFER_FROM,
+                    toAccount,
+                    amount
+                )
+                .setStatus(BankingTransactionStatus.PENDING)
+                .setDescription("Transfer from " + fromAccount.getOwner().getProfile().getFullName());
+
+            addTransaction(toTransaction);
+        }
     }
 
     public Long getId() {
@@ -289,21 +348,21 @@ public class BankingTransfer {
      * @throws BankingTransferSameAccountException      if fromAccount and toAccount are the same
      */
     public BankingTransfer assertTransferPossible() {
-        // check fromAccount has funds
-        this.fromAccount.assertSufficientFunds(amount);
-
-        // check accounts are different
-        this.assertDifferentAccounts();
-
-        // check currencies are the same
-        this.assertCurrenciesMatch();
-
         // check if the source account is active
         fromAccount.assertActive();
+
+        // check fromAccount has funds
+        fromAccount.assertSufficientFunds(amount);
 
         if (toAccount != null) {
             // check if the destiny account is active
             toAccount.assertActive();
+
+            // check accounts are different
+            this.assertDifferentAccounts();
+
+            // check currencies are the same
+            this.assertCurrenciesMatch();
         }
 
         return this;
@@ -313,8 +372,9 @@ public class BankingTransfer {
         return type;
     }
 
-    public void setType(BankingTransferType type) {
+    public BankingTransfer setType(BankingTransferType type) {
         this.type = type;
+        return this;
     }
 
     public String getToAccountIban() {

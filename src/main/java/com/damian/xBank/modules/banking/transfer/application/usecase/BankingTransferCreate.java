@@ -5,8 +5,6 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.transfer.application.dto.request.BankingTransferRequest;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
-import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferType;
-import com.damian.xBank.modules.banking.transfer.domain.service.BankingTransferDomainService;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -18,20 +16,17 @@ import org.springframework.transaction.annotation.Transactional;
 public class BankingTransferCreate {
     private final BankingAccountRepository bankingAccountRepository;
     private final NotificationPublisher notificationPublisher;
-    private final BankingTransferDomainService bankingTransferDomainService;
     private final AuthenticationContext authenticationContext;
     private final BankingTransferRepository bankingTransferRepository;
 
     public BankingTransferCreate(
         BankingAccountRepository bankingAccountRepository,
         NotificationPublisher notificationPublisher,
-        BankingTransferDomainService bankingTransferDomainService,
         AuthenticationContext authenticationContext,
         BankingTransferRepository bankingTransferRepository
     ) {
         this.bankingAccountRepository = bankingAccountRepository;
         this.notificationPublisher = notificationPublisher;
-        this.bankingTransferDomainService = bankingTransferDomainService;
         this.authenticationContext = authenticationContext;
         this.bankingTransferRepository = bankingTransferRepository;
     }
@@ -48,25 +43,23 @@ public class BankingTransferCreate {
                 () -> new BankingAccountNotFoundException(request.fromAccountId())
             );
 
+        // assert that the current user is the owner of the fromAccount
+        fromAccount.assertOwnedBy(currentUser.getId());
+
         // Banking account to receive funds
         final BankingAccount toAccount = bankingAccountRepository
             .findByAccountNumber(request.toAccountNumber())
             .orElse(null);
 
-        BankingTransfer transfer = bankingTransferDomainService.createTransfer(
+        BankingTransfer transfer = BankingTransfer.create(
             currentUser.getId(),
             fromAccount,
             toAccount,
             request.amount(),
             request.description()
         );
+
         transfer.setToAccountIban(request.toAccountNumber());
-        if (toAccount == null) {
-            transfer.setType(BankingTransferType.EXTERNAL);
-        }
-
-        bankingTransferRepository.save(transfer);
-
-        return transfer;
+        return bankingTransferRepository.save(transfer);
     }
 }

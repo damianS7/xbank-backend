@@ -34,7 +34,7 @@ public class TransferAuthorizationNetworkController {
         this.handleOutgoingTransferAuthorizationFailure = handleOutgoingTransferAuthorizationFailure;
     }
 
-    @PostMapping("/webhooks/transfers/authorize")
+    @PostMapping("/webhooks/transfers/incoming/authorize")
     public ResponseEntity<?> authorizeIncomingTransfer(
         @RequestBody @Valid
         IncomingTransferAuthorizationRequest request

@@ -4,14 +4,10 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
-import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
-import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
-import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transfer.application.dto.request.BankingTransferRequest;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferStatus;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferType;
-import com.damian.xBank.modules.banking.transfer.domain.service.BankingTransferDomainService;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -28,15 +24,11 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class BankingTransferCreateTest extends AbstractServiceTest {
-
-    @Mock
-    private BankingTransferDomainService bankingTransferDomainService;
 
     @InjectMocks
     private BankingTransferCreate bankingTransferCreate;
@@ -99,37 +91,12 @@ public class BankingTransferCreateTest extends AbstractServiceTest {
             BigDecimal.valueOf(100)
         );
 
-        BankingTransfer givenTransfer = BankingTransfer
-            .create(fromAccount, toAccount, BigDecimal.valueOf(100))
-            .setId(1L)
-            .setStatus(BankingTransferStatus.CONFIRMED)
-            .setDescription("a gift!");
-
-        BankingTransaction toTransaction = BankingTransaction
-            .create(
-                BankingTransactionType.TRANSFER_FROM,
-                toAccount,
-                givenTransfer.getAmount()
-            )
-            .setStatus(BankingTransactionStatus.PENDING)
-            .setDescription(givenTransfer.getDescription());
-
-        givenTransfer.addTransaction(toTransaction);
-
         // when
         when(bankingAccountRepository.findById(fromAccount.getId())).thenReturn(
             Optional.of(fromAccount));
 
         when(bankingAccountRepository.findByAccountNumber(toAccount.getAccountNumber())).thenReturn(
             Optional.of(toAccount));
-
-        when(bankingTransferDomainService.createTransfer(
-            anyLong(),
-            any(BankingAccount.class),
-            any(BankingAccount.class),
-            any(BigDecimal.class),
-            any(String.class)
-        )).thenReturn(givenTransfer);
 
         when(bankingTransferRepository.save(any(BankingTransfer.class))).thenAnswer(
             i -> i.getArguments()[0]
@@ -150,7 +117,7 @@ public class BankingTransferCreateTest extends AbstractServiceTest {
             .containsExactly(
                 resultTransfer.getId(),
                 request.amount(),
-                BankingTransferStatus.CONFIRMED,
+                BankingTransferStatus.PENDING,
                 request.description(),
                 resultTransfer.getCreatedAt()
             );
@@ -170,26 +137,12 @@ public class BankingTransferCreateTest extends AbstractServiceTest {
             BigDecimal.valueOf(100)
         );
 
-        BankingTransfer givenTransfer = BankingTransfer
-            .create(fromAccount, null, BigDecimal.valueOf(100))
-            .setId(1L)
-            .setStatus(BankingTransferStatus.PENDING)
-            .setDescription("a gift!");
-
         // when
         when(bankingAccountRepository.findById(fromAccount.getId())).thenReturn(
             Optional.of(fromAccount));
 
         when(bankingAccountRepository.findByAccountNumber(toAccount.getAccountNumber()))
             .thenReturn(Optional.empty());
-
-        when(bankingTransferDomainService.createTransfer(
-            anyLong(),
-            any(BankingAccount.class),
-            any(),
-            any(BigDecimal.class),
-            any(String.class)
-        )).thenReturn(givenTransfer);
 
         when(bankingTransferRepository.save(any(BankingTransfer.class))).thenAnswer(
             i -> i.getArguments()[0]

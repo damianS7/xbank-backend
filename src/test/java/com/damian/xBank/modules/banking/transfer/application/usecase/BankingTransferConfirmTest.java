@@ -12,7 +12,6 @@ import com.damian.xBank.modules.banking.transaction.infrastructure.service.Banki
 import com.damian.xBank.modules.banking.transfer.application.dto.request.BankingTransferConfirmRequest;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferStatus;
-import com.damian.xBank.modules.banking.transfer.domain.service.BankingTransferDomainService;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
 import com.damian.xBank.modules.notification.domain.factory.NotificationEventFactory;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
@@ -45,9 +44,6 @@ public class BankingTransferConfirmTest extends AbstractServiceTest {
 
     @Mock
     private NotificationEventFactory notificationEventFactory;
-
-    @Mock
-    private BankingTransferDomainService bankingTransferDomainService;
 
     @Mock
     private NotificationPublisher notificationPublisher;

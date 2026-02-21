@@ -4,7 +4,6 @@ import com.damian.xBank.modules.banking.account.infrastructure.repository.Bankin
 import com.damian.xBank.modules.banking.transfer.application.dto.request.BankingTransferConfirmRequest;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferNotFoundException;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
-import com.damian.xBank.modules.banking.transfer.domain.service.BankingTransferDomainService;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
 import com.damian.xBank.modules.notification.domain.factory.NotificationEventFactory;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
@@ -18,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class BankingTransferConfirm {
     private final NotificationPublisher notificationPublisher;
     private final BankingAccountRepository bankingAccountRepository;
-    private final BankingTransferDomainService bankingTransferDomainService;
     private final AuthenticationContext authenticationContext;
     private final PasswordValidator passwordValidator;
     private final BankingTransferRepository bankingTransferRepository;
@@ -27,7 +25,6 @@ public class BankingTransferConfirm {
     public BankingTransferConfirm(
         NotificationPublisher notificationPublisher,
         BankingAccountRepository bankingAccountRepository,
-        BankingTransferDomainService bankingTransferDomainService,
         AuthenticationContext authenticationContext,
         PasswordValidator passwordValidator,
         BankingTransferRepository bankingTransferRepository,
@@ -35,7 +32,6 @@ public class BankingTransferConfirm {
     ) {
         this.notificationPublisher = notificationPublisher;
         this.bankingAccountRepository = bankingAccountRepository;
-        this.bankingTransferDomainService = bankingTransferDomainService;
         this.authenticationContext = authenticationContext;
         this.passwordValidator = passwordValidator;
         this.bankingTransferRepository = bankingTransferRepository;
