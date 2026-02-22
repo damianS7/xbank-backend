@@ -12,7 +12,11 @@ import com.damian.xBank.modules.banking.transaction.infrastructure.service.Banki
 import com.damian.xBank.modules.banking.transfer.application.dto.request.BankingTransferConfirmRequest;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferStatus;
+import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferType;
+import com.damian.xBank.modules.banking.transfer.domain.model.TransferAuthorizationStatus;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
+import com.damian.xBank.modules.banking.transfer.infrastructure.web.controller.TransferAuthorizationNetworkHttpGateway;
+import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.response.TransferAuthorizationNetworkResponse;
 import com.damian.xBank.modules.notification.domain.factory.NotificationEventFactory;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordConfirmationException;
@@ -59,6 +63,9 @@ public class BankingTransferConfirmTest extends AbstractServiceTest {
 
     @Mock
     private BankingTransactionPersistenceService bankingTransactionPersistenceService;
+
+    @Mock
+    private TransferAuthorizationNetworkHttpGateway transferAuthorizationNetworkHttpGateway;
 
     private User fromCustomer;
     private User toCustomer;
@@ -143,10 +150,55 @@ public class BankingTransferConfirmTest extends AbstractServiceTest {
         //                .thenAnswer(i -> i.getArgument(0));
 
         // then
-        bankingTransferConfirm
-            .execute(givenTransfer.getId(), request);
+        bankingTransferConfirm.execute(givenTransfer.getId(), request);
 
         verify(bankingAccountRepository, times(2)).save(any(BankingAccount.class));
+        verify(bankingTransferRepository, times(1)).save(any(BankingTransfer.class));
+    }
+
+    @Test
+    @DisplayName("should return confirmed transfer when request is valid for external transfer")
+    void confirmTransfer_WhenExternal_ReturnsConfirmedTransfer() {
+        // given
+        setUpContext(fromCustomer);
+
+        BankingTransfer givenTransfer = BankingTransfer
+            .create(fromAccount, null, BigDecimal.valueOf(100))
+            .setId(1L)
+            .setStatus(BankingTransferStatus.PENDING)
+            .setType(BankingTransferType.EXTERNAL)
+            .setToAccountIban("US1200001111112233335555")
+            .setDescription("a gift!");
+
+        BankingTransferConfirmRequest request = new BankingTransferConfirmRequest(
+            RAW_PASSWORD
+        );
+
+        // when
+        when(bankingTransferRepository.findById(anyLong())).thenReturn(Optional.of(givenTransfer));
+        when(transferAuthorizationNetworkHttpGateway.authorizeTransfer(
+            any()
+        )).thenReturn(
+            new TransferAuthorizationNetworkResponse(
+                "123/123",
+                TransferAuthorizationStatus.AUTHORIZED.name(),
+                null
+            )
+        );
+
+        // then
+        bankingTransferConfirm.execute(givenTransfer.getId(), request);
+
+        assertThat(givenTransfer)
+            .extracting(
+                BankingTransfer::getStatus,
+                BankingTransfer::getProviderAuthorizationId
+            ).containsExactly(
+                BankingTransferStatus.CONFIRMED,
+                "123/123"
+            );
+
+        verify(bankingAccountRepository).save(any(BankingAccount.class));
         verify(bankingTransferRepository, times(1)).save(any(BankingTransfer.class));
     }
 

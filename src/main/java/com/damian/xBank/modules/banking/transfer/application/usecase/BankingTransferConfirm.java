@@ -4,7 +4,11 @@ import com.damian.xBank.modules.banking.account.infrastructure.repository.Bankin
 import com.damian.xBank.modules.banking.transfer.application.dto.request.BankingTransferConfirmRequest;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferNotFoundException;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
+import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferType;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
+import com.damian.xBank.modules.banking.transfer.infrastructure.web.controller.TransferAuthorizationNetworkHttpGateway;
+import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.request.TransferAuthorizationNetworkRequest;
+import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.response.TransferAuthorizationNetworkResponse;
 import com.damian.xBank.modules.notification.domain.factory.NotificationEventFactory;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -15,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class BankingTransferConfirm {
+    private final TransferAuthorizationNetworkHttpGateway transferAuthorizationNetworkHttpGateway;
     private final NotificationPublisher notificationPublisher;
     private final BankingAccountRepository bankingAccountRepository;
     private final AuthenticationContext authenticationContext;
@@ -23,6 +28,7 @@ public class BankingTransferConfirm {
     private final NotificationEventFactory notificationEventFactory;
 
     public BankingTransferConfirm(
+        TransferAuthorizationNetworkHttpGateway transferAuthorizationNetworkHttpGateway,
         NotificationPublisher notificationPublisher,
         BankingAccountRepository bankingAccountRepository,
         AuthenticationContext authenticationContext,
@@ -30,6 +36,7 @@ public class BankingTransferConfirm {
         BankingTransferRepository bankingTransferRepository,
         NotificationEventFactory notificationEventFactory
     ) {
+        this.transferAuthorizationNetworkHttpGateway = transferAuthorizationNetworkHttpGateway;
         this.notificationPublisher = notificationPublisher;
         this.bankingAccountRepository = bankingAccountRepository;
         this.authenticationContext = authenticationContext;
@@ -72,14 +79,28 @@ public class BankingTransferConfirm {
             notificationEventFactory.transferSent(transfer)
         );
 
-        // Notify recipient
-        notificationPublisher.publish(
-            notificationEventFactory.transferReceived(transfer)
-        );
+        if (transfer.getType() == BankingTransferType.INTERNAL) {
+            // Notify recipient
+            notificationPublisher.publish(
+                notificationEventFactory.transferReceived(transfer)
+            );
+        }
 
-        // TODO when confirmed transaction send to RabbitMq queue
+        if (transfer.getType() == BankingTransferType.EXTERNAL) {
+            // TODO send transfer to RabbitMq queue for processing by external transfer service
+            TransferAuthorizationNetworkResponse response = transferAuthorizationNetworkHttpGateway
+                .authorizeTransfer(
+                    new TransferAuthorizationNetworkRequest(
+                        transfer.getFromAccount().getAccountNumber(),
+                        transfer.getToAccountIban(),
+                        transfer.getAmount(),
+                        transfer.getFromAccount().getCurrency().name(),
+                        transfer.getDescription()
+                    )
+                );
+            transfer.setProviderAuthorizationId(response.authorizationId());
+        }
 
         return transfer;
     }
-
 }

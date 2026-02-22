@@ -3,6 +3,6 @@ package com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.respons
 public record TransferAuthorizationNetworkResponse(
     String authorizationId,
     String status,
-    String declineReason
+    String rejectionReason
 ) {
 }

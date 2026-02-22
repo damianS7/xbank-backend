@@ -1,6 +1,7 @@
 package com.damian.xBank.modules.banking.transfer.infrastructure.web.controller;
 
 import com.damian.xBank.modules.banking.transfer.application.TransferAuthorizationNetworkGateway;
+import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferStatus;
 import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.request.TransferAuthorizationNetworkRequest;
 import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.response.TransferAuthorizationNetworkResponse;
 import com.damian.xBank.shared.infrastructure.web.dto.response.ApiResponse;
@@ -42,7 +43,7 @@ public class TransferAuthorizationNetworkHttpGateway implements TransferAuthoriz
                     return response.bodyToMono(ApiResponse.class)
                         .map(body -> new TransferAuthorizationNetworkResponse(
                             null,
-                            "FAILED",
+                            BankingTransferStatus.REJECTED.toString(),
                             body.getMessage()
                         ));
                 }

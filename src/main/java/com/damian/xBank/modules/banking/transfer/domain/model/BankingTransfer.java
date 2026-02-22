@@ -94,6 +94,9 @@ public class BankingTransfer {
         transfer.setFromAccount(fromAccount);
         transfer.setToAccount(toAccount);
         transfer.setAmount(amount);
+
+        // Generate transactions
+        transfer.generateTransactions();
         return transfer;
     }
 
@@ -390,7 +393,8 @@ public class BankingTransfer {
         return providerAuthorizationId;
     }
 
-    public void setProviderAuthorizationId(String providerAuthorizationId) {
+    public BankingTransfer setProviderAuthorizationId(String providerAuthorizationId) {
         this.providerAuthorizationId = providerAuthorizationId;
+        return this;
     }
 }
