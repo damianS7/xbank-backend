@@ -90,35 +90,16 @@ public class BankingTransfer {
         BankingAccount toAccount,
         BigDecimal amount
     ) {
-        BankingTransfer transfer = new BankingTransfer();
-        transfer.setFromAccount(fromAccount);
-        transfer.setToAccount(toAccount);
-        transfer.setAmount(amount);
-
-        // Generate transactions
-        transfer.generateTransactions();
-        return transfer;
-    }
-
-    public static BankingTransfer create(
-        Long userId,
-        BankingAccount fromAccount,
-        BankingAccount toAccount,
-        BigDecimal amount,
-        String description
-    ) {
-        // assert userId is the owner of fromAccount
-        fromAccount.assertOwnedBy(userId);
-
         BankingTransferType type = toAccount != null
             ? BankingTransferType.INTERNAL
             : BankingTransferType.EXTERNAL;
 
         // Create the transfer
-        BankingTransfer transfer = BankingTransfer
-            .create(fromAccount, toAccount, amount)
-            .setDescription(description)
-            .setType(type);
+        BankingTransfer transfer = new BankingTransfer();
+        transfer.setFromAccount(fromAccount);
+        transfer.setToAccount(toAccount);
+        transfer.setAmount(amount);
+        transfer.setType(type);
 
         // validate transfer
         transfer.assertTransferPossible();

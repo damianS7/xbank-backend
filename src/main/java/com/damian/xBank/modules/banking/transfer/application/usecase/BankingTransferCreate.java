@@ -48,11 +48,9 @@ public class BankingTransferCreate {
             .orElse(null);
 
         BankingTransfer transfer = BankingTransfer.create(
-            currentUser.getId(),
             fromAccount,
             toAccount,
-            request.amount(),
-            request.description()
+            request.amount()
         );
 
         transfer.setToAccountIban(request.toAccountNumber());
