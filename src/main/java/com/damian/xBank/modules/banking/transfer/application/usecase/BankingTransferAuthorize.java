@@ -1,10 +1,13 @@
 package com.damian.xBank.modules.banking.transfer.application.usecase;
 
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
+import com.damian.xBank.modules.banking.transfer.application.TransferAuthorizationNetworkGateway;
 import com.damian.xBank.modules.banking.transfer.application.dto.request.BankingTransferConfirmRequest;
+import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferAuthorizationFailedException;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferNotFoundException;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferType;
+import com.damian.xBank.modules.banking.transfer.domain.model.TransferAuthorizationStatus;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
 import com.damian.xBank.modules.banking.transfer.infrastructure.web.controller.TransferAuthorizationNetworkHttpGateway;
 import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.request.TransferAuthorizationNetworkRequest;
@@ -14,12 +17,15 @@ import com.damian.xBank.modules.notification.infrastructure.service.Notification
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import com.damian.xBank.shared.security.PasswordValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class BankingTransferConfirm {
-    private final TransferAuthorizationNetworkHttpGateway transferAuthorizationNetworkHttpGateway;
+public class BankingTransferAuthorize {
+    private static final Logger log = LoggerFactory.getLogger(BankingTransferAuthorize.class);
+    private final TransferAuthorizationNetworkGateway transferAuthorizationNetworkGateway;
     private final NotificationPublisher notificationPublisher;
     private final BankingAccountRepository bankingAccountRepository;
     private final AuthenticationContext authenticationContext;
@@ -27,8 +33,8 @@ public class BankingTransferConfirm {
     private final BankingTransferRepository bankingTransferRepository;
     private final NotificationEventFactory notificationEventFactory;
 
-    public BankingTransferConfirm(
-        TransferAuthorizationNetworkHttpGateway transferAuthorizationNetworkHttpGateway,
+    public BankingTransferAuthorize(
+        TransferAuthorizationNetworkHttpGateway transferAuthorizationNetworkGateway,
         NotificationPublisher notificationPublisher,
         BankingAccountRepository bankingAccountRepository,
         AuthenticationContext authenticationContext,
@@ -36,7 +42,7 @@ public class BankingTransferConfirm {
         BankingTransferRepository bankingTransferRepository,
         NotificationEventFactory notificationEventFactory
     ) {
-        this.transferAuthorizationNetworkHttpGateway = transferAuthorizationNetworkHttpGateway;
+        this.transferAuthorizationNetworkGateway = transferAuthorizationNetworkGateway;
         this.notificationPublisher = notificationPublisher;
         this.bankingAccountRepository = bankingAccountRepository;
         this.authenticationContext = authenticationContext;
@@ -46,40 +52,31 @@ public class BankingTransferConfirm {
     }
 
     @Transactional
-    public BankingTransfer execute(
-        Long transferId,
-        BankingTransferConfirmRequest request
-    ) {
+    public BankingTransfer execute(Long transferId, BankingTransferConfirmRequest request) {
+        log.debug("Enter BankingTransferConfirm with id: {}", transferId);
         // Current user
         final User currentUser = authenticationContext.getCurrentUser();
 
         // validate customer password
         passwordValidator.validatePassword(currentUser, request.password());
 
-        BankingTransfer transfer = bankingTransferRepository.findById(transferId).orElseThrow(
-            () -> new BankingTransferNotFoundException(transferId)
-        );
+        BankingTransfer transfer = bankingTransferRepository.findById(transferId)
+            .orElseThrow(
+                () -> new BankingTransferNotFoundException(transferId)
+            );
 
         // assert that the transfer belongs to userId
         transfer.assertOwnedBy(currentUser.getId());
 
-        // confirm transfer
-        transfer.confirm();
-
-        // Save accounts (.save is optional because of transactional)
-        // Saving the accounts also updates the transactions since we are using CASCADE.ALL
-        bankingAccountRepository.save(transfer.getFromAccount());
-        bankingAccountRepository.save(transfer.getToAccount());
-
-        // Save transfer
-        bankingTransferRepository.save(transfer);
-
-        // Notify sender
-        notificationPublisher.publish(
-            notificationEventFactory.transferSent(transfer)
-        );
+        // authorize transfer
+        transfer.authorized();
 
         if (transfer.getType() == BankingTransferType.INTERNAL) {
+            // Notify sender
+            notificationPublisher.publish(
+                notificationEventFactory.transferSent(transfer)
+            );
+
             // Notify recipient
             notificationPublisher.publish(
                 notificationEventFactory.transferReceived(transfer)
@@ -87,8 +84,9 @@ public class BankingTransferConfirm {
         }
 
         if (transfer.getType() == BankingTransferType.EXTERNAL) {
+            log.debug("Authorizing external transfer: {}", transferId);
             // TODO send transfer to RabbitMq queue for processing by external transfer service
-            TransferAuthorizationNetworkResponse response = transferAuthorizationNetworkHttpGateway
+            TransferAuthorizationNetworkResponse response = transferAuthorizationNetworkGateway
                 .authorizeTransfer(
                     new TransferAuthorizationNetworkRequest(
                         transfer.getFromAccount().getAccountNumber(),
@@ -98,9 +96,17 @@ public class BankingTransferConfirm {
                         transfer.getDescription()
                     )
                 );
+
+            if (response.status() != TransferAuthorizationStatus.PENDING) {
+                throw new BankingTransferAuthorizationFailedException(
+                    transferId,
+                    response.rejectionReason()
+                );
+            }
+
             transfer.setProviderAuthorizationId(response.authorizationId());
         }
 
-        return transfer;
+        return bankingTransferRepository.save(transfer);
     }
 }

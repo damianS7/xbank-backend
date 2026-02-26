@@ -5,6 +5,13 @@ import java.util.Set;
 public enum BankingTransferStatus {
 
     /**
+     * Emitted but not activated by user.
+     * <p>
+     * From this state transitions to REJECTED, CONFIRMED are allowed.
+     */
+    PENDING,
+
+    /**
      * Transfer rejected
      * <p>
      * From this state no transitions are not allowed.
@@ -16,25 +23,16 @@ public enum BankingTransferStatus {
      * <p>
      * From this state no transitions are allowed.
      */
-    CONFIRMED,
-
-    /**
-     * Emitted but not activated by user.
-     * <p>
-     * From this state transitions to REJECTED, CONFIRMED are allowed.
-     */
-    PENDING;
+    AUTHORIZED;
 
     private Set<BankingTransferStatus> allowedTransitions;
 
     static {
         REJECTED.allowedTransitions = Set.of();
-
-        CONFIRMED.allowedTransitions = Set.of();
-
+        AUTHORIZED.allowedTransitions = Set.of();
         PENDING.allowedTransitions = Set.of(
-                CONFIRMED,
-                REJECTED
+            AUTHORIZED,
+            REJECTED
         );
     }
 

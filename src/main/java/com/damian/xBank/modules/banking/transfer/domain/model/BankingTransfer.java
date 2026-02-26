@@ -289,7 +289,7 @@ public class BankingTransfer {
         return this;
     }
 
-    public void confirm() {
+    public void authorized() {
         // deduct balance from source
         this.getFromAccount().subtractBalance(getAmount());
 
@@ -300,7 +300,7 @@ public class BankingTransfer {
 
         // Confirm transactions
         this.getTransactions().forEach(BankingTransaction::complete);
-        this.setStatus(BankingTransferStatus.CONFIRMED);
+        this.setStatus(BankingTransferStatus.AUTHORIZED);
         this.updatedAt = Instant.now();
     }
 

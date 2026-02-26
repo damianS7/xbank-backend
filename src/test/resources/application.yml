@@ -10,6 +10,9 @@ jwt:
 payment-network:
   base-url: http://localhost:8079/
   endpoint: /api/v1/card-payments/authorizations
+transfer-network:
+  base-url: http://localhost:8079/
+  endpoint: /api/v1/card-payments/authorizations
 bank:
   account:
     bin: ES003199

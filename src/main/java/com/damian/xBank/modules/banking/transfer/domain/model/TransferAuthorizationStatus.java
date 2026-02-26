@@ -4,6 +4,7 @@ import java.util.Set;
 
 public enum TransferAuthorizationStatus {
 
+    PENDING,
     /**
      * Transfer rejected
      * <p>
@@ -21,8 +22,8 @@ public enum TransferAuthorizationStatus {
     private Set<TransferAuthorizationStatus> allowedTransitions;
 
     static {
+        PENDING.allowedTransitions = Set.of(REJECTED, AUTHORIZED);
         REJECTED.allowedTransitions = Set.of();
-
         AUTHORIZED.allowedTransitions = Set.of();
     }
 

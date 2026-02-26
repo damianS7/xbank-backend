@@ -6,7 +6,6 @@ import com.damian.xBank.modules.banking.account.infrastructure.repository.Bankin
 import com.damian.xBank.modules.banking.transfer.application.dto.request.BankingTransferRequest;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
-import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.stereotype.Service;
@@ -15,18 +14,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class BankingTransferCreate {
     private final BankingAccountRepository bankingAccountRepository;
-    private final NotificationPublisher notificationPublisher;
     private final AuthenticationContext authenticationContext;
     private final BankingTransferRepository bankingTransferRepository;
 
     public BankingTransferCreate(
         BankingAccountRepository bankingAccountRepository,
-        NotificationPublisher notificationPublisher,
         AuthenticationContext authenticationContext,
         BankingTransferRepository bankingTransferRepository
     ) {
         this.bankingAccountRepository = bankingAccountRepository;
-        this.notificationPublisher = notificationPublisher;
         this.authenticationContext = authenticationContext;
         this.bankingTransferRepository = bankingTransferRepository;
     }
@@ -36,7 +32,7 @@ public class BankingTransferCreate {
         // Current user
         final User currentUser = authenticationContext.getCurrentUser();
 
-        // Banking account from where funds will be transfered.
+        // Banking account from where funds will be transferred.
         final BankingAccount fromAccount = bankingAccountRepository
             .findById(request.fromAccountId())
             .orElseThrow(

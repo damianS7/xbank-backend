@@ -6,7 +6,7 @@ import com.damian.xBank.modules.banking.transfer.application.dto.request.Banking
 import com.damian.xBank.modules.banking.transfer.application.dto.response.BankingTransferDetailDto;
 import com.damian.xBank.modules.banking.transfer.application.dto.response.BankingTransferDto;
 import com.damian.xBank.modules.banking.transfer.application.mapper.BankingTransferDtoMapper;
-import com.damian.xBank.modules.banking.transfer.application.usecase.BankingTransferConfirm;
+import com.damian.xBank.modules.banking.transfer.application.usecase.BankingTransferAuthorize;
 import com.damian.xBank.modules.banking.transfer.application.usecase.BankingTransferCreate;
 import com.damian.xBank.modules.banking.transfer.application.usecase.BankingTransferGetAll;
 import com.damian.xBank.modules.banking.transfer.application.usecase.BankingTransferReject;
@@ -33,19 +33,19 @@ import org.springframework.web.bind.annotation.RestController;
 public class BankingTransferController {
     private final BankingTransferGetAll bankingTransferGetAll;
     private final BankingTransferCreate bankingTransferCreate;
-    private final BankingTransferConfirm bankingTransferConfirm;
+    private final BankingTransferAuthorize bankingTransferAuthorize;
     private final BankingTransferReject bankingTransferReject;
 
 
     public BankingTransferController(
         BankingTransferGetAll bankingTransferGetAll,
         BankingTransferCreate bankingTransferCreate,
-        BankingTransferConfirm bankingTransferConfirm,
+        BankingTransferAuthorize bankingTransferAuthorize,
         BankingTransferReject bankingTransferReject
     ) {
         this.bankingTransferGetAll = bankingTransferGetAll;
         this.bankingTransferCreate = bankingTransferCreate;
-        this.bankingTransferConfirm = bankingTransferConfirm;
+        this.bankingTransferAuthorize = bankingTransferAuthorize;
         this.bankingTransferReject = bankingTransferReject;
     }
 
@@ -85,7 +85,7 @@ public class BankingTransferController {
         @RequestBody @Valid
         BankingTransferConfirmRequest request
     ) {
-        BankingTransfer transfer = bankingTransferConfirm.execute(id, request);
+        BankingTransfer transfer = bankingTransferAuthorize.execute(id, request);
         BankingTransferDetailDto transferDto = BankingTransferDtoMapper.toBankingTransferDetailDto(transfer);
 
         return ResponseEntity

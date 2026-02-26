@@ -64,6 +64,7 @@ public class ErrorCodes {
 
     // Transfers
     public static final String BANKING_TRANSFER_NOT_FOUND = "banking.transfer.not_found";
+    public static final String TRANSFER_AUTHORIZATION_REJECTED = "banking.transfer.authorization.rejected";
     public static final String BANKING_TRANSFER_NOT_OWNER = "banking.transfer.not_owner";
     public static final String
         BANKING_TRANSFER_INVALID_TRANSITION_STATUS

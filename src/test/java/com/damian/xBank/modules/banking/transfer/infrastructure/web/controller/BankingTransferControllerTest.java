@@ -305,7 +305,7 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
             ).containsExactly(
                 transfer.getId(),
                 transfer.getAmount().setScale(2),
-                BankingTransferStatus.CONFIRMED,
+                BankingTransferStatus.AUTHORIZED,
                 transfer.getDescription()
             );
 

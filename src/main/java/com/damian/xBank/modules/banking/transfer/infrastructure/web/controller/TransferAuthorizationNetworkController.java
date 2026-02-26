@@ -45,7 +45,7 @@ public class TransferAuthorizationNetworkController {
             .body(response);
     }
 
-    @PostMapping("/webhooks/transfers/incoming")
+    @PostMapping("/webhooks/transfers/incoming/authorized")
     public ResponseEntity<?> onIncomingTransfer(
         @RequestBody @Valid
         IncomingTransferRequest request

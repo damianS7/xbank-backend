@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.banking.transfer.infrastructure.web.controller;
 
 import com.damian.xBank.modules.banking.transfer.application.TransferAuthorizationNetworkGateway;
-import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferStatus;
+import com.damian.xBank.modules.banking.transfer.domain.model.TransferAuthorizationStatus;
 import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.request.TransferAuthorizationNetworkRequest;
 import com.damian.xBank.modules.banking.transfer.infrastructure.web.dto.response.TransferAuthorizationNetworkResponse;
 import com.damian.xBank.shared.infrastructure.web.dto.response.ApiResponse;
@@ -16,12 +16,12 @@ public class TransferAuthorizationNetworkHttpGateway implements TransferAuthoriz
     private static final Logger log = LoggerFactory.getLogger(TransferAuthorizationNetworkHttpGateway.class);
     private final WebClient webClient;
 
-    @Value("${payment-network.endpoint}")
+    @Value("${transfer-network.endpoint}")
     private String paymentNetworkEndpoint;
 
     public TransferAuthorizationNetworkHttpGateway(
         WebClient.Builder builder,
-        @Value("${payment-network.base-url}")
+        @Value("${transfer-network.base-url}")
         String paymentNetworkBaseUrl
     ) {
         this.webClient = builder
@@ -43,7 +43,7 @@ public class TransferAuthorizationNetworkHttpGateway implements TransferAuthoriz
                     return response.bodyToMono(ApiResponse.class)
                         .map(body -> new TransferAuthorizationNetworkResponse(
                             null,
-                            BankingTransferStatus.REJECTED.toString(),
+                            TransferAuthorizationStatus.REJECTED,
                             body.getMessage()
                         ));
                 }

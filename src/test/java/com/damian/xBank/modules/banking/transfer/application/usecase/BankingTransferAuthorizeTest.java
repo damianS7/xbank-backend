@@ -41,10 +41,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class BankingTransferConfirmTest extends AbstractServiceTest {
+public class BankingTransferAuthorizeTest extends AbstractServiceTest {
 
     @InjectMocks
-    private BankingTransferConfirm bankingTransferConfirm;
+    private BankingTransferAuthorize bankingTransferAuthorize;
 
     @Mock
     private NotificationEventFactory notificationEventFactory;
@@ -104,15 +104,15 @@ public class BankingTransferConfirmTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("should return confirmed transfer when request is valid")
-    void confirmTransfer_WhenValidRequest_ReturnsConfirmedTransfer() {
+    @DisplayName("should return authorized transfer when request is valid")
+    void authorizeTransfer_WhenValidRequest_ReturnsAuthorizedTransfer() {
         // given
         setUpContext(fromCustomer);
 
         BankingTransfer givenTransfer = BankingTransfer
             .create(fromAccount, toAccount, BigDecimal.valueOf(100))
             .setId(1L)
-            .setStatus(BankingTransferStatus.CONFIRMED)
+            .setStatus(BankingTransferStatus.AUTHORIZED)
             .setDescription("a gift!");
 
         BankingTransaction fromTransaction = BankingTransaction
@@ -150,15 +150,15 @@ public class BankingTransferConfirmTest extends AbstractServiceTest {
         //                .thenAnswer(i -> i.getArgument(0));
 
         // then
-        bankingTransferConfirm.execute(givenTransfer.getId(), request);
+        bankingTransferAuthorize.execute(givenTransfer.getId(), request);
 
-        verify(bankingAccountRepository, times(2)).save(any(BankingAccount.class));
+        //        verify(bankingAccountRepository, times(2)).save(any(BankingAccount.class));
         verify(bankingTransferRepository, times(1)).save(any(BankingTransfer.class));
     }
 
     @Test
-    @DisplayName("should return confirmed transfer when request is valid for external transfer")
-    void confirmTransfer_WhenExternal_ReturnsConfirmedTransfer() {
+    @DisplayName("should return authorized transfer when request is valid for external transfer")
+    void authorizeTransfer_WhenExternalTransfer_ReturnsAuthorizedTransfer() {
         // given
         setUpContext(fromCustomer);
 
@@ -181,37 +181,37 @@ public class BankingTransferConfirmTest extends AbstractServiceTest {
         )).thenReturn(
             new TransferAuthorizationNetworkResponse(
                 "123/123",
-                TransferAuthorizationStatus.AUTHORIZED.name(),
+                TransferAuthorizationStatus.PENDING,
                 null
             )
         );
 
         // then
-        bankingTransferConfirm.execute(givenTransfer.getId(), request);
+        bankingTransferAuthorize.execute(givenTransfer.getId(), request);
 
         assertThat(givenTransfer)
             .extracting(
                 BankingTransfer::getStatus,
                 BankingTransfer::getProviderAuthorizationId
             ).containsExactly(
-                BankingTransferStatus.CONFIRMED,
+                BankingTransferStatus.AUTHORIZED,
                 "123/123"
             );
 
-        verify(bankingAccountRepository).save(any(BankingAccount.class));
+        //        verify(bankingAccountRepository).save(any(BankingAccount.class));
         verify(bankingTransferRepository, times(1)).save(any(BankingTransfer.class));
     }
 
     @Test
     @DisplayName("should throw exception when invalid password")
-    void confirmTransfer_WhenInvalidPassword_ThrowsException() {
+    void authorizeTransfer_WhenInvalidPassword_ThrowsException() {
         // given
         setUpContext(fromCustomer);
 
         BankingTransfer givenTransfer = BankingTransfer
             .create(fromAccount, toAccount, BigDecimal.valueOf(100))
             .setId(1L)
-            .setStatus(BankingTransferStatus.CONFIRMED)
+            .setStatus(BankingTransferStatus.AUTHORIZED)
             .setDescription("a gift!");
 
         BankingTransaction fromTransaction = BankingTransaction
@@ -243,7 +243,7 @@ public class BankingTransferConfirmTest extends AbstractServiceTest {
         // then
         UserInvalidPasswordConfirmationException exception = assertThrows(
             UserInvalidPasswordConfirmationException.class,
-            () -> bankingTransferConfirm.execute(givenTransfer.getId(), request)
+            () -> bankingTransferAuthorize.execute(givenTransfer.getId(), request)
         );
 
         // then

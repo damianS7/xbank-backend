@@ -14,3 +14,9 @@ bank:
     bin: ES003199
   card:
     bin: 777700
+transfer-network:
+  base-url: http://transfer-network-api:8078
+  endpoint: /api/v1/transfers
+payment-network:
+  base-url: http://payment-network-api:8079
+  endpoint: /api/v1/card-payments/authorizations

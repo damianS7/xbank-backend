@@ -13,37 +13,37 @@ public class BankingTransferDtoMapper {
     public static BankingTransferDto toBankingTransferDto(BankingTransfer bankingTransfer) {
 
         return new BankingTransferDto(
-                bankingTransfer.getId(),
-                bankingTransfer.getFromAccount().getId(),
-                bankingTransfer.getToAccount().getAccountNumber(),
-                bankingTransfer.getAmount(),
-                bankingTransfer.getStatus(),
-                bankingTransfer.getDescription(),
-                bankingTransfer.getCreatedAt(),
-                bankingTransfer.getUpdatedAt()
+            bankingTransfer.getId(),
+            bankingTransfer.getFromAccount().getId(),
+            bankingTransfer.getToAccountIban(),
+            bankingTransfer.getAmount(),
+            bankingTransfer.getStatus(),
+            bankingTransfer.getDescription(),
+            bankingTransfer.getCreatedAt(),
+            bankingTransfer.getUpdatedAt()
         );
     }
 
     public static BankingTransferDetailDto toBankingTransferDetailDto(BankingTransfer bankingTransfer) {
 
         return new BankingTransferDetailDto(
-                bankingTransfer.getId(),
-                bankingTransfer.getFromAccount().getId(),
-                bankingTransfer.getToAccount().getAccountNumber(),
-                bankingTransfer.getAmount(),
-                bankingTransfer.getStatus(),
-                bankingTransfer.getDescription(),
-                BankingTransactionDtoMapper.toBankingTransactionDto(bankingTransfer.getFromTransaction()),
-                bankingTransfer.getCreatedAt(),
-                bankingTransfer.getUpdatedAt()
+            bankingTransfer.getId(),
+            bankingTransfer.getFromAccount().getId(),
+            bankingTransfer.getToAccountIban(),
+            bankingTransfer.getAmount(),
+            bankingTransfer.getStatus(),
+            bankingTransfer.getDescription(),
+            BankingTransactionDtoMapper.toBankingTransactionDto(bankingTransfer.getFromTransaction()),
+            bankingTransfer.getCreatedAt(),
+            bankingTransfer.getUpdatedAt()
         );
     }
 
     public static Set<BankingTransferDto> toBankingTransferDtoSet(Set<BankingTransfer> transfers) {
 
         return transfers.stream()
-                        .map(BankingTransferDtoMapper::toBankingTransferDto)
-                        .collect(Collectors.toSet());
+            .map(BankingTransferDtoMapper::toBankingTransferDto)
+            .collect(Collectors.toSet());
     }
 
     public static Page<BankingTransferDto> toBankingTransferDtoPage(Page<BankingTransfer> transfers) {

@@ -154,11 +154,11 @@ public class BankingTransferTest {
         transfer.setStatus(BankingTransferStatus.PENDING);
 
         // when
-        BankingTransfer result = transfer.setStatus(BankingTransferStatus.CONFIRMED);
+        BankingTransfer result = transfer.setStatus(BankingTransferStatus.AUTHORIZED);
 
         // then
         assertThat(result).isSameAs(transfer);
-        assertThat(transfer.getStatus()).isEqualTo(BankingTransferStatus.CONFIRMED);
+        assertThat(transfer.getStatus()).isEqualTo(BankingTransferStatus.AUTHORIZED);
     }
 
     @Test
@@ -179,7 +179,7 @@ public class BankingTransferTest {
     @DisplayName("setStatus invalid transition throws BankingTransferStatusTransitionException")
     void setStatus_WhenInvalidTransition_ThrowsException() {
         // given
-        transfer.setStatus(BankingTransferStatus.CONFIRMED);
+        transfer.setStatus(BankingTransferStatus.AUTHORIZED);
 
         // when / then
         BankingTransferStatusTransitionException exception = assertThrows(
@@ -262,10 +262,10 @@ public class BankingTransferTest {
     void confirm_WhenValid_ConfirmsTransfer() {
         // given
         // when
-        transfer.confirm();
+        transfer.authorized();
 
         // then
-        assertThat(transfer.getStatus()).isEqualTo(BankingTransferStatus.CONFIRMED);
+        assertThat(transfer.getStatus()).isEqualTo(BankingTransferStatus.AUTHORIZED);
         assertThat(transfer.getUpdatedAt()).isNotNull();
     }
 
