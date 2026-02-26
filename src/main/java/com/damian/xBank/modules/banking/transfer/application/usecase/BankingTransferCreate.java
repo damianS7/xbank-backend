@@ -53,7 +53,9 @@ public class BankingTransferCreate {
             request.amount()
         );
 
+        transfer.setDescription(request.description());
         transfer.setToAccountIban(request.toAccountNumber());
+        
         return bankingTransferRepository.save(transfer);
     }
 }
