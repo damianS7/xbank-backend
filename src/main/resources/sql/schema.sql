@@ -197,7 +197,7 @@ CREATE CAST (varchar as banking_transfer_type) WITH INOUT AS IMPLICIT;
 CREATE TYPE public."banking_transfer_status_type" AS ENUM (
   'PENDING',
   'REJECTED',
-  'CONFIRMED'
+  'AUTHORIZED'
 );
 CREATE CAST (varchar as banking_transfer_status_type) WITH INOUT AS IMPLICIT;
 
