@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.banking.transfer.infrastructure.web.exception;
 
+import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferAuthorizationFailedException;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferCurrencyMismatchException;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferNotFoundException;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferNotOwnerException;
@@ -49,11 +50,19 @@ public class BankingTransferExceptionHandler {
     }
 
     @ExceptionHandler(BankingTransferNotFoundException.class)
-    public ResponseEntity<ApiResponse<String>> handleNotFound(BankingTransferNotFoundException ex) {
+    public ResponseEntity<ApiResponse<String>> handle(BankingTransferNotFoundException ex) {
         log.warn("Banking transfer: {} not found", ex.getResourceId());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(ApiResponse.error(ex, HttpStatus.NOT_FOUND, messageSource));
+    }
+
+    @ExceptionHandler(BankingTransferAuthorizationFailedException.class)
+    public ResponseEntity<ApiResponse<String>> handle(BankingTransferAuthorizationFailedException ex) {
+        log.warn("Banking transfer authorization failed: {} ", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+            .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
     }
 
     @ExceptionHandler(BankingTransferSameAccountException.class)
