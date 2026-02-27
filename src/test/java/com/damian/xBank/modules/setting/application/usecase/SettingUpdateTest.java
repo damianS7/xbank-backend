@@ -1,8 +1,13 @@
 package com.damian.xBank.modules.setting.application.usecase;
 
-import com.damian.xBank.modules.setting.application.dto.request.SettingsUpdateRequest;
+import com.damian.xBank.modules.setting.application.cqrs.command.SettingUpdateCommand;
+import com.damian.xBank.modules.setting.application.cqrs.result.SettingResult;
 import com.damian.xBank.modules.setting.domain.exception.SettingNotOwnerException;
-import com.damian.xBank.modules.setting.domain.model.*;
+import com.damian.xBank.modules.setting.domain.model.Setting;
+import com.damian.xBank.modules.setting.domain.model.SettingLanguage;
+import com.damian.xBank.modules.setting.domain.model.SettingMultifactor;
+import com.damian.xBank.modules.setting.domain.model.SettingTheme;
+import com.damian.xBank.modules.setting.domain.model.UserSettings;
 import com.damian.xBank.modules.setting.infrastructure.persistence.repository.SettingRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
@@ -18,7 +23,11 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class SettingUpdateTest extends AbstractServiceTest {
 
@@ -79,7 +88,7 @@ public class SettingUpdateTest extends AbstractServiceTest {
             SettingTheme.LIGHT
         );
 
-        SettingsUpdateRequest request = new SettingsUpdateRequest(
+        SettingUpdateCommand request = new SettingUpdateCommand(
             newUserSettings
         );
 
@@ -90,14 +99,14 @@ public class SettingUpdateTest extends AbstractServiceTest {
         when(settingRepository.save(any(Setting.class)))
             .thenAnswer(invocation -> invocation.getArgument(0));
 
-        Setting result = settingUpdate.execute(request);
+        SettingResult result = settingUpdate.execute(request);
 
         // then
         assertThat(result)
             .isNotNull()
             .extracting(
-                r -> r.getSettings().language(),
-                r -> r.getSettings().emailNotifications()
+                r -> r.settings().language(),
+                r -> r.settings().emailNotifications()
             )
             .containsExactly(
                 newUserSettings.language(),
@@ -140,7 +149,7 @@ public class SettingUpdateTest extends AbstractServiceTest {
             SettingTheme.LIGHT
         );
 
-        SettingsUpdateRequest request = new SettingsUpdateRequest(
+        SettingUpdateCommand request = new SettingUpdateCommand(
             newUserSettings
         );
 

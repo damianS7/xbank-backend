@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.setting.application.usecase;
 
+import com.damian.xBank.modules.setting.application.cqrs.result.SettingResult;
 import com.damian.xBank.modules.setting.domain.exception.SettingNotFoundException;
 import com.damian.xBank.modules.setting.domain.model.Setting;
 import com.damian.xBank.modules.setting.infrastructure.persistence.repository.SettingRepository;
@@ -16,8 +17,8 @@ public class SettingGet {
     private final SettingRepository settingRepository;
 
     public SettingGet(
-            AuthenticationContext authenticationContext,
-            SettingRepository settingRepository
+        AuthenticationContext authenticationContext,
+        SettingRepository settingRepository
     ) {
         this.authenticationContext = authenticationContext;
         this.settingRepository = settingRepository;
@@ -28,15 +29,17 @@ public class SettingGet {
      *
      * @return current user settings
      */
-    public Setting execute() {
+    public SettingResult execute() {
         // User logged
         final User currentUser = authenticationContext.getCurrentUser();
 
         // find the settings for the currentUser
-        return settingRepository
-                .findByUser_Id(currentUser.getId())
-                .orElseThrow(
-                        () -> new SettingNotFoundException(currentUser.getId())
-                );
+        Setting userSettings = settingRepository
+            .findByUser_Id(currentUser.getId())
+            .orElseThrow(
+                () -> new SettingNotFoundException(currentUser.getId())
+            );
+
+        return new SettingResult(userSettings.getSettings());
     }
 }
