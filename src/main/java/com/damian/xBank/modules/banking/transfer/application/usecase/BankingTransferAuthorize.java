@@ -71,18 +71,6 @@ public class BankingTransferAuthorize {
         // authorize transfer
         transfer.authorized();
 
-        if (transfer.getType() == BankingTransferType.INTERNAL) {
-            // Notify sender
-            notificationPublisher.publish(
-                notificationEventFactory.transferSent(transfer)
-            );
-
-            // Notify recipient
-            notificationPublisher.publish(
-                notificationEventFactory.transferReceived(transfer)
-            );
-        }
-
         if (transfer.getType() == BankingTransferType.EXTERNAL) {
             log.debug("Authorizing external transfer: {}", transferId);
             // TODO send transfer to RabbitMq queue for processing by external transfer service
@@ -105,6 +93,19 @@ public class BankingTransferAuthorize {
             }
 
             transfer.setProviderAuthorizationId(response.authorizationId());
+        }
+
+        // Notify sender
+        notificationPublisher.publish(
+            notificationEventFactory.transferAuthorized(transfer)
+        );
+
+        if (transfer.getType() == BankingTransferType.INTERNAL) {
+
+            // Notify recipient
+            notificationPublisher.publish(
+                notificationEventFactory.transferReceived(transfer)
+            );
         }
 
         return bankingTransferRepository.save(transfer);
