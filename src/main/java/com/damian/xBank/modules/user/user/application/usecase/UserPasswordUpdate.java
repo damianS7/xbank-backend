@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.user.user.application.usecase;
 
-import com.damian.xBank.modules.user.user.application.dto.request.UserPasswordUpdateRequest;
+import com.damian.xBank.modules.user.user.application.cqrs.command.UserPasswordUpdateCommand;
 import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -19,9 +19,9 @@ public class UserPasswordUpdate {
     private final AuthenticationContext authenticationContext;
 
     public UserPasswordUpdate(
-            UserPasswordService userPasswordService,
-            PasswordValidator passwordValidator,
-            AuthenticationContext authenticationContext
+        UserPasswordService userPasswordService,
+        PasswordValidator passwordValidator,
+        AuthenticationContext authenticationContext
     ) {
         this.userPasswordService = userPasswordService;
         this.passwordValidator = passwordValidator;
@@ -31,18 +31,18 @@ public class UserPasswordUpdate {
     /**
      * It updates the password of the current user
      *
-     * @param request the request body that contains the current password and the new password
+     * @param command the request body that contains the current password and the new password
      * @throws UserNotFoundException                    if the user does not exist
      * @throws UserInvalidPasswordConfirmationException if the password does not match
      */
-    public void execute(UserPasswordUpdateRequest request) {
+    public void execute(UserPasswordUpdateCommand command) {
         // Current user
         final User currentUser = authenticationContext.getCurrentUser();
 
         // Before making any changes we check that the password sent by the user matches the one in the entity
-        passwordValidator.validatePassword(currentUser, request.currentPassword());
+        passwordValidator.validatePassword(currentUser, command.currentPassword());
 
         // update the password
-        userPasswordService.updatePassword(currentUser.getId(), request.newPassword());
+        userPasswordService.updatePassword(currentUser.getId(), command.newPassword());
     }
 }

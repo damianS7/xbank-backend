@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.user.profile.application.usecase;
 
+import com.damian.xBank.modules.user.profile.application.cqrs.result.UserProfileResult;
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileNotFoundException;
 import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
@@ -21,7 +22,10 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class UserProfileGetTest extends AbstractServiceTest {
@@ -57,11 +61,11 @@ public class UserProfileGetTest extends AbstractServiceTest {
         when(userProfileRepository.findByUserId(anyLong()))
             .thenReturn(Optional.of(customer.getProfile()));
 
-        UserProfile result = userProfileGet.execute();
+        UserProfileResult result = userProfileGet.execute();
 
         // then
-        assertEquals(customer.getId(), result.getUser().getId());
-        assertEquals(customer.getEmail(), result.getUser().getEmail());
+        assertEquals(customer.getProfile().getId(), result.id());
+        assertEquals(customer.getProfile().getFirstName(), result.firstName());
         verify(userProfileRepository, times(1)).findByUserId(customer.getId());
     }
 

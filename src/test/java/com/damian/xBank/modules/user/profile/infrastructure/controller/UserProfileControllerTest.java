@@ -1,11 +1,11 @@
 package com.damian.xBank.modules.user.profile.infrastructure.controller;
 
-import com.damian.xBank.modules.user.profile.application.dto.request.UserProfileUpdateRequest;
-import com.damian.xBank.modules.user.profile.application.dto.response.UserProfileDetailDto;
-import com.damian.xBank.modules.user.profile.application.dto.response.UserProfileDto;
+import com.damian.xBank.modules.user.profile.application.cqrs.result.UserProfileResult;
 import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.profile.domain.model.UserGender;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
+import com.damian.xBank.modules.user.profile.infrastructure.rest.dto.request.UserProfileUpdateRequest;
+import com.damian.xBank.modules.user.profile.infrastructure.rest.dto.response.UserProfileDto;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
@@ -39,13 +39,13 @@ public class UserProfileControllerTest extends AbstractControllerTest {
         UserProfile profile = UserProfileFactory.testProfile();
 
         customer = UserTestBuilder
-                .aCustomer()
-                .withEmail("customer@demo.com")
-                .withRole(UserRole.CUSTOMER)
-                .withStatus(UserStatus.VERIFIED)
-                .withPassword(RAW_PASSWORD)
-                .withProfile(profile)
-                .build();
+            .aCustomer()
+            .withEmail("customer@demo.com")
+            .withRole(UserRole.CUSTOMER)
+            .withStatus(UserStatus.VERIFIED)
+            .withPassword(RAW_PASSWORD)
+            .withProfile(profile)
+            .build();
 
         userRepository.save(customer);
     }
@@ -58,23 +58,23 @@ public class UserProfileControllerTest extends AbstractControllerTest {
 
         // when
         MvcResult result = mockMvc
-                .perform(
-                        get("/api/v1/profiles")
-                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
-                .andDo(print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andReturn();
+            .perform(
+                get("/api/v1/profiles")
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+            .andDo(print())
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+            .andReturn();
 
         // then
-        UserProfileDetailDto customerWithProfileDTO = objectMapper.readValue(
-                result.getResponse().getContentAsString(),
-                UserProfileDetailDto.class
+        UserProfileResult customerWithProfileDTO = objectMapper.readValue(
+            result.getResponse().getContentAsString(),
+            UserProfileResult.class
         );
 
         // then
         assertThat(customerWithProfileDTO).isNotNull();
-        assertThat(customerWithProfileDTO.email()).isEqualTo(customer.getEmail());
+        assertThat(customerWithProfileDTO.firstName()).isEqualTo(customer.getProfile().getFirstName());
     }
 
     @Test
@@ -91,43 +91,43 @@ public class UserProfileControllerTest extends AbstractControllerTest {
         fields.put("gender", UserGender.FEMALE);
 
         UserProfileUpdateRequest givenRequest = new UserProfileUpdateRequest(
-                RAW_PASSWORD,
-                fields
+            RAW_PASSWORD,
+            fields
         );
 
         // when
         MvcResult result = mockMvc
-                .perform(
-                        patch("/api/v1/profiles")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                                .content(JsonHelper.toJson(givenRequest)))
-                .andDo(print())
-                .andExpect(status().is(HttpStatus.OK.value()))
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andReturn();
+            .perform(
+                patch("/api/v1/profiles")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                    .content(JsonHelper.toJson(givenRequest)))
+            .andDo(print())
+            .andExpect(status().is(HttpStatus.OK.value()))
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+            .andReturn();
 
         // then
         UserProfileDto customerDto = JsonHelper.fromJson(
-                result.getResponse().getContentAsString(),
-                UserProfileDto.class
+            result.getResponse().getContentAsString(),
+            UserProfileDto.class
         );
 
         assertThat(customerDto)
-                .isNotNull()
-                .extracting(
-                        UserProfileDto::firstName,
-                        UserProfileDto::lastName,
-                        UserProfileDto::phone,
-                        UserProfileDto::birthdate,
-                        UserProfileDto::gender
-                ).containsExactly(
-                        givenRequest.fieldsToUpdate().get("firstName"),
-                        givenRequest.fieldsToUpdate().get("lastName"),
-                        givenRequest.fieldsToUpdate().get("phoneNumber"),
-                        givenRequest.fieldsToUpdate().get("birthdate"),
-                        givenRequest.fieldsToUpdate().get("gender")
-                );
+            .isNotNull()
+            .extracting(
+                UserProfileDto::firstName,
+                UserProfileDto::lastName,
+                UserProfileDto::phone,
+                UserProfileDto::birthdate,
+                UserProfileDto::gender
+            ).containsExactly(
+                givenRequest.fieldsToUpdate().get("firstName"),
+                givenRequest.fieldsToUpdate().get("lastName"),
+                givenRequest.fieldsToUpdate().get("phoneNumber"),
+                givenRequest.fieldsToUpdate().get("birthdate"),
+                givenRequest.fieldsToUpdate().get("gender")
+            );
     }
 
 }

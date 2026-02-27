@@ -9,7 +9,8 @@ import com.damian.xBank.modules.user.token.domain.factory.UserTokenFactory;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.domain.notification.UserTokenVerificationNotifier;
 import com.damian.xBank.modules.user.token.infrastructure.service.notification.UserTokenLinkBuilder;
-import com.damian.xBank.modules.user.user.application.dto.request.UserRegistrationRequest;
+import com.damian.xBank.modules.user.user.application.cqrs.command.UserRegistrationCommand;
+import com.damian.xBank.modules.user.user.application.cqrs.result.UserRegistrationResult;
 import com.damian.xBank.modules.user.user.domain.exception.UserEmailTakenException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
@@ -33,13 +34,13 @@ public class UserRegister {
     private final SettingFactory settingFactory;
 
     public UserRegister(
-            UserRepository userRepository,
-            UserDomainService userDomainService,
-            UserTokenLinkBuilder userTokenLinkBuilder,
-            UserTokenVerificationNotifier userTokenVerificationNotifier,
-            UserProfileFactory userProfileFactory,
-            UserTokenFactory userTokenFactory,
-            SettingFactory settingFactory
+        UserRepository userRepository,
+        UserDomainService userDomainService,
+        UserTokenLinkBuilder userTokenLinkBuilder,
+        UserTokenVerificationNotifier userTokenVerificationNotifier,
+        UserProfileFactory userProfileFactory,
+        UserTokenFactory userTokenFactory,
+        SettingFactory settingFactory
     ) {
         this.userRepository = userRepository;
         this.userDomainService = userDomainService;
@@ -53,26 +54,26 @@ public class UserRegister {
     /**
      * Creates a new user
      *
-     * @param request contains the fields needed for the user creation
+     * @param command contains the fields needed for the user creation
      * @return the user created
      * @throws UserProfileException if another user has the email
      */
     @Transactional
-    public User execute(UserRegistrationRequest request) {
+    public UserRegistrationResult execute(UserRegistrationCommand command) {
         // check if the email is already taken
-        if (userRepository.existsByEmail(request.email())) {
-            throw new UserEmailTakenException(request.email());
+        if (userRepository.existsByEmail(command.email())) {
+            throw new UserEmailTakenException(command.email());
         }
 
         // Create the user
         User user = userDomainService.createUser(
-                request.email(),
-                request.password(),
-                UserRole.CUSTOMER
+            command.email(),
+            command.password(),
+            UserRole.CUSTOMER
         );
 
         // create the user profile
-        UserProfile profile = userProfileFactory.create(request);
+        UserProfile profile = userProfileFactory.create(command);
         user.setProfile(profile);
 
         // Create default settings for the new user
@@ -90,15 +91,20 @@ public class UserRegister {
         String verificationLink = userTokenLinkBuilder.buildAccountVerificationLink(userToken.getToken());
 
         // Send email to the user with verification link
-        userTokenVerificationNotifier.sendVerificationToken(request.email(), verificationLink);
+        userTokenVerificationNotifier.sendVerificationToken(command.email(), verificationLink);
 
         log.debug(
-                "user: {} with email:{} registered",
-                user.getId(),
-                user.getEmail()
+            "user: {} with email:{} registered",
+            user.getId(),
+            user.getEmail()
         );
 
-        return user;
+        return new UserRegistrationResult(
+            user.getId(),
+            user.getEmail(),
+            user.getRole(),
+            user.getCreatedAt()
+        );
     }
 
     @Async  // ← No bloquea ni causa rollback si falla

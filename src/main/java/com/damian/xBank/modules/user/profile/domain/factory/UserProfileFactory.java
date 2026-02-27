@@ -2,7 +2,8 @@ package com.damian.xBank.modules.user.profile.domain.factory;
 
 import com.damian.xBank.modules.user.profile.domain.model.UserGender;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
-import com.damian.xBank.modules.user.user.application.dto.request.UserRegistrationRequest;
+import com.damian.xBank.modules.user.user.application.cqrs.command.UserRegistrationCommand;
+import com.damian.xBank.modules.user.user.infrastructure.rest.dto.request.UserRegistrationRequest;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -11,30 +12,44 @@ import java.time.LocalDate;
 public class UserProfileFactory {
     public static UserProfile testProfile() {
         return UserProfile.create()
-                          .setNationalId("123456789Z")
-                          .setFirstName("David")
-                          .setLastName("Brow")
-                          .setBirthdate(LocalDate.now())
-                          .setPhotoPath("avatar.jpg")
-                          .setPhoneNumber("123 123 123")
-                          .setPostalCode("01003")
-                          .setAddress("Fake ave")
-                          .setCountry("US")
-                          .setGender(UserGender.MALE);
+            .setNationalId("123456789Z")
+            .setFirstName("David")
+            .setLastName("Brow")
+            .setBirthdate(LocalDate.now())
+            .setPhotoPath("avatar.jpg")
+            .setPhoneNumber("123 123 123")
+            .setPostalCode("01003")
+            .setAddress("Fake ave")
+            .setCountry("US")
+            .setGender(UserGender.MALE);
     }
 
     public UserProfile create(UserRegistrationRequest request) {
         return UserProfile.create()
-                          .setNationalId(request.nationalId())
-                          .setFirstName(request.firstName())
-                          .setLastName(request.lastName())
-                          .setPhoneNumber(request.phoneNumber())
-                          .setGender(request.gender())
-                          .setBirthdate(request.birthdate())
-                          .setCountry(request.country())
-                          .setAddress(request.address())
-                          .setPostalCode((request.zipCode()))
-                          .setPhotoPath("avatar.jpg");
+            .setNationalId(request.nationalId())
+            .setFirstName(request.firstName())
+            .setLastName(request.lastName())
+            .setPhoneNumber(request.phoneNumber())
+            .setGender(request.gender())
+            .setBirthdate(request.birthdate())
+            .setCountry(request.country())
+            .setAddress(request.address())
+            .setPostalCode((request.zipCode()))
+            .setPhotoPath("avatar.jpg");
+    }
+
+    public UserProfile create(UserRegistrationCommand command) {
+        return UserProfile.create()
+            .setNationalId(command.nationalId())
+            .setFirstName(command.firstName())
+            .setLastName(command.lastName())
+            .setPhoneNumber(command.phoneNumber())
+            .setGender(command.gender())
+            .setBirthdate(command.birthdate())
+            .setCountry(command.country())
+            .setAddress(command.address())
+            .setPostalCode((command.zipCode()))
+            .setPhotoPath("avatar.jpg");
     }
 
 }

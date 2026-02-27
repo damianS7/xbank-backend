@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.user.user.application.usecase;
 
+import com.damian.xBank.modules.user.user.application.cqrs.result.UserResult;
 import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
@@ -15,8 +16,8 @@ public class UserGet {
     private final AuthenticationContext authenticationContext;
 
     public UserGet(
-            UserRepository userRepository,
-            AuthenticationContext authenticationContext
+        UserRepository userRepository,
+        AuthenticationContext authenticationContext
     ) {
         this.userRepository = userRepository;
         this.authenticationContext = authenticationContext;
@@ -28,15 +29,22 @@ public class UserGet {
      * @return the user
      * @throws UserNotFoundException
      */
-    public User execute() {
+    public UserResult execute() {
         // Current user
         final User currentUser = authenticationContext.getCurrentUser();
 
         // if the user does not exist we throw an exception
-        return userRepository
-                .findById(currentUser.getId())
-                .orElseThrow(
-                        () -> new UserNotFoundException(currentUser.getId())
-                );
+        User storedUser = userRepository
+            .findById(currentUser.getId())
+            .orElseThrow(
+                () -> new UserNotFoundException(currentUser.getId())
+            );
+
+        return new UserResult(
+            storedUser.getId(),
+            storedUser.getEmail(),
+            storedUser.getRole(),
+            storedUser.getCreatedAt()
+        );
     }
 }

@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.user.user.application.usecase;
 
-import com.damian.xBank.modules.user.user.application.dto.request.UserEmailUpdateRequest;
+import com.damian.xBank.modules.user.user.application.cqrs.command.UserEmailUpdateCommand;
 import com.damian.xBank.modules.user.user.domain.exception.UserEmailTakenException;
 import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException;
@@ -11,6 +11,7 @@ import com.damian.xBank.shared.security.PasswordValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 
@@ -22,9 +23,9 @@ public class UserEmailUpdate {
     private final UserRepository userRepository;
 
     public UserEmailUpdate(
-            AuthenticationContext authenticationContext,
-            PasswordValidator passwordValidator,
-            UserRepository userRepository
+        AuthenticationContext authenticationContext,
+        PasswordValidator passwordValidator,
+        UserRepository userRepository
     ) {
         this.authenticationContext = authenticationContext;
         this.passwordValidator = passwordValidator;
@@ -34,38 +35,38 @@ public class UserEmailUpdate {
     /**
      * It updates the email from the logged user
      *
-     * @param request that contains the current password and the new email.
-     * @return the user updated
+     * @param command that contains the current password and the new email.
      * @throws UserNotFoundException                    if the user does not exist
      * @throws UserEmailTakenException                  if the email is already taken
      * @throws UserInvalidPasswordConfirmationException if the password does not match
      */
-    public User execute(UserEmailUpdateRequest request) {
+    @Transactional
+    public void execute(UserEmailUpdateCommand command) {
         // Current user
         final User currentUser = authenticationContext.getCurrentUser();
 
         // we get the User entity so we can save at the end
         User user = userRepository.findById(currentUser.getId()).orElseThrow(
-                () -> new UserNotFoundException(currentUser.getId())
+            () -> new UserNotFoundException(currentUser.getId())
         );
 
         // Before making any changes we check that the password sent by the user matches the one in the entity
-        passwordValidator.validatePassword(currentUser, request.currentPassword());
+        passwordValidator.validatePassword(currentUser, command.currentPassword());
 
         // check if the email is already taken
-        if (userRepository.existsByEmail(request.newEmail())) {
-            throw new UserEmailTakenException(request.newEmail());
+        if (userRepository.existsByEmail(command.newEmail())) {
+            throw new UserEmailTakenException(command.newEmail());
         }
 
-        log.debug("Updating user: {} to email: {}", user.getId(), request.newEmail());
+        log.debug("Updating user: {} to email: {}", user.getId(), command.newEmail());
 
         // set the new email
-        user.setEmail(request.newEmail());
+        user.setEmail(command.newEmail());
 
         // we change the updateAt timestamp field
         user.setUpdatedAt(Instant.now());
 
         // save the changes
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 }

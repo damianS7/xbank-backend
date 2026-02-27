@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.auth.infrastructure.web.controller;
 
-import com.damian.xBank.modules.user.profile.application.dto.request.UserProfileUpdateRequest;
+import com.damian.xBank.modules.user.profile.infrastructure.rest.dto.request.UserProfileUpdateRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;

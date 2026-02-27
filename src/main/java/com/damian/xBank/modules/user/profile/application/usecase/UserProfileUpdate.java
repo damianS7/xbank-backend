@@ -1,6 +1,7 @@
 package com.damian.xBank.modules.user.profile.application.usecase;
 
-import com.damian.xBank.modules.user.profile.application.dto.request.UserProfileUpdateRequest;
+import com.damian.xBank.modules.user.profile.application.cqrs.command.UserProfileUpdateCommand;
+import com.damian.xBank.modules.user.profile.application.cqrs.result.UserProfileResult;
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileNotFoundException;
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileUpdateException;
 import com.damian.xBank.modules.user.profile.domain.model.UserGender;
@@ -24,51 +25,51 @@ public class UserProfileUpdate {
     private final PasswordValidator passwordValidator;
 
     public UserProfileUpdate(
-            UserProfileRepository userProfileRepository,
-            AuthenticationContext authenticationContext,
-            PasswordValidator passwordValidator
+        UserProfileRepository userProfileRepository,
+        AuthenticationContext authenticationContext,
+        PasswordValidator passwordValidator
     ) {
         this.userProfileRepository = userProfileRepository;
         this.authenticationContext = authenticationContext;
         this.passwordValidator = passwordValidator;
     }
 
-    public UserProfile execute(UserProfileUpdateRequest request) {
+    public UserProfileResult execute(UserProfileUpdateCommand command) {
         // Current user
         final User currentUser = authenticationContext.getCurrentUser();
 
-        return execute(currentUser.getId(), request);
+        return execute(currentUser.getId(), command);
     }
 
     /**
      * It updates the customer profile by its ID.
      *
      * @param userId  the id of the profile to be updated
-     * @param request the request containing the updated profile information
+     * @param command the command containing the updated profile information
      * @return Customer with the updated profile
      * @throws UserProfileNotFoundException if the profile is not found
      */
-    public UserProfile execute(Long userId, UserProfileUpdateRequest request) {
+    public UserProfileResult execute(Long userId, UserProfileUpdateCommand command) {
         // Current user
         final User currentUser = authenticationContext.getCurrentUser();
 
         // find the user we want to modify
         UserProfile profile = userProfileRepository
-                .findByUserId(userId)
-                .orElseThrow(
-                        () -> new UserProfileNotFoundException(userId)
-                );
+            .findByUserId(userId)
+            .orElseThrow(
+                () -> new UserProfileNotFoundException(userId)
+            );
 
         if (!currentUser.isAdmin()) {
             // we make sure that this profile belongs to the current user
             profile.assertOwnedBy(currentUser.getId());
 
             // we validate the password before updating the profile
-            passwordValidator.validatePassword(currentUser, request.currentPassword());
+            passwordValidator.validatePassword(currentUser, command.currentPassword());
         }
 
         // we iterate over the fields (if any)
-        request.fieldsToUpdate().forEach((key, value) -> {
+        command.fieldsToUpdate().forEach((key, value) -> {
             switch (key) {
                 case "firstName" -> profile.setFirstName((String) value);
                 case "lastName" -> profile.setLastName((String) value);
@@ -80,7 +81,7 @@ public class UserProfileUpdate {
                 case "gender" -> profile.setGender(UserGender.valueOf((String) value));
                 case "birthdate" -> profile.setBirthdate(LocalDate.parse((String) value));
                 default -> throw new UserProfileUpdateException(
-                        userId, new Object[]{key, value.toString()}
+                    userId, new Object[]{key, value.toString()}
                 );
             }
         });
@@ -89,6 +90,8 @@ public class UserProfileUpdate {
         profile.setUpdatedAt(Instant.now());
 
         // we save the updated profile to the database
-        return userProfileRepository.save(profile);
+        userProfileRepository.save(profile);
+
+        return UserProfileResult.from(profile);
     }
 }

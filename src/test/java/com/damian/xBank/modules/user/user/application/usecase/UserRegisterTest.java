@@ -6,7 +6,7 @@ import com.damian.xBank.modules.user.profile.domain.model.UserGender;
 import com.damian.xBank.modules.user.token.domain.factory.UserTokenFactory;
 import com.damian.xBank.modules.user.token.domain.notification.UserTokenVerificationNotifier;
 import com.damian.xBank.modules.user.token.infrastructure.service.notification.UserTokenLinkBuilder;
-import com.damian.xBank.modules.user.user.application.dto.request.UserRegistrationRequest;
+import com.damian.xBank.modules.user.user.application.cqrs.command.UserRegistrationCommand;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.service.UserDomainService;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
@@ -25,7 +25,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class UserRegisterTest extends AbstractServiceTest {
@@ -58,33 +60,33 @@ public class UserRegisterTest extends AbstractServiceTest {
     @BeforeEach
     void setUp() {
         user = UserTestBuilder.aCustomer()
-                              .withId(1L)
-                              .withPassword(RAW_PASSWORD)
-                              .withEmail("customer@demo.com")
-                              .withProfile(UserProfileFactory.testProfile())
-                              .build();
+            .withId(1L)
+            .withPassword(RAW_PASSWORD)
+            .withEmail("customer@demo.com")
+            .withProfile(UserProfileFactory.testProfile())
+            .build();
     }
 
     @Test
     @DisplayName("should register user when valid request")
     void registerUser_WhenValidRequest_SavesUser() {
         // given
-        UserRegistrationRequest request = new UserRegistrationRequest(
-                "david@gmail.com",
-                "123456",
-                "david",
-                "white",
-                "123 123 123",
-                LocalDate.of(1989, 1, 1),
-                UserGender.MALE,
-                "Fake AV",
-                "50120",
-                "USA",
-                "123123123Z"
+        UserRegistrationCommand command = new UserRegistrationCommand(
+            "david@gmail.com",
+            "123456",
+            "david",
+            "white",
+            "123 123 123",
+            LocalDate.of(1989, 1, 1),
+            UserGender.MALE,
+            "Fake AV",
+            "50120",
+            "USA",
+            "123123123Z"
         );
 
         // when
-        userRegister.execute(request);
+        userRegister.execute(command);
 
         // then
         ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
@@ -93,12 +95,12 @@ public class UserRegisterTest extends AbstractServiceTest {
         User userCaptured = userArgumentCaptor.getValue();
 
         assertThat(userCaptured)
-                .isNotNull()
-                .extracting(
-                        User::getEmail
-                ).isEqualTo(
-                        request.email()
-                );
+            .isNotNull()
+            .extracting(
+                User::getEmail
+            ).isEqualTo(
+                command.email()
+            );
         verify(userRepository, times(1)).save(any(User.class));
     }
 }

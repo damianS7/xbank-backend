@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.user.user.application.usecase;
 
 import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
-import com.damian.xBank.modules.user.user.application.dto.request.UserEmailUpdateRequest;
+import com.damian.xBank.modules.user.user.application.cqrs.command.UserEmailUpdateCommand;
 import com.damian.xBank.modules.user.user.domain.exception.UserEmailTakenException;
 import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -22,7 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class UserEmailUpdateTest extends AbstractServiceTest {
 
@@ -51,7 +53,7 @@ public class UserEmailUpdateTest extends AbstractServiceTest {
         // set the user on the context
         setUpContext(customer);
 
-        UserEmailUpdateRequest updateRequest = new UserEmailUpdateRequest(
+        UserEmailUpdateCommand command = new UserEmailUpdateCommand(
             RAW_PASSWORD,
             "david@test.com"
         );
@@ -63,15 +65,14 @@ public class UserEmailUpdateTest extends AbstractServiceTest {
             invocation -> invocation.getArgument(0)
         );
 
-        User updatedAccount = userEmailUpdate.execute(updateRequest);
+        userEmailUpdate.execute(command);
 
         // then
-        assertThat(updatedAccount)
-            .isNotNull()
+        assertThat(customer)
             .extracting(
                 User::getEmail
             ).isEqualTo(
-                updateRequest.newEmail()
+                command.newEmail()
             );
 
         verify(userRepository, times(1)).save(any(User.class));
@@ -85,7 +86,7 @@ public class UserEmailUpdateTest extends AbstractServiceTest {
         // set the user on the context
         setUpContext(customer);
 
-        UserEmailUpdateRequest updateRequest = new UserEmailUpdateRequest(
+        UserEmailUpdateCommand updateRequest = new UserEmailUpdateCommand(
             RAW_PASSWORD,
             "david2@test.com"
         );
@@ -110,7 +111,7 @@ public class UserEmailUpdateTest extends AbstractServiceTest {
         // set the user on the context
         setUpContext(customer);
 
-        UserEmailUpdateRequest updateRequest = new UserEmailUpdateRequest(
+        UserEmailUpdateCommand updateRequest = new UserEmailUpdateCommand(
             "wrong password",
             "david@test.com"
         );
