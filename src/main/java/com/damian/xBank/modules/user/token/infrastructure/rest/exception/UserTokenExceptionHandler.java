@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.user.token.infrastructure.web.exception;
+package com.damian.xBank.modules.user.token.infrastructure.rest.exception;
 
 import com.damian.xBank.modules.user.token.domain.exception.UserTokenExpiredException;
 import com.damian.xBank.modules.user.token.domain.exception.UserTokenNotFoundException;

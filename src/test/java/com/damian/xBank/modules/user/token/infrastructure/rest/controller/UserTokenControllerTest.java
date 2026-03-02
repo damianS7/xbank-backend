@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.user.token.infrastructure.web.controller;
+package com.damian.xBank.modules.user.token.infrastructure.rest.controller;
 
 import com.damian.xBank.modules.user.token.application.dto.request.UserTokenRequestPasswordResetRequest;
 import com.damian.xBank.modules.user.token.application.dto.request.UserTokenResetPasswordRequest;
@@ -11,7 +11,11 @@ import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.utils.JsonHelper;
 import com.damian.xBank.shared.utils.UserTestBuilder;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -26,12 +30,12 @@ public class UserTokenControllerTest extends AbstractControllerTest {
     @BeforeEach
     void setUp() {
         user = UserTestBuilder
-                .aCustomer()
-                .withEmail("user@demo.com")
-                .withRole(UserRole.CUSTOMER)
-                .withStatus(UserStatus.VERIFIED)
-                .withPassword(RAW_PASSWORD)
-                .build();
+            .aCustomer()
+            .withEmail("user@demo.com")
+            .withRole(UserRole.CUSTOMER)
+            .withStatus(UserStatus.VERIFIED)
+            .withPassword(RAW_PASSWORD)
+            .build();
 
         userRepository.save(user);
     }
@@ -47,23 +51,23 @@ public class UserTokenControllerTest extends AbstractControllerTest {
     void getVerifyAccount_WhenValidRequest_Returns200Ok() throws Exception {
         // given
         User unverifiedUser = User.create()
-                                  .setEmail("non-verified-user@demo.com")
-                                  .setPassword(passwordEncoder.encode(this.RAW_PASSWORD))
-                                  .setStatus(UserStatus.PENDING_VERIFICATION);
+            .setEmail("non-verified-user@demo.com")
+            .setPassword(passwordEncoder.encode(this.RAW_PASSWORD))
+            .setStatus(UserStatus.PENDING_VERIFICATION);
 
         userRepository.save(unverifiedUser);
 
         UserToken givenToken = UserToken.create()
-                                        .setType(UserTokenType.ACCOUNT_VERIFICATION)
-                                        .setUser(unverifiedUser);
+            .setType(UserTokenType.ACCOUNT_VERIFICATION)
+            .setUser(unverifiedUser);
 
         userTokenRepository.save(givenToken);
 
         // when
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/accounts/verification/{token}", givenToken.getToken())
-                                              .contentType(MediaType.APPLICATION_JSON))
-               .andDo(print())
-               .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()));
+                .contentType(MediaType.APPLICATION_JSON))
+            .andDo(print())
+            .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()));
     }
 
     @Test
@@ -71,23 +75,23 @@ public class UserTokenControllerTest extends AbstractControllerTest {
     void postVerification_WhenValidRequest_Returns200Ok() throws Exception {
         // given
         User unverifiedUser = User.create()
-                                  .setEmail("non-verified-user@demo.com")
-                                  .setPassword(passwordEncoder.encode(this.RAW_PASSWORD))
-                                  .setStatus(UserStatus.PENDING_VERIFICATION);
+            .setEmail("non-verified-user@demo.com")
+            .setPassword(passwordEncoder.encode(this.RAW_PASSWORD))
+            .setStatus(UserStatus.PENDING_VERIFICATION);
 
         userRepository.save(unverifiedUser);
 
         UserTokenVerificationRequest request = new UserTokenVerificationRequest(
-                unverifiedUser.getEmail()
+            unverifiedUser.getEmail()
         );
 
         // when
         // then
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/accounts/verification/resend")
-                                              .contentType(MediaType.APPLICATION_JSON)
-                                              .content(JsonHelper.toJson(request)))
-               .andDo(print())
-               .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()));
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonHelper.toJson(request)))
+            .andDo(print())
+            .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()));
     }
 
     @Test
@@ -95,15 +99,15 @@ public class UserTokenControllerTest extends AbstractControllerTest {
     void postPasswordReset_WhenValidRequest_Returns200Ok() throws Exception {
         // given
         UserTokenRequestPasswordResetRequest request = new UserTokenRequestPasswordResetRequest(
-                user.getEmail()
+            user.getEmail()
         );
 
         // when
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/accounts/password/reset")
-                                              .contentType(MediaType.APPLICATION_JSON)
-                                              .content(JsonHelper.toJson(request)))
-               .andDo(print())
-               .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()));
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonHelper.toJson(request)))
+            .andDo(print())
+            .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()));
         // then
     }
 
@@ -112,26 +116,26 @@ public class UserTokenControllerTest extends AbstractControllerTest {
     void postPasswordResetToken_WhenValidRequest_Returns200Ok() throws Exception {
         // given
         User unverifiedUser = User.create()
-                                  .setEmail("non-verified-user@demo.com")
-                                  .setPassword(passwordEncoder.encode(this.RAW_PASSWORD))
-                                  .setRole(UserRole.CUSTOMER)
-                                  .setStatus(UserStatus.PENDING_VERIFICATION);
+            .setEmail("non-verified-user@demo.com")
+            .setPassword(passwordEncoder.encode(this.RAW_PASSWORD))
+            .setRole(UserRole.CUSTOMER)
+            .setStatus(UserStatus.PENDING_VERIFICATION);
         userRepository.save(unverifiedUser);
 
         UserToken givenToken = UserToken.create()
-                                        .setUser(unverifiedUser);
+            .setUser(unverifiedUser);
         userTokenRepository.save(givenToken);
 
         UserTokenResetPasswordRequest request = new UserTokenResetPasswordRequest(
-                "12345678$Xa"
+            "12345678$Xa"
         );
 
         // when
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/accounts/password/reset/{token}", givenToken.getToken())
-                                              .contentType(MediaType.APPLICATION_JSON)
-                                              .content(JsonHelper.toJson(request)))
-               .andDo(print())
-               .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()));
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonHelper.toJson(request)))
+            .andDo(print())
+            .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()));
         // then
     }
 }

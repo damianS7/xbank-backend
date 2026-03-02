@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.user.token.infrastructure.web.controller;
+package com.damian.xBank.modules.user.token.infrastructure.rest.controller;
 
 import com.damian.xBank.modules.user.token.application.dto.request.UserTokenRequestPasswordResetRequest;
 import com.damian.xBank.modules.user.token.application.dto.request.UserTokenResetPasswordRequest;

@@ -1,9 +1,7 @@
 package com.damian.xBank.modules.user.profile.infrastructure.rest.controller;
 
-import com.damian.xBank.modules.user.profile.application.usecase.UserProfileGet;
 import com.damian.xBank.modules.user.profile.application.usecase.UserProfileImageGet;
 import com.damian.xBank.modules.user.profile.application.usecase.UserProfileImageUpload;
-import com.damian.xBank.modules.user.profile.application.usecase.UserProfileUpdate;
 import com.damian.xBank.shared.utils.ImageHelper;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -27,20 +25,14 @@ import java.util.concurrent.TimeUnit;
 @RequestMapping("/api/v1")
 @RestController
 public class UserProfileImageController {
-    private final UserProfileGet userProfileGet;
-    private final UserProfileUpdate userProfileUpdate;
     private final UserProfileImageGet userProfileImageGet;
     private final UserProfileImageUpload userProfileImageUpload;
 
     @Autowired
     public UserProfileImageController(
-        UserProfileGet userProfileGet,
-        UserProfileUpdate userProfileUpdate,
         UserProfileImageGet userProfileImageGet,
         UserProfileImageUpload userProfileImageUpload
     ) {
-        this.userProfileGet = userProfileGet;
-        this.userProfileUpdate = userProfileUpdate;
         this.userProfileImageGet = userProfileImageGet;
         this.userProfileImageUpload = userProfileImageUpload;
     }
