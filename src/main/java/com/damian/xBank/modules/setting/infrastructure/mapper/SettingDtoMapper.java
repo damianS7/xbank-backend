@@ -1,10 +1,10 @@
 package com.damian.xBank.modules.setting.infrastructure.mapper;
 
-import com.damian.xBank.modules.setting.application.cqrs.command.SettingUpdateCommand;
+import com.damian.xBank.modules.setting.application.cqrs.command.UpdateCurrentUserSettingsCommand;
 import com.damian.xBank.modules.setting.infrastructure.rest.dto.request.SettingsUpdateRequest;
 
 public class SettingDtoMapper {
-    public static SettingUpdateCommand toCommand(SettingsUpdateRequest request) {
-        return new SettingUpdateCommand(request.settings());
+    public static UpdateCurrentUserSettingsCommand toCommand(SettingsUpdateRequest request) {
+        return new UpdateCurrentUserSettingsCommand(request.settings());
     }
 }

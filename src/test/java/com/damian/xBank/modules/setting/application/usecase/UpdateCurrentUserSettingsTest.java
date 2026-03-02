@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.setting.application.usecase;
 
-import com.damian.xBank.modules.setting.application.cqrs.command.SettingUpdateCommand;
+import com.damian.xBank.modules.setting.application.cqrs.command.UpdateCurrentUserSettingsCommand;
 import com.damian.xBank.modules.setting.application.cqrs.result.SettingResult;
 import com.damian.xBank.modules.setting.domain.exception.SettingNotOwnerException;
 import com.damian.xBank.modules.setting.domain.model.Setting;
@@ -29,13 +29,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class SettingUpdateTest extends AbstractServiceTest {
+public class UpdateCurrentUserSettingsTest extends AbstractServiceTest {
 
     @Mock
     private SettingRepository settingRepository;
 
     @InjectMocks
-    private SettingUpdate settingUpdate;
+    private UpdateCurrentUserSettings updateCurrentUserSettings;
 
     private User customerA;
     private User customerB;
@@ -88,7 +88,7 @@ public class SettingUpdateTest extends AbstractServiceTest {
             SettingTheme.LIGHT
         );
 
-        SettingUpdateCommand request = new SettingUpdateCommand(
+        UpdateCurrentUserSettingsCommand request = new UpdateCurrentUserSettingsCommand(
             newUserSettings
         );
 
@@ -99,7 +99,7 @@ public class SettingUpdateTest extends AbstractServiceTest {
         when(settingRepository.save(any(Setting.class)))
             .thenAnswer(invocation -> invocation.getArgument(0));
 
-        SettingResult result = settingUpdate.execute(request);
+        SettingResult result = updateCurrentUserSettings.execute(request);
 
         // then
         assertThat(result)
@@ -149,7 +149,7 @@ public class SettingUpdateTest extends AbstractServiceTest {
             SettingTheme.LIGHT
         );
 
-        SettingUpdateCommand request = new SettingUpdateCommand(
+        UpdateCurrentUserSettingsCommand request = new UpdateCurrentUserSettingsCommand(
             newUserSettings
         );
 
@@ -161,7 +161,7 @@ public class SettingUpdateTest extends AbstractServiceTest {
         SettingNotOwnerException exception =
             assertThrows(
                 SettingNotOwnerException.class,
-                () -> settingUpdate.execute(request)
+                () -> updateCurrentUserSettings.execute(request)
             );
 
         // then

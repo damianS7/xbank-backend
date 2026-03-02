@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.setting.application.usecase;
 
+import com.damian.xBank.modules.setting.application.cqrs.query.GetCurrentUserSettingsQuery;
 import com.damian.xBank.modules.setting.application.cqrs.result.SettingResult;
 import com.damian.xBank.modules.setting.domain.model.Setting;
 import com.damian.xBank.modules.setting.domain.model.UserSettings;
@@ -20,13 +21,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class SettingGetTest extends AbstractServiceTest {
+public class GetCurrentUserSettingsTest extends AbstractServiceTest {
 
     @Mock
     private SettingRepository settingRepository;
 
     @InjectMocks
-    private SettingGet settingGet;
+    private GetCurrentUserSettings getCurrentUserSettings;
 
     private User customer;
 
@@ -46,11 +47,13 @@ public class SettingGetTest extends AbstractServiceTest {
         Setting givenSettings = Setting.create(customer)
             .setSettings(givenUserSettings);
 
+        GetCurrentUserSettingsQuery query = new GetCurrentUserSettingsQuery();
+
         // when
         when(settingRepository.findByUser_Id(customer.getId()))
             .thenReturn(Optional.of(givenSettings));
 
-        SettingResult result = settingGet.execute();
+        SettingResult result = getCurrentUserSettings.execute(query);
 
         // then
         assertThat(result)
