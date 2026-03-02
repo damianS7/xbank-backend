@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.notification.application.usecase;
 
+import com.damian.xBank.modules.notification.application.cqrs.command.DeleteNotificationCommand;
 import com.damian.xBank.modules.notification.domain.exception.NotificationNotFoundException;
 import com.damian.xBank.modules.notification.domain.model.Notification;
 import com.damian.xBank.modules.notification.infrastructure.repository.NotificationRepository;
@@ -11,14 +12,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class NotificationDelete {
-    private static final Logger log = LoggerFactory.getLogger(NotificationDelete.class);
+public class DeleteNotification {
+    private static final Logger log = LoggerFactory.getLogger(DeleteNotification.class);
     private final AuthenticationContext authenticationContext;
     private final NotificationRepository notificationRepository;
 
-    public NotificationDelete(
-            AuthenticationContext authenticationContext,
-            NotificationRepository notificationRepository
+    public DeleteNotification(
+        AuthenticationContext authenticationContext,
+        NotificationRepository notificationRepository
     ) {
         this.authenticationContext = authenticationContext;
         this.notificationRepository = notificationRepository;
@@ -27,17 +28,17 @@ public class NotificationDelete {
     /**
      * Delete notification for the current user.
      *
-     * @param id Notification id
+     * @param command with the Notification id
      */
     @Transactional
-    public void execute(Long id) {
+    public void execute(DeleteNotificationCommand command) {
         final User currentUser = authenticationContext.getCurrentUser();
 
         Notification notification = notificationRepository
-                .findById(id)
-                .orElseThrow(
-                        () -> new NotificationNotFoundException(id)
-                );
+            .findById(command.id())
+            .orElseThrow(
+                () -> new NotificationNotFoundException(command.id())
+            );
 
         // Assert notification is owned by currentUser or throw
         notification.assertOwnedBy(currentUser.getId());

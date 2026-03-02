@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.notification.application.usecase;
 
+import com.damian.xBank.modules.notification.application.cqrs.command.DeleteNotificationCommand;
 import com.damian.xBank.modules.notification.domain.exception.NotificationNotOwnerException;
 import com.damian.xBank.modules.notification.domain.model.Notification;
 import com.damian.xBank.modules.notification.domain.model.NotificationType;
@@ -19,15 +20,19 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-public class NotificationDeleteTest extends AbstractServiceTest {
+public class DeleteNotificationTest extends AbstractServiceTest {
 
     @Mock
     private NotificationRepository notificationRepository;
 
     @InjectMocks
-    private NotificationDelete notificationDelete;
+    private DeleteNotification deleteNotification;
 
     private User customer;
 
@@ -59,11 +64,15 @@ public class NotificationDeleteTest extends AbstractServiceTest {
                 )
             );
 
+        DeleteNotificationCommand command = new DeleteNotificationCommand(
+            givenNotification.getId()
+        );
+
         // when
         when(notificationRepository.findById(anyLong()))
             .thenReturn(Optional.of(givenNotification));
 
-        notificationDelete.execute(givenNotification.getId());
+        deleteNotification.execute(command);
 
         // then
         verify(notificationRepository).delete(any(Notification.class));
@@ -94,13 +103,17 @@ public class NotificationDeleteTest extends AbstractServiceTest {
                 )
             );
 
+        DeleteNotificationCommand command = new DeleteNotificationCommand(
+            givenNotification.getId()
+        );
+
         // when
         when(notificationRepository.findById(anyLong()))
             .thenReturn(Optional.of(givenNotification));
 
         NotificationNotOwnerException exception = assertThrows(
             NotificationNotOwnerException.class,
-            () -> notificationDelete.execute(givenNotification.getId())
+            () -> deleteNotification.execute(command)
 
         );
 

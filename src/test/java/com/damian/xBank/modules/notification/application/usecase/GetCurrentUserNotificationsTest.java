@@ -1,5 +1,7 @@
 package com.damian.xBank.modules.notification.application.usecase;
 
+import com.damian.xBank.modules.notification.application.cqrs.query.GetCurrentUserNotificationsQuery;
+import com.damian.xBank.modules.notification.application.cqrs.result.GetCurrentUserNotificationsResult;
 import com.damian.xBank.modules.notification.domain.model.Notification;
 import com.damian.xBank.modules.notification.infrastructure.repository.NotificationRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -21,23 +23,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class NotificationGetTest extends AbstractServiceTest {
+public class GetCurrentUserNotificationsTest extends AbstractServiceTest {
 
     @Mock
     private NotificationRepository notificationRepository;
 
     @InjectMocks
-    private NotificationGet notificationGet;
+    private GetCurrentUserNotifications getCurrentUserNotifications;
 
     private User customer;
 
     @BeforeEach
     void setUp() {
         customer = UserTestBuilder.aCustomer()
-                                  .withId(1L)
-                                  .withEmail("customer@demo.com")
-                                  .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                  .build();
+            .withId(1L)
+            .withEmail("customer@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .build();
     }
 
     @Test
@@ -48,21 +50,23 @@ public class NotificationGetTest extends AbstractServiceTest {
 
         Pageable pageable = PageRequest.of(0, 10);
         Page<Notification> page = new PageImpl<>(
-                List.of(
-                        Notification.create(customer),
-                        Notification.create(customer),
-                        Notification.create(customer)
-                )
+            List.of(
+                Notification.create(customer),
+                Notification.create(customer),
+                Notification.create(customer)
+            )
         );
+
+        GetCurrentUserNotificationsQuery query = new GetCurrentUserNotificationsQuery(pageable);
 
         // when
         when(notificationRepository.findAllByUserId(customer.getId(), pageable)).thenReturn(page);
 
-        Page<Notification> result = notificationGet.execute(pageable);
+        GetCurrentUserNotificationsResult result = getCurrentUserNotifications.execute(query);
 
         // then
-        assertThat(result).isEqualTo(page);
-        assertThat(result.getTotalElements()).isEqualTo(page.getTotalElements());
+        assertThat(result).isNotNull();
+        assertThat(result.pagedResult().getTotalElements()).isEqualTo(page.getTotalElements());
         verify(notificationRepository).findAllByUserId(customer.getId(), pageable);
     }
 }

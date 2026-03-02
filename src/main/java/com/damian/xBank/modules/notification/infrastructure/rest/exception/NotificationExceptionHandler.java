@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.notification.infrastructure.web.exception;
+package com.damian.xBank.modules.notification.infrastructure.rest.exception;
 
 import com.damian.xBank.modules.notification.domain.exception.NotificationException;
 import com.damian.xBank.modules.notification.domain.exception.NotificationNotFoundException;

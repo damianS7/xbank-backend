@@ -1,10 +1,10 @@
-package com.damian.xBank.modules.notification.infrastructure.web.controller;
+package com.damian.xBank.modules.notification.infrastructure.rest.controller;
 
-import com.damian.xBank.modules.notification.application.dto.request.NotificationDeleteRequest;
-import com.damian.xBank.modules.notification.application.dto.response.NotificationDto;
-import com.damian.xBank.modules.notification.application.usecase.NotificationSinkGet;
+import com.damian.xBank.modules.notification.application.usecase.GetCurrentUserSinkNotifications;
 import com.damian.xBank.modules.notification.domain.model.Notification;
 import com.damian.xBank.modules.notification.domain.model.NotificationType;
+import com.damian.xBank.modules.notification.infrastructure.rest.dto.request.NotificationDeleteRequest;
+import com.damian.xBank.modules.notification.infrastructure.rest.dto.response.NotificationDto;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
@@ -50,19 +50,19 @@ public class NotificationControllerTest extends AbstractControllerTest {
     private JwtUtil jwtUtil;
 
     @SpyBean
-    private NotificationSinkGet notificationSinkGet;
+    private GetCurrentUserSinkNotifications getCurrentUserSinkNotifications;
 
     private User customer;
 
     @BeforeEach
     void setUp() {
         customer = UserTestBuilder
-                .aCustomer()
-                .withEmail("customer@demo.com")
-                .withRole(UserRole.CUSTOMER)
-                .withStatus(UserStatus.VERIFIED)
-                .withPassword(passwordEncoder.encode(RAW_PASSWORD))
-                .build();
+            .aCustomer()
+            .withEmail("customer@demo.com")
+            .withRole(UserRole.CUSTOMER)
+            .withStatus(UserStatus.VERIFIED)
+            .withPassword(passwordEncoder.encode(RAW_PASSWORD))
+            .build();
 
         userRepository.save(customer);
     }
@@ -72,29 +72,29 @@ public class NotificationControllerTest extends AbstractControllerTest {
     void getNotifications_ValidRequest_Returns200OK() throws Exception {
         // given
         Notification notification = Notification
-                .create(customer)
-                .setType(NotificationType.TRANSFER)
-                .setMetadata(
-                        Map.of(
-                                "transactionId", 1L,
-                                "toUser", 1L,
-                                "amount", 100L,
-                                "currency", "EUR"
-                        )
-                );
+            .create(customer)
+            .setType(NotificationType.TRANSFER)
+            .setMetadata(
+                Map.of(
+                    "transactionId", 1L,
+                    "toUser", 1L,
+                    "amount", 100L,
+                    "currency", "EUR"
+                )
+            );
 
         notificationRepository.save(notification);
 
         // when
         login(customer);
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders
-                                          .get("/api/v1/notifications")
-                                          .contentType(MediaType.APPLICATION_JSON)
-                                          .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
-                                  .andDo(print())
-                                  .andExpect(status().is(HttpStatus.OK.value()))
-                                  .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                                  .andReturn();
+                .get("/api/v1/notifications")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+            .andDo(print())
+            .andExpect(status().is(HttpStatus.OK.value()))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andReturn();
 
         // then
         String json = result.getResponse().getContentAsString();
@@ -112,32 +112,32 @@ public class NotificationControllerTest extends AbstractControllerTest {
     void deleteNotifications_ValidRequest_Returns204NoContent() throws Exception {
         // given
         Notification notification = Notification
-                .create(customer)
-                .setType(NotificationType.TRANSFER)
-                .setMetadata(
-                        Map.of(
-                                "transactionId", 1L,
-                                "toUser", 1L,
-                                "amount", 100L,
-                                "currency", "EUR"
-                        )
-                );
+            .create(customer)
+            .setType(NotificationType.TRANSFER)
+            .setMetadata(
+                Map.of(
+                    "transactionId", 1L,
+                    "toUser", 1L,
+                    "amount", 100L,
+                    "currency", "EUR"
+                )
+            );
 
         notificationRepository.save(notification);
 
         NotificationDeleteRequest notificationDeleteRequest = new NotificationDeleteRequest(
-                List.of(notification.getId())
+            List.of(notification.getId())
         );
 
         // when
         login(customer);
         mockMvc.perform(MockMvcRequestBuilders
-                       .delete("/api/v1/notifications")
-                       .contentType(MediaType.APPLICATION_JSON)
-                       .content(objectMapper.writeValueAsString(notificationDeleteRequest))
-                       .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
-               .andDo(print())
-               .andExpect(status().is(HttpStatus.NO_CONTENT.value()));
+                .delete("/api/v1/notifications")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(notificationDeleteRequest))
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+            .andDo(print())
+            .andExpect(status().is(HttpStatus.NO_CONTENT.value()));
     }
 
     @Test
@@ -147,23 +147,23 @@ public class NotificationControllerTest extends AbstractControllerTest {
         login(customer);
 
         NotificationDto givenNotification = new NotificationDto(
-                1L,
-                NotificationType.TRANSFER,
-                Map.of(
-                        "transactionId", 1L,
-                        "toUser", 1L,
-                        "amount", 100L,
-                        "currency", "EUR"
-                ),
-                "notification.transfer.sent",
-                Instant.now()
+            1L,
+            NotificationType.TRANSFER,
+            Map.of(
+                "transactionId", 1L,
+                "toUser", 1L,
+                "amount", 100L,
+                "currency", "EUR"
+            ),
+            "notification.transfer.sent",
+            Instant.now()
         );
 
         ServerSentEvent<NotificationDto> notificationDtoFlux =
-                ServerSentEvent.builder(givenNotification)
-                               .event("notification")
-                               .data(givenNotification)
-                               .build();
+            ServerSentEvent.builder(givenNotification)
+                .event("notification")
+                .data(givenNotification)
+                .build();
 
         UserPrincipal user = new UserPrincipal(customer);
         Authentication authentication = Mockito.mock(Authentication.class);
@@ -174,13 +174,13 @@ public class NotificationControllerTest extends AbstractControllerTest {
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(SecurityContextHolder.getContext().getAuthentication().getPrincipal()).thenReturn(user);
 
-        when(notificationSinkGet.execute()).thenReturn(Flux.just(givenNotification));
+        when(getCurrentUserSinkNotifications.execute()).thenReturn(Flux.just(givenNotification));
 
         MvcResult result = mockMvc.perform(get("/api/v1/notifications/stream")
-                                          .accept(MediaType.TEXT_EVENT_STREAM)
-                                          .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
-                                  .andExpect(status().is(HttpStatus.OK.value()))
-                                  .andReturn();
+                .accept(MediaType.TEXT_EVENT_STREAM)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+            .andExpect(status().is(HttpStatus.OK.value()))
+            .andReturn();
 
         String rawResponse = result.getResponse().getContentAsString();
 
@@ -195,23 +195,23 @@ public class NotificationControllerTest extends AbstractControllerTest {
         login(customer);
 
         NotificationDto givenNotification = new NotificationDto(
-                1L,
-                NotificationType.TRANSFER,
-                Map.of(
-                        "transactionId", 1,
-                        "toUser", 1,
-                        "amount", 100,
-                        "currency", "EUR"
-                ),
-                "notification.transfer.sent",
-                Instant.now()
+            1L,
+            NotificationType.TRANSFER,
+            Map.of(
+                "transactionId", 1,
+                "toUser", 1,
+                "amount", 100,
+                "currency", "EUR"
+            ),
+            "notification.transfer.sent",
+            Instant.now()
         );
 
         ServerSentEvent<NotificationDto> notificationDtoFlux =
-                ServerSentEvent.builder(givenNotification)
-                               .event("notification")
-                               .data(givenNotification)
-                               .build();
+            ServerSentEvent.builder(givenNotification)
+                .event("notification")
+                .data(givenNotification)
+                .build();
 
         UserPrincipal user = new UserPrincipal(customer);
         Authentication authentication = Mockito.mock(Authentication.class);
@@ -222,13 +222,13 @@ public class NotificationControllerTest extends AbstractControllerTest {
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(SecurityContextHolder.getContext().getAuthentication().getPrincipal()).thenReturn(user);
 
-        when(notificationSinkGet.execute()).thenReturn(Flux.just(givenNotification));
+        when(getCurrentUserSinkNotifications.execute()).thenReturn(Flux.just(givenNotification));
 
         MvcResult result = mockMvc.perform(get("/api/v1/notifications/stream")
-                                          .accept(MediaType.TEXT_EVENT_STREAM)
-                                          .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
-                                  .andExpect(status().is(HttpStatus.OK.value()))
-                                  .andReturn();
+                .accept(MediaType.TEXT_EVENT_STREAM)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+            .andExpect(status().is(HttpStatus.OK.value()))
+            .andReturn();
 
         List<String> notificationData = new ArrayList<>();
 
@@ -248,24 +248,24 @@ public class NotificationControllerTest extends AbstractControllerTest {
         assertThat(notificationData).hasSize(1);
 
         NotificationDto notificationDto = objectMapper.readValue(
-                notificationData.get(0),
-                NotificationDto.class
+            notificationData.get(0),
+            NotificationDto.class
         );
 
         assertThat(notificationDto)
-                .isNotNull()
-                .extracting(
-                        NotificationDto::id,
-                        NotificationDto::type,
-                        NotificationDto::templateKey,
-                        NotificationDto::payload,
-                        NotificationDto::createdAt
-                ).containsExactly(
-                        givenNotification.id(),
-                        givenNotification.type(),
-                        givenNotification.templateKey(),
-                        givenNotification.payload(),
-                        givenNotification.createdAt()
-                );
+            .isNotNull()
+            .extracting(
+                NotificationDto::id,
+                NotificationDto::type,
+                NotificationDto::templateKey,
+                NotificationDto::payload,
+                NotificationDto::createdAt
+            ).containsExactly(
+                givenNotification.id(),
+                givenNotification.type(),
+                givenNotification.templateKey(),
+                givenNotification.payload(),
+                givenNotification.createdAt()
+            );
     }
 }

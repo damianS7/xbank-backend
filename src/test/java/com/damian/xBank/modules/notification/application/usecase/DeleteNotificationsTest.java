@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.notification.application.usecase;
 
+import com.damian.xBank.modules.notification.application.cqrs.command.DeleteNotificationsCommand;
 import com.damian.xBank.modules.notification.domain.model.Notification;
 import com.damian.xBank.modules.notification.infrastructure.repository.NotificationRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -13,25 +14,27 @@ import org.mockito.Mock;
 
 import java.util.List;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyList;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.verify;
 
-public class NotificationDeleteAllTest extends AbstractServiceTest {
+public class DeleteNotificationsTest extends AbstractServiceTest {
 
     @Mock
     private NotificationRepository notificationRepository;
 
     @InjectMocks
-    private NotificationDeleteAll notificationDeleteAll;
+    private DeleteNotifications deleteNotifications;
 
     private User customer;
 
     @BeforeEach
     void setUp() {
         customer = UserTestBuilder.aCustomer()
-                                  .withId(1L)
-                                  .withEmail("customer@demo.com")
-                                  .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                  .build();
+            .withId(1L)
+            .withEmail("customer@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .build();
     }
 
     @Test
@@ -41,10 +44,14 @@ public class NotificationDeleteAllTest extends AbstractServiceTest {
         setUpContext(customer);
 
         Notification notification = Notification.create(customer)
-                                                .setId(1L);
+            .setId(1L);
+
+        DeleteNotificationsCommand command = new DeleteNotificationsCommand(
+            List.of(notification.getId())
+        );
 
         // when
-        notificationDeleteAll.execute(List.of(notification.getId()));
+        deleteNotifications.execute(command);
 
         // then
         verify(notificationRepository).deleteAllByIdInAndUser_Id(anyList(), anyLong());

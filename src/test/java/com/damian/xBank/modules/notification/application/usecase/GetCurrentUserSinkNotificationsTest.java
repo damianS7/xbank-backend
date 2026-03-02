@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.notification.application.usecase;
 
-import com.damian.xBank.modules.notification.application.dto.response.NotificationDto;
+import com.damian.xBank.modules.notification.infrastructure.rest.dto.response.NotificationDto;
 import com.damian.xBank.modules.notification.infrastructure.sink.NotificationSinkRegistry;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
@@ -16,23 +16,23 @@ import reactor.test.StepVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class NotificationSinkGetTest extends AbstractServiceTest {
+public class GetCurrentUserSinkNotificationsTest extends AbstractServiceTest {
 
     @Spy
     private NotificationSinkRegistry notificationSinkRegistry;
 
     @InjectMocks
-    private NotificationSinkGet notificationSinkGet;
+    private GetCurrentUserSinkNotifications getCurrentUserSinkNotifications;
 
     private User customer;
 
     @BeforeEach
     void setUp() {
         customer = UserTestBuilder.aCustomer()
-                                  .withId(1L)
-                                  .withEmail("customer@demo.com")
-                                  .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                  .build();
+            .withId(1L)
+            .withEmail("customer@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .build();
     }
 
     @Test
@@ -46,17 +46,17 @@ public class NotificationSinkGetTest extends AbstractServiceTest {
         assertThat(notificationSinkRegistry.getSinkForUser(userId)).isNull();
 
         // when
-        Flux<NotificationDto> flux = notificationSinkGet.execute();
+        Flux<NotificationDto> flux = getCurrentUserSinkNotifications.execute();
 
         // then
         StepVerifier.create(flux)
-                    .then(() -> {
-                        // sink should exist after subscribing
-                        Sinks.Many<NotificationDto> sink = notificationSinkRegistry.getSinkForUser(userId);
-                        assertThat(sink).isNotNull();
-                    })
-                    .thenCancel()
-                    .verify();
+            .then(() -> {
+                // sink should exist after subscribing
+                Sinks.Many<NotificationDto> sink = notificationSinkRegistry.getSinkForUser(userId);
+                assertThat(sink).isNotNull();
+            })
+            .thenCancel()
+            .verify();
 
         // sink should be removed after cancellation
         // removal depends on NotificationSinkGet.doFinally

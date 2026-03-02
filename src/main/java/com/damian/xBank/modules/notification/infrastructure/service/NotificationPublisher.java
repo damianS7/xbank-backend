@@ -1,9 +1,9 @@
 package com.damian.xBank.modules.notification.infrastructure.service;
 
-import com.damian.xBank.modules.notification.application.mapper.NotificationDtoMapper;
 import com.damian.xBank.modules.notification.domain.model.Notification;
 import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
 import com.damian.xBank.modules.notification.infrastructure.repository.NotificationRepository;
+import com.damian.xBank.modules.notification.infrastructure.rest.mapper.NotificationDtoMapper;
 import com.damian.xBank.modules.notification.infrastructure.sink.NotificationSinkRegistry;
 import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -20,9 +20,9 @@ public class NotificationPublisher {
     private final NotificationSinkRegistry sinkRegistry;
 
     public NotificationPublisher(
-            NotificationRepository notificationRepository,
-            UserRepository userRepository,
-            NotificationSinkRegistry sinkRegistry
+        NotificationRepository notificationRepository,
+        UserRepository userRepository,
+        NotificationSinkRegistry sinkRegistry
     ) {
         this.notificationRepository = notificationRepository;
         this.userRepository = userRepository;
@@ -37,21 +37,21 @@ public class NotificationPublisher {
     public void publish(NotificationEvent notificationEvent) {
         // find recipient user who will receive the notification
         User recipient = userRepository
-                .findById(notificationEvent.toUserId())
-                .orElseThrow(() -> {
-                    log.warn(
-                            "Notification failed: recipient: {} not found.",
-                            notificationEvent.toUserId()
-                    );
-                    return new UserNotFoundException(notificationEvent.toUserId());
-                });
+            .findById(notificationEvent.toUserId())
+            .orElseThrow(() -> {
+                log.warn(
+                    "Notification failed: recipient: {} not found.",
+                    notificationEvent.toUserId()
+                );
+                return new UserNotFoundException(notificationEvent.toUserId());
+            });
 
         // create and save notification to the database
         Notification notification = Notification
-                .create(recipient)
-                .setMetadata(notificationEvent.payload())
-                .setType(notificationEvent.type())
-                .setTemplateKey(notificationEvent.templateKey());
+            .create(recipient)
+            .setMetadata(notificationEvent.payload())
+            .setType(notificationEvent.type())
+            .setTemplateKey(notificationEvent.templateKey());
 
         notificationRepository.save(notification);
 
@@ -60,14 +60,14 @@ public class NotificationPublisher {
 
         if (sink != null) {
             sink.tryEmitNext(
-                    NotificationDtoMapper.map(notification)
+                NotificationDtoMapper.toDto(notification)
             );
         }
 
         log.debug(
-                "Notification ({}) sent to user: {}",
-                notificationEvent.type(),
-                notificationEvent.toUserId()
+            "Notification ({}) sent to user: {}",
+            notificationEvent.type(),
+            notificationEvent.toUserId()
         );
     }
 }
