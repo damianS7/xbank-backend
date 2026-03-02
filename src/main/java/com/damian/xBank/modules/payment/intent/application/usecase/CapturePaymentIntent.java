@@ -1,9 +1,9 @@
 package com.damian.xBank.modules.payment.intent.application.usecase;
 
 
-import com.damian.xBank.modules.payment.intent.application.dto.request.PaymentCaptureRequest;
 import com.damian.xBank.modules.payment.intent.domain.exception.PaymentIntentNotFoundException;
 import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntent;
+import com.damian.xBank.modules.payment.intent.infrastructure.dto.request.CapturePaymentRequest;
 import com.damian.xBank.modules.payment.intent.infrastructure.repository.PaymentIntentRepository;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.stereotype.Service;
@@ -18,8 +18,8 @@ public class CapturePaymentIntent {
     private final AuthenticationContext authenticationContext;
 
     public CapturePaymentIntent(
-            PaymentIntentRepository paymentIntentRepository,
-            AuthenticationContext authenticationContext
+        PaymentIntentRepository paymentIntentRepository,
+        AuthenticationContext authenticationContext
     ) {
         this.paymentIntentRepository = paymentIntentRepository;
         this.authenticationContext = authenticationContext;
@@ -31,14 +31,14 @@ public class CapturePaymentIntent {
      * @return
      */
     @Transactional
-    public PaymentIntent execute(PaymentCaptureRequest request) {
+    public PaymentIntent execute(CapturePaymentRequest request) {
 
         // 1. find the payment
         PaymentIntent paymentIntent = paymentIntentRepository
-                .findById(request.paymentId())
-                .orElseThrow(
-                        () -> new PaymentIntentNotFoundException(request.paymentId())
-                );
+            .findById(request.paymentId())
+            .orElseThrow(
+                () -> new PaymentIntentNotFoundException(request.paymentId())
+            );
 
         // 2. deduce funds from user card
         //                payment.getUser().getAccount().add

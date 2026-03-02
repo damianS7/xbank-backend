@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.payment.intent.infrastructure.web.exception;
+package com.damian.xBank.modules.payment.intent.infrastructure.rest.exception;
 
 import com.damian.xBank.modules.payment.intent.domain.exception.PaymentIntentNotFoundException;
 import com.damian.xBank.modules.payment.intent.domain.exception.PaymentIntentNotPendingException;

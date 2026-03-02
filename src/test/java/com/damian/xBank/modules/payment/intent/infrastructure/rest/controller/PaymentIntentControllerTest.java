@@ -1,6 +1,6 @@
-package com.damian.xBank.modules.payment.intent.infrastructure.web.controller;
+package com.damian.xBank.modules.payment.intent.infrastructure.rest.controller;
 
-import com.damian.xBank.modules.payment.intent.application.dto.request.CreatePaymentIntentRequest;
+import com.damian.xBank.modules.payment.intent.infrastructure.dto.request.CreatePaymentIntentRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
@@ -23,10 +23,10 @@ public class PaymentIntentControllerTest extends AbstractControllerTest {
     @BeforeEach
     void setUp() {
         customer = UserTestBuilder.aCustomer()
-                                  .withEmail("customer@demo.com")
-                                  .withStatus(UserStatus.VERIFIED)
-                                  .withPassword(passwordEncoder.encode(RAW_PASSWORD))
-                                  .build();
+            .withEmail("customer@demo.com")
+            .withStatus(UserStatus.VERIFIED)
+            .withPassword(passwordEncoder.encode(RAW_PASSWORD))
+            .build();
 
         userRepository.save(customer);
     }
@@ -38,17 +38,17 @@ public class PaymentIntentControllerTest extends AbstractControllerTest {
         login(customer);
 
         CreatePaymentIntentRequest request = new CreatePaymentIntentRequest(
-                BigDecimal.valueOf(100),
-                "EUR"
+            BigDecimal.valueOf(100),
+            "EUR"
         );
 
         // when
         // then
         mockMvc.perform(post("/api/v1/payment-intents")
-                       .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                       .contentType(MediaType.APPLICATION_JSON)
-                       .content(objectMapper.writeValueAsString(request)))
-               .andDo(print())
-               .andExpect(status().is(201));
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+            .andDo(print())
+            .andExpect(status().is(201));
     }
 }

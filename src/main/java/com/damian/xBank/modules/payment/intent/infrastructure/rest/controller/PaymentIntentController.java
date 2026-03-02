@@ -1,10 +1,9 @@
-package com.damian.xBank.modules.payment.intent.infrastructure.web.controller;
+package com.damian.xBank.modules.payment.intent.infrastructure.rest.controller;
 
-import com.damian.xBank.modules.payment.intent.application.dto.mapper.PaymentIntentOrderDtoMapper;
-import com.damian.xBank.modules.payment.intent.application.dto.request.CreatePaymentIntentRequest;
-import com.damian.xBank.modules.payment.intent.application.dto.response.PaymentOrderDto;
+import com.damian.xBank.modules.payment.intent.application.cqrs.command.CreatePaymentIntentCommand;
+import com.damian.xBank.modules.payment.intent.application.cqrs.result.CreatePaymentIntentResult;
 import com.damian.xBank.modules.payment.intent.application.usecase.CreatePaymentIntent;
-import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntent;
+import com.damian.xBank.modules.payment.intent.infrastructure.dto.request.CreatePaymentIntentRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +20,7 @@ public class PaymentIntentController {
     private final CreatePaymentIntent createPaymentIntent;
 
     public PaymentIntentController(
-            CreatePaymentIntent createPaymentIntent
+        CreatePaymentIntent createPaymentIntent
     ) {
         this.createPaymentIntent = createPaymentIntent;
     }
@@ -34,14 +33,18 @@ public class PaymentIntentController {
      */
     @PostMapping("/payment-intents")
     public ResponseEntity<?> createPaymentIntent(
-            @RequestBody @Valid
-            CreatePaymentIntentRequest request
+        @RequestBody @Valid
+        CreatePaymentIntentRequest request
     ) {
-        PaymentIntent paymentIntent = createPaymentIntent.execute(request);
-        PaymentOrderDto paymentOrderDto = PaymentIntentOrderDtoMapper.toPaymentDto(paymentIntent);
+        CreatePaymentIntentCommand command = new CreatePaymentIntentCommand(
+            request.amount(),
+            request.currency()
+        );
+
+        CreatePaymentIntentResult createPaymentIntentResult = createPaymentIntent.execute(command);
 
         return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(paymentOrderDto);
+            .status(HttpStatus.CREATED)
+            .body(createPaymentIntentResult);
     }
 }
