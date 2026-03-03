@@ -3,7 +3,7 @@ package com.damian.xBank.modules.payment.checkout.application.usecase;
 import com.damian.xBank.modules.banking.transaction.infrastructure.service.BankingTransactionPersistenceService;
 import com.damian.xBank.modules.notification.domain.factory.NotificationEventFactory;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
-import com.damian.xBank.modules.payment.checkout.application.dto.request.PaymentCheckoutSubmitRequest;
+import com.damian.xBank.modules.payment.checkout.application.cqrs.command.SubmitPaymentCheckoutCommand;
 import com.damian.xBank.modules.payment.checkout.domain.excepcion.PaymentCheckoutException;
 import com.damian.xBank.modules.payment.intent.domain.exception.PaymentIntentNotFoundException;
 import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntent;
@@ -21,14 +21,14 @@ import org.springframework.transaction.annotation.Transactional;
  * When the form is submitted this class method will be called.
  */
 @Service
-public class PaymentCheckoutSubmit {
+public class SubmitPaymentCheckout {
     private final NotificationEventFactory notificationEventFactory;
     private final BankingTransactionPersistenceService bankingTransactionPersistenceService;
     private final PaymentNetworkGateway paymentNetworkGateway;
     private final PaymentIntentRepository paymentIntentRepository;
     private final NotificationPublisher notificationPublisher;
 
-    public PaymentCheckoutSubmit(
+    public SubmitPaymentCheckout(
         NotificationEventFactory notificationEventFactory,
         BankingTransactionPersistenceService bankingTransactionPersistenceService,
         PaymentNetworkGateway paymentNetworkGateway,
@@ -43,9 +43,9 @@ public class PaymentCheckoutSubmit {
     }
 
     @Transactional
-    public void execute(PaymentCheckoutSubmitRequest request) {
-        PaymentIntent paymentIntent = paymentIntentRepository.findById(request.paymentId()).orElseThrow(
-            () -> new PaymentIntentNotFoundException(request.paymentId())
+    public void execute(SubmitPaymentCheckoutCommand command) {
+        PaymentIntent paymentIntent = paymentIntentRepository.findById(command.paymentId()).orElseThrow(
+            () -> new PaymentIntentNotFoundException(command.paymentId())
         );
 
         // Payment must be pending
@@ -54,12 +54,12 @@ public class PaymentCheckoutSubmit {
         PaymentAuthorizationResponse response = paymentNetworkGateway.authorizePayment(
             new PaymentAuthorizationRequest(
                 paymentIntent.getMerchantName(),
-                request.cardHolder(),
-                request.cardNumber(),
-                request.expiryMonth(),
-                request.expiryYear(),
-                request.cardCvv(),
-                request.cardPin(),
+                command.cardHolder(),
+                command.cardNumber(),
+                command.expiryMonth(),
+                command.expiryYear(),
+                command.cardCvv(),
+                command.cardPin(),
                 paymentIntent.getAmount(),
                 paymentIntent.getCurrency().toString(),
                 paymentIntent.getDescription()

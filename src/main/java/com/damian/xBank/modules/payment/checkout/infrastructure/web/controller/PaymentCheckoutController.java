@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.payment.checkout.infrastructure.web.controller;
 
-import com.damian.xBank.modules.payment.checkout.application.dto.request.PaymentCheckoutSubmitRequest;
-import com.damian.xBank.modules.payment.checkout.application.usecase.PaymentCheckoutSubmit;
+import com.damian.xBank.modules.payment.checkout.application.cqrs.command.SubmitPaymentCheckoutCommand;
+import com.damian.xBank.modules.payment.checkout.application.usecase.SubmitPaymentCheckout;
 import com.damian.xBank.modules.payment.checkout.domain.PaymentCheckoutForm;
 import com.damian.xBank.modules.payment.checkout.domain.excepcion.PaymentCheckoutException;
 import com.damian.xBank.modules.payment.intent.application.usecase.GetPaymentIntent;
@@ -35,16 +35,16 @@ import java.util.Map;
 public class PaymentCheckoutController {
     private static final Logger log = LoggerFactory.getLogger(PaymentCheckoutController.class);
     private final GetPaymentIntent getPaymentIntent;
-    private final PaymentCheckoutSubmit paymentCheckoutSubmit;
+    private final SubmitPaymentCheckout submitPaymentCheckout;
     private final MessageSource messageSource;
 
     public PaymentCheckoutController(
         GetPaymentIntent getPaymentIntent,
-        PaymentCheckoutSubmit paymentCheckoutSubmit,
+        SubmitPaymentCheckout submitPaymentCheckout,
         MessageSource messageSource
     ) {
         this.getPaymentIntent = getPaymentIntent;
-        this.paymentCheckoutSubmit = paymentCheckoutSubmit;
+        this.submitPaymentCheckout = submitPaymentCheckout;
         this.messageSource = messageSource;
     }
 
@@ -105,8 +105,8 @@ public class PaymentCheckoutController {
         }
 
         try {
-            paymentCheckoutSubmit.execute(
-                new PaymentCheckoutSubmitRequest(
+            submitPaymentCheckout.execute(
+                new SubmitPaymentCheckoutCommand(
                     form.paymentId(),
                     form.cardHolder(),
                     form.cardNumber(),

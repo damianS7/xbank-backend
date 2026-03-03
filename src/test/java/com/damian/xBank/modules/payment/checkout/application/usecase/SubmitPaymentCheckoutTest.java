@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.payment.checkout.application.usecase;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
-import com.damian.xBank.modules.payment.checkout.application.dto.request.PaymentCheckoutSubmitRequest;
+import com.damian.xBank.modules.payment.checkout.application.cqrs.command.SubmitPaymentCheckoutCommand;
 import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntent;
 import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntentStatus;
 import com.damian.xBank.modules.payment.intent.infrastructure.repository.PaymentIntentRepository;
@@ -28,7 +28,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class PaymentCheckoutSubmitTest extends AbstractServiceTest {
+public class SubmitPaymentCheckoutTest extends AbstractServiceTest {
 
     @Mock
     private PaymentIntentRepository paymentIntentRepository;
@@ -37,7 +37,7 @@ public class PaymentCheckoutSubmitTest extends AbstractServiceTest {
     private PaymentNetworkGateway paymentNetworkGateway;
 
     @InjectMocks
-    private PaymentCheckoutSubmit checkoutSubmit;
+    private SubmitPaymentCheckout submitPaymentCheckout;
 
     private User customer;
 
@@ -60,7 +60,7 @@ public class PaymentCheckoutSubmitTest extends AbstractServiceTest {
             BankingAccountCurrency.EUR
         );
 
-        PaymentCheckoutSubmitRequest request = new PaymentCheckoutSubmitRequest(
+        SubmitPaymentCheckoutCommand command = new SubmitPaymentCheckoutCommand(
             0L,
             "John Doe",
             "1234123412341234",
@@ -86,7 +86,7 @@ public class PaymentCheckoutSubmitTest extends AbstractServiceTest {
         when(paymentIntentRepository.save(any(PaymentIntent.class)))
             .thenAnswer(invocation -> invocation.getArgument(0));
 
-        checkoutSubmit.execute(request);
+        submitPaymentCheckout.execute(command);
 
         // then
         assertThat(paymentIntent.getStatus()).isEqualTo(PaymentIntentStatus.AUTHORIZED);
