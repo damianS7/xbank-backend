@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.user.token.application.usecase;
 
-import com.damian.xBank.modules.user.token.application.dto.request.UserTokenRequestPasswordResetRequest;
+import com.damian.xBank.modules.user.token.application.cqrs.command.PasswordResetRequestCommand;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.domain.notification.UserTokenPasswordResetNotifier;
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
@@ -18,18 +18,18 @@ import org.springframework.stereotype.Service;
  * Email will contain a link to reset the password.
  */
 @Service
-public class UserTokenRequestPasswordReset {
-    private static final Logger log = LoggerFactory.getLogger(UserTokenRequestPasswordReset.class);
+public class RequestPasswordReset {
+    private static final Logger log = LoggerFactory.getLogger(RequestPasswordReset.class);
     private final UserTokenPasswordResetNotifier userTokenPasswordResetNotifier;
     private final UserRepository userRepository;
     private final UserTokenLinkBuilder userTokenLinkBuilder;
     private final UserTokenRepository userTokenRepository;
 
-    public UserTokenRequestPasswordReset(
-            UserTokenPasswordResetNotifier userTokenPasswordResetNotifier,
-            UserRepository userRepository,
-            UserTokenLinkBuilder userTokenLinkBuilder,
-            UserTokenRepository userTokenRepository
+    public RequestPasswordReset(
+        UserTokenPasswordResetNotifier userTokenPasswordResetNotifier,
+        UserRepository userRepository,
+        UserTokenLinkBuilder userTokenLinkBuilder,
+        UserTokenRepository userTokenRepository
     ) {
         this.userTokenPasswordResetNotifier = userTokenPasswordResetNotifier;
         this.userTokenLinkBuilder = userTokenLinkBuilder;
@@ -41,22 +41,22 @@ public class UserTokenRequestPasswordReset {
      * Generate a token for password reset.
      * Send email to the user with a link to reset password.
      *
-     * @param request the request containing the email of the user and password
+     * @param command the command containing the email of the user and password
      */
-    public void execute(UserTokenRequestPasswordResetRequest request) {
+    public void execute(PasswordResetRequestCommand command) {
         // generate a new password reset token
-        log.debug("Generating password reset token for email: {}", request.email());
+        log.debug("Generating password reset token for email: {}", command.email());
         User user = userRepository
-                .findByEmail(request.email())
-                .orElseThrow(
-                        () -> {
-                            log.error(
-                                    "Failed to generate password reset token. No user found for: {}",
-                                    request.email()
-                            );
-                            return new UserNotFoundException(request.email());
-                        }
-                );
+            .findByEmail(command.email())
+            .orElseThrow(
+                () -> {
+                    log.error(
+                        "Failed to generate password reset token. No user found for: {}",
+                        command.email()
+                    );
+                    return new UserNotFoundException(command.email());
+                }
+            );
 
         // generate the token for password reset
         UserToken token = new UserToken(user);
@@ -68,8 +68,8 @@ public class UserTokenRequestPasswordReset {
         String link = userTokenLinkBuilder.buildPasswordResetLink(token.getToken());
 
         // send the email
-        userTokenPasswordResetNotifier.sendPasswordResetToken(request.email(), link);
+        userTokenPasswordResetNotifier.sendPasswordResetToken(command.email(), link);
 
-        log.debug("Password reset token generated and sent to: {}", request.email());
+        log.debug("Password reset token generated and sent to: {}", command.email());
     }
 }

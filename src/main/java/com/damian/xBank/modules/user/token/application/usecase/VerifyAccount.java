@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.user.token.application.usecase;
 
+import com.damian.xBank.modules.user.token.application.cqrs.command.AccountVerificationCommand;
 import com.damian.xBank.modules.user.token.domain.exception.UserTokenExpiredException;
 import com.damian.xBank.modules.user.token.domain.exception.UserTokenNotFoundException;
 import com.damian.xBank.modules.user.token.domain.exception.UserTokenUsedException;
@@ -17,21 +18,21 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Confirms the user account using a token previously received
- * by using {@link UserTokenRequestVerification} or by new registration
+ * by using {@link RequestAccountVerification} or by new registration
  */
 @Service
-public class UserTokenVerifyAccount {
-    private static final Logger log = LoggerFactory.getLogger(UserTokenVerifyAccount.class);
+public class VerifyAccount {
+    private static final Logger log = LoggerFactory.getLogger(VerifyAccount.class);
     private final UserTokenRepository userTokenRepository;
     private final UserRepository userRepository;
     private final UserTokenService userTokenService;
     private final UserTokenVerificationNotifier userTokenVerificationNotifier;
 
-    public UserTokenVerifyAccount(
-            UserTokenRepository userTokenRepository,
-            UserRepository userRepository,
-            UserTokenService userTokenService,
-            UserTokenVerificationNotifier userTokenVerificationNotifier
+    public VerifyAccount(
+        UserTokenRepository userTokenRepository,
+        UserRepository userRepository,
+        UserTokenService userTokenService,
+        UserTokenVerificationNotifier userTokenVerificationNotifier
     ) {
         this.userTokenRepository = userTokenRepository;
         this.userRepository = userRepository;
@@ -49,9 +50,9 @@ public class UserTokenVerifyAccount {
      * @throws UserVerificationNotPendingException when the user is not pending for activation.
      */
     @Transactional
-    public void execute(String token) {
+    public void execute(AccountVerificationCommand command) {
         // check the token is valid and not expired.
-        UserToken userToken = userTokenService.validateToken(token);
+        UserToken userToken = userTokenService.validateToken(command.token());
 
         // Get the user that owns the token
         User user = userToken.getUser();

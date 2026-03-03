@@ -1,12 +1,16 @@
 package com.damian.xBank.modules.user.token.infrastructure.rest.controller;
 
-import com.damian.xBank.modules.user.token.application.dto.request.UserTokenRequestPasswordResetRequest;
-import com.damian.xBank.modules.user.token.application.dto.request.UserTokenResetPasswordRequest;
-import com.damian.xBank.modules.user.token.application.dto.request.UserTokenVerificationRequest;
-import com.damian.xBank.modules.user.token.application.usecase.UserTokenRequestPasswordReset;
-import com.damian.xBank.modules.user.token.application.usecase.UserTokenRequestVerification;
-import com.damian.xBank.modules.user.token.application.usecase.UserTokenResetPassword;
-import com.damian.xBank.modules.user.token.application.usecase.UserTokenVerifyAccount;
+import com.damian.xBank.modules.user.token.application.cqrs.command.AccountVerificationCommand;
+import com.damian.xBank.modules.user.token.application.cqrs.command.AccountVerificationRequestCommand;
+import com.damian.xBank.modules.user.token.application.cqrs.command.PasswordResetCommand;
+import com.damian.xBank.modules.user.token.application.cqrs.command.PasswordResetRequestCommand;
+import com.damian.xBank.modules.user.token.application.usecase.RequestAccountVerification;
+import com.damian.xBank.modules.user.token.application.usecase.RequestPasswordReset;
+import com.damian.xBank.modules.user.token.application.usecase.ResetPassword;
+import com.damian.xBank.modules.user.token.application.usecase.VerifyAccount;
+import com.damian.xBank.modules.user.token.infrastructure.rest.dto.request.RequestAccountVerificationRequest;
+import com.damian.xBank.modules.user.token.infrastructure.rest.dto.request.RequestPasswordResetRequest;
+import com.damian.xBank.modules.user.token.infrastructure.rest.dto.request.ResetPasswordRequest;
 import com.damian.xBank.shared.infrastructure.web.dto.response.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -24,21 +28,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1")
 public class UserTokenController {
-    private final UserTokenRequestPasswordReset userTokenRequestPasswordReset;
-    private final UserTokenResetPassword userTokenResetPassword;
-    private final UserTokenVerifyAccount userTokenVerifyAccount;
-    private final UserTokenRequestVerification userTokenRequestVerification;
+    private final RequestPasswordReset requestPasswordReset;
+    private final ResetPassword resetPassword;
+    private final VerifyAccount verifyAccount;
+    private final RequestAccountVerification requestAccountVerification;
 
     public UserTokenController(
-        UserTokenRequestPasswordReset userTokenRequestPasswordReset,
-        UserTokenResetPassword userTokenResetPassword,
-        UserTokenVerifyAccount userTokenVerifyAccount,
-        UserTokenRequestVerification userTokenRequestVerification
+        RequestPasswordReset requestPasswordReset,
+        ResetPassword resetPassword,
+        VerifyAccount verifyAccount,
+        RequestAccountVerification requestAccountVerification
     ) {
-        this.userTokenRequestPasswordReset = userTokenRequestPasswordReset;
-        this.userTokenResetPassword = userTokenResetPassword;
-        this.userTokenVerifyAccount = userTokenVerifyAccount;
-        this.userTokenRequestVerification = userTokenRequestVerification;
+        this.requestPasswordReset = requestPasswordReset;
+        this.resetPassword = resetPassword;
+        this.verifyAccount = verifyAccount;
+        this.requestAccountVerification = requestAccountVerification;
     }
 
     // endpoint for account verification
@@ -47,8 +51,10 @@ public class UserTokenController {
         @PathVariable @NotBlank
         String token
     ) {
+        AccountVerificationCommand command = new AccountVerificationCommand(token);
+
         // verification the account using the provided token
-        userTokenVerifyAccount.execute(token);
+        verifyAccount.execute(command);
 
         return ResponseEntity
             .status(HttpStatus.OK)
@@ -60,10 +66,14 @@ public class UserTokenController {
     @PostMapping("/accounts/verification/resend")
     public ResponseEntity<?> resendVerification(
         @Valid @RequestBody
-        UserTokenVerificationRequest request
+        RequestAccountVerificationRequest request
     ) {
+        AccountVerificationRequestCommand command = new AccountVerificationRequestCommand(
+            request.email()
+        );
+
         // send the account verification link
-        userTokenRequestVerification.execute(request);
+        requestAccountVerification.execute(command);
 
         return ResponseEntity
             .status(HttpStatus.OK)
@@ -75,11 +85,15 @@ public class UserTokenController {
     @PostMapping("/accounts/password/reset")
     public ResponseEntity<?> resetPasswordRequest(
         @Valid @RequestBody
-        UserTokenRequestPasswordResetRequest request
+        RequestPasswordResetRequest request
     ) {
 
+        PasswordResetRequestCommand command = new PasswordResetRequestCommand(
+            request.email()
+        );
+
         // send the email with the link to reset the password
-        userTokenRequestPasswordReset.execute(request);
+        requestPasswordReset.execute(command);
 
         return ResponseEntity
             .status(HttpStatus.OK)
@@ -93,10 +107,15 @@ public class UserTokenController {
         @PathVariable @NotBlank
         String token,
         @Valid @RequestBody
-        UserTokenResetPasswordRequest request
+        ResetPasswordRequest request
     ) {
+        PasswordResetCommand command = new PasswordResetCommand(
+            token,
+            request.password()
+        );
+
         // update the password using the token
-        userTokenResetPassword.execute(token, request);
+        resetPassword.execute(command);
 
         return ResponseEntity
             .status(HttpStatus.OK)

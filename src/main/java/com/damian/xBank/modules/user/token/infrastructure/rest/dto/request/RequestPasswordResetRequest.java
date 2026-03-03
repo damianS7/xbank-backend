@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.user.token.application.dto.request;
+package com.damian.xBank.modules.user.token.infrastructure.rest.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -9,9 +9,9 @@ import jakarta.validation.constraints.NotBlank;
  *
  * @param email the email where the token reset will be sent.
  */
-public record UserTokenRequestPasswordResetRequest(
-        @NotBlank(message = "Email must not be blank")
-        @Email(message = "Email must be a well-formed email address.")
-        String email
+public record RequestPasswordResetRequest(
+    @NotBlank(message = "Email must not be blank")
+    @Email(message = "Email must be a well-formed email address.")
+    String email
 ) {
 }

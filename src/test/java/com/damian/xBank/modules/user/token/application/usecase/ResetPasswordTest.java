@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.user.token.application.usecase;
 
 import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
-import com.damian.xBank.modules.user.token.application.dto.request.UserTokenResetPasswordRequest;
+import com.damian.xBank.modules.user.token.application.cqrs.command.PasswordResetCommand;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.domain.notification.UserTokenPasswordResetNotifier;
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
@@ -20,7 +20,7 @@ import org.mockito.Mock;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-public class UserTokenResetPasswordTest extends AbstractServiceTest {
+public class ResetPasswordTest extends AbstractServiceTest {
 
     @Mock
     private UserTokenPasswordResetNotifier userTokenPasswordResetNotifier;
@@ -38,35 +38,36 @@ public class UserTokenResetPasswordTest extends AbstractServiceTest {
     private UserTokenRepository userTokenRepository;
 
     @InjectMocks
-    private UserTokenResetPassword userTokenResetPassword;
+    private ResetPassword resetPassword;
 
     private User customer;
 
     @BeforeEach
     void setUp() {
         customer = UserTestBuilder.aCustomer()
-                                  .withId(1L)
-                                  .withPassword(RAW_PASSWORD)
-                                  .withEmail("customer@demo.com")
-                                  .withProfile(UserProfileFactory.testProfile())
-                                  .build();
+            .withId(1L)
+            .withPassword(RAW_PASSWORD)
+            .withEmail("customer@demo.com")
+            .withProfile(UserProfileFactory.testProfile())
+            .build();
     }
 
     @Test
     @DisplayName("should set a new password when token is valid")
     void resetPassword_WhenValidToken_ResetsPasswordAndMarksTokenAsUsed() {
         // given
-        UserTokenResetPasswordRequest passwordResetRequest = new UserTokenResetPasswordRequest(
-                "1111000"
-        );
-
         UserToken token = new UserToken(customer);
         token.generateResetPasswordToken();
+
+        PasswordResetCommand command = new PasswordResetCommand(
+            token.getToken(),
+            "1111000"
+        );
 
         // when
         when(userTokenService.validateToken(token.getToken())).thenReturn(token);
 
-        userTokenResetPassword.execute(token.getToken(), passwordResetRequest);
+        resetPassword.execute(command);
 
         // then
         assertThat(token.isUsed()).isTrue();

@@ -1,10 +1,10 @@
 package com.damian.xBank.modules.user.token.infrastructure.rest.controller;
 
-import com.damian.xBank.modules.user.token.application.dto.request.UserTokenRequestPasswordResetRequest;
-import com.damian.xBank.modules.user.token.application.dto.request.UserTokenResetPasswordRequest;
-import com.damian.xBank.modules.user.token.application.dto.request.UserTokenVerificationRequest;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.domain.model.UserTokenType;
+import com.damian.xBank.modules.user.token.infrastructure.rest.dto.request.RequestAccountVerificationRequest;
+import com.damian.xBank.modules.user.token.infrastructure.rest.dto.request.RequestPasswordResetRequest;
+import com.damian.xBank.modules.user.token.infrastructure.rest.dto.request.ResetPasswordRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
@@ -81,7 +81,7 @@ public class UserTokenControllerTest extends AbstractControllerTest {
 
         userRepository.save(unverifiedUser);
 
-        UserTokenVerificationRequest request = new UserTokenVerificationRequest(
+        RequestAccountVerificationRequest request = new RequestAccountVerificationRequest(
             unverifiedUser.getEmail()
         );
 
@@ -98,7 +98,7 @@ public class UserTokenControllerTest extends AbstractControllerTest {
     @DisplayName("should send reset password token to user email")
     void postPasswordReset_WhenValidRequest_Returns200Ok() throws Exception {
         // given
-        UserTokenRequestPasswordResetRequest request = new UserTokenRequestPasswordResetRequest(
+        RequestPasswordResetRequest request = new RequestPasswordResetRequest(
             user.getEmail()
         );
 
@@ -126,7 +126,7 @@ public class UserTokenControllerTest extends AbstractControllerTest {
             .setUser(unverifiedUser);
         userTokenRepository.save(givenToken);
 
-        UserTokenResetPasswordRequest request = new UserTokenResetPasswordRequest(
+        ResetPasswordRequest request = new ResetPasswordRequest(
             "12345678$Xa"
         );
 

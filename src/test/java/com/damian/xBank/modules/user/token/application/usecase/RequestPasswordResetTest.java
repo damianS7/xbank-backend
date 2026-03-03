@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.user.token.application.usecase;
 
-import com.damian.xBank.modules.user.token.application.dto.request.UserTokenRequestPasswordResetRequest;
+import com.damian.xBank.modules.user.token.application.cqrs.command.PasswordResetRequestCommand;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.domain.notification.UserTokenPasswordResetNotifier;
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
@@ -21,9 +21,13 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-public class UserTokenRequestPasswordResetTest extends AbstractServiceTest {
+public class RequestPasswordResetTest extends AbstractServiceTest {
 
     @Mock
     private UserTokenPasswordResetNotifier userTokenPasswordResetNotifier;
@@ -38,7 +42,7 @@ public class UserTokenRequestPasswordResetTest extends AbstractServiceTest {
     private UserTokenRepository userTokenRepository;
 
     @InjectMocks
-    private UserTokenRequestPasswordReset userTokenRequestPasswordReset;
+    private RequestPasswordReset requestPasswordReset;
 
     private User user;
 
@@ -55,7 +59,7 @@ public class UserTokenRequestPasswordResetTest extends AbstractServiceTest {
     @DisplayName("should request a password reset and sent it to email")
     void requestPasswordReset_WhenValidRequest_SendsEmail() {
         // given
-        UserTokenRequestPasswordResetRequest request = new UserTokenRequestPasswordResetRequest(
+        PasswordResetRequestCommand command = new PasswordResetRequestCommand(
             user.getEmail()
         );
 
@@ -65,7 +69,7 @@ public class UserTokenRequestPasswordResetTest extends AbstractServiceTest {
         when(userTokenRepository.save(any(UserToken.class)))
             .thenAnswer(invocation -> invocation.getArgument(0));
 
-        userTokenRequestPasswordReset.execute(request);
+        requestPasswordReset.execute(command);
 
         // then
         verify(userTokenRepository, times(1)).save(any(UserToken.class));
@@ -75,7 +79,7 @@ public class UserTokenRequestPasswordResetTest extends AbstractServiceTest {
     @DisplayName("should throw exception when user not found")
     void requestPasswordReset_WhenUserNotFound_ThrowsException() {
         // given
-        UserTokenRequestPasswordResetRequest request = new UserTokenRequestPasswordResetRequest(
+        PasswordResetRequestCommand command = new PasswordResetRequestCommand(
             user.getEmail()
         );
 
@@ -84,7 +88,7 @@ public class UserTokenRequestPasswordResetTest extends AbstractServiceTest {
 
         UserNotFoundException exception = assertThrows(
             UserNotFoundException.class,
-            () -> userTokenRequestPasswordReset.execute(request)
+            () -> requestPasswordReset.execute(command)
         );
 
         // then

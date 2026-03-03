@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.user.token.application.usecase;
 
-import com.damian.xBank.modules.user.token.application.dto.request.UserTokenResetPasswordRequest;
+import com.damian.xBank.modules.user.token.application.cqrs.command.PasswordResetCommand;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.domain.notification.UserTokenPasswordResetNotifier;
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
@@ -12,23 +12,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * It resets the user password using a token previously received using {@link UserTokenRequestPasswordReset}
+ * It resets the user password using a token previously received using {@link RequestPasswordReset}
  * <p>
  * To set a new password the token must be valid.
  */
 @Service
-public class UserTokenResetPassword {
-    private static final Logger log = LoggerFactory.getLogger(UserTokenResetPassword.class);
+public class ResetPassword {
+    private static final Logger log = LoggerFactory.getLogger(ResetPassword.class);
     private final UserTokenRepository userTokenRepository;
     private final UserTokenPasswordResetNotifier userTokenPasswordResetNotifier;
     private final UserTokenService userTokenService;
     private final UserPasswordService userPasswordService;
 
-    public UserTokenResetPassword(
-            UserTokenRepository userTokenRepository,
-            UserTokenPasswordResetNotifier userTokenPasswordResetNotifier,
-            UserTokenService userTokenService,
-            UserPasswordService userPasswordService
+    public ResetPassword(
+        UserTokenRepository userTokenRepository,
+        UserTokenPasswordResetNotifier userTokenPasswordResetNotifier,
+        UserTokenService userTokenService,
+        UserPasswordService userPasswordService
     ) {
         this.userTokenRepository = userTokenRepository;
         this.userTokenPasswordResetNotifier = userTokenPasswordResetNotifier;
@@ -39,18 +39,17 @@ public class UserTokenResetPassword {
     /**
      * It resets the user password using a token.
      *
-     * @param token   the token used to reset the password
-     * @param request the request with the password to set
+     * @param command the command with the password to set
      */
     @Transactional
-    public void execute(String token, UserTokenResetPasswordRequest request) {
+    public void execute(PasswordResetCommand command) {
         // verify the token
-        final UserToken userToken = userTokenService.validateToken(token);
+        final UserToken userToken = userTokenService.validateToken(command.token());
 
         log.debug("Resetting password for user: {} using a token.", userToken.getUser().getId());
 
         // update the password
-        userPasswordService.updatePassword(userToken.getUser().getId(), request.password());
+        userPasswordService.updatePassword(userToken.getUser().getId(), command.password());
 
         // set the token as used
         userToken.markAsUsed();

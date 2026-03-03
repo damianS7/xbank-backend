@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.user.token.application.usecase;
 
-import com.damian.xBank.modules.user.token.application.dto.request.UserTokenVerificationRequest;
+import com.damian.xBank.modules.user.token.application.cqrs.command.AccountVerificationRequestCommand;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.domain.notification.UserTokenVerificationNotifier;
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
@@ -20,9 +20,11 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-public class UserTokenRequestVerificationTest extends AbstractServiceTest {
+public class RequestAccountVerificationTest extends AbstractServiceTest {
     @Mock
     private UserTokenLinkBuilder userTokenLinkBuilder;
 
@@ -36,17 +38,17 @@ public class UserTokenRequestVerificationTest extends AbstractServiceTest {
     private UserTokenRepository userTokenRepository;
 
     @InjectMocks
-    private UserTokenRequestVerification userTokenRequestVerification;
+    private RequestAccountVerification requestAccountVerification;
 
     private User user;
 
     @BeforeEach
     void setUp() {
         user = UserTestBuilder.aCustomer()
-                              .withId(1L)
-                              .withPassword(RAW_PASSWORD)
-                              .withEmail("customer@demo.com")
-                              .build();
+            .withId(1L)
+            .withPassword(RAW_PASSWORD)
+            .withEmail("customer@demo.com")
+            .build();
     }
 
     @Test
@@ -55,10 +57,9 @@ public class UserTokenRequestVerificationTest extends AbstractServiceTest {
         // given
         user.setStatus(UserStatus.PENDING_VERIFICATION);
 
-        UserTokenVerificationRequest request = new UserTokenVerificationRequest(
-                user.getEmail()
+        AccountVerificationRequestCommand command = new AccountVerificationRequestCommand(
+            user.getEmail()
         );
-
 
         UserToken token = new UserToken(user);
         token.generateVerificationToken();
@@ -67,7 +68,7 @@ public class UserTokenRequestVerificationTest extends AbstractServiceTest {
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(userTokenRepository.save(any(UserToken.class))).thenReturn(token);
 
-        userTokenRequestVerification.execute(request);
+        requestAccountVerification.execute(command);
 
         // then
         verify(userTokenRepository, times(1)).save(any(UserToken.class));

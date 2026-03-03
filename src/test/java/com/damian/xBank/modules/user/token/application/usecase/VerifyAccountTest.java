@@ -1,6 +1,7 @@
 package com.damian.xBank.modules.user.token.application.usecase;
 
 import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
+import com.damian.xBank.modules.user.token.application.cqrs.command.AccountVerificationCommand;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.domain.notification.UserTokenVerificationNotifier;
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
@@ -23,10 +24,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class UserTokenVerifyAccountTest extends AbstractServiceTest {
+public class VerifyAccountTest extends AbstractServiceTest {
     @Mock
     private UserTokenVerificationNotifier userTokenVerificationNotifier;
 
@@ -40,7 +45,7 @@ public class UserTokenVerifyAccountTest extends AbstractServiceTest {
     private UserRepository userRepository;
 
     @InjectMocks
-    private UserTokenVerifyAccount userTokenVerifyAccount;
+    private VerifyAccount verifyAccount;
 
     private User customer;
 
@@ -64,12 +69,14 @@ public class UserTokenVerifyAccountTest extends AbstractServiceTest {
         UserToken token = new UserToken(unverifiedUser);
         token.generateVerificationToken();
 
+        AccountVerificationCommand command = new AccountVerificationCommand(token.getToken());
+
         // when
         when(userTokenService.validateToken(anyString())).thenReturn(token);
         when(userTokenRepository.save(any(UserToken.class))).thenReturn(token);
         when(userRepository.save(any(User.class))).thenReturn(unverifiedUser);
 
-        userTokenVerifyAccount.execute(token.getToken());
+        verifyAccount.execute(command);
 
         // then
         verify(userRepository, times(1)).save(any(User.class));
@@ -87,12 +94,14 @@ public class UserTokenVerifyAccountTest extends AbstractServiceTest {
         UserToken token = new UserToken(user);
         token.generateVerificationToken();
 
+        AccountVerificationCommand command = new AccountVerificationCommand(token.getToken());
+
         // when
         when(userTokenService.validateToken(anyString())).thenReturn(token);
 
         UserVerificationNotPendingException exception = assertThrows(
             UserVerificationNotPendingException.class,
-            () -> userTokenVerifyAccount.execute(token.getToken())
+            () -> verifyAccount.execute(command)
         );
 
         assertThat(exception)
@@ -109,11 +118,13 @@ public class UserTokenVerifyAccountTest extends AbstractServiceTest {
         UserToken token = new UserToken(user);
         token.generateVerificationToken();
 
+        AccountVerificationCommand command = new AccountVerificationCommand(token.getToken());
+
         // when
         when(userTokenService.validateToken(anyString())).thenReturn(token);
         UserVerificationNotPendingException exception = assertThrows(
             UserVerificationNotPendingException.class,
-            () -> userTokenVerifyAccount.execute(token.getToken())
+            () -> verifyAccount.execute(command)
         );
 
         assertThat(exception)
