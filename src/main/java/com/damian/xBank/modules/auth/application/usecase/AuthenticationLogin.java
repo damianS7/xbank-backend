@@ -1,14 +1,18 @@
 package com.damian.xBank.modules.auth.application.usecase;
 
-import com.damian.xBank.modules.auth.application.dto.AuthenticationRequest;
-import com.damian.xBank.modules.auth.application.dto.AuthenticationResponse;
 import com.damian.xBank.modules.auth.domain.exception.UserNotVerifiedException;
 import com.damian.xBank.modules.auth.domain.exception.UserSuspendedException;
+import com.damian.xBank.modules.auth.infrastructure.rest.dto.AuthenticationRequest;
+import com.damian.xBank.modules.auth.infrastructure.rest.dto.AuthenticationResponse;
 import com.damian.xBank.shared.security.UserPrincipal;
 import com.damian.xBank.shared.utils.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.authentication.*;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -25,8 +29,8 @@ public class AuthenticationLogin {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationLogin(
-            JwtUtil jwtUtil,
-            AuthenticationManager authenticationManager
+        JwtUtil jwtUtil,
+        AuthenticationManager authenticationManager
     ) {
         this.jwtUtil = jwtUtil;
         this.authenticationManager = authenticationManager;
@@ -52,7 +56,7 @@ public class AuthenticationLogin {
 
         try {
             auth = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(email, password)
+                new UsernamePasswordAuthenticationToken(email, password)
             );
         } catch (DisabledException e) {
             throw new UserNotVerifiedException(email);
@@ -69,8 +73,8 @@ public class AuthenticationLogin {
 
         // Generate a token for the authenticated user
         final String token = jwtUtil.generateToken(
-                claims,
-                email
+            claims,
+            email
         );
 
         // Return the user data and the token

@@ -1,8 +1,8 @@
 package com.damian.xBank.shared;
 
 
-import com.damian.xBank.modules.auth.application.dto.AuthenticationRequest;
-import com.damian.xBank.modules.auth.application.dto.AuthenticationResponse;
+import com.damian.xBank.modules.auth.infrastructure.rest.dto.AuthenticationRequest;
+import com.damian.xBank.modules.auth.infrastructure.rest.dto.AuthenticationResponse;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
@@ -41,8 +41,8 @@ public abstract class AbstractControllerTest {
     @Container
     @ServiceConnection
     protected static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16")
-            .withReuse(true)
-            .withInitScript("init_postgres.sql");
+        .withReuse(true)
+        .withInitScript("init_postgres.sql");
 
     protected final String RAW_PASSWORD = "123456";
 
@@ -132,20 +132,20 @@ public abstract class AbstractControllerTest {
     protected void loginWithPost(User user) throws Exception {
         // given
         AuthenticationRequest authenticationRequest = new AuthenticationRequest(
-                user.getEmail(), "123456"
+            user.getEmail(), "123456"
         );
 
         String jsonRequest = objectMapper.writeValueAsString(authenticationRequest);
 
         // when
         MvcResult result = mockMvc.perform(post("/api/v1/auth/login")
-                                          .contentType(MediaType.APPLICATION_JSON)
-                                          .content(jsonRequest))
-                                  .andReturn();
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonRequest))
+            .andReturn();
 
         AuthenticationResponse response = objectMapper.readValue(
-                result.getResponse().getContentAsString(),
-                AuthenticationResponse.class
+            result.getResponse().getContentAsString(),
+            AuthenticationResponse.class
         );
 
         token = response.token();

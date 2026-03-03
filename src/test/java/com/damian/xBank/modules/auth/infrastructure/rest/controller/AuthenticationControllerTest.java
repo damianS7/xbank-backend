@@ -1,7 +1,7 @@
-package com.damian.xBank.modules.auth.infrastructure.web.controller;
+package com.damian.xBank.modules.auth.infrastructure.rest.controller;
 
-import com.damian.xBank.modules.auth.application.dto.AuthenticationRequest;
-import com.damian.xBank.modules.auth.application.dto.AuthenticationResponse;
+import com.damian.xBank.modules.auth.infrastructure.rest.dto.AuthenticationRequest;
+import com.damian.xBank.modules.auth.infrastructure.rest.dto.AuthenticationResponse;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;

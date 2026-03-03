@@ -1,9 +1,9 @@
 package com.damian.xBank.modules.auth.application.usecase;
 
-import com.damian.xBank.modules.auth.application.dto.AuthenticationRequest;
-import com.damian.xBank.modules.auth.application.dto.AuthenticationResponse;
 import com.damian.xBank.modules.auth.domain.exception.UserNotVerifiedException;
 import com.damian.xBank.modules.auth.domain.exception.UserSuspendedException;
+import com.damian.xBank.modules.auth.infrastructure.rest.dto.AuthenticationRequest;
+import com.damian.xBank.modules.auth.infrastructure.rest.dto.AuthenticationResponse;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractServiceTest;
@@ -23,7 +23,9 @@ import org.springframework.security.core.Authentication;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 

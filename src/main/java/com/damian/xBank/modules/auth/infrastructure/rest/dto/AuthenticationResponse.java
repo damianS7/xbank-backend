@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.auth.application.dto;
+package com.damian.xBank.modules.auth.infrastructure.rest.dto;
 
 /**
  * Used for returning the token after successful authentication.
@@ -6,7 +6,7 @@ package com.damian.xBank.modules.auth.application.dto;
  * @param token jwt token
  */
 public record AuthenticationResponse(
-        String token
+    String token
 ) {
 }
 

@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.auth.infrastructure.web.exception;
+package com.damian.xBank.modules.auth.infrastructure.rest.exception;
 
 import com.damian.xBank.modules.auth.domain.exception.UserNotVerifiedException;
 import com.damian.xBank.modules.auth.domain.exception.UserSuspendedException;
