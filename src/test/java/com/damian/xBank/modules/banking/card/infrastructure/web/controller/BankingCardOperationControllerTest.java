@@ -15,9 +15,9 @@ import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransact
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.payment.network.card.application.PaymentNetworkGateway;
-import com.damian.xBank.modules.payment.network.card.application.dto.request.PaymentAuthorizationRequest;
-import com.damian.xBank.modules.payment.network.card.application.dto.response.PaymentAuthorizationResponse;
 import com.damian.xBank.modules.payment.network.card.domain.PaymentAuthorizationStatus;
+import com.damian.xBank.modules.payment.network.card.infrastructure.web.dto.request.PaymentAuthorizationRequest;
+import com.damian.xBank.modules.payment.network.card.infrastructure.web.dto.response.PaymentAuthorizationResponse;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractControllerTest;

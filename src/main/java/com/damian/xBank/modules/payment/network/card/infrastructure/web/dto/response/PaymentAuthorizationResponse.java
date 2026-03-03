@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.payment.network.card.application.dto.response;
+package com.damian.xBank.modules.payment.network.card.infrastructure.web.dto.response;
 
 import com.damian.xBank.modules.payment.network.card.domain.PaymentAuthorizationStatus;
 

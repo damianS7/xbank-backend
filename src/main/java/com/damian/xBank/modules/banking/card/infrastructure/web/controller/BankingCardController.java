@@ -11,7 +11,7 @@ import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.transaction.application.dto.response.BankingTransactionDto;
 import com.damian.xBank.modules.banking.transaction.application.mapper.BankingTransactionDtoMapper;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
-import com.damian.xBank.modules.payment.network.card.application.dto.response.PaymentAuthorizationResponse;
+import com.damian.xBank.modules.payment.network.card.infrastructure.web.dto.response.PaymentAuthorizationResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

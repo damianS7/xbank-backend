@@ -9,9 +9,9 @@ import com.damian.xBank.modules.payment.intent.domain.exception.PaymentIntentNot
 import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntent;
 import com.damian.xBank.modules.payment.intent.infrastructure.repository.PaymentIntentRepository;
 import com.damian.xBank.modules.payment.network.card.application.PaymentNetworkGateway;
-import com.damian.xBank.modules.payment.network.card.application.dto.request.PaymentAuthorizationRequest;
-import com.damian.xBank.modules.payment.network.card.application.dto.response.PaymentAuthorizationResponse;
 import com.damian.xBank.modules.payment.network.card.domain.PaymentAuthorizationStatus;
+import com.damian.xBank.modules.payment.network.card.infrastructure.web.dto.request.PaymentAuthorizationRequest;
+import com.damian.xBank.modules.payment.network.card.infrastructure.web.dto.response.PaymentAuthorizationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
