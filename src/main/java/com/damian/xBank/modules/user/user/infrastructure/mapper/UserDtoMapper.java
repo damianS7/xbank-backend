@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.user.user.infrastructure.mapper;
 
-import com.damian.xBank.modules.user.user.application.cqrs.command.UserEmailUpdateCommand;
-import com.damian.xBank.modules.user.user.application.cqrs.command.UserPasswordUpdateCommand;
+import com.damian.xBank.modules.user.user.application.cqrs.command.UpdateUserEmailCommand;
+import com.damian.xBank.modules.user.user.application.cqrs.command.UpdateUserPasswordCommand;
 import com.damian.xBank.modules.user.user.application.cqrs.command.UserRegistrationCommand;
 import com.damian.xBank.modules.user.user.application.cqrs.result.UserResult;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -11,15 +11,15 @@ import com.damian.xBank.modules.user.user.infrastructure.rest.dto.request.UserRe
 
 public class UserDtoMapper {
 
-    public static UserPasswordUpdateCommand toCommand(UserPasswordUpdateRequest request) {
-        return new UserPasswordUpdateCommand(
+    public static UpdateUserPasswordCommand toCommand(UserPasswordUpdateRequest request) {
+        return new UpdateUserPasswordCommand(
             request.currentPassword(),
             request.newPassword()
         );
     }
 
-    public static UserEmailUpdateCommand toCommand(UserEmailUpdateRequest request) {
-        return new UserEmailUpdateCommand(
+    public static UpdateUserEmailCommand toCommand(UserEmailUpdateRequest request) {
+        return new UpdateUserEmailCommand(
             request.currentPassword(),
             request.newEmail()
         );

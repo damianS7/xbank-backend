@@ -1,9 +1,10 @@
 package com.damian.xBank.modules.user.user.infrastructure.rest.controller;
 
-import com.damian.xBank.modules.user.user.application.cqrs.command.UserEmailUpdateCommand;
-import com.damian.xBank.modules.user.user.application.cqrs.result.UserResult;
-import com.damian.xBank.modules.user.user.application.usecase.UserEmailUpdate;
-import com.damian.xBank.modules.user.user.application.usecase.UserGet;
+import com.damian.xBank.modules.user.user.application.cqrs.command.UpdateUserEmailCommand;
+import com.damian.xBank.modules.user.user.application.cqrs.query.GetUserQuery;
+import com.damian.xBank.modules.user.user.application.cqrs.result.GetCurrentUserResult;
+import com.damian.xBank.modules.user.user.application.usecase.GetCurrentUser;
+import com.damian.xBank.modules.user.user.application.usecase.UpdateCurrentUserEmail;
 import com.damian.xBank.modules.user.user.infrastructure.mapper.UserDtoMapper;
 import com.damian.xBank.modules.user.user.infrastructure.rest.dto.request.UserEmailUpdateRequest;
 import jakarta.validation.Valid;
@@ -20,21 +21,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1")
 public class UserController {
-    private final UserGet userGet;
-    private final UserEmailUpdate userEmailUpdate;
+    private final GetCurrentUser getCurrentUser;
+    private final UpdateCurrentUserEmail updateCurrentUserEmail;
 
     public UserController(
-        UserGet userGet,
-        UserEmailUpdate userEmailUpdate
+        GetCurrentUser getCurrentUser,
+        UpdateCurrentUserEmail updateCurrentUserEmail
     ) {
-        this.userGet = userGet;
-        this.userEmailUpdate = userEmailUpdate;
+        this.getCurrentUser = getCurrentUser;
+        this.updateCurrentUserEmail = updateCurrentUserEmail;
     }
 
     // endpoint to receive current customer
     @GetMapping("/users")
     public ResponseEntity<?> getLoggedUserData() {
-        UserResult userResult = userGet.execute();
+        GetUserQuery query = new GetUserQuery();
+        GetCurrentUserResult userResult = getCurrentUser.execute(query);
 
         return ResponseEntity
             .status(HttpStatus.OK)
@@ -47,8 +49,8 @@ public class UserController {
         @Valid @RequestBody
         UserEmailUpdateRequest request
     ) {
-        UserEmailUpdateCommand command = UserDtoMapper.toCommand(request);
-        userEmailUpdate.execute(command);
+        UpdateUserEmailCommand command = UserDtoMapper.toCommand(request);
+        updateCurrentUserEmail.execute(command);
 
         return ResponseEntity
             .status(HttpStatus.OK)

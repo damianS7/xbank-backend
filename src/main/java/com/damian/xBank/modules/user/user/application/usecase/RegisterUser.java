@@ -23,8 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class UserRegister {
-    private static final Logger log = LoggerFactory.getLogger(UserRegister.class);
+public class RegisterUser {
+    private static final Logger log = LoggerFactory.getLogger(RegisterUser.class);
     private final UserRepository userRepository;
     private final UserDomainService userDomainService;
     private final UserTokenLinkBuilder userTokenLinkBuilder;
@@ -33,7 +33,7 @@ public class UserRegister {
     private final UserTokenFactory userTokenFactory;
     private final SettingFactory settingFactory;
 
-    public UserRegister(
+    public RegisterUser(
         UserRepository userRepository,
         UserDomainService userDomainService,
         UserTokenLinkBuilder userTokenLinkBuilder,

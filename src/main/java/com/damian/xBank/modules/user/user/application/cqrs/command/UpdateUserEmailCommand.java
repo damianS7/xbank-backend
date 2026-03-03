@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.user.user.application.cqrs.command;
 
 
-public record UserEmailUpdateCommand(
+public record UpdateUserEmailCommand(
     String currentPassword,
     String newEmail
 ) {

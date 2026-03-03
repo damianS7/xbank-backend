@@ -1,6 +1,7 @@
 package com.damian.xBank.modules.user.user.application.usecase;
 
-import com.damian.xBank.modules.user.user.application.cqrs.result.UserResult;
+import com.damian.xBank.modules.user.user.application.cqrs.query.GetUserQuery;
+import com.damian.xBank.modules.user.user.application.cqrs.result.GetCurrentUserResult;
 import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
@@ -10,12 +11,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserGet {
-    private static final Logger log = LoggerFactory.getLogger(UserGet.class);
+public class GetCurrentUser {
+    private static final Logger log = LoggerFactory.getLogger(GetCurrentUser.class);
     private final UserRepository userRepository;
     private final AuthenticationContext authenticationContext;
 
-    public UserGet(
+    public GetCurrentUser(
         UserRepository userRepository,
         AuthenticationContext authenticationContext
     ) {
@@ -29,7 +30,7 @@ public class UserGet {
      * @return the user
      * @throws UserNotFoundException
      */
-    public UserResult execute() {
+    public GetCurrentUserResult execute(GetUserQuery query) {
         // Current user
         final User currentUser = authenticationContext.getCurrentUser();
 
@@ -40,7 +41,7 @@ public class UserGet {
                 () -> new UserNotFoundException(currentUser.getId())
             );
 
-        return new UserResult(
+        return new GetCurrentUserResult(
             storedUser.getId(),
             storedUser.getEmail(),
             storedUser.getRole(),

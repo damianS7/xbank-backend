@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.user.user.infrastructure.rest.controller;
 
-import com.damian.xBank.modules.user.user.application.cqrs.command.UserPasswordUpdateCommand;
-import com.damian.xBank.modules.user.user.application.usecase.UserPasswordUpdate;
+import com.damian.xBank.modules.user.user.application.cqrs.command.UpdateUserPasswordCommand;
+import com.damian.xBank.modules.user.user.application.usecase.UpdateCurrentUserPassword;
 import com.damian.xBank.modules.user.user.infrastructure.mapper.UserDtoMapper;
 import com.damian.xBank.modules.user.user.infrastructure.rest.dto.request.UserPasswordUpdateRequest;
 import jakarta.validation.Valid;
@@ -18,12 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1")
 public class UserPasswordController {
 
-    private final UserPasswordUpdate userPasswordUpdate;
+    private final UpdateCurrentUserPassword updateCurrentUserPassword;
 
     public UserPasswordController(
-        UserPasswordUpdate userPasswordUpdate
+        UpdateCurrentUserPassword updateCurrentUserPassword
     ) {
-        this.userPasswordUpdate = userPasswordUpdate;
+        this.updateCurrentUserPassword = updateCurrentUserPassword;
     }
 
     // endpoint to modify current user password
@@ -32,8 +32,8 @@ public class UserPasswordController {
         @Valid @RequestBody
         UserPasswordUpdateRequest request
     ) {
-        UserPasswordUpdateCommand command = UserDtoMapper.toCommand(request);
-        userPasswordUpdate.execute(command);
+        UpdateUserPasswordCommand command = UserDtoMapper.toCommand(request);
+        updateCurrentUserPassword.execute(command);
 
         return ResponseEntity
             .status(HttpStatus.OK)

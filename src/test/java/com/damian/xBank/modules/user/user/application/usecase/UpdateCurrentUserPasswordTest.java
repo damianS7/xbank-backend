@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.user.user.application.usecase;
 
 import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
-import com.damian.xBank.modules.user.user.application.cqrs.command.UserPasswordUpdateCommand;
+import com.damian.xBank.modules.user.user.application.cqrs.command.UpdateUserPasswordCommand;
 import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
@@ -18,7 +18,7 @@ import org.mockito.Mock;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class UserPasswordUpdateTest extends AbstractServiceTest {
+public class UpdateCurrentUserPasswordTest extends AbstractServiceTest {
 
     @Mock
     private UserRepository userRepository;
@@ -27,7 +27,7 @@ public class UserPasswordUpdateTest extends AbstractServiceTest {
     private UserPasswordService userPasswordService;
 
     @InjectMocks
-    private UserPasswordUpdate userPasswordUpdate;
+    private UpdateCurrentUserPassword updateCurrentUserPassword;
 
     private User customer;
 
@@ -50,13 +50,13 @@ public class UserPasswordUpdateTest extends AbstractServiceTest {
 
         final String rawNewPassword = "1234";
 
-        UserPasswordUpdateCommand command = new UserPasswordUpdateCommand(
+        UpdateUserPasswordCommand command = new UpdateUserPasswordCommand(
             RAW_PASSWORD,
             rawNewPassword
         );
 
         // when
-        userPasswordUpdate.execute(command);
+        updateCurrentUserPassword.execute(command);
 
         // then
     }
@@ -68,7 +68,7 @@ public class UserPasswordUpdateTest extends AbstractServiceTest {
         // set the user on the context
         setUpContext(customer);
 
-        UserPasswordUpdateCommand command = new UserPasswordUpdateCommand(
+        UpdateUserPasswordCommand command = new UpdateUserPasswordCommand(
             "wrongPassword",
             "1234"
         );
@@ -76,7 +76,7 @@ public class UserPasswordUpdateTest extends AbstractServiceTest {
         // when
         UserInvalidPasswordConfirmationException exception = assertThrows(
             UserInvalidPasswordConfirmationException.class,
-            () -> userPasswordUpdate.execute(command)
+            () -> updateCurrentUserPassword.execute(command)
         );
 
         // then

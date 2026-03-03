@@ -30,7 +30,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class UserRegisterTest extends AbstractServiceTest {
+public class RegisterUserTest extends AbstractServiceTest {
     @Mock
     private UserTokenVerificationNotifier userTokenVerificationNotifier;
 
@@ -53,7 +53,7 @@ public class UserRegisterTest extends AbstractServiceTest {
     private SettingFactory settingFactory;
 
     @InjectMocks
-    private UserRegister userRegister;
+    private RegisterUser registerUser;
 
     private User user;
 
@@ -86,7 +86,7 @@ public class UserRegisterTest extends AbstractServiceTest {
         );
 
         // when
-        userRegister.execute(command);
+        registerUser.execute(command);
 
         // then
         ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);

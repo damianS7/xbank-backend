@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.user.user.application.usecase;
 
-import com.damian.xBank.modules.user.user.application.cqrs.command.UserEmailUpdateCommand;
+import com.damian.xBank.modules.user.user.application.cqrs.command.UpdateUserEmailCommand;
 import com.damian.xBank.modules.user.user.domain.exception.UserEmailTakenException;
 import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException;
@@ -16,13 +16,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 
 @Service
-public class UserEmailUpdate {
-    private static final Logger log = LoggerFactory.getLogger(UserEmailUpdate.class);
+public class UpdateCurrentUserEmail {
+    private static final Logger log = LoggerFactory.getLogger(UpdateCurrentUserEmail.class);
     private final AuthenticationContext authenticationContext;
     private final PasswordValidator passwordValidator;
     private final UserRepository userRepository;
 
-    public UserEmailUpdate(
+    public UpdateCurrentUserEmail(
         AuthenticationContext authenticationContext,
         PasswordValidator passwordValidator,
         UserRepository userRepository
@@ -41,7 +41,7 @@ public class UserEmailUpdate {
      * @throws UserInvalidPasswordConfirmationException if the password does not match
      */
     @Transactional
-    public void execute(UserEmailUpdateCommand command) {
+    public void execute(UpdateUserEmailCommand command) {
         // Current user
         final User currentUser = authenticationContext.getCurrentUser();
 
