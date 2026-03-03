@@ -1,7 +1,9 @@
 package com.damian.xBank.modules.user.profile.infrastructure.rest.controller;
 
-import com.damian.xBank.modules.user.profile.application.usecase.UserProfileImageGet;
-import com.damian.xBank.modules.user.profile.application.usecase.UserProfileImageUpload;
+import com.damian.xBank.modules.user.profile.application.cqrs.command.UploadUserProfileImageCommand;
+import com.damian.xBank.modules.user.profile.application.cqrs.query.GetUserProfileImageQuery;
+import com.damian.xBank.modules.user.profile.application.usecase.GetCurrentUserProfileImage;
+import com.damian.xBank.modules.user.profile.application.usecase.UploadUserProfileImage;
 import com.damian.xBank.shared.utils.ImageHelper;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -25,16 +27,16 @@ import java.util.concurrent.TimeUnit;
 @RequestMapping("/api/v1")
 @RestController
 public class UserProfileImageController {
-    private final UserProfileImageGet userProfileImageGet;
-    private final UserProfileImageUpload userProfileImageUpload;
+    private final GetCurrentUserProfileImage getCurrentUserProfileImage;
+    private final UploadUserProfileImage uploadUserProfileImage;
 
     @Autowired
     public UserProfileImageController(
-        UserProfileImageGet userProfileImageGet,
-        UserProfileImageUpload userProfileImageUpload
+        GetCurrentUserProfileImage getCurrentUserProfileImage,
+        UploadUserProfileImage uploadUserProfileImage
     ) {
-        this.userProfileImageGet = userProfileImageGet;
-        this.userProfileImageUpload = userProfileImageUpload;
+        this.getCurrentUserProfileImage = getCurrentUserProfileImage;
+        this.uploadUserProfileImage = uploadUserProfileImage;
     }
 
     // endpoint to get the current customer profile image
@@ -43,7 +45,8 @@ public class UserProfileImageController {
         @PathVariable @NotNull @Positive
         Long userId
     ) {
-        Resource resource = userProfileImageGet.execute(userId);
+        GetUserProfileImageQuery query = new GetUserProfileImageQuery(userId);
+        Resource resource = getCurrentUserProfileImage.execute(query);
         String contentType = ImageHelper.getContentType(resource);
 
         return ResponseEntity
@@ -56,7 +59,7 @@ public class UserProfileImageController {
     // endpoint to get the current user profile image
     @GetMapping("/profiles/image")
     public ResponseEntity<?> getProfileImage() {
-        Resource resource = userProfileImageGet.execute();
+        Resource resource = getCurrentUserProfileImage.execute();
         String contentType = ImageHelper.getContentType(resource);
 
         return ResponseEntity
@@ -73,8 +76,11 @@ public class UserProfileImageController {
         String currentPassword,
         @RequestParam("file") MultipartFile file
     ) {
-        userProfileImageUpload.execute(currentPassword, file);
-        Resource resource = userProfileImageGet.execute();
+        UploadUserProfileImageCommand command = new UploadUserProfileImageCommand(
+            currentPassword, file
+        );
+        uploadUserProfileImage.execute(command);
+        Resource resource = getCurrentUserProfileImage.execute();
         String contentType = ImageHelper.getContentType(resource);
 
         return ResponseEntity

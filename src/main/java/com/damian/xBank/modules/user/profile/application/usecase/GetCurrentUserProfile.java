@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.user.profile.application.usecase;
 
+import com.damian.xBank.modules.user.profile.application.cqrs.query.GetUserProfileQuery;
 import com.damian.xBank.modules.user.profile.application.cqrs.result.UserProfileResult;
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileNotFoundException;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
@@ -11,12 +12,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserProfileGet {
-    private static final Logger log = LoggerFactory.getLogger(UserProfileGet.class);
+public class GetCurrentUserProfile {
+    private static final Logger log = LoggerFactory.getLogger(GetCurrentUserProfile.class);
     private final UserProfileRepository userProfileRepository;
     private final AuthenticationContext authenticationContext;
 
-    public UserProfileGet(
+    public GetCurrentUserProfile(
         UserProfileRepository userProfileRepository,
         AuthenticationContext authenticationContext
     ) {
@@ -30,7 +31,7 @@ public class UserProfileGet {
      * @return the user profile
      * @throws UserProfileNotFoundException
      */
-    public UserProfileResult execute() {
+    public UserProfileResult execute(GetUserProfileQuery query) {
         // Current user
         final User currentUser = authenticationContext.getCurrentUser();
 

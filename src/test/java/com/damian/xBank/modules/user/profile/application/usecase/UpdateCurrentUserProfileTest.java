@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.user.profile.application.usecase;
 
-import com.damian.xBank.modules.user.profile.application.cqrs.command.UserProfileUpdateCommand;
+import com.damian.xBank.modules.user.profile.application.cqrs.command.UpdateUserProfileCommand;
 import com.damian.xBank.modules.user.profile.application.cqrs.result.UserProfileResult;
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileNotFoundException;
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileNotOwnerException;
@@ -35,13 +35,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class UserProfileUpdateTest extends AbstractServiceTest {
+public class UpdateCurrentUserProfileTest extends AbstractServiceTest {
 
     @Mock
     private UserProfileRepository userProfileRepository;
 
     @InjectMocks
-    private UserProfileUpdate userProfileUpdate;
+    private UpdateCurrentUserProfile updateCurrentUserProfile;
 
     private User customer;
 
@@ -70,7 +70,7 @@ public class UserProfileUpdateTest extends AbstractServiceTest {
         fields.put("birthdate", "1904-01-02");
         fields.put("gender", "MALE");
         fields.put("phoneNumber", "9199191919");
-        UserProfileUpdateCommand command = new UserProfileUpdateCommand(
+        UpdateUserProfileCommand command = new UpdateUserProfileCommand(
             RAW_PASSWORD,
             fields
         );
@@ -83,7 +83,7 @@ public class UserProfileUpdateTest extends AbstractServiceTest {
             invocation -> invocation.getArgument(0)
         );
 
-        UserProfileResult result = userProfileUpdate.execute(command);
+        UserProfileResult result = updateCurrentUserProfile.execute(command);
 
         // Then
         assertThat(result).isNotNull();
@@ -104,7 +104,7 @@ public class UserProfileUpdateTest extends AbstractServiceTest {
         Map<String, Object> fields = new HashMap<>();
         fields.put("firstName", "David");
         fields.put("fakeField", "1234");
-        UserProfileUpdateCommand command = new UserProfileUpdateCommand(
+        UpdateUserProfileCommand command = new UpdateUserProfileCommand(
             RAW_PASSWORD,
             fields
         );
@@ -113,7 +113,7 @@ public class UserProfileUpdateTest extends AbstractServiceTest {
         when(userProfileRepository.findByUserId(customer.getId())).thenReturn(Optional.of(customer.getProfile()));
         UserProfileUpdateException exception = assertThrows(
             UserProfileUpdateException.class,
-            () -> userProfileUpdate.execute(command)
+            () -> updateCurrentUserProfile.execute(command)
         );
 
         // Then
@@ -128,7 +128,7 @@ public class UserProfileUpdateTest extends AbstractServiceTest {
 
         Map<String, Object> fields = new HashMap<>();
         fields.put("firstName", "David");
-        UserProfileUpdateCommand command = new UserProfileUpdateCommand(
+        UpdateUserProfileCommand command = new UpdateUserProfileCommand(
             "wrongPassword1",
             fields
         );
@@ -146,7 +146,7 @@ public class UserProfileUpdateTest extends AbstractServiceTest {
 
         UserInvalidPasswordConfirmationException exception = assertThrows(
             UserInvalidPasswordConfirmationException.class,
-            () -> userProfileUpdate.execute(command)
+            () -> updateCurrentUserProfile.execute(command)
         );
 
         // Then
@@ -161,7 +161,7 @@ public class UserProfileUpdateTest extends AbstractServiceTest {
 
         Map<String, Object> fields = new HashMap<>();
         fields.put("firstName", "David");
-        UserProfileUpdateCommand command = new UserProfileUpdateCommand(
+        UpdateUserProfileCommand command = new UpdateUserProfileCommand(
             RAW_PASSWORD,
             fields
         );
@@ -170,7 +170,7 @@ public class UserProfileUpdateTest extends AbstractServiceTest {
         when(userProfileRepository.findByUserId(customer.getId())).thenReturn(Optional.empty());
         UserProfileNotFoundException exception = assertThrows(
             UserProfileNotFoundException.class,
-            () -> userProfileUpdate.execute(command)
+            () -> updateCurrentUserProfile.execute(command)
         );
 
         // Then
@@ -185,7 +185,7 @@ public class UserProfileUpdateTest extends AbstractServiceTest {
 
         Map<String, Object> fields = new HashMap<>();
         fields.put("firstName", "David");
-        UserProfileUpdateCommand command = new UserProfileUpdateCommand(
+        UpdateUserProfileCommand command = new UpdateUserProfileCommand(
             RAW_PASSWORD,
             fields
         );
@@ -206,7 +206,7 @@ public class UserProfileUpdateTest extends AbstractServiceTest {
 
         UserProfileNotOwnerException exception = assertThrows(
             UserProfileNotOwnerException.class,
-            () -> userProfileUpdate.execute(command)
+            () -> updateCurrentUserProfile.execute(command)
         );
 
         // Then

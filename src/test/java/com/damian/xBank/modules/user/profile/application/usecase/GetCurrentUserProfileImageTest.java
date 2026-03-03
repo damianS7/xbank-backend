@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.user.profile.application.usecase;
 
+import com.damian.xBank.modules.user.profile.application.cqrs.query.GetUserProfileImageQuery;
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileImageNotFoundException;
 import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
@@ -23,10 +24,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
-public class UserProfileImageGetTest extends AbstractServiceTest {
+public class GetCurrentUserProfileImageTest extends AbstractServiceTest {
 
     @Mock
     private UserRepository userRepository;
@@ -35,7 +39,7 @@ public class UserProfileImageGetTest extends AbstractServiceTest {
     private UserProfileImageService userProfileImageService;
 
     @InjectMocks
-    private UserProfileImageGet userProfileImageGet;
+    private GetCurrentUserProfileImage getCurrentUserProfileImage;
     private User customer;
 
     @BeforeEach
@@ -60,6 +64,8 @@ public class UserProfileImageGetTest extends AbstractServiceTest {
 
         Resource givenResource = new UrlResource(givenFile.toURI());
 
+        GetUserProfileImageQuery query = new GetUserProfileImageQuery(customer.getId());
+
         // when
         when(userRepository.findById(customer.getId()))
             .thenReturn(Optional.of(customer));
@@ -70,7 +76,7 @@ public class UserProfileImageGetTest extends AbstractServiceTest {
             customer.getProfile().getPhotoPath()
         )).thenReturn(givenResource);
 
-        Resource resource = userProfileImageGet.execute(customer.getId());
+        Resource resource = getCurrentUserProfileImage.execute(query);
 
         // then
         assertNotNull(resource);
@@ -82,12 +88,13 @@ public class UserProfileImageGetTest extends AbstractServiceTest {
     @DisplayName("should throw exception when user not found")
     void getImage_WhenUserNotFound_ThrowsException() throws IOException {
         // given
+        GetUserProfileImageQuery query = new GetUserProfileImageQuery(customer.getId());
         // when
         when(userRepository.findById(customer.getId())).thenReturn(Optional.empty());
 
         UserNotFoundException exception = assertThrows(
             UserNotFoundException.class,
-            () -> userProfileImageGet.execute(customer.getId())
+            () -> getCurrentUserProfileImage.execute(query)
         );
 
         // then
@@ -100,13 +107,14 @@ public class UserProfileImageGetTest extends AbstractServiceTest {
     void getImage_WhenUserImageIsNull_ThrowsException() throws IOException {
         // given
         customer.getProfile().setPhotoPath(null);
+        GetUserProfileImageQuery query = new GetUserProfileImageQuery(customer.getId());
 
         // when
         when(userRepository.findById(customer.getId())).thenReturn(Optional.of(customer));
 
         UserProfileImageNotFoundException exception = assertThrows(
             UserProfileImageNotFoundException.class,
-            () -> userProfileImageGet.execute(customer.getId())
+            () -> getCurrentUserProfileImage.execute(query)
         );
 
         // then

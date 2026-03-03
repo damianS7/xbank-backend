@@ -1,9 +1,10 @@
 package com.damian.xBank.modules.user.profile.infrastructure.rest.controller;
 
-import com.damian.xBank.modules.user.profile.application.cqrs.command.UserProfileUpdateCommand;
+import com.damian.xBank.modules.user.profile.application.cqrs.command.UpdateUserProfileCommand;
+import com.damian.xBank.modules.user.profile.application.cqrs.query.GetUserProfileQuery;
 import com.damian.xBank.modules.user.profile.application.cqrs.result.UserProfileResult;
-import com.damian.xBank.modules.user.profile.application.usecase.UserProfileGet;
-import com.damian.xBank.modules.user.profile.application.usecase.UserProfileUpdate;
+import com.damian.xBank.modules.user.profile.application.usecase.GetCurrentUserProfile;
+import com.damian.xBank.modules.user.profile.application.usecase.UpdateCurrentUserProfile;
 import com.damian.xBank.modules.user.profile.infrastructure.mapper.UserProfileDtoMapper;
 import com.damian.xBank.modules.user.profile.infrastructure.rest.dto.request.UserProfileUpdateRequest;
 import jakarta.validation.Valid;
@@ -21,22 +22,23 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1")
 @RestController
 public class UserProfileController {
-    private final UserProfileGet userProfileGet;
-    private final UserProfileUpdate userProfileUpdate;
+    private final GetCurrentUserProfile getCurrentUserProfile;
+    private final UpdateCurrentUserProfile updateCurrentUserProfile;
 
     @Autowired
     public UserProfileController(
-        UserProfileGet userProfileGet,
-        UserProfileUpdate userProfileUpdate
+        GetCurrentUserProfile getCurrentUserProfile,
+        UpdateCurrentUserProfile updateCurrentUserProfile
     ) {
-        this.userProfileGet = userProfileGet;
-        this.userProfileUpdate = userProfileUpdate;
+        this.getCurrentUserProfile = getCurrentUserProfile;
+        this.updateCurrentUserProfile = updateCurrentUserProfile;
     }
 
     // endpoint to receive current customer
     @GetMapping("/profiles")
     public ResponseEntity<?> getLoggedCustomerData() {
-        UserProfileResult userProfileResult = userProfileGet.execute();
+        GetUserProfileQuery query = new GetUserProfileQuery();
+        UserProfileResult userProfileResult = getCurrentUserProfile.execute(query);
 
         return ResponseEntity
             .status(HttpStatus.OK)
@@ -49,8 +51,8 @@ public class UserProfileController {
         @Valid @RequestBody
         UserProfileUpdateRequest request
     ) {
-        UserProfileUpdateCommand command = UserProfileDtoMapper.toCommand(request);
-        UserProfileResult userProfileResult = userProfileUpdate.execute(command);
+        UpdateUserProfileCommand command = UserProfileDtoMapper.toCommand(request);
+        UserProfileResult userProfileResult = updateCurrentUserProfile.execute(command);
 
         return ResponseEntity
             .status(HttpStatus.OK)

@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.user.profile.infrastructure.mapper;
 
-import com.damian.xBank.modules.user.profile.application.cqrs.command.UserProfileUpdateCommand;
+import com.damian.xBank.modules.user.profile.application.cqrs.command.UpdateUserProfileCommand;
 import com.damian.xBank.modules.user.profile.application.cqrs.result.UserProfileDetailResult;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import com.damian.xBank.modules.user.profile.infrastructure.rest.dto.request.UserProfileUpdateRequest;
@@ -30,8 +30,8 @@ public class UserProfileDtoMapper {
         );
     }
 
-    public static UserProfileUpdateCommand toCommand(UserProfileUpdateRequest request) {
-        return new UserProfileUpdateCommand(
+    public static UpdateUserProfileCommand toCommand(UserProfileUpdateRequest request) {
+        return new UpdateUserProfileCommand(
             request.currentPassword(),
             request.fieldsToUpdate()
         );

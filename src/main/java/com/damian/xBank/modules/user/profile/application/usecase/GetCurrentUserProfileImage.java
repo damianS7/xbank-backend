@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.user.profile.application.usecase;
 
+import com.damian.xBank.modules.user.profile.application.cqrs.query.GetUserProfileImageQuery;
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileImageNotFoundException;
 import com.damian.xBank.modules.user.profile.infrastructure.service.UserProfileImageService;
 import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException;
@@ -12,16 +13,16 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserProfileImageGet {
-    private static final Logger log = LoggerFactory.getLogger(UserProfileImageGet.class);
+public class GetCurrentUserProfileImage {
+    private static final Logger log = LoggerFactory.getLogger(GetCurrentUserProfileImage.class);
     private final AuthenticationContext authenticationContext;
     private final UserRepository userRepository;
     private final UserProfileImageService userProfileImageService;
 
-    public UserProfileImageGet(
-            AuthenticationContext authenticationContext,
-            UserRepository userRepository,
-            UserProfileImageService userProfileImageService
+    public GetCurrentUserProfileImage(
+        AuthenticationContext authenticationContext,
+        UserRepository userRepository,
+        UserProfileImageService userProfileImageService
     ) {
         this.authenticationContext = authenticationContext;
         this.userRepository = userRepository;
@@ -31,25 +32,26 @@ public class UserProfileImageGet {
     /**
      * It gets the user photo
      *
-     * @param userId the id of the user to get the photo for
+     * @param query the id of the user to get the photo for
      * @return the user photo resource
      * @throws UserNotFoundException             if the user does not exist
      * @throws UserProfileImageNotFoundException if the user photo does not exist in the db
      */
-    public Resource execute(Long userId) {
+    public Resource execute(GetUserProfileImageQuery query) {
         // find the user
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException(userId)
-        );
+        User user = userRepository.findById(query.userId())
+            .orElseThrow(
+                () -> new UserNotFoundException(query.userId())
+            );
 
         // check if the user has a user photo filename stored in db
         if (user.getProfile().getPhotoPath() == null) {
             throw new UserProfileImageNotFoundException(user.getProfile().getId());
         }
 
-        log.debug("Getting user: {} user image: {}", userId, user.getProfile().getPhotoPath());
+        log.debug("Getting user: {} user image: {}", user.getId(), user.getProfile().getPhotoPath());
 
-        return userProfileImageService.getImage(userId, user.getProfile().getPhotoPath());
+        return userProfileImageService.getImage(user.getId(), user.getProfile().getPhotoPath());
     }
 
     /**
@@ -61,6 +63,6 @@ public class UserProfileImageGet {
         // Current user
         final User currentUser = authenticationContext.getCurrentUser();
 
-        return this.execute(currentUser.getId());
+        return this.execute(new GetUserProfileImageQuery(currentUser.getId()));
     }
 }

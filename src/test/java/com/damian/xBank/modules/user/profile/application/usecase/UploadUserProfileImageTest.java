@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.user.profile.application.usecase;
 
+import com.damian.xBank.modules.user.profile.application.cqrs.command.UploadUserProfileImageCommand;
 import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import com.damian.xBank.modules.user.profile.infrastructure.repository.UserProfileRepository;
@@ -20,9 +21,12 @@ import java.io.File;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-public class UserProfileImageUploadTest extends AbstractServiceTest {
+public class UploadUserProfileImageTest extends AbstractServiceTest {
 
     @Mock
     private UserProfileRepository userProfileRepository;
@@ -31,7 +35,7 @@ public class UserProfileImageUploadTest extends AbstractServiceTest {
     private UserProfileImageService userProfileImageService;
 
     @InjectMocks
-    private UserProfileImageUpload userProfileImageUpload;
+    private UploadUserProfileImage uploadUserProfileImage;
 
     private User customer;
 
@@ -40,11 +44,11 @@ public class UserProfileImageUploadTest extends AbstractServiceTest {
         UserProfile profile = UserProfileFactory.testProfile();
 
         customer = UserTestBuilder.aCustomer()
-                                  .withId(1L)
-                                  .withPassword(RAW_PASSWORD)
-                                  .withEmail("customer@demo.com")
-                                  .withProfile(profile)
-                                  .build();
+            .withId(1L)
+            .withPassword(RAW_PASSWORD)
+            .withEmail("customer@demo.com")
+            .withProfile(profile)
+            .build();
     }
 
     @Test
@@ -55,17 +59,19 @@ public class UserProfileImageUploadTest extends AbstractServiceTest {
         MultipartFile givenMultipart = ImageTestHelper.createDefaultJpg();
         File tempFile = ImageTestHelper.multipartToFile(givenMultipart);
 
+        UploadUserProfileImageCommand command = new UploadUserProfileImageCommand(
+            RAW_PASSWORD, givenMultipart
+        );
+
         // when
         when(userProfileRepository.save(any(UserProfile.class))).thenReturn(customer.getProfile());
 
         when(userProfileImageService.uploadImage(
-                anyLong(),
-                any(MultipartFile.class)
+            anyLong(),
+            any(MultipartFile.class)
         )).thenReturn(tempFile);
 
-        File resultImage = userProfileImageUpload.execute(
-                RAW_PASSWORD, givenMultipart
-        );
+        File resultImage = uploadUserProfileImage.execute(command);
 
         // then
         assertNotNull(resultImage);

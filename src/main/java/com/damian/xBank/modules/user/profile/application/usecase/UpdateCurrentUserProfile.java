@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.user.profile.application.usecase;
 
-import com.damian.xBank.modules.user.profile.application.cqrs.command.UserProfileUpdateCommand;
+import com.damian.xBank.modules.user.profile.application.cqrs.command.UpdateUserProfileCommand;
 import com.damian.xBank.modules.user.profile.application.cqrs.result.UserProfileResult;
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileNotFoundException;
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileUpdateException;
@@ -18,13 +18,13 @@ import java.time.Instant;
 import java.time.LocalDate;
 
 @Service
-public class UserProfileUpdate {
-    private static final Logger log = LoggerFactory.getLogger(UserProfileUpdate.class);
+public class UpdateCurrentUserProfile {
+    private static final Logger log = LoggerFactory.getLogger(UpdateCurrentUserProfile.class);
     private final UserProfileRepository userProfileRepository;
     private final AuthenticationContext authenticationContext;
     private final PasswordValidator passwordValidator;
 
-    public UserProfileUpdate(
+    public UpdateCurrentUserProfile(
         UserProfileRepository userProfileRepository,
         AuthenticationContext authenticationContext,
         PasswordValidator passwordValidator
@@ -34,7 +34,7 @@ public class UserProfileUpdate {
         this.passwordValidator = passwordValidator;
     }
 
-    public UserProfileResult execute(UserProfileUpdateCommand command) {
+    public UserProfileResult execute(UpdateUserProfileCommand command) {
         // Current user
         final User currentUser = authenticationContext.getCurrentUser();
 
@@ -49,7 +49,7 @@ public class UserProfileUpdate {
      * @return Customer with the updated profile
      * @throws UserProfileNotFoundException if the profile is not found
      */
-    public UserProfileResult execute(Long userId, UserProfileUpdateCommand command) {
+    public UserProfileResult execute(Long userId, UpdateUserProfileCommand command) {
         // Current user
         final User currentUser = authenticationContext.getCurrentUser();
 

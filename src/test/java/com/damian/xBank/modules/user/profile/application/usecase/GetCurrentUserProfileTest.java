@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.user.profile.application.usecase;
 
+import com.damian.xBank.modules.user.profile.application.cqrs.query.GetUserProfileQuery;
 import com.damian.xBank.modules.user.profile.application.cqrs.result.UserProfileResult;
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileNotFoundException;
 import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
@@ -28,13 +29,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class UserProfileGetTest extends AbstractServiceTest {
+public class GetCurrentUserProfileTest extends AbstractServiceTest {
 
     @Mock
     private UserProfileRepository userProfileRepository;
 
     @InjectMocks
-    private UserProfileGet userProfileGet;
+    private GetCurrentUserProfile getCurrentUserProfile;
 
     private User customer;
 
@@ -61,7 +62,8 @@ public class UserProfileGetTest extends AbstractServiceTest {
         when(userProfileRepository.findByUserId(anyLong()))
             .thenReturn(Optional.of(customer.getProfile()));
 
-        UserProfileResult result = userProfileGet.execute();
+        GetUserProfileQuery query = new GetUserProfileQuery();
+        UserProfileResult result = getCurrentUserProfile.execute(query);
 
         // then
         assertEquals(customer.getProfile().getId(), result.id());
@@ -75,13 +77,15 @@ public class UserProfileGetTest extends AbstractServiceTest {
         // given
         setUpContext(customer);
 
+        GetUserProfileQuery query = new GetUserProfileQuery();
+
         // when
         when(userProfileRepository.findByUserId(anyLong()))
             .thenReturn(Optional.empty());
 
         UserProfileNotFoundException exception = assertThrows(
             UserProfileNotFoundException.class,
-            () -> userProfileGet.execute()
+            () -> getCurrentUserProfile.execute(query)
         );
 
         // then
