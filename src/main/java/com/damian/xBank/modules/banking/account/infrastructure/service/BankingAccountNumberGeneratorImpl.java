@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.banking.account.infrastructure.service;
 
+import com.damian.xBank.modules.banking.account.domain.service.BankingAccountNumberGenerator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 

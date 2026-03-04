@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.banking.account.infrastructure.service;
 
+import com.damian.xBank.modules.banking.account.domain.service.BankingAccountNumberGenerator;
 import com.damian.xBank.shared.AbstractServiceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,10 +28,10 @@ public class BankingAccountNumberGeneratorTest extends AbstractServiceTest {
 
         // country code (2 uppercase letters)
         assertThat(accountNumber.substring(0, 2))
-                .matches("[A-Z]{2}");
+            .matches("[A-Z]{2}");
 
         // remaining digits
         assertThat(accountNumber.substring(2))
-                .matches("\\d{22}");
+            .matches("\\d{22}");
     }
 }

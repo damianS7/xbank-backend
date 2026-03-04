@@ -1,0 +1,93 @@
+package com.damian.xBank.modules.banking.account.application.usecase;
+
+import com.damian.xBank.modules.banking.account.application.cqrs.query.GetAllBankingAccountsQuery;
+import com.damian.xBank.modules.banking.account.application.cqrs.result.BankingAccountResult;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
+import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
+import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.shared.AbstractServiceTest;
+import com.damian.xBank.shared.utils.UserTestBuilder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+
+import java.math.BigDecimal;
+import java.util.Set;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+public class GetAllBankingAccountsTest extends AbstractServiceTest {
+
+    @Mock
+    private BankingAccountRepository bankingAccountRepository;
+
+    @InjectMocks
+    private GetAllBankingAccounts getAllBankingAccounts;
+
+    private User customer;
+
+    @BeforeEach
+    void setUp() {
+        customer = UserTestBuilder.aCustomer()
+            .withId(1L)
+            .withEmail("customer@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .build();
+
+        BankingAccount account1 = BankingAccount
+            .create(customer)
+            .setId(1L)
+            .setBalance(BigDecimal.valueOf(1000))
+            .setCurrency(BankingAccountCurrency.EUR)
+            .setType(BankingAccountType.SAVINGS)
+            .setAccountNumber("US9900001111112233334444");
+
+        BankingAccount account2 = BankingAccount
+            .create(customer)
+            .setId(2L)
+            .setBalance(BigDecimal.valueOf(1000))
+            .setCurrency(BankingAccountCurrency.EUR)
+            .setType(BankingAccountType.SAVINGS)
+            .setAccountNumber("US9900001111112233334411");
+
+        BankingAccount account3 = BankingAccount
+            .create(customer)
+            .setId(3L)
+            .setBalance(BigDecimal.valueOf(1000))
+            .setCurrency(BankingAccountCurrency.EUR)
+            .setType(BankingAccountType.SAVINGS)
+            .setAccountNumber("US9900001111112233334412");
+
+        customer.addBankingAccount(account1);
+        customer.addBankingAccount(account2);
+        customer.addBankingAccount(account3);
+    }
+
+    @Test
+    @DisplayName("should return a set containing all banking accounts from authenticated user")
+    void getCustomerBankingAccounts_WhenValidRequest_ReturnsCustomerBankingAccounts() {
+        // given
+        setUpContext(customer);
+
+        GetAllBankingAccountsQuery query = new GetAllBankingAccountsQuery();
+
+        // when
+        when(bankingAccountRepository.findByUser_Id(anyLong())).thenReturn(
+            customer.getBankingAccounts()
+        );
+
+        Set<BankingAccountResult> result = getAllBankingAccounts.execute(query);
+
+        // then
+        assertThat(result.size()).isEqualTo(customer.getBankingAccounts().size());
+        verify(bankingAccountRepository, times(1)).findByUser_Id(anyLong());
+    }
+}
