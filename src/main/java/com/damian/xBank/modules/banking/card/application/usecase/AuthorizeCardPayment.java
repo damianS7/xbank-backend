@@ -8,7 +8,7 @@ import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransact
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.infrastructure.service.BankingTransactionPersistenceService;
 import com.damian.xBank.modules.payment.network.card.domain.PaymentAuthorizationStatus;
-import com.damian.xBank.modules.payment.network.card.infrastructure.web.dto.response.PaymentAuthorizationResult;
+import com.damian.xBank.modules.payment.network.card.infrastructure.http.dto.response.PaymentAuthorizationResponse;
 import org.springframework.stereotype.Service;
 
 /**
@@ -32,7 +32,7 @@ public class AuthorizeCardPayment {
      *
      * @param command
      */
-    public PaymentAuthorizationResult execute(AuthorizeCardPaymentCommand command) {
+    public PaymentAuthorizationResponse execute(AuthorizeCardPaymentCommand command) {
         // check card exists
         BankingCard bankingCard = bankingCardRepository
             .findByCardNumber(command.cardNumber())
@@ -60,7 +60,7 @@ public class AuthorizeCardPayment {
         // store here the transaction as AUTHORIZED
         transaction = bankingTransactionPersistenceService.record(transaction);
 
-        return new PaymentAuthorizationResult(
+        return new PaymentAuthorizationResponse(
             PaymentAuthorizationStatus.AUTHORIZED,
             transaction.getId().toString(),
             null

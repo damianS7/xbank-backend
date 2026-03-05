@@ -5,8 +5,8 @@ import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntent;
 import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntentStatus;
 import com.damian.xBank.modules.payment.network.card.application.PaymentNetworkGateway;
 import com.damian.xBank.modules.payment.network.card.domain.PaymentAuthorizationStatus;
-import com.damian.xBank.modules.payment.network.card.infrastructure.web.dto.request.PaymentAuthorizationRequest;
-import com.damian.xBank.modules.payment.network.card.infrastructure.web.dto.response.PaymentAuthorizationResult;
+import com.damian.xBank.modules.payment.network.card.infrastructure.http.dto.request.PaymentAuthorizationRequest;
+import com.damian.xBank.modules.payment.network.card.infrastructure.http.dto.response.PaymentAuthorizationResponse;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
@@ -68,7 +68,7 @@ public class PaymentCheckoutControllerTest extends AbstractControllerTest {
     void postPaymentsCheckout_WhenPaymentAuthorized_ReturnsAuthorizedView() throws Exception {
         when(paymentNetworkGateway.authorizePayment(
             any(PaymentAuthorizationRequest.class)
-        )).thenReturn(new PaymentAuthorizationResult(
+        )).thenReturn(new PaymentAuthorizationResponse(
             PaymentAuthorizationStatus.AUTHORIZED,
             "authorizationId",
             null

@@ -15,7 +15,7 @@ import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransact
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.infrastructure.service.BankingTransactionPersistenceService;
 import com.damian.xBank.modules.payment.network.card.domain.PaymentAuthorizationStatus;
-import com.damian.xBank.modules.payment.network.card.infrastructure.web.dto.response.PaymentAuthorizationResult;
+import com.damian.xBank.modules.payment.network.card.infrastructure.http.dto.response.PaymentAuthorizationResponse;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.domain.exception.ErrorCodes;
@@ -104,13 +104,13 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
         )).thenReturn(givenBankingTransaction);
 
         // then
-        PaymentAuthorizationResult response = cardAuthorize.execute(command);
+        PaymentAuthorizationResponse response = cardAuthorize.execute(command);
         assertThat(response)
             .isNotNull()
             .extracting(
-                PaymentAuthorizationResult::status,
-                PaymentAuthorizationResult::authorizationId,
-                PaymentAuthorizationResult::declineReason
+                PaymentAuthorizationResponse::status,
+                PaymentAuthorizationResponse::authorizationId,
+                PaymentAuthorizationResponse::declineReason
             ).containsExactly(
                 PaymentAuthorizationStatus.AUTHORIZED,
                 givenBankingTransaction.getId().toString(),

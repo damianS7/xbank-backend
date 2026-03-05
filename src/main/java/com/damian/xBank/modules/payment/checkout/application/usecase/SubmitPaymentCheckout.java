@@ -10,8 +10,8 @@ import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntent;
 import com.damian.xBank.modules.payment.intent.infrastructure.repository.PaymentIntentRepository;
 import com.damian.xBank.modules.payment.network.card.application.PaymentNetworkGateway;
 import com.damian.xBank.modules.payment.network.card.domain.PaymentAuthorizationStatus;
-import com.damian.xBank.modules.payment.network.card.infrastructure.web.dto.request.PaymentAuthorizationRequest;
-import com.damian.xBank.modules.payment.network.card.infrastructure.web.dto.response.PaymentAuthorizationResult;
+import com.damian.xBank.modules.payment.network.card.infrastructure.http.dto.request.PaymentAuthorizationRequest;
+import com.damian.xBank.modules.payment.network.card.infrastructure.http.dto.response.PaymentAuthorizationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,7 +51,7 @@ public class SubmitPaymentCheckout {
         // Payment must be pending
         paymentIntent.assertPending();
 
-        PaymentAuthorizationResult response = paymentNetworkGateway.authorizePayment(
+        PaymentAuthorizationResponse response = paymentNetworkGateway.authorizePayment(
             new PaymentAuthorizationRequest(
                 paymentIntent.getMerchantName(),
                 command.cardHolder(),

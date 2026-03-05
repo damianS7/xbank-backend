@@ -1,10 +1,10 @@
 package com.damian.xBank.modules.payment.network.card.application;
 
-import com.damian.xBank.modules.payment.network.card.infrastructure.web.dto.request.PaymentAuthorizationRequest;
-import com.damian.xBank.modules.payment.network.card.infrastructure.web.dto.response.PaymentAuthorizationResult;
+import com.damian.xBank.modules.payment.network.card.infrastructure.http.dto.request.PaymentAuthorizationRequest;
+import com.damian.xBank.modules.payment.network.card.infrastructure.http.dto.response.PaymentAuthorizationResponse;
 
 public interface PaymentNetworkGateway {
-    PaymentAuthorizationResult authorizePayment(PaymentAuthorizationRequest request);
+    PaymentAuthorizationResponse authorizePayment(PaymentAuthorizationRequest request);
 
     //    void capturePayment(); TODO
 }
