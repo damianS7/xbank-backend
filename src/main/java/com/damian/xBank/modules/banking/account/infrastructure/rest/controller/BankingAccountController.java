@@ -18,9 +18,9 @@ import com.damian.xBank.modules.banking.account.infrastructure.rest.dto.request.
 import com.damian.xBank.modules.banking.account.infrastructure.rest.dto.request.CreateBankingAccountRequest;
 import com.damian.xBank.modules.banking.account.infrastructure.rest.dto.request.RequestBankingAccountCardRequest;
 import com.damian.xBank.modules.banking.account.infrastructure.rest.dto.request.SetBankingAccountAliasRequest;
-import com.damian.xBank.modules.banking.card.application.dto.response.BankingCardDto;
-import com.damian.xBank.modules.banking.card.application.mapper.BankingCardDtoMapper;
+import com.damian.xBank.modules.banking.card.application.cqrs.result.BankingCardResult;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
+import com.damian.xBank.modules.banking.card.infrastructure.mapper.BankingCardDtoMapper;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -152,11 +152,11 @@ public class BankingAccountController {
     ) {
         RequestBankingAccountCardCommand command = new RequestBankingAccountCardCommand(id, request.type());
         BankingCard bankingCard = bankingAccountCardRequest.execute(command);
-        BankingCardDto bankingCardDTO = BankingCardDtoMapper.toBankingCardDto(bankingCard);
+        BankingCardResult bankingCardResult = BankingCardDtoMapper.toBankingCardResult(bankingCard);
 
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(bankingCardDTO);
+            .body(bankingCardResult);
     }
 
 }

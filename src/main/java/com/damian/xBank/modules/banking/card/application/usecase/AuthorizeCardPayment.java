@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.banking.card.application.usecase;
 
-import com.damian.xBank.modules.banking.card.application.dto.request.AuthorizeCardPaymentRequest;
+import com.damian.xBank.modules.banking.card.application.cqrs.command.AuthorizeCardPaymentCommand;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoundException;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
@@ -8,7 +8,7 @@ import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransact
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.infrastructure.service.BankingTransactionPersistenceService;
 import com.damian.xBank.modules.payment.network.card.domain.PaymentAuthorizationStatus;
-import com.damian.xBank.modules.payment.network.card.infrastructure.web.dto.response.PaymentAuthorizationResponse;
+import com.damian.xBank.modules.payment.network.card.infrastructure.web.dto.response.PaymentAuthorizationResult;
 import org.springframework.stereotype.Service;
 
 /**
@@ -30,37 +30,37 @@ public class AuthorizeCardPayment {
 
     /**
      *
-     * @param request
+     * @param command
      */
-    public PaymentAuthorizationResponse execute(AuthorizeCardPaymentRequest request) {
+    public PaymentAuthorizationResult execute(AuthorizeCardPaymentCommand command) {
         // check card exists
         BankingCard bankingCard = bankingCardRepository
-            .findByCardNumber(request.cardNumber())
+            .findByCardNumber(command.cardNumber())
             .orElseThrow(
-                () -> new BankingCardNotFoundException(request.cardNumber())
+                () -> new BankingCardNotFoundException(command.cardNumber())
             );
 
         // check security
         bankingCard.authorizePayment(
-            request.amount(),
-            request.expiryMonth(),
-            request.expiryYear(),
-            request.cvv()
+            command.amount(),
+            command.expiryMonth(),
+            command.expiryYear(),
+            command.cvv()
         );
 
         BankingTransaction transaction = BankingTransaction
             .create(
                 BankingTransactionType.CARD_CHARGE,
                 bankingCard.getBankingAccount(),
-                request.amount()
+                command.amount()
             )
             .setBankingCard(bankingCard)
-            .setDescription(request.merchant());
+            .setDescription(command.merchant());
 
         // store here the transaction as AUTHORIZED
         transaction = bankingTransactionPersistenceService.record(transaction);
 
-        return new PaymentAuthorizationResponse(
+        return new PaymentAuthorizationResult(
             PaymentAuthorizationStatus.AUTHORIZED,
             transaction.getId().toString(),
             null

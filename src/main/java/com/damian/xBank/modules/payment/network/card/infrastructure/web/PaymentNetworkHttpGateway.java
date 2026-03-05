@@ -3,7 +3,7 @@ package com.damian.xBank.modules.payment.network.card.infrastructure.web;
 import com.damian.xBank.modules.payment.network.card.application.PaymentNetworkGateway;
 import com.damian.xBank.modules.payment.network.card.domain.PaymentAuthorizationStatus;
 import com.damian.xBank.modules.payment.network.card.infrastructure.web.dto.request.PaymentAuthorizationRequest;
-import com.damian.xBank.modules.payment.network.card.infrastructure.web.dto.response.PaymentAuthorizationResponse;
+import com.damian.xBank.modules.payment.network.card.infrastructure.web.dto.response.PaymentAuthorizationResult;
 import com.damian.xBank.shared.infrastructure.web.dto.response.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +30,7 @@ public class PaymentNetworkHttpGateway implements PaymentNetworkGateway {
     }
 
     @Override
-    public PaymentAuthorizationResponse authorizePayment(
+    public PaymentAuthorizationResult authorizePayment(
         PaymentAuthorizationRequest request
     ) {
         return webClient
@@ -41,7 +41,7 @@ public class PaymentNetworkHttpGateway implements PaymentNetworkGateway {
                 // response if error
                 if (response.statusCode().isError()) {
                     return response.bodyToMono(ApiResponse.class)
-                        .map(body -> new PaymentAuthorizationResponse(
+                        .map(body -> new PaymentAuthorizationResult(
                             PaymentAuthorizationStatus.DECLINED,
                             null,
                             body.getMessage()
@@ -49,7 +49,7 @@ public class PaymentNetworkHttpGateway implements PaymentNetworkGateway {
                 }
 
                 // response if success
-                return response.bodyToMono(PaymentAuthorizationResponse.class);
+                return response.bodyToMono(PaymentAuthorizationResult.class);
             })
             .block();
     }

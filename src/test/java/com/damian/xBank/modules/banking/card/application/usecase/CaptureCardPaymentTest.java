@@ -3,7 +3,7 @@ package com.damian.xBank.modules.banking.card.application.usecase;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
-import com.damian.xBank.modules.banking.card.application.dto.request.CaptureCardPaymentRequest;
+import com.damian.xBank.modules.banking.card.application.cqrs.command.CaptureCardPaymentCommand;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
@@ -39,26 +39,26 @@ public class CaptureCardPaymentTest extends AbstractServiceTest {
     @BeforeEach
     void setUp() {
         customer = UserTestBuilder.aCustomer()
-                                  .withId(1L)
-                                  .withEmail("customer@demo.com")
-                                  .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                  .build();
+            .withId(1L)
+            .withEmail("customer@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .build();
 
         bankingAccount = BankingAccount
-                .create(customer)
-                .setId(5L)
-                .setCurrency(BankingAccountCurrency.EUR)
-                .setType(BankingAccountType.SAVINGS)
-                .setBalance(BigDecimal.valueOf(1000))
-                .setAccountNumber("US9900001111112233334444");
+            .create(customer)
+            .setId(5L)
+            .setCurrency(BankingAccountCurrency.EUR)
+            .setType(BankingAccountType.SAVINGS)
+            .setBalance(BigDecimal.valueOf(1000))
+            .setAccountNumber("US9900001111112233334444");
 
 
         bankingCard = BankingCard
-                .create(bankingAccount)
-                .setId(11L)
-                .setCardNumber("1234123412341234")
-                .setCardCvv("123")
-                .setCardPin("1234");
+            .create(bankingAccount)
+            .setId(11L)
+            .setCardNumber("1234123412341234")
+            .setCardCvv("123")
+            .setCardPin("1234");
     }
 
     @Test
@@ -72,15 +72,15 @@ public class CaptureCardPaymentTest extends AbstractServiceTest {
         transaction.setAmount(bankingAccount.getBalance());
         transaction.setDescription("AMAZON.COM");
 
-        CaptureCardPaymentRequest request = new CaptureCardPaymentRequest(
-                transaction.getId()
+        CaptureCardPaymentCommand command = new CaptureCardPaymentCommand(
+            transaction.getId()
         );
 
         when(bankingTransactionRepository.findById(anyLong()))
-                .thenReturn(Optional.of(transaction));
+            .thenReturn(Optional.of(transaction));
 
         // then
-        captureCardPayment.execute(request);
+        captureCardPayment.execute(command);
 
         assertThat(transaction).isNotNull();
         assertThat(transaction.getStatus()).isEqualTo(BankingTransactionStatus.COMPLETED);

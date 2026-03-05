@@ -4,8 +4,8 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
-import com.damian.xBank.modules.banking.card.application.dto.response.BankingCardDto;
-import com.damian.xBank.modules.banking.card.application.mapper.BankingCardDtoMapper;
+import com.damian.xBank.modules.banking.card.application.cqrs.result.BankingCardResult;
+import com.damian.xBank.modules.banking.card.infrastructure.mapper.BankingCardDtoMapper;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -19,7 +19,7 @@ public record BankingAccountResult(
     BankingAccountType accountType,
     BankingAccountCurrency accountCurrency,
     BankingAccountStatus accountStatus,
-    Set<BankingCardDto> accountCards,
+    Set<BankingCardResult> accountCards,
     Instant createdAt,
     Instant updatedAt
 ) {
@@ -32,7 +32,7 @@ public record BankingAccountResult(
             bankingAccount.getType(),
             bankingAccount.getCurrency(),
             bankingAccount.getStatus(),
-            BankingCardDtoMapper.toBankingCardSetDTO(bankingAccount.getBankingCards()),
+            BankingCardDtoMapper.toBankingCardResultSetDTO(bankingAccount.getBankingCards()),
             bankingAccount.getCreatedAt(),
             bankingAccount.getUpdatedAt()
         );

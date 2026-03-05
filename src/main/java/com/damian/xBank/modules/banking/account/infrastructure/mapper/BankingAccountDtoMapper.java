@@ -4,8 +4,8 @@ import com.damian.xBank.modules.banking.account.application.cqrs.result.BankingA
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.infrastructure.rest.dto.response.BankingAccountDetailDto;
 import com.damian.xBank.modules.banking.account.infrastructure.rest.dto.response.BankingAccountDto;
-import com.damian.xBank.modules.banking.card.application.dto.response.BankingCardDto;
-import com.damian.xBank.modules.banking.card.application.mapper.BankingCardDtoMapper;
+import com.damian.xBank.modules.banking.card.application.cqrs.result.BankingCardResult;
+import com.damian.xBank.modules.banking.card.infrastructure.mapper.BankingCardDtoMapper;
 import com.damian.xBank.modules.banking.transaction.application.dto.response.BankingTransactionDto;
 import com.damian.xBank.modules.banking.transaction.application.mapper.BankingTransactionDtoMapper;
 import org.springframework.data.domain.Page;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 public class BankingAccountDtoMapper {
     public static BankingAccountDto toBankingAccountDto(BankingAccount bankingAccount) {
-        Set<BankingCardDto> bankingCardsDto = Collections.emptySet();
+        Set<BankingCardResult> bankingCardsDto = Collections.emptySet();
         //        Set<BankingCardDto> bankingCardsDTO = Optional
         //                .ofNullable(bankingAccount.getBankingCards())
         //                .orElseGet(Collections::emptySet)
@@ -55,11 +55,11 @@ public class BankingAccountDtoMapper {
                 bankingAccount.getAccountTransactions()
             );
 
-        Set<BankingCardDto> bankingCardsDto = Optional
+        Set<BankingCardResult> bankingCardsDto = Optional
             .ofNullable(bankingAccount.getBankingCards())
             .orElseGet(Collections::emptySet)
             .stream()
-            .map(BankingCardDtoMapper::toBankingCardDto)
+            .map(BankingCardDtoMapper::toBankingCardResult)
             .collect(Collectors.toSet());
 
         return new BankingAccountDetailDto(
@@ -85,11 +85,11 @@ public class BankingAccountDtoMapper {
 
     public static BankingAccountResult toBankingAccountResult(BankingAccount bankingAccount) {
 
-        Set<BankingCardDto> bankingCardsDto = Optional
+        Set<BankingCardResult> bankingCardsDto = Optional
             .ofNullable(bankingAccount.getBankingCards())
             .orElseGet(Collections::emptySet)
             .stream()
-            .map(BankingCardDtoMapper::toBankingCardDto)
+            .map(BankingCardDtoMapper::toBankingCardResult)
             .collect(Collectors.toSet());
 
         return new BankingAccountResult(

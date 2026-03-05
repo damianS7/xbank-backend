@@ -3,7 +3,7 @@ package com.damian.xBank.modules.banking.account.infrastructure.rest.dto.respons
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
-import com.damian.xBank.modules.banking.card.application.dto.response.BankingCardDto;
+import com.damian.xBank.modules.banking.card.application.cqrs.result.BankingCardResult;
 import com.damian.xBank.modules.banking.transaction.application.dto.response.BankingTransactionDto;
 import org.springframework.data.domain.Page;
 
@@ -20,7 +20,7 @@ public record BankingAccountDetailDto(
     BankingAccountCurrency accountCurrency,
     BankingAccountStatus accountStatus,
     Page<BankingTransactionDto> accountTransactions,
-    Set<BankingCardDto> accountCards,
+    Set<BankingCardResult> accountCards,
     Instant createdAt,
     Instant updatedAt
 ) {

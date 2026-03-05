@@ -435,4 +435,14 @@ public class BankingCard {
         validateExpirationMonth(expiryMonth);
         assertCorrectCvv(cvv);
     }
+
+    /**
+     * Activate the card.
+     *
+     * @param cvv
+     */
+    public void activate(String cvv) {
+        assertCorrectCvv(cvv);
+        setStatus(BankingCardStatus.ACTIVE);
+    }
 }

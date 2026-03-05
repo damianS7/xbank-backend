@@ -1,6 +1,7 @@
 package com.damian.xBank.modules.banking.card.application.usecase;
 
-import com.damian.xBank.modules.banking.card.application.dto.request.CaptureCardPaymentRequest;
+import com.damian.xBank.modules.banking.card.application.cqrs.command.CaptureCardPaymentCommand;
+import com.damian.xBank.modules.banking.card.application.cqrs.result.CaptureCardPaymentResult;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotFoundException;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
@@ -16,22 +17,24 @@ public class CaptureCardPayment {
     private final BankingTransactionRepository bankingTransactionRepository;
 
     public CaptureCardPayment(
-            BankingTransactionRepository bankingTransactionRepository
+        BankingTransactionRepository bankingTransactionRepository
     ) {
         this.bankingTransactionRepository = bankingTransactionRepository;
     }
 
     /**
-     * @param request
+     * Capture the authorized amount and mark transaction as completed
+     *
+     * @param command
      */
     @Transactional
-    public BankingTransaction execute(CaptureCardPaymentRequest request) {
+    public CaptureCardPaymentResult execute(CaptureCardPaymentCommand command) {
         // check transaction exists
         BankingTransaction transaction = bankingTransactionRepository
-                .findById(request.authorizationId())
-                .orElseThrow(
-                        () -> new BankingTransactionNotFoundException(request.authorizationId())
-                );
+            .findById(command.authorizationId())
+            .orElseThrow(
+                () -> new BankingTransactionNotFoundException(command.authorizationId())
+            );
 
         // mark as captured
         transaction.capture();
@@ -45,6 +48,8 @@ public class CaptureCardPayment {
         //                notificationEventFactory.cardPaymentCompleted(transaction)
         //        );
 
-        return bankingTransactionRepository.save(transaction);
+        bankingTransactionRepository.save(transaction);
+
+        return CaptureCardPaymentResult.from(transaction);
     }
 }

@@ -123,6 +123,10 @@ public class BankingTransaction {
         return bankingAccount;
     }
 
+    public Long getBankingAccountId() {
+        return this.bankingAccount != null ? this.bankingAccount.getId() : null;
+    }
+
     public BankingTransaction setBankingAccount(BankingAccount account) {
         this.bankingAccount = account;
         return this;
@@ -172,6 +176,10 @@ public class BankingTransaction {
         return transfer;
     }
 
+    public Long getTransferId() {
+        return transfer != null ? transfer.getId() : null;
+    }
+
     public BankingTransaction setTransfer(BankingTransfer transfer) {
         this.transfer = transfer;
         return this;
@@ -206,6 +214,10 @@ public class BankingTransaction {
 
     public BankingCard getBankingCard() {
         return bankingCard;
+    }
+
+    public Long getBankingCardId() {
+        return this.bankingCard != null ? this.bankingCard.getId() : null;
     }
 
     public BankingTransaction setBankingCard(BankingCard bankingCard) {

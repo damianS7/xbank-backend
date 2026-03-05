@@ -9,7 +9,7 @@ import com.damian.xBank.modules.banking.account.infrastructure.rest.dto.request.
 import com.damian.xBank.modules.banking.account.infrastructure.rest.dto.request.RequestBankingAccountCardRequest;
 import com.damian.xBank.modules.banking.account.infrastructure.rest.dto.request.SetBankingAccountAliasRequest;
 import com.damian.xBank.modules.banking.account.infrastructure.rest.dto.response.BankingAccountDto;
-import com.damian.xBank.modules.banking.card.application.dto.response.BankingCardDto;
+import com.damian.xBank.modules.banking.card.application.cqrs.result.BankingCardResult;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardType;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
@@ -283,17 +283,17 @@ public class BankingAccountControllerTest extends AbstractControllerTest {
             .andExpect(status().is(201))
             .andReturn();
 
-        BankingCardDto card = objectMapper.readValue(
+        BankingCardResult card = objectMapper.readValue(
             result.getResponse().getContentAsString(),
-            BankingCardDto.class
+            BankingCardResult.class
         );
 
         // then
         assertThat(card)
             .isNotNull()
             .extracting(
-                BankingCardDto::bankingAccountId,
-                BankingCardDto::cardType
+                BankingCardResult::bankingAccountId,
+                BankingCardResult::cardType
             )
             .containsExactly(
                 bankingAccount.getId(),
