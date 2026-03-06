@@ -4,7 +4,7 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurre
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.card.application.cqrs.result.BankingCardResult;
-import com.damian.xBank.modules.banking.transaction.application.dto.response.BankingTransactionDto;
+import com.damian.xBank.modules.banking.transaction.application.cqrs.result.BankingTransactionResult;
 import org.springframework.data.domain.Page;
 
 import java.math.BigDecimal;
@@ -19,7 +19,7 @@ public record BankingAccountDetailDto(
     BankingAccountType accountType,
     BankingAccountCurrency accountCurrency,
     BankingAccountStatus accountStatus,
-    Page<BankingTransactionDto> accountTransactions,
+    Page<BankingTransactionResult> accountTransactions,
     Set<BankingCardResult> accountCards,
     Instant createdAt,
     Instant updatedAt

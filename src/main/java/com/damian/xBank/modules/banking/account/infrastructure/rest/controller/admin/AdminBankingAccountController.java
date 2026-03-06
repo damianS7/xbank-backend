@@ -3,9 +3,9 @@ package com.damian.xBank.modules.banking.account.infrastructure.rest.controller.
 import com.damian.xBank.modules.banking.account.application.cqrs.command.DepositBankingAccountCommand;
 import com.damian.xBank.modules.banking.account.application.usecase.DepositBankingAccount;
 import com.damian.xBank.modules.banking.account.infrastructure.rest.dto.request.DepositBankingAccountRequest;
-import com.damian.xBank.modules.banking.transaction.application.dto.response.BankingTransactionDto;
-import com.damian.xBank.modules.banking.transaction.application.mapper.BankingTransactionDtoMapper;
+import com.damian.xBank.modules.banking.transaction.application.cqrs.result.BankingTransactionResult;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
+import com.damian.xBank.modules.banking.transaction.infrastructure.mapper.BankingTransactionDtoMapper;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -45,8 +45,8 @@ public class AdminBankingAccountController {
         );
 
         BankingTransaction transaction = depositBankingAccount.execute(command);
-        BankingTransactionDto transactionDto = BankingTransactionDtoMapper
-            .toBankingTransactionDto(transaction);
+        BankingTransactionResult transactionDto = BankingTransactionDtoMapper
+            .toBankingTransactionResult(transaction);
 
         return ResponseEntity
             .status(HttpStatus.CREATED)

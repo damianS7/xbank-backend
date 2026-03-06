@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.banking.transfer.application.mapper;
 
-import com.damian.xBank.modules.banking.transaction.application.mapper.BankingTransactionDtoMapper;
+import com.damian.xBank.modules.banking.transaction.infrastructure.mapper.BankingTransactionDtoMapper;
 import com.damian.xBank.modules.banking.transfer.application.dto.response.BankingTransferDetailDto;
 import com.damian.xBank.modules.banking.transfer.application.dto.response.BankingTransferDto;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
@@ -33,7 +33,7 @@ public class BankingTransferDtoMapper {
             bankingTransfer.getAmount(),
             bankingTransfer.getStatus(),
             bankingTransfer.getDescription(),
-            BankingTransactionDtoMapper.toBankingTransactionDto(bankingTransfer.getFromTransaction()),
+            BankingTransactionDtoMapper.toBankingTransactionResult(bankingTransfer.getFromTransaction()),
             bankingTransfer.getCreatedAt(),
             bankingTransfer.getUpdatedAt()
         );

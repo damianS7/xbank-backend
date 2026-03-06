@@ -16,7 +16,7 @@ import org.mockito.Mock;
 
 import java.math.BigDecimal;
 
-public class BankingTransactionGetPendingTest extends AbstractServiceTest {
+public class GetPendingTransactionsTest extends AbstractServiceTest {
 
     @Mock
     private BankingAccountRepository bankingAccountRepository;
@@ -28,7 +28,7 @@ public class BankingTransactionGetPendingTest extends AbstractServiceTest {
     private BankingTransactionRepository bankingTransactionRepository;
 
     @InjectMocks
-    private BankingTransactionGetPending bankingTransactionGetPending;
+    private GetPendingTransactions getPendingTransactions;
 
     private User customer;
     private BankingAccount customerBankingAccount;
@@ -37,22 +37,22 @@ public class BankingTransactionGetPendingTest extends AbstractServiceTest {
     @BeforeEach
     void setUp() {
         customer = UserTestBuilder.aCustomer()
-                                  .withId(1L)
-                                  .withEmail("customer@demo.com")
-                                  .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                  .build();
+            .withId(1L)
+            .withEmail("customer@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .build();
 
         customerBankingAccount = BankingAccount
-                .create(customer)
-                .setId(5L)
-                .setBalance(BigDecimal.valueOf(1000))
-                .setCurrency(BankingAccountCurrency.EUR)
-                .setType(BankingAccountType.SAVINGS)
-                .setAccountNumber("US9900001111112233334444");
+            .create(customer)
+            .setId(5L)
+            .setBalance(BigDecimal.valueOf(1000))
+            .setCurrency(BankingAccountCurrency.EUR)
+            .setType(BankingAccountType.SAVINGS)
+            .setAccountNumber("US9900001111112233334444");
 
         customerBankingCard = BankingCard
-                .create(customerBankingAccount)
-                .setId(1L);
+            .create(customerBankingAccount)
+            .setId(1L);
     }
 
 }

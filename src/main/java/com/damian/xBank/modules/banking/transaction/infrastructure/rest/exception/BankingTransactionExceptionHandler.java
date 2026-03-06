@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.banking.transaction.infrastructure.web.exception;
+package com.damian.xBank.modules.banking.transaction.infrastructure.rest.exception;
 
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotFoundException;

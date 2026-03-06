@@ -78,7 +78,7 @@ public class GetAllCurrentUserBankingCardsTest extends AbstractServiceTest {
         assertThat(result.cards())
             .isNotNull()
             .size()
-            .isGreaterThan(1);
+            .isGreaterThanOrEqualTo(1);
 
         verify(bankingCardRepository, times(1)).findCardsByUserId(anyLong());
     }

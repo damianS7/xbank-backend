@@ -5,6 +5,8 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurre
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
+import com.damian.xBank.modules.banking.transaction.application.cqrs.query.GetTransactionQuery;
+import com.damian.xBank.modules.banking.transaction.application.cqrs.result.BankingTransactionDetailResult;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotFoundException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotOwnerException;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
@@ -28,7 +30,7 @@ import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.when;
 
-public class BankingTransactionGetTest extends AbstractServiceTest {
+public class GetTransactionTest extends AbstractServiceTest {
 
     @Mock
     private BankingAccountRepository bankingAccountRepository;
@@ -40,7 +42,7 @@ public class BankingTransactionGetTest extends AbstractServiceTest {
     private BankingTransactionRepository bankingTransactionRepository;
 
     @InjectMocks
-    private BankingTransactionGet bankingTransactionGet;
+    private GetTransaction getTransaction;
 
     private User customer;
     private BankingAccount customerBankingAccount;
@@ -77,18 +79,19 @@ public class BankingTransactionGetTest extends AbstractServiceTest {
             .setId(1L)
             .setDescription("Deposit transaction");
 
+        GetTransactionQuery query = new GetTransactionQuery(givenTransaction.getId());
+
         // when
         when(bankingTransactionRepository.findById(givenTransaction.getId()))
             .thenReturn(Optional.of(givenTransaction));
 
-        BankingTransaction retrievedTransaction = bankingTransactionGet
-            .execute(givenTransaction.getId());
+        BankingTransactionDetailResult result = getTransaction.execute(query);
 
         // then
-        assertThat(retrievedTransaction).isNotNull();
-        assertThat(retrievedTransaction.getAmount()).isEqualTo(givenTransaction.getAmount());
-        assertThat(retrievedTransaction.getType()).isEqualTo(givenTransaction.getType());
-        assertThat(retrievedTransaction.getDescription()).isEqualTo(givenTransaction.getDescription());
+        assertThat(result).isNotNull();
+        assertThat(result.amount()).isEqualTo(givenTransaction.getAmount());
+        assertThat(result.type()).isEqualTo(givenTransaction.getType());
+        assertThat(result.description()).isEqualTo(givenTransaction.getDescription());
     }
 
     @Test
@@ -96,6 +99,7 @@ public class BankingTransactionGetTest extends AbstractServiceTest {
     void getTransaction_WhenNotExists_ThrowsException() {
         // given
         setUpContext(customer);
+        GetTransactionQuery query = new GetTransactionQuery(99L);
 
         // when
         when(bankingTransactionRepository.findById(anyLong()))
@@ -103,9 +107,9 @@ public class BankingTransactionGetTest extends AbstractServiceTest {
 
         BankingTransactionNotFoundException exception = assertThrows(
             BankingTransactionNotFoundException.class,
-            () -> bankingTransactionGet.execute(1L)
-
+            () -> getTransaction.execute(query)
         );
+
         // then
         assertThat(exception)
             .isNotNull()
@@ -135,13 +139,15 @@ public class BankingTransactionGetTest extends AbstractServiceTest {
             .setId(1L)
             .setDescription("Deposit transaction");
 
+        GetTransactionQuery query = new GetTransactionQuery(givenTransaction.getId());
+
         // when
         when(bankingTransactionRepository.findById(anyLong()))
             .thenReturn(Optional.of(givenTransaction));
 
         BankingTransactionNotOwnerException exception = assertThrows(
             BankingTransactionNotOwnerException.class,
-            () -> bankingTransactionGet.execute(givenTransaction.getId())
+            () -> getTransaction.execute(query)
 
         );
         // then

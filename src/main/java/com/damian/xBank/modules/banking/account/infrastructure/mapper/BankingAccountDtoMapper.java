@@ -6,8 +6,8 @@ import com.damian.xBank.modules.banking.account.infrastructure.rest.dto.response
 import com.damian.xBank.modules.banking.account.infrastructure.rest.dto.response.BankingAccountDto;
 import com.damian.xBank.modules.banking.card.application.cqrs.result.BankingCardResult;
 import com.damian.xBank.modules.banking.card.infrastructure.mapper.BankingCardDtoMapper;
-import com.damian.xBank.modules.banking.transaction.application.dto.response.BankingTransactionDto;
-import com.damian.xBank.modules.banking.transaction.application.mapper.BankingTransactionDtoMapper;
+import com.damian.xBank.modules.banking.transaction.application.cqrs.result.BankingTransactionResult;
+import com.damian.xBank.modules.banking.transaction.infrastructure.mapper.BankingTransactionDtoMapper;
 import org.springframework.data.domain.Page;
 
 import java.util.Collections;
@@ -25,7 +25,7 @@ public class BankingAccountDtoMapper {
         //                .map(BankingCardDTOMapper::toBankingCardDTO)
         //                .collect(Collectors.toSet());
 
-        Set<BankingTransactionDto> bankingTransactionsDto = Collections.emptySet();
+        Set<BankingTransactionResult> bankingTransactionsDto = Collections.emptySet();
         //                Optional
         //                .ofNullable(bankingAccount.getAccountTransactions())
         //                .orElseGet(Collections::emptySet)
@@ -50,8 +50,8 @@ public class BankingAccountDtoMapper {
 
     public static BankingAccountDetailDto toBankingAccountDetailDto(BankingAccount bankingAccount) {
 
-        Page<BankingTransactionDto> bankingAccountTransactions = BankingTransactionDtoMapper
-            .toBankingTransactionPageDto(
+        Page<BankingTransactionResult> bankingAccountTransactions = BankingTransactionDtoMapper
+            .toBankingTransactionPagedResult(
                 bankingAccount.getAccountTransactions()
             );
 

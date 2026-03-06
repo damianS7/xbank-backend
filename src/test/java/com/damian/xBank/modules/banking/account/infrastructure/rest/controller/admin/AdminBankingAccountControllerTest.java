@@ -5,7 +5,7 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurre
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.rest.dto.request.DepositBankingAccountRequest;
-import com.damian.xBank.modules.banking.transaction.application.dto.response.BankingTransactionDto;
+import com.damian.xBank.modules.banking.transaction.application.cqrs.result.BankingTransactionResult;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
@@ -83,9 +83,9 @@ public class AdminBankingAccountControllerTest extends AbstractControllerTest {
             .andReturn();
 
         // then
-        BankingTransactionDto transaction = objectMapper.readValue(
+        BankingTransactionResult transaction = objectMapper.readValue(
             result.getResponse().getContentAsString(),
-            BankingTransactionDto.class
+            BankingTransactionResult.class
         );
 
         BankingAccount updatedBankingAccount = bankingAccountRepository.findById(bankingAccount.getId()).get();

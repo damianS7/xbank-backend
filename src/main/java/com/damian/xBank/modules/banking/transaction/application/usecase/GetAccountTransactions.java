@@ -3,25 +3,30 @@ package com.damian.xBank.modules.banking.transaction.application.usecase;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
+import com.damian.xBank.modules.banking.transaction.application.cqrs.query.GetAccountTransactionsQuery;
+import com.damian.xBank.modules.banking.transaction.application.cqrs.result.GetAccountTransactionsResult;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
+import com.damian.xBank.modules.banking.transaction.infrastructure.mapper.BankingTransactionDtoMapper;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+/**
+ * Use case for retrieving the transactions of a banking account.
+ */
 @Service
-public class BankingTransactionAccountGet {
+public class GetAccountTransactions {
     private final BankingAccountRepository bankingAccountRepository;
     private final BankingTransactionRepository bankingTransactionRepository;
     private final AuthenticationContext authenticationContext;
 
-    public BankingTransactionAccountGet(
-            BankingAccountRepository bankingAccountRepository,
-            BankingTransactionRepository bankingTransactionRepository,
-            AuthenticationContext authenticationContext
+    public GetAccountTransactions(
+        BankingAccountRepository bankingAccountRepository,
+        BankingTransactionRepository bankingTransactionRepository,
+        AuthenticationContext authenticationContext
     ) {
         this.bankingAccountRepository = bankingAccountRepository;
         this.bankingTransactionRepository = bankingTransactionRepository;
@@ -29,21 +34,19 @@ public class BankingTransactionAccountGet {
     }
 
     /**
-     * Returns a paginated result containing the transactions from a banking account.
      *
-     * @param accountId the id of the banking account
-     * @param pageable
-     * @return a paginated result containing the transactions from a banking account.
+     * @param query
+     * @return a result containing the paged transactions.
      */
-    public Page<BankingTransaction> execute(Long accountId, Pageable pageable) {
+    public GetAccountTransactionsResult execute(GetAccountTransactionsQuery query) {
         // Current user
         final User currentUser = authenticationContext.getCurrentUser();
 
         BankingAccount account = bankingAccountRepository
-                .findById(accountId)
-                .orElseThrow(
-                        () -> new BankingAccountNotFoundException(accountId)
-                );
+            .findById(query.accountId())
+            .orElseThrow(
+                () -> new BankingAccountNotFoundException(query.accountId())
+            );
 
         // if the current user is a customer ...
         if (currentUser.hasRole(UserRole.CUSTOMER)) {
@@ -52,6 +55,11 @@ public class BankingTransactionAccountGet {
             account.assertOwnedBy(currentUser.getId());
         }
 
-        return bankingTransactionRepository.findByBankingAccountId(accountId, pageable);
+        Page<BankingTransaction> pagedTransactions = bankingTransactionRepository
+            .findByBankingAccountId(query.accountId(), query.pageable());
+
+        return new GetAccountTransactionsResult(
+            BankingTransactionDtoMapper.toBankingTransactionPagedResult(pagedTransactions)
+        );
     }
 }

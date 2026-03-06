@@ -6,6 +6,8 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
+import com.damian.xBank.modules.banking.transaction.application.cqrs.query.GetCardTransactionsQuery;
+import com.damian.xBank.modules.banking.transaction.application.cqrs.result.GetCardTransactionsResult;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
@@ -29,7 +31,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-public class BankingTransactionCardGetTest extends AbstractServiceTest {
+public class GetCardTransactionsTest extends AbstractServiceTest {
 
     @Mock
     private BankingAccountRepository bankingAccountRepository;
@@ -41,7 +43,7 @@ public class BankingTransactionCardGetTest extends AbstractServiceTest {
     private BankingTransactionRepository bankingTransactionRepository;
 
     @InjectMocks
-    private BankingTransactionCardGet bankingTransactionCardGet;
+    private GetCardTransactions getCardTransactions;
 
     private User customer;
     private BankingAccount customerBankingAccount;
@@ -50,22 +52,22 @@ public class BankingTransactionCardGetTest extends AbstractServiceTest {
     @BeforeEach
     void setUp() {
         customer = UserTestBuilder.aCustomer()
-                                  .withId(1L)
-                                  .withEmail("customer@demo.com")
-                                  .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                  .build();
+            .withId(1L)
+            .withEmail("customer@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .build();
 
         customerBankingAccount = BankingAccount
-                .create(customer)
-                .setId(5L)
-                .setBalance(BigDecimal.valueOf(1000))
-                .setCurrency(BankingAccountCurrency.EUR)
-                .setType(BankingAccountType.SAVINGS)
-                .setAccountNumber("US9900001111112233334444");
+            .create(customer)
+            .setId(5L)
+            .setBalance(BigDecimal.valueOf(1000))
+            .setCurrency(BankingAccountCurrency.EUR)
+            .setType(BankingAccountType.SAVINGS)
+            .setAccountNumber("US9900001111112233334444");
 
         customerBankingCard = BankingCard
-                .create(customerBankingAccount)
-                .setId(1L);
+            .create(customerBankingAccount)
+            .setId(1L);
     }
 
     @Test
@@ -77,37 +79,38 @@ public class BankingTransactionCardGetTest extends AbstractServiceTest {
         Pageable pageable = PageRequest.of(0, 10);
 
         BankingTransaction givenTransaction = BankingTransaction
-                .create(
-                        BankingTransactionType.CARD_CHARGE,
-                        customerBankingCard,
-                        BigDecimal.valueOf(100)
-                )
-                .setId(1L)
-                .setDescription("Deposit transaction");
+            .create(
+                BankingTransactionType.CARD_CHARGE,
+                customerBankingCard,
+                BigDecimal.valueOf(100)
+            )
+            .setId(1L)
+            .setDescription("Deposit transaction");
 
         Page<BankingTransaction> page = new PageImpl<>(
-                List.of(givenTransaction),
-                pageable,
-                1
+            List.of(givenTransaction),
+            pageable,
+            1
+        );
+
+        GetCardTransactionsQuery query = new GetCardTransactionsQuery(
+            customerBankingCard.getId(),
+            pageable
         );
 
         // when
         when(bankingCardRepository.findById(customerBankingCard.getId()))
-                .thenReturn(Optional.of(customerBankingCard));
+            .thenReturn(Optional.of(customerBankingCard));
 
         when(bankingTransactionRepository.findByBankingCardId(
-                customerBankingCard.getId(), pageable))
-                .thenReturn(page);
+            customerBankingCard.getId(), pageable))
+            .thenReturn(page);
 
-        Page<BankingTransaction> paginatedTransactions = bankingTransactionCardGet
-                .execute(
-                        customerBankingCard.getId(),
-                        pageable
-                );
+        GetCardTransactionsResult result = getCardTransactions.execute(query);
 
         // then
-        assertThat(paginatedTransactions)
-                .isNotNull()
-                .hasSize(1);
+        assertThat(result.pagedTransactions())
+            .isNotNull()
+            .hasSize(1);
     }
 }
