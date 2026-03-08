@@ -1,6 +1,6 @@
 package com.damian.xBank.shared.infrastructure.storage.exception;
 
-import com.damian.xBank.shared.domain.exception.ApplicationException;
+import com.damian.xBank.shared.exception.ApplicationException;
 import com.damian.xBank.shared.infrastructure.web.dto.response.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

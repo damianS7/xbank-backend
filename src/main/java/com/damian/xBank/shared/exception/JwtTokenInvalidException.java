@@ -1,4 +1,4 @@
-package com.damian.xBank.shared.domain.exception;
+package com.damian.xBank.shared.exception;
 
 import org.springframework.security.core.AuthenticationException;
 

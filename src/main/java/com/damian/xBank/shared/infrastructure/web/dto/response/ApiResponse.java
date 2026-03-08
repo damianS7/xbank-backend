@@ -1,6 +1,6 @@
 package com.damian.xBank.shared.infrastructure.web.dto.response;
 
-import com.damian.xBank.shared.domain.exception.ApplicationException;
+import com.damian.xBank.shared.exception.ApplicationException;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;

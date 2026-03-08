@@ -1,6 +1,6 @@
 package com.damian.xBank.shared.infrastructure.storage.exception;
 
-import com.damian.xBank.shared.domain.exception.ApplicationException;
+import com.damian.xBank.shared.exception.ApplicationException;
 
 public class FileStorageException extends ApplicationException {
     public FileStorageException(String message, String path, String fileName) {
