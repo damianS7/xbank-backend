@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.payment.network.transfer.application.usecase;
+package com.damian.xBank.modules.banking.transfer.application.usecase.transfer.incoming;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;

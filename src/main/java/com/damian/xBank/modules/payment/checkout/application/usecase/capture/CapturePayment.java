@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.payment.intent.application.usecase.capture;
+package com.damian.xBank.modules.payment.checkout.application.usecase.capture;
 
 
 import com.damian.xBank.modules.payment.intent.domain.exception.PaymentIntentNotFoundException;
@@ -13,11 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
  * This class is used by the merchant to capture the funds from an AUTHORIZED payment.
  */
 @Service
-public class CapturePaymentIntent {
+// TODO rename to CapturePayment??
+public class CapturePayment {
     private final PaymentIntentRepository paymentIntentRepository;
     private final AuthenticationContext authenticationContext;
 
-    public CapturePaymentIntent(
+    public CapturePayment(
         PaymentIntentRepository paymentIntentRepository,
         AuthenticationContext authenticationContext
     ) {

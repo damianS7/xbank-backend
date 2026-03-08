@@ -1,15 +1,15 @@
 package com.damian.xBank.modules.payment.checkout.application.usecase;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
+import com.damian.xBank.modules.payment.checkout.application.PaymentNetworkGateway;
 import com.damian.xBank.modules.payment.checkout.application.usecase.submit.SubmitPaymentCheckout;
 import com.damian.xBank.modules.payment.checkout.application.usecase.submit.SubmitPaymentCheckoutCommand;
+import com.damian.xBank.modules.payment.checkout.domain.PaymentAuthorizationStatus;
+import com.damian.xBank.modules.payment.checkout.infrastructure.http.request.PaymentAuthorizationRequest;
+import com.damian.xBank.modules.payment.checkout.infrastructure.http.response.PaymentAuthorizationResponse;
 import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntent;
 import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntentStatus;
 import com.damian.xBank.modules.payment.intent.infrastructure.repository.PaymentIntentRepository;
-import com.damian.xBank.modules.payment.network.card.application.PaymentNetworkGateway;
-import com.damian.xBank.modules.payment.network.card.domain.PaymentAuthorizationStatus;
-import com.damian.xBank.modules.payment.network.card.infrastructure.http.dto.request.PaymentAuthorizationRequest;
-import com.damian.xBank.modules.payment.network.card.infrastructure.http.dto.response.PaymentAuthorizationResponse;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.utils.UserTestBuilder;

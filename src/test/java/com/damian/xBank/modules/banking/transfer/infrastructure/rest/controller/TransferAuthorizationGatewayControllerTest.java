@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.payment.network.transfer.infrastructure.web.controller;
+package com.damian.xBank.modules.banking.transfer.infrastructure.rest.controller;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;

@@ -7,8 +7,8 @@ import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCa
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.infrastructure.service.BankingTransactionPersistenceService;
-import com.damian.xBank.modules.payment.network.card.domain.PaymentAuthorizationStatus;
-import com.damian.xBank.modules.payment.network.card.infrastructure.http.dto.response.PaymentAuthorizationResponse;
+import com.damian.xBank.modules.payment.checkout.domain.PaymentAuthorizationStatus;
+import com.damian.xBank.modules.payment.checkout.infrastructure.http.response.PaymentAuthorizationResponse;
 import org.springframework.stereotype.Service;
 
 /**

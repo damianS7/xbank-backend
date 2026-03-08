@@ -10,7 +10,7 @@ import com.damian.xBank.modules.banking.card.application.usecase.CaptureCardPaym
 import com.damian.xBank.modules.banking.card.application.usecase.GetAllCurrentUserBankingCards;
 import com.damian.xBank.modules.banking.card.infrastructure.rest.dto.request.AuthorizeCardPaymentRequest;
 import com.damian.xBank.modules.banking.card.infrastructure.rest.dto.request.CaptureCardPaymentRequest;
-import com.damian.xBank.modules.payment.network.card.infrastructure.http.dto.response.PaymentAuthorizationResponse;
+import com.damian.xBank.modules.payment.checkout.infrastructure.http.response.PaymentAuthorizationResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

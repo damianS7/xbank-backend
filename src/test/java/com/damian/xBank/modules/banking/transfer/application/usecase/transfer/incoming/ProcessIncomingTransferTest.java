@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.payment.network.transfer.application.usecase;
+package com.damian.xBank.modules.banking.transfer.application.usecase.transfer.incoming;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
@@ -6,7 +6,6 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
-import com.damian.xBank.modules.banking.transfer.application.usecase.transfer.incoming.ProcessIncomingTransfer;
 import com.damian.xBank.modules.banking.transfer.infrastructure.rest.request.IncomingTransferRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;

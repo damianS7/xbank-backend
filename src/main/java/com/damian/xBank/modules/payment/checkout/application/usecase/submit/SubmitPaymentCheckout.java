@@ -3,14 +3,14 @@ package com.damian.xBank.modules.payment.checkout.application.usecase.submit;
 import com.damian.xBank.modules.banking.transaction.infrastructure.service.BankingTransactionPersistenceService;
 import com.damian.xBank.modules.notification.domain.factory.NotificationEventFactory;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
+import com.damian.xBank.modules.payment.checkout.application.PaymentNetworkGateway;
+import com.damian.xBank.modules.payment.checkout.domain.PaymentAuthorizationStatus;
 import com.damian.xBank.modules.payment.checkout.domain.excepcion.PaymentCheckoutException;
+import com.damian.xBank.modules.payment.checkout.infrastructure.http.request.PaymentAuthorizationRequest;
+import com.damian.xBank.modules.payment.checkout.infrastructure.http.response.PaymentAuthorizationResponse;
 import com.damian.xBank.modules.payment.intent.domain.exception.PaymentIntentNotFoundException;
 import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntent;
 import com.damian.xBank.modules.payment.intent.infrastructure.repository.PaymentIntentRepository;
-import com.damian.xBank.modules.payment.network.card.application.PaymentNetworkGateway;
-import com.damian.xBank.modules.payment.network.card.domain.PaymentAuthorizationStatus;
-import com.damian.xBank.modules.payment.network.card.infrastructure.http.dto.request.PaymentAuthorizationRequest;
-import com.damian.xBank.modules.payment.network.card.infrastructure.http.dto.response.PaymentAuthorizationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
