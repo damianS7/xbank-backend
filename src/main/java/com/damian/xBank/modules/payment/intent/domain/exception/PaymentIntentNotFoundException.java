@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.payment.intent.domain.exception;
 
-import com.damian.xBank.shared.domain.exception.ApplicationException;
-import com.damian.xBank.shared.domain.exception.ErrorCodes;
+import com.damian.xBank.shared.exception.ApplicationException;
+import com.damian.xBank.shared.exception.ErrorCodes;
 
 public class PaymentIntentNotFoundException extends ApplicationException {
     public PaymentIntentNotFoundException(Long paymentId) {

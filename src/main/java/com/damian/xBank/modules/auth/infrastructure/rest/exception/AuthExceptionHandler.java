@@ -2,8 +2,8 @@ package com.damian.xBank.modules.auth.infrastructure.rest.exception;
 
 import com.damian.xBank.modules.auth.domain.exception.UserNotVerifiedException;
 import com.damian.xBank.modules.auth.domain.exception.UserSuspendedException;
-import com.damian.xBank.shared.domain.exception.ApplicationException;
-import com.damian.xBank.shared.domain.exception.ErrorCodes;
+import com.damian.xBank.shared.exception.ApplicationException;
+import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.infrastructure.web.dto.response.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

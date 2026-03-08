@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.setting.domain.exception;
 
-import com.damian.xBank.shared.domain.exception.ApplicationException;
+import com.damian.xBank.shared.exception.ApplicationException;
 
 public class SettingException extends ApplicationException {
 

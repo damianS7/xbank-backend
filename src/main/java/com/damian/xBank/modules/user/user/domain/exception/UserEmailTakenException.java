@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.user.user.domain.exception;
 
-import com.damian.xBank.shared.domain.exception.ErrorCodes;
+import com.damian.xBank.shared.exception.ErrorCodes;
 
 public class UserEmailTakenException extends UserException {
     public UserEmailTakenException(String email) {

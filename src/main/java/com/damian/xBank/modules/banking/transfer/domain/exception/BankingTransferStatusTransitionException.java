@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.banking.transfer.domain.exception;
 
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardException;
-import com.damian.xBank.shared.domain.exception.ErrorCodes;
+import com.damian.xBank.shared.exception.ErrorCodes;
 
 public class BankingTransferStatusTransitionException extends BankingCardException {
 

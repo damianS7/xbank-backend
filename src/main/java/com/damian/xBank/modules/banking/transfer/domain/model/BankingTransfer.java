@@ -270,7 +270,13 @@ public class BankingTransfer {
         return this;
     }
 
-    public void authorized() {
+    public void confirm() {
+        // TODO assertIsPending();
+        this.setStatus(BankingTransferStatus.CONFIRMED);
+        this.updatedAt = Instant.now();
+    }
+
+    public void authorize() {
         // deduct balance from source
         this.getFromAccount().subtractBalance(getAmount());
 

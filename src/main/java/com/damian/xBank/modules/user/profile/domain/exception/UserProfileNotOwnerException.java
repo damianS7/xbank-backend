@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.user.profile.domain.exception;
 
-import com.damian.xBank.shared.domain.exception.ErrorCodes;
+import com.damian.xBank.shared.exception.ErrorCodes;
 
 public class UserProfileNotOwnerException extends UserProfileException {
     public UserProfileNotOwnerException(Long profileId) {

@@ -7,7 +7,7 @@ import com.damian.xBank.modules.payment.checkout.domain.excepcion.PaymentCheckou
 import com.damian.xBank.modules.payment.intent.application.usecase.GetPaymentIntent;
 import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntent;
 import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntentStatus;
-import com.damian.xBank.shared.domain.exception.ErrorCodes;
+import com.damian.xBank.shared.exception.ErrorCodes;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;

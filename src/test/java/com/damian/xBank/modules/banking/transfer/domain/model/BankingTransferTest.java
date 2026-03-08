@@ -9,7 +9,7 @@ import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransfe
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferSameAccountException;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferStatusTransitionException;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.shared.domain.exception.ErrorCodes;
+import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -151,7 +151,7 @@ public class BankingTransferTest {
     @DisplayName("setStatus set status COMPLETED")
     void setStatus_WhenValidTransition_UpdatesStatus() {
         // given
-        transfer.setStatus(BankingTransferStatus.PENDING);
+        transfer.setStatus(BankingTransferStatus.CONFIRMED);
 
         // when
         BankingTransfer result = transfer.setStatus(BankingTransferStatus.AUTHORIZED);
@@ -179,12 +179,10 @@ public class BankingTransferTest {
     @DisplayName("setStatus invalid transition throws BankingTransferStatusTransitionException")
     void setStatus_WhenInvalidTransition_ThrowsException() {
         // given
-        transfer.setStatus(BankingTransferStatus.AUTHORIZED);
-
         // when / then
         BankingTransferStatusTransitionException exception = assertThrows(
             BankingTransferStatusTransitionException.class,
-            () -> transfer.setStatus(BankingTransferStatus.PENDING)
+            () -> transfer.setStatus(BankingTransferStatus.COMPLETED)
         );
 
         assertThat(exception)
@@ -262,10 +260,10 @@ public class BankingTransferTest {
     void confirm_WhenValid_ConfirmsTransfer() {
         // given
         // when
-        transfer.authorized();
+        transfer.confirm();
 
         // then
-        assertThat(transfer.getStatus()).isEqualTo(BankingTransferStatus.AUTHORIZED);
+        assertThat(transfer.getStatus()).isEqualTo(BankingTransferStatus.CONFIRMED);
         assertThat(transfer.getUpdatedAt()).isNotNull();
     }
 

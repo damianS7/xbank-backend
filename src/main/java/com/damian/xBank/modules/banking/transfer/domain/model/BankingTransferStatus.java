@@ -23,17 +23,21 @@ public enum BankingTransferStatus {
      * <p>
      * From this state no transitions are allowed.
      */
-    AUTHORIZED;
+    AUTHORIZED,
+    CONFIRMED,
+    COMPLETED;
 
     private Set<BankingTransferStatus> allowedTransitions;
 
     static {
         REJECTED.allowedTransitions = Set.of();
-        AUTHORIZED.allowedTransitions = Set.of();
         PENDING.allowedTransitions = Set.of(
-            AUTHORIZED,
+            CONFIRMED,
             REJECTED
         );
+        CONFIRMED.allowedTransitions = Set.of(AUTHORIZED, REJECTED);
+        AUTHORIZED.allowedTransitions = Set.of(COMPLETED);
+        COMPLETED.allowedTransitions = Set.of();
     }
 
     public boolean canTransitionTo(BankingTransferStatus newStatus) {

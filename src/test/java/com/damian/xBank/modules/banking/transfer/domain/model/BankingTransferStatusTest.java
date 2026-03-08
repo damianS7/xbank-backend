@@ -12,7 +12,7 @@ public class BankingTransferStatusTest extends AbstractServiceTest {
     @ParameterizedTest
     @EnumSource(
         value = BankingTransferStatus.class,
-        names = {"REJECTED", "AUTHORIZED"}
+        names = {"REJECTED", "CONFIRMED"}
     )
     @DisplayName("should return true when valid transition")
     void canTransitionTo_WhenAllowedStatus_ReturnsTrue(BankingTransferStatus toStatus) {
@@ -20,7 +20,7 @@ public class BankingTransferStatusTest extends AbstractServiceTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = BankingTransferStatus.class, names = {"REJECTED", "AUTHORIZED"})
+    @EnumSource(value = BankingTransferStatus.class, names = {"REJECTED", "COMPLETED"})
     @DisplayName("should return false when not allow any transitions from terminal states")
     void canTransitionTo_WhenNotAllowedStatus_ReturnsFalse(BankingTransferStatus fromStatus) {
         for (BankingTransferStatus targetStatus : BankingTransferStatus.values()) {

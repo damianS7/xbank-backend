@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.banking.card.domain.exception;
 
-import com.damian.xBank.shared.domain.exception.ApplicationException;
+import com.damian.xBank.shared.exception.ApplicationException;
 
 public class BankingCardException extends ApplicationException {
     public BankingCardException(String message, Object resourceId) {
