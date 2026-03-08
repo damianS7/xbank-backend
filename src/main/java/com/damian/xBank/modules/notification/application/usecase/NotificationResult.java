@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.notification.application.cqrs.result;
+package com.damian.xBank.modules.notification.application.usecase;
 
 import com.damian.xBank.modules.notification.domain.model.NotificationType;
 

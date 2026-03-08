@@ -1,15 +1,15 @@
 package com.damian.xBank.modules.notification.infrastructure.rest.controller;
 
-import com.damian.xBank.modules.notification.application.cqrs.command.DeleteNotificationCommand;
-import com.damian.xBank.modules.notification.application.cqrs.command.DeleteNotificationsCommand;
-import com.damian.xBank.modules.notification.application.cqrs.query.GetCurrentUserNotificationsQuery;
-import com.damian.xBank.modules.notification.application.cqrs.result.GetCurrentUserNotificationsResult;
-import com.damian.xBank.modules.notification.application.usecase.DeleteNotification;
-import com.damian.xBank.modules.notification.application.usecase.DeleteNotifications;
-import com.damian.xBank.modules.notification.application.usecase.GetCurrentUserNotifications;
-import com.damian.xBank.modules.notification.application.usecase.GetCurrentUserSinkNotifications;
-import com.damian.xBank.modules.notification.infrastructure.rest.dto.request.NotificationDeleteRequest;
-import com.damian.xBank.modules.notification.infrastructure.rest.dto.response.NotificationDto;
+import com.damian.xBank.modules.notification.application.usecase.delete.DeleteNotification;
+import com.damian.xBank.modules.notification.application.usecase.delete.DeleteNotificationCommand;
+import com.damian.xBank.modules.notification.application.usecase.delete.DeleteNotifications;
+import com.damian.xBank.modules.notification.application.usecase.delete.DeleteNotificationsCommand;
+import com.damian.xBank.modules.notification.application.usecase.get.GetCurrentUserNotifications;
+import com.damian.xBank.modules.notification.application.usecase.get.GetCurrentUserNotificationsQuery;
+import com.damian.xBank.modules.notification.application.usecase.get.GetCurrentUserNotificationsResult;
+import com.damian.xBank.modules.notification.application.usecase.get.GetCurrentUserSinkNotifications;
+import com.damian.xBank.modules.notification.infrastructure.rest.request.NotificationDeleteRequest;
+import com.damian.xBank.modules.notification.infrastructure.rest.response.NotificationDto;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;

@@ -1,7 +1,8 @@
 package com.damian.xBank.modules.notification.application.usecase;
 
-import com.damian.xBank.modules.notification.application.cqrs.query.GetCurrentUserNotificationsQuery;
-import com.damian.xBank.modules.notification.application.cqrs.result.GetCurrentUserNotificationsResult;
+import com.damian.xBank.modules.notification.application.usecase.get.GetCurrentUserNotifications;
+import com.damian.xBank.modules.notification.application.usecase.get.GetCurrentUserNotificationsQuery;
+import com.damian.xBank.modules.notification.application.usecase.get.GetCurrentUserNotificationsResult;
 import com.damian.xBank.modules.notification.domain.model.Notification;
 import com.damian.xBank.modules.notification.infrastructure.repository.NotificationRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;

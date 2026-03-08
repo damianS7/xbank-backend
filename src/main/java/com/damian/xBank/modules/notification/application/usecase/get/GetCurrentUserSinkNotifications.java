@@ -1,6 +1,6 @@
-package com.damian.xBank.modules.notification.application.usecase;
+package com.damian.xBank.modules.notification.application.usecase.get;
 
-import com.damian.xBank.modules.notification.infrastructure.rest.dto.response.NotificationDto;
+import com.damian.xBank.modules.notification.infrastructure.rest.response.NotificationDto;
 import com.damian.xBank.modules.notification.infrastructure.sink.NotificationSinkRegistry;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;

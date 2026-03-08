@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.notification.infrastructure.rest.dto.response;
+package com.damian.xBank.modules.notification.infrastructure.rest.response;
 
 import com.damian.xBank.modules.notification.domain.model.NotificationType;
 

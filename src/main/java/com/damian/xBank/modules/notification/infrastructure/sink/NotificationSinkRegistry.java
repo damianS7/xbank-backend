@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.notification.infrastructure.sink;
 
-import com.damian.xBank.modules.notification.infrastructure.rest.dto.response.NotificationDto;
+import com.damian.xBank.modules.notification.infrastructure.rest.response.NotificationDto;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Sinks;
 

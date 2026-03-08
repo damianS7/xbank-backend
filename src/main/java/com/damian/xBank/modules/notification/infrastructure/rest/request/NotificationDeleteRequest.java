@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.notification.infrastructure.rest.dto.request;
+package com.damian.xBank.modules.notification.infrastructure.rest.request;
 
 import jakarta.validation.constraints.NotEmpty;
 

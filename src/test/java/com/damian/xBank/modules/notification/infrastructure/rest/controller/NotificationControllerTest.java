@@ -1,10 +1,10 @@
 package com.damian.xBank.modules.notification.infrastructure.rest.controller;
 
-import com.damian.xBank.modules.notification.application.usecase.GetCurrentUserSinkNotifications;
+import com.damian.xBank.modules.notification.application.usecase.get.GetCurrentUserSinkNotifications;
 import com.damian.xBank.modules.notification.domain.model.Notification;
 import com.damian.xBank.modules.notification.domain.model.NotificationType;
-import com.damian.xBank.modules.notification.infrastructure.rest.dto.request.NotificationDeleteRequest;
-import com.damian.xBank.modules.notification.infrastructure.rest.dto.response.NotificationDto;
+import com.damian.xBank.modules.notification.infrastructure.rest.request.NotificationDeleteRequest;
+import com.damian.xBank.modules.notification.infrastructure.rest.response.NotificationDto;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;

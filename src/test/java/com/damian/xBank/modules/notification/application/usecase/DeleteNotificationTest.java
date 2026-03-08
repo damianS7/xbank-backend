@@ -1,6 +1,7 @@
 package com.damian.xBank.modules.notification.application.usecase;
 
-import com.damian.xBank.modules.notification.application.cqrs.command.DeleteNotificationCommand;
+import com.damian.xBank.modules.notification.application.usecase.delete.DeleteNotification;
+import com.damian.xBank.modules.notification.application.usecase.delete.DeleteNotificationCommand;
 import com.damian.xBank.modules.notification.domain.exception.NotificationNotOwnerException;
 import com.damian.xBank.modules.notification.domain.model.Notification;
 import com.damian.xBank.modules.notification.domain.model.NotificationType;

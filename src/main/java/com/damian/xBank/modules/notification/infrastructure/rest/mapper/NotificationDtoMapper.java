@@ -1,8 +1,8 @@
 package com.damian.xBank.modules.notification.infrastructure.rest.mapper;
 
-import com.damian.xBank.modules.notification.application.cqrs.result.NotificationResult;
+import com.damian.xBank.modules.notification.application.usecase.NotificationResult;
 import com.damian.xBank.modules.notification.domain.model.Notification;
-import com.damian.xBank.modules.notification.infrastructure.rest.dto.response.NotificationDto;
+import com.damian.xBank.modules.notification.infrastructure.rest.response.NotificationDto;
 import org.springframework.data.domain.Page;
 
 public class NotificationDtoMapper {
