@@ -1,7 +1,8 @@
 package com.damian.xBank.modules.setting.application.usecase;
 
-import com.damian.xBank.modules.setting.application.cqrs.query.GetCurrentUserSettingsQuery;
-import com.damian.xBank.modules.setting.application.cqrs.result.SettingResult;
+import com.damian.xBank.modules.setting.application.usecase.get.GetCurrentUserSettings;
+import com.damian.xBank.modules.setting.application.usecase.get.GetCurrentUserSettingsQuery;
+import com.damian.xBank.modules.setting.application.usecase.get.GetCurrentUserSettingsResult;
 import com.damian.xBank.modules.setting.domain.model.Setting;
 import com.damian.xBank.modules.setting.domain.model.UserSettings;
 import com.damian.xBank.modules.setting.infrastructure.persistence.repository.SettingRepository;
@@ -53,7 +54,7 @@ public class GetCurrentUserSettingsTest extends AbstractServiceTest {
         when(settingRepository.findByUser_Id(customer.getId()))
             .thenReturn(Optional.of(givenSettings));
 
-        SettingResult result = getCurrentUserSettings.execute(query);
+        GetCurrentUserSettingsResult result = getCurrentUserSettings.execute(query);
 
         // then
         assertThat(result)

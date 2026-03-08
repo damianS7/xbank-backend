@@ -1,7 +1,5 @@
-package com.damian.xBank.modules.setting.application.usecase;
+package com.damian.xBank.modules.setting.application.usecase.get;
 
-import com.damian.xBank.modules.setting.application.cqrs.query.GetCurrentUserSettingsQuery;
-import com.damian.xBank.modules.setting.application.cqrs.result.SettingResult;
 import com.damian.xBank.modules.setting.domain.exception.SettingNotFoundException;
 import com.damian.xBank.modules.setting.domain.model.Setting;
 import com.damian.xBank.modules.setting.infrastructure.persistence.repository.SettingRepository;
@@ -30,7 +28,7 @@ public class GetCurrentUserSettings {
      *
      * @return current user settings
      */
-    public SettingResult execute(GetCurrentUserSettingsQuery query) {
+    public GetCurrentUserSettingsResult execute(GetCurrentUserSettingsQuery query) {
         // User logged
         final User currentUser = authenticationContext.getCurrentUser();
 
@@ -41,6 +39,6 @@ public class GetCurrentUserSettings {
                 () -> new SettingNotFoundException(currentUser.getId())
             );
 
-        return new SettingResult(userSettings.getSettings());
+        return GetCurrentUserSettingsResult.from(userSettings);
     }
 }

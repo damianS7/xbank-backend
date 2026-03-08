@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.setting.application.cqrs.command;
+package com.damian.xBank.modules.setting.application.usecase.update;
 
 import com.damian.xBank.modules.setting.domain.model.UserSettings;
 

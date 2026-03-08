@@ -1,7 +1,5 @@
-package com.damian.xBank.modules.setting.application.usecase;
+package com.damian.xBank.modules.setting.application.usecase.update;
 
-import com.damian.xBank.modules.setting.application.cqrs.command.UpdateCurrentUserSettingsCommand;
-import com.damian.xBank.modules.setting.application.cqrs.result.SettingResult;
 import com.damian.xBank.modules.setting.domain.exception.SettingNotFoundException;
 import com.damian.xBank.modules.setting.domain.model.Setting;
 import com.damian.xBank.modules.setting.infrastructure.persistence.repository.SettingRepository;
@@ -33,7 +31,7 @@ public class UpdateCurrentUserSettings {
      * @return updated settings
      */
     @Transactional
-    public SettingResult execute(UpdateCurrentUserSettingsCommand command) {
+    public UpdateCurrentUserSettingsResult execute(UpdateCurrentUserSettingsCommand command) {
         // User logged
         final User currentUser = authenticationContext.getCurrentUser();
 
@@ -59,6 +57,6 @@ public class UpdateCurrentUserSettings {
             currentUser.getId()
         );
 
-        return new SettingResult(userSettings.getSettings());
+        return UpdateCurrentUserSettingsResult.from(userSettings);
     }
 }

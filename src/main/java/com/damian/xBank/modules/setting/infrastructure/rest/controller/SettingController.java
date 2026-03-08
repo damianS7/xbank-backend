@@ -1,12 +1,13 @@
 package com.damian.xBank.modules.setting.infrastructure.rest.controller;
 
-import com.damian.xBank.modules.setting.application.cqrs.command.UpdateCurrentUserSettingsCommand;
-import com.damian.xBank.modules.setting.application.cqrs.query.GetCurrentUserSettingsQuery;
-import com.damian.xBank.modules.setting.application.cqrs.result.SettingResult;
-import com.damian.xBank.modules.setting.application.usecase.GetCurrentUserSettings;
-import com.damian.xBank.modules.setting.application.usecase.UpdateCurrentUserSettings;
-import com.damian.xBank.modules.setting.infrastructure.mapper.SettingDtoMapper;
-import com.damian.xBank.modules.setting.infrastructure.rest.dto.request.SettingsUpdateRequest;
+import com.damian.xBank.modules.setting.application.usecase.get.GetCurrentUserSettings;
+import com.damian.xBank.modules.setting.application.usecase.get.GetCurrentUserSettingsQuery;
+import com.damian.xBank.modules.setting.application.usecase.get.GetCurrentUserSettingsResult;
+import com.damian.xBank.modules.setting.application.usecase.update.UpdateCurrentUserSettings;
+import com.damian.xBank.modules.setting.application.usecase.update.UpdateCurrentUserSettingsCommand;
+import com.damian.xBank.modules.setting.application.usecase.update.UpdateCurrentUserSettingsResult;
+import com.damian.xBank.modules.setting.infrastructure.mapper.SettingMapper;
+import com.damian.xBank.modules.setting.infrastructure.rest.request.UpdateCurrentUserSettingsRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,27 +37,27 @@ public class SettingController {
 
     // endpoint to fetch all setting from logged user
     @GetMapping("/settings")
-    public ResponseEntity<SettingResult> getSettings() {
-        GetCurrentUserSettingsQuery query = new GetCurrentUserSettingsQuery();
-        SettingResult settingResult = getCurrentUserSettings.execute(query);
+    public ResponseEntity<?> getSettings() {
+        GetCurrentUserSettingsQuery query = SettingMapper.toGetCurrentUserSettingsQuery();
+        GetCurrentUserSettingsResult result = getCurrentUserSettings.execute(query);
 
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(settingResult);
+            .body(result);
     }
 
     // endpoint to update a setting
     @PatchMapping("/settings")
-    public ResponseEntity<SettingResult> updateSettings(
+    public ResponseEntity<?> updateSettings(
         @Valid @RequestBody
-        SettingsUpdateRequest request
+        UpdateCurrentUserSettingsRequest request
     ) {
-        UpdateCurrentUserSettingsCommand command = SettingDtoMapper.toCommand(request);
-        SettingResult settingResult = updateCurrentUserSettings.execute(command);
+        UpdateCurrentUserSettingsCommand command = SettingMapper.toCommand(request);
+        UpdateCurrentUserSettingsResult result = updateCurrentUserSettings.execute(command);
 
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(settingResult);
+            .body(result);
     }
 }
 

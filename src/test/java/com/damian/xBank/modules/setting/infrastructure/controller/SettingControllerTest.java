@@ -1,12 +1,13 @@
 package com.damian.xBank.modules.setting.infrastructure.controller;
 
-import com.damian.xBank.modules.setting.application.cqrs.result.SettingResult;
+import com.damian.xBank.modules.setting.application.usecase.get.GetCurrentUserSettingsResult;
+import com.damian.xBank.modules.setting.application.usecase.update.UpdateCurrentUserSettingsResult;
 import com.damian.xBank.modules.setting.domain.model.Setting;
 import com.damian.xBank.modules.setting.domain.model.SettingLanguage;
 import com.damian.xBank.modules.setting.domain.model.SettingMultifactor;
 import com.damian.xBank.modules.setting.domain.model.SettingTheme;
 import com.damian.xBank.modules.setting.domain.model.UserSettings;
-import com.damian.xBank.modules.setting.infrastructure.rest.dto.request.SettingsUpdateRequest;
+import com.damian.xBank.modules.setting.infrastructure.rest.request.UpdateCurrentUserSettingsRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
@@ -76,9 +77,9 @@ public class SettingControllerTest extends AbstractControllerTest {
             .andReturn();
 
         // then
-        SettingResult settings = JsonHelper.fromJson(
+        GetCurrentUserSettingsResult settings = JsonHelper.fromJson(
             result.getResponse().getContentAsString(),
-            SettingResult.class
+            GetCurrentUserSettingsResult.class
         );
 
         // then
@@ -98,7 +99,7 @@ public class SettingControllerTest extends AbstractControllerTest {
 
         settingRepository.save(givenSetting);
 
-        SettingsUpdateRequest request = new SettingsUpdateRequest(
+        UpdateCurrentUserSettingsRequest request = new UpdateCurrentUserSettingsRequest(
             new UserSettings(
                 true,
                 true,
@@ -125,9 +126,9 @@ public class SettingControllerTest extends AbstractControllerTest {
             .andReturn();
 
         // then
-        SettingResult settings = JsonHelper.fromJson(
+        UpdateCurrentUserSettingsResult settings = JsonHelper.fromJson(
             result.getResponse().getContentAsString(),
-            SettingResult.class
+            UpdateCurrentUserSettingsResult.class
         );
 
         // then

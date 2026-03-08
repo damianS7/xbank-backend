@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.setting.infrastructure.rest.dto.request;
+package com.damian.xBank.modules.setting.infrastructure.rest.request;
 
 import com.damian.xBank.modules.setting.domain.model.UserSettings;
 import jakarta.validation.constraints.NotNull;
@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotNull;
  *
  * @param settings all the settings to update
  */
-public record SettingsUpdateRequest(
+public record UpdateCurrentUserSettingsRequest(
     @NotNull(message = "Settings cannot be null")
     UserSettings settings
 ) {

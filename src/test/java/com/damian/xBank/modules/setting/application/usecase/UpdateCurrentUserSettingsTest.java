@@ -1,7 +1,8 @@
 package com.damian.xBank.modules.setting.application.usecase;
 
-import com.damian.xBank.modules.setting.application.cqrs.command.UpdateCurrentUserSettingsCommand;
-import com.damian.xBank.modules.setting.application.cqrs.result.SettingResult;
+import com.damian.xBank.modules.setting.application.usecase.update.UpdateCurrentUserSettings;
+import com.damian.xBank.modules.setting.application.usecase.update.UpdateCurrentUserSettingsCommand;
+import com.damian.xBank.modules.setting.application.usecase.update.UpdateCurrentUserSettingsResult;
 import com.damian.xBank.modules.setting.domain.exception.SettingNotOwnerException;
 import com.damian.xBank.modules.setting.domain.model.Setting;
 import com.damian.xBank.modules.setting.domain.model.SettingLanguage;
@@ -99,7 +100,7 @@ public class UpdateCurrentUserSettingsTest extends AbstractServiceTest {
         when(settingRepository.save(any(Setting.class)))
             .thenAnswer(invocation -> invocation.getArgument(0));
 
-        SettingResult result = updateCurrentUserSettings.execute(request);
+        UpdateCurrentUserSettingsResult result = updateCurrentUserSettings.execute(request);
 
         // then
         assertThat(result)
