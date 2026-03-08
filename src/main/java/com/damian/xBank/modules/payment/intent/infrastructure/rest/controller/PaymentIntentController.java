@@ -1,9 +1,9 @@
 package com.damian.xBank.modules.payment.intent.infrastructure.rest.controller;
 
-import com.damian.xBank.modules.payment.intent.application.cqrs.command.CreatePaymentIntentCommand;
-import com.damian.xBank.modules.payment.intent.application.cqrs.result.CreatePaymentIntentResult;
-import com.damian.xBank.modules.payment.intent.application.usecase.CreatePaymentIntent;
-import com.damian.xBank.modules.payment.intent.infrastructure.dto.request.CreatePaymentIntentRequest;
+import com.damian.xBank.modules.payment.intent.application.usecase.create.CreatePaymentIntent;
+import com.damian.xBank.modules.payment.intent.application.usecase.create.CreatePaymentIntentCommand;
+import com.damian.xBank.modules.payment.intent.application.usecase.create.CreatePaymentIntentResult;
+import com.damian.xBank.modules.payment.intent.infrastructure.rest.request.CreatePaymentIntentRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

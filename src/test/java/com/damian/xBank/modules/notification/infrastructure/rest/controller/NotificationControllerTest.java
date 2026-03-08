@@ -1,10 +1,10 @@
 package com.damian.xBank.modules.notification.infrastructure.rest.controller;
 
+import com.damian.xBank.modules.notification.application.usecase.NotificationResult;
 import com.damian.xBank.modules.notification.application.usecase.get.GetCurrentUserSinkNotifications;
 import com.damian.xBank.modules.notification.domain.model.Notification;
 import com.damian.xBank.modules.notification.domain.model.NotificationType;
 import com.damian.xBank.modules.notification.infrastructure.rest.request.NotificationDeleteRequest;
-import com.damian.xBank.modules.notification.infrastructure.rest.response.NotificationDto;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
@@ -101,7 +101,7 @@ public class NotificationControllerTest extends AbstractControllerTest {
         JsonNode root = objectMapper.readTree(json);
         JsonNode contentNode = root.get("content");
 
-        NotificationDto[] notificationsDto = objectMapper.treeToValue(contentNode, NotificationDto[].class);
+        NotificationResult[] notificationsDto = objectMapper.treeToValue(contentNode, NotificationResult[].class);
 
         // then
         assertThat(notificationsDto.length).isEqualTo(1L);
@@ -146,7 +146,7 @@ public class NotificationControllerTest extends AbstractControllerTest {
         // given
         login(customer);
 
-        NotificationDto givenNotification = new NotificationDto(
+        NotificationResult givenNotification = new NotificationResult(
             1L,
             NotificationType.TRANSFER,
             Map.of(
@@ -159,7 +159,7 @@ public class NotificationControllerTest extends AbstractControllerTest {
             Instant.now()
         );
 
-        ServerSentEvent<NotificationDto> notificationDtoFlux =
+        ServerSentEvent<NotificationResult> notificationDtoFlux =
             ServerSentEvent.builder(givenNotification)
                 .event("notification")
                 .data(givenNotification)
@@ -194,7 +194,7 @@ public class NotificationControllerTest extends AbstractControllerTest {
         // given
         login(customer);
 
-        NotificationDto givenNotification = new NotificationDto(
+        NotificationResult givenNotification = new NotificationResult(
             1L,
             NotificationType.TRANSFER,
             Map.of(
@@ -207,7 +207,7 @@ public class NotificationControllerTest extends AbstractControllerTest {
             Instant.now()
         );
 
-        ServerSentEvent<NotificationDto> notificationDtoFlux =
+        ServerSentEvent<NotificationResult> notificationDtoFlux =
             ServerSentEvent.builder(givenNotification)
                 .event("notification")
                 .data(givenNotification)
@@ -247,19 +247,19 @@ public class NotificationControllerTest extends AbstractControllerTest {
 
         assertThat(notificationData).hasSize(1);
 
-        NotificationDto notificationDto = objectMapper.readValue(
+        NotificationResult notificationResult = objectMapper.readValue(
             notificationData.get(0),
-            NotificationDto.class
+            NotificationResult.class
         );
 
-        assertThat(notificationDto)
+        assertThat(notificationResult)
             .isNotNull()
             .extracting(
-                NotificationDto::id,
-                NotificationDto::type,
-                NotificationDto::templateKey,
-                NotificationDto::payload,
-                NotificationDto::createdAt
+                NotificationResult::id,
+                NotificationResult::type,
+                NotificationResult::templateKey,
+                NotificationResult::payload,
+                NotificationResult::createdAt
             ).containsExactly(
                 givenNotification.id(),
                 givenNotification.type(),

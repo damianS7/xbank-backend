@@ -1,10 +1,10 @@
-package com.damian.xBank.modules.payment.intent.application.usecase;
+package com.damian.xBank.modules.payment.intent.application.usecase.capture;
 
 
 import com.damian.xBank.modules.payment.intent.domain.exception.PaymentIntentNotFoundException;
 import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntent;
-import com.damian.xBank.modules.payment.intent.infrastructure.dto.request.CapturePaymentRequest;
 import com.damian.xBank.modules.payment.intent.infrastructure.repository.PaymentIntentRepository;
+import com.damian.xBank.modules.payment.intent.infrastructure.rest.request.CapturePaymentRequest;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

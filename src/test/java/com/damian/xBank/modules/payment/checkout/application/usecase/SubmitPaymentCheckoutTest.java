@@ -1,7 +1,8 @@
 package com.damian.xBank.modules.payment.checkout.application.usecase;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
-import com.damian.xBank.modules.payment.checkout.application.cqrs.command.SubmitPaymentCheckoutCommand;
+import com.damian.xBank.modules.payment.checkout.application.usecase.submit.SubmitPaymentCheckout;
+import com.damian.xBank.modules.payment.checkout.application.usecase.submit.SubmitPaymentCheckoutCommand;
 import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntent;
 import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntentStatus;
 import com.damian.xBank.modules.payment.intent.infrastructure.repository.PaymentIntentRepository;

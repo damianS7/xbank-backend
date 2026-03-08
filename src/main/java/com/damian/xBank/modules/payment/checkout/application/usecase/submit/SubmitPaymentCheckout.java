@@ -1,9 +1,8 @@
-package com.damian.xBank.modules.payment.checkout.application.usecase;
+package com.damian.xBank.modules.payment.checkout.application.usecase.submit;
 
 import com.damian.xBank.modules.banking.transaction.infrastructure.service.BankingTransactionPersistenceService;
 import com.damian.xBank.modules.notification.domain.factory.NotificationEventFactory;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
-import com.damian.xBank.modules.payment.checkout.application.cqrs.command.SubmitPaymentCheckoutCommand;
 import com.damian.xBank.modules.payment.checkout.domain.excepcion.PaymentCheckoutException;
 import com.damian.xBank.modules.payment.intent.domain.exception.PaymentIntentNotFoundException;
 import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntent;

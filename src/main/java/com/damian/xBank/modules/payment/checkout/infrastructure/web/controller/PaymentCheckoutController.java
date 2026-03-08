@@ -1,11 +1,11 @@
 package com.damian.xBank.modules.payment.checkout.infrastructure.web.controller;
 
-import com.damian.xBank.modules.payment.checkout.application.cqrs.command.SubmitPaymentCheckoutCommand;
-import com.damian.xBank.modules.payment.checkout.application.usecase.SubmitPaymentCheckout;
+import com.damian.xBank.modules.payment.checkout.application.usecase.submit.SubmitPaymentCheckout;
+import com.damian.xBank.modules.payment.checkout.application.usecase.submit.SubmitPaymentCheckoutCommand;
 import com.damian.xBank.modules.payment.checkout.domain.PaymentCheckoutForm;
 import com.damian.xBank.modules.payment.checkout.domain.excepcion.PaymentCheckoutException;
-import com.damian.xBank.modules.payment.intent.application.usecase.GetPaymentIntent;
-import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntent;
+import com.damian.xBank.modules.payment.intent.application.usecase.get.GetPaymentIntent;
+import com.damian.xBank.modules.payment.intent.application.usecase.get.GetPaymentIntentResult;
 import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntentStatus;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import jakarta.validation.ConstraintViolationException;
@@ -54,8 +54,8 @@ public class PaymentCheckoutController {
         Model model
     ) {
         // Get payment
-        PaymentIntent paymentIntent = getPaymentIntent.execute(id);
-        if (paymentIntent.getStatus() != PaymentIntentStatus.PENDING) {
+        GetPaymentIntentResult result = getPaymentIntent.execute(id);
+        if (result.status() != PaymentIntentStatus.PENDING) {
             return "redirect:/payments/" + id + "/status";
         }
 
@@ -63,13 +63,13 @@ public class PaymentCheckoutController {
         PaymentCheckoutForm form = new PaymentCheckoutForm();
 
         // read only fields
-        model.addAttribute("paymentId", paymentIntent.getId());
-        model.addAttribute("status", paymentIntent.getStatus());
+        model.addAttribute("paymentId", result.id());
+        model.addAttribute("status", result.status());
         model.addAttribute("PaymentIntentStatus", PaymentIntentStatus.class);
-        model.addAttribute("merchant", paymentIntent.getMerchantName());
-        model.addAttribute("amount", paymentIntent.getAmount());
-        model.addAttribute("currency", paymentIntent.getCurrency());
-        model.addAttribute("merchantCallbackUrl", paymentIntent.getMerchantCallbackUrl());
+        model.addAttribute("merchant", result.merchant());
+        model.addAttribute("amount", result.amount());
+        model.addAttribute("currency", result.currency());
+        model.addAttribute("merchantCallbackUrl", result.merchantCallbackUrl());
         model.addAttribute("form", form);
         return "layout/main";
     }
@@ -80,16 +80,16 @@ public class PaymentCheckoutController {
         Model model
     ) {
         // Get payment
-        PaymentIntent paymentIntent = getPaymentIntent.execute(id);
+        GetPaymentIntentResult result = getPaymentIntent.execute(id);
 
         // read only fields
-        model.addAttribute("paymentId", paymentIntent.getId());
-        model.addAttribute("status", paymentIntent.getStatus());
+        model.addAttribute("paymentId", result.id());
+        model.addAttribute("status", result.status());
         model.addAttribute("PaymentIntentStatus", PaymentIntentStatus.class);
-        model.addAttribute("merchant", paymentIntent.getMerchantName());
-        model.addAttribute("amount", paymentIntent.getAmount());
-        model.addAttribute("currency", paymentIntent.getCurrency());
-        model.addAttribute("merchantCallbackUrl", paymentIntent.getMerchantCallbackUrl());
+        model.addAttribute("merchant", result.merchant());
+        model.addAttribute("amount", result.amount());
+        model.addAttribute("currency", result.currency());
+        model.addAttribute("merchantCallbackUrl", result.merchantCallbackUrl());
         return "layout/status";
     }
 

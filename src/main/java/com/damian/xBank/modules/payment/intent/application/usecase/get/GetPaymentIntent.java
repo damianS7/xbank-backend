@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.payment.intent.application.usecase;
+package com.damian.xBank.modules.payment.intent.application.usecase.get;
 
 
 import com.damian.xBank.modules.payment.intent.domain.exception.PaymentIntentNotFoundException;
@@ -14,14 +14,16 @@ public class GetPaymentIntent {
     private final PaymentIntentRepository paymentIntentRepository;
 
     public GetPaymentIntent(
-            PaymentIntentRepository paymentIntentRepository
+        PaymentIntentRepository paymentIntentRepository
     ) {
         this.paymentIntentRepository = paymentIntentRepository;
     }
 
-    public PaymentIntent execute(Long id) {
-        return paymentIntentRepository.findById(id).orElseThrow(
-                () -> new PaymentIntentNotFoundException(id)
+    public GetPaymentIntentResult execute(Long id) {
+        PaymentIntent paymentIntent = paymentIntentRepository.findById(id).orElseThrow(
+            () -> new PaymentIntentNotFoundException(id)
         );
+
+        return GetPaymentIntentResult.from(paymentIntent);
     }
 }

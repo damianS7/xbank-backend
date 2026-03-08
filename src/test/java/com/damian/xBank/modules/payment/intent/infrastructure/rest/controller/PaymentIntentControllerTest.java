@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.payment.intent.infrastructure.rest.controller;
 
-import com.damian.xBank.modules.payment.intent.infrastructure.dto.request.CreatePaymentIntentRequest;
+import com.damian.xBank.modules.payment.intent.infrastructure.rest.request.CreatePaymentIntentRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractControllerTest;

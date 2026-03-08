@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.notification.infrastructure.rest.controller;
 
+import com.damian.xBank.modules.notification.application.usecase.NotificationResult;
 import com.damian.xBank.modules.notification.application.usecase.delete.DeleteNotification;
 import com.damian.xBank.modules.notification.application.usecase.delete.DeleteNotificationCommand;
 import com.damian.xBank.modules.notification.application.usecase.delete.DeleteNotifications;
@@ -9,7 +10,6 @@ import com.damian.xBank.modules.notification.application.usecase.get.GetCurrentU
 import com.damian.xBank.modules.notification.application.usecase.get.GetCurrentUserNotificationsResult;
 import com.damian.xBank.modules.notification.application.usecase.get.GetCurrentUserSinkNotifications;
 import com.damian.xBank.modules.notification.infrastructure.rest.request.NotificationDeleteRequest;
-import com.damian.xBank.modules.notification.infrastructure.rest.response.NotificationDto;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -99,7 +99,7 @@ public class NotificationController {
 
     @GetMapping(value = "/notifications/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<?>> streamNotifications() {
-        Flux<ServerSentEvent<NotificationDto>> notifications =
+        Flux<ServerSentEvent<NotificationResult>> notifications =
             getCurrentUserSinkNotifications.execute()
                 .map(dto -> ServerSentEvent.builder(dto)
                     .event("notification")

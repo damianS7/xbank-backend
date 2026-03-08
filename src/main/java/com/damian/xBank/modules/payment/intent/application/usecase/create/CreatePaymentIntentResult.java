@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.payment.intent.application.cqrs.result;
+package com.damian.xBank.modules.payment.intent.application.usecase.create;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntent;

@@ -2,12 +2,11 @@ package com.damian.xBank.modules.notification.infrastructure.rest.mapper;
 
 import com.damian.xBank.modules.notification.application.usecase.NotificationResult;
 import com.damian.xBank.modules.notification.domain.model.Notification;
-import com.damian.xBank.modules.notification.infrastructure.rest.response.NotificationDto;
 import org.springframework.data.domain.Page;
 
 public class NotificationDtoMapper {
-    public static NotificationDto toDto(Notification notification) {
-        return new NotificationDto(
+    public static NotificationResult toDto(Notification notification) {
+        return new NotificationResult(
             notification.getId(),
             notification.getType(),
             notification.getMetadata(),
@@ -16,7 +15,7 @@ public class NotificationDtoMapper {
         );
     }
 
-    public static Page<NotificationDto> toPageDto(Page<Notification> notifications) {
+    public static Page<NotificationResult> toPageDto(Page<Notification> notifications) {
         return notifications.map(
             NotificationDtoMapper::toDto
         );

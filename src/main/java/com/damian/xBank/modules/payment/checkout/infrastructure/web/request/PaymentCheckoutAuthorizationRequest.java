@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.payment.checkout.infrastructure.web.dto.request;
+package com.damian.xBank.modules.payment.checkout.infrastructure.web.request;
 
 import java.math.BigDecimal;
 

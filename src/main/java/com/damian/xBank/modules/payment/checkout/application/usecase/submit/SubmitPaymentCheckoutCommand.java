@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.payment.checkout.application.cqrs.command;
+package com.damian.xBank.modules.payment.checkout.application.usecase.submit;
 
 public record SubmitPaymentCheckoutCommand(
     Long paymentId,

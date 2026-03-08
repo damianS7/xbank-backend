@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.notification.application.usecase.get;
 
-import com.damian.xBank.modules.notification.infrastructure.rest.response.NotificationDto;
+import com.damian.xBank.modules.notification.application.usecase.NotificationResult;
 import com.damian.xBank.modules.notification.infrastructure.sink.NotificationSinkRegistry;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
@@ -29,11 +29,11 @@ public class GetCurrentUserSinkNotifications {
      *
      * @return Flux<NotificationEvent> a stream of notifications
      */
-    public Flux<NotificationDto> execute() {
+    public Flux<NotificationResult> execute() {
         // Current user
         final User currentUser = authenticationContext.getCurrentUser();
 
-        Sinks.Many<NotificationDto> sink =
+        Sinks.Many<NotificationResult> sink =
             notificationSinkRegistry.getSinkForUserOrCreate(currentUser.getId());
 
         return sink.asFlux()

@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.payment.checkout.infrastructure.web.dto.request;
+package com.damian.xBank.modules.payment.checkout.infrastructure.web.request;
 
 public record PaymentCheckoutSubmitRequest(
     Long paymentId,
