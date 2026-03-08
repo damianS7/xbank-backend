@@ -6,7 +6,7 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatu
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.transfer.application.usecase.transfer.incoming.authorize.AuthorizeIncomingTransferResult;
 import com.damian.xBank.modules.banking.transfer.domain.model.TransferAuthorizationStatus;
-import com.damian.xBank.modules.banking.transfer.infrastructure.rest.dto.request.AuthorizeIncomingTransferRequest;
+import com.damian.xBank.modules.banking.transfer.infrastructure.rest.request.AuthorizeIncomingTransferRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractControllerTest;

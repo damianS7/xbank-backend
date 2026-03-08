@@ -11,8 +11,8 @@ import com.damian.xBank.modules.banking.transfer.application.usecase.transfer.ou
 import com.damian.xBank.modules.banking.transfer.application.usecase.transfer.outgoing.reject.RejectOutgoingTransferResult;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferStatus;
-import com.damian.xBank.modules.banking.transfer.infrastructure.rest.dto.request.ConfirmOutgoingTransferRequest;
-import com.damian.xBank.modules.banking.transfer.infrastructure.rest.dto.request.CreateOutgoingTransferRequest;
+import com.damian.xBank.modules.banking.transfer.infrastructure.rest.request.ConfirmOutgoingTransferRequest;
+import com.damian.xBank.modules.banking.transfer.infrastructure.rest.request.CreateOutgoingTransferRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;

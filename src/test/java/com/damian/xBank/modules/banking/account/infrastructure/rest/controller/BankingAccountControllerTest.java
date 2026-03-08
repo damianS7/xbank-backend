@@ -1,15 +1,18 @@
 package com.damian.xBank.modules.banking.account.infrastructure.rest.controller;
 
+import com.damian.xBank.modules.banking.account.application.result.BankingAccountResult;
+import com.damian.xBank.modules.banking.account.application.usecase.account.card.RequestCardResult;
+import com.damian.xBank.modules.banking.account.application.usecase.account.close.CloseAccountResult;
+import com.damian.xBank.modules.banking.account.application.usecase.account.create.CreateAccountResult;
+import com.damian.xBank.modules.banking.account.application.usecase.account.set.alias.SetAccountAliasResult;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
-import com.damian.xBank.modules.banking.account.infrastructure.rest.dto.request.CloseBankingAccountRequest;
-import com.damian.xBank.modules.banking.account.infrastructure.rest.dto.request.CreateBankingAccountRequest;
-import com.damian.xBank.modules.banking.account.infrastructure.rest.dto.request.RequestBankingAccountCardRequest;
-import com.damian.xBank.modules.banking.account.infrastructure.rest.dto.request.SetBankingAccountAliasRequest;
-import com.damian.xBank.modules.banking.account.infrastructure.rest.dto.response.BankingAccountDto;
-import com.damian.xBank.modules.banking.card.application.cqrs.result.BankingCardResult;
+import com.damian.xBank.modules.banking.account.infrastructure.rest.request.CloseBankingAccountRequest;
+import com.damian.xBank.modules.banking.account.infrastructure.rest.request.CreateBankingAccountRequest;
+import com.damian.xBank.modules.banking.account.infrastructure.rest.request.RequestBankingAccountCardRequest;
+import com.damian.xBank.modules.banking.account.infrastructure.rest.request.SetBankingAccountAliasRequest;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardType;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
@@ -71,18 +74,18 @@ public class BankingAccountControllerTest extends AbstractControllerTest {
             .andExpect(status().is(200))
             .andReturn();
 
-        BankingAccountDto[] bankingAccountDto = objectMapper.readValue(
+        BankingAccountResult[] bankingAccountDto = objectMapper.readValue(
             result.getResponse().getContentAsString(),
-            BankingAccountDto[].class
+            BankingAccountResult[].class
         );
 
         // then
         assertThat(bankingAccountDto[0])
             .isNotNull()
             .extracting(
-                BankingAccountDto::id,
-                BankingAccountDto::accountNumber,
-                BankingAccountDto::accountStatus
+                BankingAccountResult::id,
+                BankingAccountResult::accountNumber,
+                BankingAccountResult::accountStatus
             ).containsExactly(
                 bankingAccount.getId(),
                 bankingAccount.getAccountNumber(),
@@ -110,17 +113,17 @@ public class BankingAccountControllerTest extends AbstractControllerTest {
             .andExpect(status().is(201))
             .andReturn();
 
-        BankingAccountDto bankingAccountDto = objectMapper.readValue(
+        CreateAccountResult response = objectMapper.readValue(
             result.getResponse().getContentAsString(),
-            BankingAccountDto.class
+            CreateAccountResult.class
         );
 
         // then
-        assertThat(bankingAccountDto).isNotNull();
-        assertThat(bankingAccountDto.accountNumber()).isNotEmpty();
-        assertThat(bankingAccountDto.accountCurrency()).isEqualTo(request.currency());
-        assertThat(bankingAccountDto.balance()).isEqualTo(BigDecimal.ZERO);
-        assertThat(bankingAccountDto.accountType()).isEqualTo(request.type());
+        assertThat(response).isNotNull();
+        assertThat(response.accountNumber()).isNotEmpty();
+        assertThat(response.accountCurrency()).isEqualTo(request.currency());
+        assertThat(response.balance()).isEqualTo(BigDecimal.ZERO);
+        assertThat(response.accountType()).isEqualTo(request.type());
     }
 
     @Test
@@ -222,14 +225,14 @@ public class BankingAccountControllerTest extends AbstractControllerTest {
             .andExpect(status().is(200))
             .andReturn();
 
-        BankingAccountDto bankingAccount = objectMapper.readValue(
+        CloseAccountResult response = objectMapper.readValue(
             result.getResponse().getContentAsString(),
-            BankingAccountDto.class
+            CloseAccountResult.class
         );
 
         // then
-        assertThat(bankingAccount).isNotNull();
-        assertThat(bankingAccount.accountStatus()).isEqualTo(BankingAccountStatus.CLOSED);
+        assertThat(response).isNotNull();
+        assertThat(response.accountStatus()).isEqualTo(BankingAccountStatus.CLOSED);
     }
 
     @Test
@@ -252,14 +255,14 @@ public class BankingAccountControllerTest extends AbstractControllerTest {
             .andExpect(status().is(200))
             .andReturn();
 
-        BankingAccountDto bankingAccount = objectMapper.readValue(
+        SetAccountAliasResult response = objectMapper.readValue(
             result.getResponse().getContentAsString(),
-            BankingAccountDto.class
+            SetAccountAliasResult.class
         );
 
         // then
-        assertThat(bankingAccount).isNotNull();
-        assertThat(bankingAccount.alias()).isEqualTo(request.alias());
+        assertThat(response).isNotNull();
+        assertThat(response.alias()).isEqualTo(request.alias());
     }
 
     @Test
@@ -283,17 +286,17 @@ public class BankingAccountControllerTest extends AbstractControllerTest {
             .andExpect(status().is(201))
             .andReturn();
 
-        BankingCardResult card = objectMapper.readValue(
+        RequestCardResult response = objectMapper.readValue(
             result.getResponse().getContentAsString(),
-            BankingCardResult.class
+            RequestCardResult.class
         );
 
         // then
-        assertThat(card)
+        assertThat(response)
             .isNotNull()
             .extracting(
-                BankingCardResult::bankingAccountId,
-                BankingCardResult::cardType
+                RequestCardResult::bankingAccountId,
+                RequestCardResult::cardType
             )
             .containsExactly(
                 bankingAccount.getId(),

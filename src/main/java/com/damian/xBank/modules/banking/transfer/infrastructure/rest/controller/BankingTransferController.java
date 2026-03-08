@@ -13,9 +13,9 @@ import com.damian.xBank.modules.banking.transfer.application.usecase.transfer.ou
 import com.damian.xBank.modules.banking.transfer.application.usecase.transfer.outgoing.reject.RejectOutgoingTransferCommand;
 import com.damian.xBank.modules.banking.transfer.application.usecase.transfer.outgoing.reject.RejectOutgoingTransferResult;
 import com.damian.xBank.modules.banking.transfer.infrastructure.mapper.BankingTransferDtoMapper;
-import com.damian.xBank.modules.banking.transfer.infrastructure.rest.dto.request.ConfirmOutgoingTransferRequest;
-import com.damian.xBank.modules.banking.transfer.infrastructure.rest.dto.request.CreateOutgoingTransferRequest;
-import com.damian.xBank.modules.banking.transfer.infrastructure.rest.dto.request.RejectOutgoingTransferRequest;
+import com.damian.xBank.modules.banking.transfer.infrastructure.rest.request.ConfirmOutgoingTransferRequest;
+import com.damian.xBank.modules.banking.transfer.infrastructure.rest.request.CreateOutgoingTransferRequest;
+import com.damian.xBank.modules.banking.transfer.infrastructure.rest.request.RejectOutgoingTransferRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.data.domain.Pageable;

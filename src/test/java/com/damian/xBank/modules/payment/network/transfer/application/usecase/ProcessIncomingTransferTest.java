@@ -7,7 +7,7 @@ import com.damian.xBank.modules.banking.account.infrastructure.repository.Bankin
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.banking.transfer.application.usecase.transfer.incoming.ProcessIncomingTransfer;
-import com.damian.xBank.modules.banking.transfer.infrastructure.rest.dto.request.IncomingTransferRequest;
+import com.damian.xBank.modules.banking.transfer.infrastructure.rest.request.IncomingTransferRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.utils.UserTestBuilder;

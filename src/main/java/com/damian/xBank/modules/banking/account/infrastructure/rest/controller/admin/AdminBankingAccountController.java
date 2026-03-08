@@ -1,11 +1,9 @@
 package com.damian.xBank.modules.banking.account.infrastructure.rest.controller.admin;
 
-import com.damian.xBank.modules.banking.account.application.cqrs.command.DepositBankingAccountCommand;
-import com.damian.xBank.modules.banking.account.application.usecase.DepositBankingAccount;
-import com.damian.xBank.modules.banking.account.infrastructure.rest.dto.request.DepositBankingAccountRequest;
-import com.damian.xBank.modules.banking.transaction.application.cqrs.result.BankingTransactionResult;
-import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
-import com.damian.xBank.modules.banking.transaction.infrastructure.mapper.BankingTransactionDtoMapper;
+import com.damian.xBank.modules.banking.account.application.usecase.account.deposit.DepositAccount;
+import com.damian.xBank.modules.banking.account.application.usecase.account.deposit.DepositAccountCommand;
+import com.damian.xBank.modules.banking.account.application.usecase.account.deposit.DepositAccountResult;
+import com.damian.xBank.modules.banking.account.infrastructure.rest.request.DepositBankingAccountRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -22,12 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1")
 public class AdminBankingAccountController {
-    private final DepositBankingAccount depositBankingAccount;
+    private final DepositAccount depositAccount;
 
     public AdminBankingAccountController(
-        DepositBankingAccount depositBankingAccount
+        DepositAccount depositAccount
     ) {
-        this.depositBankingAccount = depositBankingAccount;
+        this.depositAccount = depositAccount;
     }
 
     // endpoint for logged customer to deposit into given account
@@ -38,19 +36,17 @@ public class AdminBankingAccountController {
         @Valid @RequestBody
         DepositBankingAccountRequest request
     ) {
-        DepositBankingAccountCommand command = new DepositBankingAccountCommand(
+        DepositAccountCommand command = new DepositAccountCommand(
             id,
             request.depositorName(),
             request.amount()
         );
 
-        BankingTransaction transaction = depositBankingAccount.execute(command);
-        BankingTransactionResult transactionDto = BankingTransactionDtoMapper
-            .toBankingTransactionResult(transaction);
+        DepositAccountResult result = depositAccount.execute(command);
 
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(transactionDto);
+            .body(result);
     }
 }
 

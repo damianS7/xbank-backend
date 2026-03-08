@@ -5,9 +5,9 @@ import com.damian.xBank.modules.banking.transfer.application.usecase.transfer.in
 import com.damian.xBank.modules.banking.transfer.application.usecase.transfer.incoming.authorize.AuthorizeIncomingTransferCommand;
 import com.damian.xBank.modules.banking.transfer.application.usecase.transfer.incoming.authorize.AuthorizeIncomingTransferResult;
 import com.damian.xBank.modules.banking.transfer.application.usecase.transfer.outgoing.authorize.HandleOutgoingTransferAuthorizationFailure;
-import com.damian.xBank.modules.banking.transfer.infrastructure.rest.dto.request.AuthorizeIncomingTransferRequest;
-import com.damian.xBank.modules.banking.transfer.infrastructure.rest.dto.request.IncomingTransferRequest;
-import com.damian.xBank.modules.banking.transfer.infrastructure.rest.dto.request.OutgoingTransferFailureRequest;
+import com.damian.xBank.modules.banking.transfer.infrastructure.rest.request.AuthorizeIncomingTransferRequest;
+import com.damian.xBank.modules.banking.transfer.infrastructure.rest.request.IncomingTransferRequest;
+import com.damian.xBank.modules.banking.transfer.infrastructure.rest.request.OutgoingTransferFailureRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

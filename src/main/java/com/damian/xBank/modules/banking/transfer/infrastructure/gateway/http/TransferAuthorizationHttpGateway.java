@@ -2,8 +2,8 @@ package com.damian.xBank.modules.banking.transfer.infrastructure.gateway.http;
 
 import com.damian.xBank.modules.banking.transfer.application.TransferAuthorizationGateway;
 import com.damian.xBank.modules.banking.transfer.domain.model.TransferAuthorizationStatus;
-import com.damian.xBank.modules.banking.transfer.infrastructure.rest.dto.request.TransferAuthorizationRequest;
-import com.damian.xBank.modules.banking.transfer.infrastructure.rest.dto.response.TransferAuthorizationResponse;
+import com.damian.xBank.modules.banking.transfer.infrastructure.rest.request.TransferAuthorizationRequest;
+import com.damian.xBank.modules.banking.transfer.infrastructure.rest.response.TransferAuthorizationResponse;
 import com.damian.xBank.shared.infrastructure.web.dto.response.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

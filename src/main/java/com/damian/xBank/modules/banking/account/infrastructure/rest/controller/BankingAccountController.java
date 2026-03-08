@@ -1,26 +1,27 @@
 package com.damian.xBank.modules.banking.account.infrastructure.rest.controller;
 
-import com.damian.xBank.modules.banking.account.application.cqrs.command.CloseBankingAccountCommand;
-import com.damian.xBank.modules.banking.account.application.cqrs.command.CreateBankingAccountCommand;
-import com.damian.xBank.modules.banking.account.application.cqrs.command.RequestBankingAccountCardCommand;
-import com.damian.xBank.modules.banking.account.application.cqrs.command.SetBankingAccountAliasCommand;
-import com.damian.xBank.modules.banking.account.application.cqrs.query.GetAllBankingAccountsQuery;
-import com.damian.xBank.modules.banking.account.application.cqrs.query.GetDailyBalancesByCurrencyQuery;
-import com.damian.xBank.modules.banking.account.application.cqrs.result.BankingAccountResult;
-import com.damian.xBank.modules.banking.account.application.cqrs.result.DailyBalancesByCurrencyResult;
-import com.damian.xBank.modules.banking.account.application.usecase.CloseBankingAccount;
-import com.damian.xBank.modules.banking.account.application.usecase.CreateBankingAccount;
-import com.damian.xBank.modules.banking.account.application.usecase.GetAllBankingAccounts;
-import com.damian.xBank.modules.banking.account.application.usecase.GetDailyBalancesByCurrency;
-import com.damian.xBank.modules.banking.account.application.usecase.RequestBankingAccountCard;
-import com.damian.xBank.modules.banking.account.application.usecase.SetBankingAccountAlias;
-import com.damian.xBank.modules.banking.account.infrastructure.rest.dto.request.CloseBankingAccountRequest;
-import com.damian.xBank.modules.banking.account.infrastructure.rest.dto.request.CreateBankingAccountRequest;
-import com.damian.xBank.modules.banking.account.infrastructure.rest.dto.request.RequestBankingAccountCardRequest;
-import com.damian.xBank.modules.banking.account.infrastructure.rest.dto.request.SetBankingAccountAliasRequest;
-import com.damian.xBank.modules.banking.card.application.cqrs.result.BankingCardResult;
-import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
-import com.damian.xBank.modules.banking.card.infrastructure.mapper.BankingCardDtoMapper;
+import com.damian.xBank.modules.banking.account.application.usecase.account.card.RequestCard;
+import com.damian.xBank.modules.banking.account.application.usecase.account.card.RequestCardCommand;
+import com.damian.xBank.modules.banking.account.application.usecase.account.card.RequestCardResult;
+import com.damian.xBank.modules.banking.account.application.usecase.account.close.CloseAccount;
+import com.damian.xBank.modules.banking.account.application.usecase.account.close.CloseAccountCommand;
+import com.damian.xBank.modules.banking.account.application.usecase.account.close.CloseAccountResult;
+import com.damian.xBank.modules.banking.account.application.usecase.account.create.CreateAccountResult;
+import com.damian.xBank.modules.banking.account.application.usecase.account.create.CreateBankingAccount;
+import com.damian.xBank.modules.banking.account.application.usecase.account.create.CreateBankingAccountCommand;
+import com.damian.xBank.modules.banking.account.application.usecase.account.get.all.GetAllUserAccounts;
+import com.damian.xBank.modules.banking.account.application.usecase.account.get.all.GetAllUserAccountsQuery;
+import com.damian.xBank.modules.banking.account.application.usecase.account.get.all.GetAllUserAccountsResult;
+import com.damian.xBank.modules.banking.account.application.usecase.account.get.summary.GetDailyBalancesByCurrency;
+import com.damian.xBank.modules.banking.account.application.usecase.account.get.summary.GetDailyBalancesByCurrencyQuery;
+import com.damian.xBank.modules.banking.account.application.usecase.account.get.summary.GetDailyBalancesByCurrencyResult;
+import com.damian.xBank.modules.banking.account.application.usecase.account.set.alias.SetAccountAlias;
+import com.damian.xBank.modules.banking.account.application.usecase.account.set.alias.SetAccountAliasCommand;
+import com.damian.xBank.modules.banking.account.application.usecase.account.set.alias.SetAccountAliasResult;
+import com.damian.xBank.modules.banking.account.infrastructure.rest.request.CloseBankingAccountRequest;
+import com.damian.xBank.modules.banking.account.infrastructure.rest.request.CreateBankingAccountRequest;
+import com.damian.xBank.modules.banking.account.infrastructure.rest.request.RequestBankingAccountCardRequest;
+import com.damian.xBank.modules.banking.account.infrastructure.rest.request.SetBankingAccountAliasRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -35,32 +36,30 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Set;
-
 @Validated
 @RequestMapping("/api/v1")
 @RestController
 public class BankingAccountController {
-    private final GetAllBankingAccounts getAllBankingAccounts;
+    private final GetAllUserAccounts getAllUserAccounts;
     private final CreateBankingAccount createBankingAccount;
-    private final RequestBankingAccountCard bankingAccountCardRequest;
-    private final CloseBankingAccount closeBankingAccount;
-    private final SetBankingAccountAlias setBankingAccountAlias;
+    private final RequestCard bankingAccountCardRequest;
+    private final CloseAccount closeAccount;
+    private final SetAccountAlias setAccountAlias;
     private final GetDailyBalancesByCurrency getDailyBalancesByCurrency;
 
     public BankingAccountController(
-        GetAllBankingAccounts getAllBankingAccounts,
+        GetAllUserAccounts getAllUserAccounts,
         CreateBankingAccount createBankingAccount,
-        RequestBankingAccountCard bankingAccountCardRequest,
-        CloseBankingAccount closeBankingAccount,
-        SetBankingAccountAlias setBankingAccountAlias,
+        RequestCard bankingAccountCardRequest,
+        CloseAccount closeAccount,
+        SetAccountAlias setAccountAlias,
         GetDailyBalancesByCurrency getDailyBalancesByCurrency
     ) {
-        this.getAllBankingAccounts = getAllBankingAccounts;
+        this.getAllUserAccounts = getAllUserAccounts;
         this.createBankingAccount = createBankingAccount;
         this.bankingAccountCardRequest = bankingAccountCardRequest;
-        this.closeBankingAccount = closeBankingAccount;
-        this.setBankingAccountAlias = setBankingAccountAlias;
+        this.closeAccount = closeAccount;
+        this.setAccountAlias = setAccountAlias;
         this.getDailyBalancesByCurrency = getDailyBalancesByCurrency;
     }
 
@@ -71,7 +70,7 @@ public class BankingAccountController {
         String currency
     ) {
         GetDailyBalancesByCurrencyQuery query = new GetDailyBalancesByCurrencyQuery(currency);
-        DailyBalancesByCurrencyResult result = getDailyBalancesByCurrency.execute(query);
+        GetDailyBalancesByCurrencyResult result = getDailyBalancesByCurrency.execute(query);
 
         return ResponseEntity
             .status(HttpStatus.OK)
@@ -81,12 +80,12 @@ public class BankingAccountController {
     // return all the accounts from the logged customer
     @GetMapping("/banking/accounts")
     public ResponseEntity<?> getCustomerBankingAccounts() {
-        GetAllBankingAccountsQuery query = new GetAllBankingAccountsQuery();
-        Set<BankingAccountResult> bankingAccountsResult = getAllBankingAccounts.execute(query);
+        GetAllUserAccountsQuery query = new GetAllUserAccountsQuery();
+        GetAllUserAccountsResult result = getAllUserAccounts.execute(query);
 
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(bankingAccountsResult);
+            .body(result.accounts());
     }
 
     // endpoint for logged customer to request for a new BankingAccount
@@ -100,11 +99,11 @@ public class BankingAccountController {
             request.currency()
         );
 
-        BankingAccountResult bankingAccountResult = createBankingAccount.execute(command);
+        CreateAccountResult result = createBankingAccount.execute(command);
 
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(bankingAccountResult);
+            .body(result);
     }
 
     // endpoint for logged customer to close his BankingAccount
@@ -115,15 +114,15 @@ public class BankingAccountController {
         @Valid @RequestBody
         CloseBankingAccountRequest request
     ) {
-        CloseBankingAccountCommand command = new CloseBankingAccountCommand(
+        CloseAccountCommand command = new CloseAccountCommand(
             id,
             request.password()
         );
-        BankingAccountResult bankingAccountResult = closeBankingAccount.execute(command);
+        CloseAccountResult result = closeAccount.execute(command);
 
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(bankingAccountResult);
+            .body(result);
     }
 
     // endpoint to set an alias for an account
@@ -134,12 +133,12 @@ public class BankingAccountController {
         @Valid @RequestBody
         SetBankingAccountAliasRequest request
     ) {
-        SetBankingAccountAliasCommand command = new SetBankingAccountAliasCommand(id, request.alias());
-        BankingAccountResult bankingAccountResult = setBankingAccountAlias.execute(command);
+        SetAccountAliasCommand command = new SetAccountAliasCommand(id, request.alias());
+        SetAccountAliasResult result = setAccountAlias.execute(command);
 
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(bankingAccountResult);
+            .body(result);
     }
 
     // endpoint for logged customer to request for a new BankingCard
@@ -150,13 +149,12 @@ public class BankingAccountController {
         @Valid @RequestBody
         RequestBankingAccountCardRequest request
     ) {
-        RequestBankingAccountCardCommand command = new RequestBankingAccountCardCommand(id, request.type());
-        BankingCard bankingCard = bankingAccountCardRequest.execute(command);
-        BankingCardResult bankingCardResult = BankingCardDtoMapper.toBankingCardResult(bankingCard);
+        RequestCardCommand command = new RequestCardCommand(id, request.type());
+        RequestCardResult result = bankingAccountCardRequest.execute(command);
 
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(bankingCardResult);
+            .body(result);
     }
 
 }

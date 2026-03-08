@@ -3,15 +3,14 @@ package com.damian.xBank.modules.banking.transaction.infrastructure.mapper;
 import com.damian.xBank.modules.banking.transaction.application.cqrs.result.BankingTransactionDetailResult;
 import com.damian.xBank.modules.banking.transaction.application.cqrs.result.BankingTransactionResult;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
+import com.damian.xBank.shared.infrastructure.web.dto.response.PageResult;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class BankingTransactionDtoMapper {
-
-
     public static BankingTransactionResult toBankingTransactionResult(BankingTransaction transaction) {
         return new BankingTransactionResult(
             transaction.getId(),
@@ -75,12 +74,20 @@ public class BankingTransactionDtoMapper {
         );
     }
 
-    public static Page<BankingTransactionResult> toBankingTransactionPagedResult(Set<BankingTransaction> accountTransactions) {
-        return new PageImpl<>(
-            accountTransactions.stream().map(
-                BankingTransactionDtoMapper::toBankingTransactionResult
-            ).collect(Collectors.toList())
+    public static PageResult<BankingTransactionResult> toBankingTransactionPagedResult(
+        Set<BankingTransaction> accountTransactions
+    ) {
+        List<BankingTransactionResult> content =
+            accountTransactions.stream()
+                .map(BankingTransactionDtoMapper::toBankingTransactionResult)
+                .toList();
+
+        return new PageResult<>(
+            content,
+            0,
+            content.size(),
+            content.size(),
+            1
         );
     }
-
 }

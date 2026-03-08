@@ -3,7 +3,7 @@ package com.damian.xBank.modules.banking.account.domain.service;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
-import com.damian.xBank.modules.banking.account.infrastructure.rest.dto.request.CreateBankingAccountRequest;
+import com.damian.xBank.modules.banking.account.infrastructure.rest.request.CreateBankingAccountRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.utils.UserTestBuilder;

@@ -5,8 +5,8 @@ import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransfe
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.domain.model.TransferAuthorizationStatus;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
-import com.damian.xBank.modules.banking.transfer.infrastructure.rest.dto.request.TransferAuthorizationRequest;
-import com.damian.xBank.modules.banking.transfer.infrastructure.rest.dto.response.TransferAuthorizationResponse;
+import com.damian.xBank.modules.banking.transfer.infrastructure.rest.request.TransferAuthorizationRequest;
+import com.damian.xBank.modules.banking.transfer.infrastructure.rest.response.TransferAuthorizationResponse;
 import com.damian.xBank.modules.notification.domain.factory.NotificationEventFactory;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import org.springframework.stereotype.Service;
