@@ -2,8 +2,8 @@ package com.damian.xBank.modules.auth.application.usecase;
 
 import com.damian.xBank.modules.auth.domain.exception.UserNotVerifiedException;
 import com.damian.xBank.modules.auth.domain.exception.UserSuspendedException;
-import com.damian.xBank.modules.auth.infrastructure.rest.dto.AuthenticationRequest;
-import com.damian.xBank.modules.auth.infrastructure.rest.dto.AuthenticationResponse;
+import com.damian.xBank.modules.auth.infrastructure.rest.request.AuthenticationRequest;
+import com.damian.xBank.modules.auth.infrastructure.rest.response.AuthenticationResponse;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractServiceTest;

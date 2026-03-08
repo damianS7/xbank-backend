@@ -1,8 +1,8 @@
 package com.damian.xBank.shared;
 
 
-import com.damian.xBank.modules.auth.infrastructure.rest.dto.AuthenticationRequest;
-import com.damian.xBank.modules.auth.infrastructure.rest.dto.AuthenticationResponse;
+import com.damian.xBank.modules.auth.infrastructure.rest.request.AuthenticationRequest;
+import com.damian.xBank.modules.auth.infrastructure.rest.response.AuthenticationResponse;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;

@@ -1,8 +1,8 @@
 package com.damian.xBank.modules.auth.infrastructure.rest.controller;
 
 import com.damian.xBank.modules.auth.application.usecase.AuthenticationLogin;
-import com.damian.xBank.modules.auth.infrastructure.rest.dto.AuthenticationRequest;
-import com.damian.xBank.modules.auth.infrastructure.rest.dto.AuthenticationResponse;
+import com.damian.xBank.modules.auth.infrastructure.rest.request.AuthenticationRequest;
+import com.damian.xBank.modules.auth.infrastructure.rest.response.AuthenticationResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

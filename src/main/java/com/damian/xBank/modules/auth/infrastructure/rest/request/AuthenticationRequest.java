@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.auth.infrastructure.rest.dto;
+package com.damian.xBank.modules.auth.infrastructure.rest.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
