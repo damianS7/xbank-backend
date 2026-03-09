@@ -1,7 +1,8 @@
 package com.damian.xBank.modules.user.profile.application.usecase;
 
-import com.damian.xBank.modules.user.profile.application.cqrs.command.UpdateUserProfileCommand;
-import com.damian.xBank.modules.user.profile.application.cqrs.result.UserProfileResult;
+import com.damian.xBank.modules.user.profile.application.usecase.update.UpdateCurrentUserProfile;
+import com.damian.xBank.modules.user.profile.application.usecase.update.UpdateUserProfileCommand;
+import com.damian.xBank.modules.user.profile.application.usecase.update.UpdateUserProfileResult;
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileNotFoundException;
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileNotOwnerException;
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileUpdateException;
@@ -83,7 +84,7 @@ public class UpdateCurrentUserProfileTest extends AbstractServiceTest {
             invocation -> invocation.getArgument(0)
         );
 
-        UserProfileResult result = updateCurrentUserProfile.execute(command);
+        UpdateUserProfileResult result = updateCurrentUserProfile.execute(command);
 
         // Then
         assertThat(result).isNotNull();

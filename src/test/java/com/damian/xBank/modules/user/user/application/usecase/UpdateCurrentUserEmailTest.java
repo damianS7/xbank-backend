@@ -1,7 +1,8 @@
 package com.damian.xBank.modules.user.user.application.usecase;
 
 import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
-import com.damian.xBank.modules.user.user.application.cqrs.command.UpdateUserEmailCommand;
+import com.damian.xBank.modules.user.user.application.usecase.update.UpdateCurrentUserEmail;
+import com.damian.xBank.modules.user.user.application.usecase.update.UpdateUserEmailCommand;
 import com.damian.xBank.modules.user.user.domain.exception.UserEmailTakenException;
 import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.user.domain.model.User;

@@ -1,6 +1,7 @@
 package com.damian.xBank.modules.user.token.application.usecase;
 
-import com.damian.xBank.modules.user.token.application.cqrs.command.PasswordResetRequestCommand;
+import com.damian.xBank.modules.user.token.application.usecase.password.reset.RequestPasswordReset;
+import com.damian.xBank.modules.user.token.application.usecase.password.reset.RequestPasswordResetCommand;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.domain.notification.UserTokenPasswordResetNotifier;
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
@@ -59,7 +60,7 @@ public class RequestPasswordResetTest extends AbstractServiceTest {
     @DisplayName("should request a password reset and sent it to email")
     void requestPasswordReset_WhenValidRequest_SendsEmail() {
         // given
-        PasswordResetRequestCommand command = new PasswordResetRequestCommand(
+        RequestPasswordResetCommand command = new RequestPasswordResetCommand(
             user.getEmail()
         );
 
@@ -79,7 +80,7 @@ public class RequestPasswordResetTest extends AbstractServiceTest {
     @DisplayName("should throw exception when user not found")
     void requestPasswordReset_WhenUserNotFound_ThrowsException() {
         // given
-        PasswordResetRequestCommand command = new PasswordResetRequestCommand(
+        RequestPasswordResetCommand command = new RequestPasswordResetCommand(
             user.getEmail()
         );
 

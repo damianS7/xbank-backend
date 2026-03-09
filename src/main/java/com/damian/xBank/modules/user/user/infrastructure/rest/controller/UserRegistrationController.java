@@ -1,10 +1,10 @@
 package com.damian.xBank.modules.user.user.infrastructure.rest.controller;
 
-import com.damian.xBank.modules.user.user.application.cqrs.command.UserRegistrationCommand;
-import com.damian.xBank.modules.user.user.application.cqrs.result.UserRegistrationResult;
-import com.damian.xBank.modules.user.user.application.usecase.RegisterUser;
+import com.damian.xBank.modules.user.user.application.usecase.register.RegisterUser;
+import com.damian.xBank.modules.user.user.application.usecase.register.RegisterUserCommand;
+import com.damian.xBank.modules.user.user.application.usecase.register.RegisterUserResult;
 import com.damian.xBank.modules.user.user.infrastructure.mapper.UserDtoMapper;
-import com.damian.xBank.modules.user.user.infrastructure.rest.dto.request.UserRegistrationRequest;
+import com.damian.xBank.modules.user.user.infrastructure.rest.request.RegisterUserRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,15 +30,15 @@ public class UserRegistrationController {
     @PostMapping("/users/register")
     public ResponseEntity<?> registerCustomer(
         @Valid @RequestBody
-        UserRegistrationRequest request
+        RegisterUserRequest request
     ) {
 
-        UserRegistrationCommand command = UserDtoMapper.toCommand(request);
-        UserRegistrationResult userRegistrationResult = registerUser.execute(command);
+        RegisterUserCommand command = UserDtoMapper.toCommand(request);
+        RegisterUserResult registerUserResult = registerUser.execute(command);
 
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(userRegistrationResult);
+            .body(registerUserResult);
     }
 }
 

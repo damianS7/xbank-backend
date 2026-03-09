@@ -1,16 +1,16 @@
 package com.damian.xBank.modules.user.token.infrastructure.rest.controller;
 
-import com.damian.xBank.modules.user.token.application.cqrs.command.AccountVerificationCommand;
-import com.damian.xBank.modules.user.token.application.cqrs.command.AccountVerificationRequestCommand;
-import com.damian.xBank.modules.user.token.application.cqrs.command.PasswordResetCommand;
-import com.damian.xBank.modules.user.token.application.cqrs.command.PasswordResetRequestCommand;
-import com.damian.xBank.modules.user.token.application.usecase.RequestAccountVerification;
-import com.damian.xBank.modules.user.token.application.usecase.RequestPasswordReset;
-import com.damian.xBank.modules.user.token.application.usecase.ResetPassword;
-import com.damian.xBank.modules.user.token.application.usecase.VerifyAccount;
-import com.damian.xBank.modules.user.token.infrastructure.rest.dto.request.RequestAccountVerificationRequest;
-import com.damian.xBank.modules.user.token.infrastructure.rest.dto.request.RequestPasswordResetRequest;
-import com.damian.xBank.modules.user.token.infrastructure.rest.dto.request.ResetPasswordRequest;
+import com.damian.xBank.modules.user.token.application.usecase.verification.request.RequestAccountVerification;
+import com.damian.xBank.modules.user.token.application.usecase.verification.request.RequestAccountVerificationCommand;
+import com.damian.xBank.modules.user.token.application.usecase.password.reset.RequestPasswordReset;
+import com.damian.xBank.modules.user.token.application.usecase.password.reset.RequestPasswordResetCommand;
+import com.damian.xBank.modules.user.token.application.usecase.password.reset.ResetPassword;
+import com.damian.xBank.modules.user.token.application.usecase.password.reset.ResetPasswordCommand;
+import com.damian.xBank.modules.user.token.application.usecase.verification.verify.VerifyAccount;
+import com.damian.xBank.modules.user.token.application.usecase.verification.verify.VerifyAccountCommand;
+import com.damian.xBank.modules.user.token.infrastructure.rest.request.RequestAccountVerificationRequest;
+import com.damian.xBank.modules.user.token.infrastructure.rest.request.RequestPasswordResetRequest;
+import com.damian.xBank.modules.user.token.infrastructure.rest.request.ResetPasswordRequest;
 import com.damian.xBank.shared.infrastructure.web.dto.response.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -51,7 +51,7 @@ public class UserTokenController {
         @PathVariable @NotBlank
         String token
     ) {
-        AccountVerificationCommand command = new AccountVerificationCommand(token);
+        VerifyAccountCommand command = new VerifyAccountCommand(token);
 
         // verification the account using the provided token
         verifyAccount.execute(command);
@@ -68,7 +68,7 @@ public class UserTokenController {
         @Valid @RequestBody
         RequestAccountVerificationRequest request
     ) {
-        AccountVerificationRequestCommand command = new AccountVerificationRequestCommand(
+        RequestAccountVerificationCommand command = new RequestAccountVerificationCommand(
             request.email()
         );
 
@@ -88,7 +88,7 @@ public class UserTokenController {
         RequestPasswordResetRequest request
     ) {
 
-        PasswordResetRequestCommand command = new PasswordResetRequestCommand(
+        RequestPasswordResetCommand command = new RequestPasswordResetCommand(
             request.email()
         );
 
@@ -109,7 +109,7 @@ public class UserTokenController {
         @Valid @RequestBody
         ResetPasswordRequest request
     ) {
-        PasswordResetCommand command = new PasswordResetCommand(
+        ResetPasswordCommand command = new ResetPasswordCommand(
             token,
             request.password()
         );

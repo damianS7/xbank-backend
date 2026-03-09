@@ -6,7 +6,8 @@ import com.damian.xBank.modules.user.profile.domain.model.UserGender;
 import com.damian.xBank.modules.user.token.domain.factory.UserTokenFactory;
 import com.damian.xBank.modules.user.token.domain.notification.UserTokenVerificationNotifier;
 import com.damian.xBank.modules.user.token.infrastructure.service.notification.UserTokenLinkBuilder;
-import com.damian.xBank.modules.user.user.application.cqrs.command.UserRegistrationCommand;
+import com.damian.xBank.modules.user.user.application.usecase.register.RegisterUser;
+import com.damian.xBank.modules.user.user.application.usecase.register.RegisterUserCommand;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.service.UserDomainService;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
@@ -71,7 +72,7 @@ public class RegisterUserTest extends AbstractServiceTest {
     @DisplayName("should register user when valid request")
     void registerUser_WhenValidRequest_SavesUser() {
         // given
-        UserRegistrationCommand command = new UserRegistrationCommand(
+        RegisterUserCommand command = new RegisterUserCommand(
             "david@gmail.com",
             "123456",
             "david",

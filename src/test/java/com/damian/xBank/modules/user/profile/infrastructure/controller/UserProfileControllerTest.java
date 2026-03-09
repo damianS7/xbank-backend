@@ -1,11 +1,11 @@
 package com.damian.xBank.modules.user.profile.infrastructure.controller;
 
-import com.damian.xBank.modules.user.profile.application.cqrs.result.UserProfileResult;
+import com.damian.xBank.modules.user.profile.application.usecase.get.GetUserProfileResult;
+import com.damian.xBank.modules.user.profile.application.usecase.update.UpdateUserProfileResult;
 import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.profile.domain.model.UserGender;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
-import com.damian.xBank.modules.user.profile.infrastructure.rest.dto.request.UserProfileUpdateRequest;
-import com.damian.xBank.modules.user.profile.infrastructure.rest.dto.response.UserProfileDto;
+import com.damian.xBank.modules.user.profile.infrastructure.rest.request.UserProfileUpdateRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
@@ -67,9 +67,9 @@ public class UserProfileControllerTest extends AbstractControllerTest {
             .andReturn();
 
         // then
-        UserProfileResult customerWithProfileDTO = objectMapper.readValue(
+        GetUserProfileResult customerWithProfileDTO = objectMapper.readValue(
             result.getResponse().getContentAsString(),
-            UserProfileResult.class
+            GetUserProfileResult.class
         );
 
         // then
@@ -108,19 +108,19 @@ public class UserProfileControllerTest extends AbstractControllerTest {
             .andReturn();
 
         // then
-        UserProfileDto customerDto = JsonHelper.fromJson(
+        UpdateUserProfileResult response = JsonHelper.fromJson(
             result.getResponse().getContentAsString(),
-            UserProfileDto.class
+            UpdateUserProfileResult.class
         );
 
-        assertThat(customerDto)
+        assertThat(response)
             .isNotNull()
             .extracting(
-                UserProfileDto::firstName,
-                UserProfileDto::lastName,
-                UserProfileDto::phone,
-                UserProfileDto::birthdate,
-                UserProfileDto::gender
+                UpdateUserProfileResult::firstName,
+                UpdateUserProfileResult::lastName,
+                UpdateUserProfileResult::phone,
+                UpdateUserProfileResult::birthdate,
+                UpdateUserProfileResult::gender
             ).containsExactly(
                 givenRequest.fieldsToUpdate().get("firstName"),
                 givenRequest.fieldsToUpdate().get("lastName"),

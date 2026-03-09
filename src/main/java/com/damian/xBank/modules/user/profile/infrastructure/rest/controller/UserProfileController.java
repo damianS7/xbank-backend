@@ -1,12 +1,13 @@
 package com.damian.xBank.modules.user.profile.infrastructure.rest.controller;
 
-import com.damian.xBank.modules.user.profile.application.cqrs.command.UpdateUserProfileCommand;
-import com.damian.xBank.modules.user.profile.application.cqrs.query.GetUserProfileQuery;
-import com.damian.xBank.modules.user.profile.application.cqrs.result.UserProfileResult;
-import com.damian.xBank.modules.user.profile.application.usecase.GetCurrentUserProfile;
-import com.damian.xBank.modules.user.profile.application.usecase.UpdateCurrentUserProfile;
+import com.damian.xBank.modules.user.profile.application.usecase.get.GetCurrentUserProfile;
+import com.damian.xBank.modules.user.profile.application.usecase.get.GetUserProfileQuery;
+import com.damian.xBank.modules.user.profile.application.usecase.get.GetUserProfileResult;
+import com.damian.xBank.modules.user.profile.application.usecase.update.UpdateCurrentUserProfile;
+import com.damian.xBank.modules.user.profile.application.usecase.update.UpdateUserProfileCommand;
+import com.damian.xBank.modules.user.profile.application.usecase.update.UpdateUserProfileResult;
 import com.damian.xBank.modules.user.profile.infrastructure.mapper.UserProfileDtoMapper;
-import com.damian.xBank.modules.user.profile.infrastructure.rest.dto.request.UserProfileUpdateRequest;
+import com.damian.xBank.modules.user.profile.infrastructure.rest.request.UserProfileUpdateRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,25 +39,25 @@ public class UserProfileController {
     @GetMapping("/profiles")
     public ResponseEntity<?> getLoggedCustomerData() {
         GetUserProfileQuery query = new GetUserProfileQuery();
-        UserProfileResult userProfileResult = getCurrentUserProfile.execute(query);
+        GetUserProfileResult result = getCurrentUserProfile.execute(query);
 
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(userProfileResult);
+            .body(result);
     }
 
     // endpoint to modify current customer profile
     @PatchMapping("/profiles")
-    public ResponseEntity<UserProfileResult> update(
+    public ResponseEntity<?> update(
         @Valid @RequestBody
         UserProfileUpdateRequest request
     ) {
         UpdateUserProfileCommand command = UserProfileDtoMapper.toCommand(request);
-        UserProfileResult userProfileResult = updateCurrentUserProfile.execute(command);
+        UpdateUserProfileResult result = updateCurrentUserProfile.execute(command);
 
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(userProfileResult);
+            .body(result);
     }
 }
 

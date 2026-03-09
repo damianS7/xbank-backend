@@ -2,8 +2,8 @@ package com.damian.xBank.modules.user.profile.domain.factory;
 
 import com.damian.xBank.modules.user.profile.domain.model.UserGender;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
-import com.damian.xBank.modules.user.user.application.cqrs.command.UserRegistrationCommand;
-import com.damian.xBank.modules.user.user.infrastructure.rest.dto.request.UserRegistrationRequest;
+import com.damian.xBank.modules.user.user.application.usecase.register.RegisterUserCommand;
+import com.damian.xBank.modules.user.user.infrastructure.rest.request.RegisterUserRequest;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -24,7 +24,7 @@ public class UserProfileFactory {
             .setGender(UserGender.MALE);
     }
 
-    public UserProfile create(UserRegistrationRequest request) {
+    public UserProfile create(RegisterUserRequest request) {
         return UserProfile.create()
             .setNationalId(request.nationalId())
             .setFirstName(request.firstName())
@@ -38,7 +38,7 @@ public class UserProfileFactory {
             .setPhotoPath("avatar.jpg");
     }
 
-    public UserProfile create(UserRegistrationCommand command) {
+    public UserProfile create(RegisterUserCommand command) {
         return UserProfile.create()
             .setNationalId(command.nationalId())
             .setFirstName(command.firstName())

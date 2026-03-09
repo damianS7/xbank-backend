@@ -3,7 +3,7 @@ package com.damian.xBank.modules.user.user.infrastructure.rest.controller;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
-import com.damian.xBank.modules.user.user.infrastructure.rest.dto.request.UserEmailUpdateRequest;
+import com.damian.xBank.modules.user.user.infrastructure.rest.request.UserEmailUpdateRequest;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.utils.JsonHelper;
 import org.junit.jupiter.api.AfterEach;

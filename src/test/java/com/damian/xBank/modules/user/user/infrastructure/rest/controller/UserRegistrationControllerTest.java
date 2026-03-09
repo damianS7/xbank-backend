@@ -1,10 +1,10 @@
 package com.damian.xBank.modules.user.user.infrastructure.rest.controller;
 
 import com.damian.xBank.modules.user.profile.domain.model.UserGender;
-import com.damian.xBank.modules.user.user.application.cqrs.result.UserRegistrationResult;
+import com.damian.xBank.modules.user.user.application.usecase.register.RegisterUserResult;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
-import com.damian.xBank.modules.user.user.infrastructure.rest.dto.request.UserRegistrationRequest;
+import com.damian.xBank.modules.user.user.infrastructure.rest.request.RegisterUserRequest;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.infrastructure.web.dto.response.ApiResponse;
@@ -29,7 +29,7 @@ public class UserRegistrationControllerTest extends AbstractControllerTest {
     @DisplayName("should register a new user")
     void postRegisterUser_WhenValidRequest_Returns201() throws Exception {
         // given
-        UserRegistrationRequest request = new UserRegistrationRequest(
+        RegisterUserRequest request = new RegisterUserRequest(
             "customer@test.com",
             "12345689X$$sa",
             "Customer",
@@ -54,17 +54,17 @@ public class UserRegistrationControllerTest extends AbstractControllerTest {
             .andReturn();
 
         // then
-        UserRegistrationResult customerDto = JsonHelper.fromJson(
+        RegisterUserResult customerDto = JsonHelper.fromJson(
             result.getResponse().getContentAsString(),
-            UserRegistrationResult.class
+            RegisterUserResult.class
         );
 
         // then
         assertThat(customerDto)
             .isNotNull()
             .extracting(
-                UserRegistrationResult::email,
-                UserRegistrationResult::role
+                RegisterUserResult::email,
+                RegisterUserResult::role
             ).containsExactly(
                 request.email(),
                 UserRole.CUSTOMER
@@ -75,7 +75,7 @@ public class UserRegistrationControllerTest extends AbstractControllerTest {
     @DisplayName("Should not register customer when missing fields")
     void postRegisterUser_WhenMissingFields_Returns400() throws Exception {
         // given
-        UserRegistrationRequest request = new UserRegistrationRequest(
+        RegisterUserRequest request = new RegisterUserRequest(
             "customer@test.com",
             "12345689X$$sa",
             "",
@@ -117,7 +117,7 @@ public class UserRegistrationControllerTest extends AbstractControllerTest {
     @DisplayName("Should not register customer when email is not well-formed")
     void shouldNotRegisterCustomerWhenEmailIsNotWellFormed() throws Exception {
         // given
-        UserRegistrationRequest request = new UserRegistrationRequest(
+        RegisterUserRequest request = new RegisterUserRequest(
             "bad-email.com",
             "12345689X$$sa",
             "Customer",
@@ -164,7 +164,7 @@ public class UserRegistrationControllerTest extends AbstractControllerTest {
     @DisplayName("Should not register customer when email is taken")
     void shouldNotRegisterCustomerWhenEmailIsTaken() throws Exception {
         // given
-        UserRegistrationRequest request = new UserRegistrationRequest(
+        RegisterUserRequest request = new RegisterUserRequest(
             "customer@test.com",
             "12345699Xxs$$",
             "Customer",
@@ -214,7 +214,7 @@ public class UserRegistrationControllerTest extends AbstractControllerTest {
     @DisplayName("Should not register customer when password policy not satisfied")
     void shouldNotRegisterCustomerWhenPasswordPolicyNotSatisfied() throws Exception {
         // given
-        UserRegistrationRequest request = new UserRegistrationRequest(
+        RegisterUserRequest request = new RegisterUserRequest(
             "customer@test.com",
             "123456",
             "Customer",

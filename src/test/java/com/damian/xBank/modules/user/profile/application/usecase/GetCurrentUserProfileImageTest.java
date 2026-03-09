@@ -1,6 +1,7 @@
 package com.damian.xBank.modules.user.profile.application.usecase;
 
-import com.damian.xBank.modules.user.profile.application.cqrs.query.GetUserProfileImageQuery;
+import com.damian.xBank.modules.user.profile.application.usecase.get.GetCurrentUserProfileImage;
+import com.damian.xBank.modules.user.profile.application.usecase.get.GetUserProfileImageQuery;
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileImageNotFoundException;
 import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;

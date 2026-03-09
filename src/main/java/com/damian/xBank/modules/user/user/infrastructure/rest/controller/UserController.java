@@ -1,12 +1,12 @@
 package com.damian.xBank.modules.user.user.infrastructure.rest.controller;
 
-import com.damian.xBank.modules.user.user.application.cqrs.command.UpdateUserEmailCommand;
-import com.damian.xBank.modules.user.user.application.cqrs.query.GetUserQuery;
-import com.damian.xBank.modules.user.user.application.cqrs.result.GetCurrentUserResult;
-import com.damian.xBank.modules.user.user.application.usecase.GetCurrentUser;
-import com.damian.xBank.modules.user.user.application.usecase.UpdateCurrentUserEmail;
+import com.damian.xBank.modules.user.user.application.usecase.get.GetCurrentUser;
+import com.damian.xBank.modules.user.user.application.usecase.get.GetCurrentUserQuery;
+import com.damian.xBank.modules.user.user.application.usecase.get.GetCurrentUserResult;
+import com.damian.xBank.modules.user.user.application.usecase.update.UpdateCurrentUserEmail;
+import com.damian.xBank.modules.user.user.application.usecase.update.UpdateUserEmailCommand;
 import com.damian.xBank.modules.user.user.infrastructure.mapper.UserDtoMapper;
-import com.damian.xBank.modules.user.user.infrastructure.rest.dto.request.UserEmailUpdateRequest;
+import com.damian.xBank.modules.user.user.infrastructure.rest.request.UserEmailUpdateRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +35,7 @@ public class UserController {
     // endpoint to receive current customer
     @GetMapping("/users")
     public ResponseEntity<?> getLoggedUserData() {
-        GetUserQuery query = new GetUserQuery();
+        GetCurrentUserQuery query = new GetCurrentUserQuery();
         GetCurrentUserResult userResult = getCurrentUser.execute(query);
 
         return ResponseEntity

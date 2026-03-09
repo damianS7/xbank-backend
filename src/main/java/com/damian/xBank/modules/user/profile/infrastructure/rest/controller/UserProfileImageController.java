@@ -1,9 +1,9 @@
 package com.damian.xBank.modules.user.profile.infrastructure.rest.controller;
 
-import com.damian.xBank.modules.user.profile.application.cqrs.command.UploadUserProfileImageCommand;
-import com.damian.xBank.modules.user.profile.application.cqrs.query.GetUserProfileImageQuery;
-import com.damian.xBank.modules.user.profile.application.usecase.GetCurrentUserProfileImage;
-import com.damian.xBank.modules.user.profile.application.usecase.UploadUserProfileImage;
+import com.damian.xBank.modules.user.profile.application.usecase.get.GetCurrentUserProfileImage;
+import com.damian.xBank.modules.user.profile.application.usecase.get.GetUserProfileImageQuery;
+import com.damian.xBank.modules.user.profile.application.usecase.update.UploadUserProfileImage;
+import com.damian.xBank.modules.user.profile.application.usecase.update.UploadUserProfileImageCommand;
 import com.damian.xBank.shared.utils.ImageHelper;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

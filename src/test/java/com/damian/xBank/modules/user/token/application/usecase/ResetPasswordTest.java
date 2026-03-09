@@ -1,7 +1,8 @@
 package com.damian.xBank.modules.user.token.application.usecase;
 
 import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
-import com.damian.xBank.modules.user.token.application.cqrs.command.PasswordResetCommand;
+import com.damian.xBank.modules.user.token.application.usecase.password.reset.ResetPassword;
+import com.damian.xBank.modules.user.token.application.usecase.password.reset.ResetPasswordCommand;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.domain.notification.UserTokenPasswordResetNotifier;
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
@@ -59,7 +60,7 @@ public class ResetPasswordTest extends AbstractServiceTest {
         UserToken token = new UserToken(customer);
         token.generateResetPasswordToken();
 
-        PasswordResetCommand command = new PasswordResetCommand(
+        ResetPasswordCommand command = new ResetPasswordCommand(
             token.getToken(),
             "1111000"
         );

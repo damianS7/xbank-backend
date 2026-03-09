@@ -1,6 +1,7 @@
 package com.damian.xBank.modules.user.token.application.usecase;
 
-import com.damian.xBank.modules.user.token.application.cqrs.command.AccountVerificationRequestCommand;
+import com.damian.xBank.modules.user.token.application.usecase.verification.request.RequestAccountVerification;
+import com.damian.xBank.modules.user.token.application.usecase.verification.request.RequestAccountVerificationCommand;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.domain.notification.UserTokenVerificationNotifier;
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
@@ -57,7 +58,7 @@ public class RequestAccountVerificationTest extends AbstractServiceTest {
         // given
         user.setStatus(UserStatus.PENDING_VERIFICATION);
 
-        AccountVerificationRequestCommand command = new AccountVerificationRequestCommand(
+        RequestAccountVerificationCommand command = new RequestAccountVerificationCommand(
             user.getEmail()
         );
 

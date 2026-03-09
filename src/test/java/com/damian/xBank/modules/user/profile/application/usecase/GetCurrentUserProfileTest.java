@@ -1,7 +1,8 @@
 package com.damian.xBank.modules.user.profile.application.usecase;
 
-import com.damian.xBank.modules.user.profile.application.cqrs.query.GetUserProfileQuery;
-import com.damian.xBank.modules.user.profile.application.cqrs.result.UserProfileResult;
+import com.damian.xBank.modules.user.profile.application.usecase.get.GetCurrentUserProfile;
+import com.damian.xBank.modules.user.profile.application.usecase.get.GetUserProfileQuery;
+import com.damian.xBank.modules.user.profile.application.usecase.get.GetUserProfileResult;
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileNotFoundException;
 import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
@@ -63,7 +64,7 @@ public class GetCurrentUserProfileTest extends AbstractServiceTest {
             .thenReturn(Optional.of(customer.getProfile()));
 
         GetUserProfileQuery query = new GetUserProfileQuery();
-        UserProfileResult result = getCurrentUserProfile.execute(query);
+        GetUserProfileResult result = getCurrentUserProfile.execute(query);
 
         // then
         assertEquals(customer.getProfile().getId(), result.id());

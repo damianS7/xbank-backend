@@ -1,7 +1,8 @@
 package com.damian.xBank.modules.user.token.application.usecase;
 
 import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
-import com.damian.xBank.modules.user.token.application.cqrs.command.AccountVerificationCommand;
+import com.damian.xBank.modules.user.token.application.usecase.verification.verify.VerifyAccount;
+import com.damian.xBank.modules.user.token.application.usecase.verification.verify.VerifyAccountCommand;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.domain.notification.UserTokenVerificationNotifier;
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
@@ -69,7 +70,7 @@ public class VerifyAccountTest extends AbstractServiceTest {
         UserToken token = new UserToken(unverifiedUser);
         token.generateVerificationToken();
 
-        AccountVerificationCommand command = new AccountVerificationCommand(token.getToken());
+        VerifyAccountCommand command = new VerifyAccountCommand(token.getToken());
 
         // when
         when(userTokenService.validateToken(anyString())).thenReturn(token);
@@ -94,7 +95,7 @@ public class VerifyAccountTest extends AbstractServiceTest {
         UserToken token = new UserToken(user);
         token.generateVerificationToken();
 
-        AccountVerificationCommand command = new AccountVerificationCommand(token.getToken());
+        VerifyAccountCommand command = new VerifyAccountCommand(token.getToken());
 
         // when
         when(userTokenService.validateToken(anyString())).thenReturn(token);
@@ -118,7 +119,7 @@ public class VerifyAccountTest extends AbstractServiceTest {
         UserToken token = new UserToken(user);
         token.generateVerificationToken();
 
-        AccountVerificationCommand command = new AccountVerificationCommand(token.getToken());
+        VerifyAccountCommand command = new VerifyAccountCommand(token.getToken());
 
         // when
         when(userTokenService.validateToken(anyString())).thenReturn(token);

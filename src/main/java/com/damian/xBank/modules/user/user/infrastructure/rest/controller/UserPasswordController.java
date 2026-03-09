@@ -1,9 +1,9 @@
 package com.damian.xBank.modules.user.user.infrastructure.rest.controller;
 
-import com.damian.xBank.modules.user.user.application.cqrs.command.UpdateUserPasswordCommand;
-import com.damian.xBank.modules.user.user.application.usecase.UpdateCurrentUserPassword;
+import com.damian.xBank.modules.user.user.application.usecase.update.UpdateCurrentUserPassword;
+import com.damian.xBank.modules.user.user.application.usecase.update.UpdateUserPasswordCommand;
 import com.damian.xBank.modules.user.user.infrastructure.mapper.UserDtoMapper;
-import com.damian.xBank.modules.user.user.infrastructure.rest.dto.request.UserPasswordUpdateRequest;
+import com.damian.xBank.modules.user.user.infrastructure.rest.request.UserPasswordUpdateRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

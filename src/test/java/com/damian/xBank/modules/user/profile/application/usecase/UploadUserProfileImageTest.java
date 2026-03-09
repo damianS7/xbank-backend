@@ -1,6 +1,7 @@
 package com.damian.xBank.modules.user.profile.application.usecase;
 
-import com.damian.xBank.modules.user.profile.application.cqrs.command.UploadUserProfileImageCommand;
+import com.damian.xBank.modules.user.profile.application.usecase.update.UploadUserProfileImage;
+import com.damian.xBank.modules.user.profile.application.usecase.update.UploadUserProfileImageCommand;
 import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import com.damian.xBank.modules.user.profile.infrastructure.repository.UserProfileRepository;

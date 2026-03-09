@@ -1,13 +1,13 @@
 package com.damian.xBank.modules.user.user.infrastructure.mapper;
 
-import com.damian.xBank.modules.user.user.application.cqrs.command.UpdateUserEmailCommand;
-import com.damian.xBank.modules.user.user.application.cqrs.command.UpdateUserPasswordCommand;
-import com.damian.xBank.modules.user.user.application.cqrs.command.UserRegistrationCommand;
-import com.damian.xBank.modules.user.user.application.cqrs.result.UserResult;
+import com.damian.xBank.modules.user.user.application.usecase.UserResult;
+import com.damian.xBank.modules.user.user.application.usecase.register.RegisterUserCommand;
+import com.damian.xBank.modules.user.user.application.usecase.update.UpdateUserEmailCommand;
+import com.damian.xBank.modules.user.user.application.usecase.update.UpdateUserPasswordCommand;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.infrastructure.rest.dto.request.UserEmailUpdateRequest;
-import com.damian.xBank.modules.user.user.infrastructure.rest.dto.request.UserPasswordUpdateRequest;
-import com.damian.xBank.modules.user.user.infrastructure.rest.dto.request.UserRegistrationRequest;
+import com.damian.xBank.modules.user.user.infrastructure.rest.request.RegisterUserRequest;
+import com.damian.xBank.modules.user.user.infrastructure.rest.request.UserEmailUpdateRequest;
+import com.damian.xBank.modules.user.user.infrastructure.rest.request.UserPasswordUpdateRequest;
 
 public class UserDtoMapper {
 
@@ -25,8 +25,8 @@ public class UserDtoMapper {
         );
     }
 
-    public static UserRegistrationCommand toCommand(UserRegistrationRequest request) {
-        return new UserRegistrationCommand(
+    public static RegisterUserCommand toCommand(RegisterUserRequest request) {
+        return new RegisterUserCommand(
             request.email(),
             request.password(),
             request.firstName(),

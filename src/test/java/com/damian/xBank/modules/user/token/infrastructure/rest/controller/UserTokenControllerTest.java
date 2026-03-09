@@ -2,9 +2,9 @@ package com.damian.xBank.modules.user.token.infrastructure.rest.controller;
 
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.domain.model.UserTokenType;
-import com.damian.xBank.modules.user.token.infrastructure.rest.dto.request.RequestAccountVerificationRequest;
-import com.damian.xBank.modules.user.token.infrastructure.rest.dto.request.RequestPasswordResetRequest;
-import com.damian.xBank.modules.user.token.infrastructure.rest.dto.request.ResetPasswordRequest;
+import com.damian.xBank.modules.user.token.infrastructure.rest.request.RequestAccountVerificationRequest;
+import com.damian.xBank.modules.user.token.infrastructure.rest.request.RequestPasswordResetRequest;
+import com.damian.xBank.modules.user.token.infrastructure.rest.request.ResetPasswordRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
