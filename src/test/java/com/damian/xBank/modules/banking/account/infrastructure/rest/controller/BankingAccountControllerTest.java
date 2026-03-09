@@ -1,10 +1,10 @@
 package com.damian.xBank.modules.banking.account.infrastructure.rest.controller;
 
 import com.damian.xBank.modules.banking.account.application.dto.BankingAccountResult;
-import com.damian.xBank.modules.banking.account.application.usecase.account.card.RequestCardResult;
-import com.damian.xBank.modules.banking.account.application.usecase.account.close.CloseAccountResult;
-import com.damian.xBank.modules.banking.account.application.usecase.account.create.CreateAccountResult;
-import com.damian.xBank.modules.banking.account.application.usecase.account.set.alias.SetAccountAliasResult;
+import com.damian.xBank.modules.banking.account.application.usecase.request.RequestCardResult;
+import com.damian.xBank.modules.banking.account.application.usecase.close.CloseAccountResult;
+import com.damian.xBank.modules.banking.account.application.usecase.create.CreateAccountResult;
+import com.damian.xBank.modules.banking.account.application.usecase.set.alias.SetAccountAliasResult;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;

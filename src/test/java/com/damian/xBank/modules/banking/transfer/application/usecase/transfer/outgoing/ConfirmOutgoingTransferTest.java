@@ -3,8 +3,8 @@ package com.damian.xBank.modules.banking.transfer.application.usecase.transfer.o
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
-import com.damian.xBank.modules.banking.transfer.application.usecase.transfer.outgoing.confirm.ConfirmOutgoingTransfer;
-import com.damian.xBank.modules.banking.transfer.application.usecase.transfer.outgoing.confirm.ConfirmOutgoingTransferCommand;
+import com.damian.xBank.modules.banking.transfer.application.usecase.outgoing.confirm.ConfirmOutgoingTransfer;
+import com.damian.xBank.modules.banking.transfer.application.usecase.outgoing.confirm.ConfirmOutgoingTransferCommand;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferStatus;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;

@@ -7,8 +7,8 @@ import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransact
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transfer.application.TransferAuthorizationGateway;
-import com.damian.xBank.modules.banking.transfer.application.usecase.transfer.outgoing.authorize.AuthorizeOutgoingExternalTransfer;
-import com.damian.xBank.modules.banking.transfer.application.usecase.transfer.outgoing.authorize.AuthorizeOutgoingTransferCommand;
+import com.damian.xBank.modules.banking.transfer.application.usecase.outgoing.authorize.AuthorizeOutgoingExternalTransfer;
+import com.damian.xBank.modules.banking.transfer.application.usecase.outgoing.authorize.AuthorizeOutgoingTransferCommand;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferStatus;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferType;

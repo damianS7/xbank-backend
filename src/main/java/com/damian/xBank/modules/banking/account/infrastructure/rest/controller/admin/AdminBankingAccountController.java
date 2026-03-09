@@ -1,8 +1,8 @@
 package com.damian.xBank.modules.banking.account.infrastructure.rest.controller.admin;
 
-import com.damian.xBank.modules.banking.account.application.usecase.account.deposit.DepositAccount;
-import com.damian.xBank.modules.banking.account.application.usecase.account.deposit.DepositAccountCommand;
-import com.damian.xBank.modules.banking.account.application.usecase.account.deposit.DepositAccountResult;
+import com.damian.xBank.modules.banking.account.application.usecase.deposit.DepositAccount;
+import com.damian.xBank.modules.banking.account.application.usecase.deposit.DepositAccountCommand;
+import com.damian.xBank.modules.banking.account.application.usecase.deposit.DepositAccountResult;
 import com.damian.xBank.modules.banking.account.infrastructure.rest.request.DepositBankingAccountRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;

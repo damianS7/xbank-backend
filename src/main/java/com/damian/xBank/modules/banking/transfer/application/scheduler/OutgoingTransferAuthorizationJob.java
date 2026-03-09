@@ -1,8 +1,8 @@
 package com.damian.xBank.modules.banking.transfer.application.scheduler;
 
-import com.damian.xBank.modules.banking.transfer.application.usecase.transfer.outgoing.authorize.AuthorizeOutgoingExternalTransfer;
-import com.damian.xBank.modules.banking.transfer.application.usecase.transfer.outgoing.authorize.AuthorizeOutgoingInternalTransfer;
-import com.damian.xBank.modules.banking.transfer.application.usecase.transfer.outgoing.authorize.AuthorizeOutgoingTransferCommand;
+import com.damian.xBank.modules.banking.transfer.application.usecase.outgoing.authorize.AuthorizeOutgoingExternalTransfer;
+import com.damian.xBank.modules.banking.transfer.application.usecase.outgoing.authorize.AuthorizeOutgoingInternalTransfer;
+import com.damian.xBank.modules.banking.transfer.application.usecase.outgoing.authorize.AuthorizeOutgoingTransferCommand;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferStatus;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferType;

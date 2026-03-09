@@ -1,8 +1,8 @@
 package com.damian.xBank.modules.banking.account.application.usecase;
 
-import com.damian.xBank.modules.banking.account.application.usecase.account.activate.ActivateAccount;
-import com.damian.xBank.modules.banking.account.application.usecase.account.activate.ActivateAccountCommand;
-import com.damian.xBank.modules.banking.account.application.usecase.account.activate.ActivateAccountResult;
+import com.damian.xBank.modules.banking.account.application.usecase.activate.ActivateAccount;
+import com.damian.xBank.modules.banking.account.application.usecase.activate.ActivateAccountCommand;
+import com.damian.xBank.modules.banking.account.application.usecase.activate.ActivateAccountResult;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountStatusTransitionException;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;

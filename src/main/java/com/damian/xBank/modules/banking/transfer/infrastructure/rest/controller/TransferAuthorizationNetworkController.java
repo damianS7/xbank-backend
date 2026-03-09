@@ -1,10 +1,10 @@
 package com.damian.xBank.modules.banking.transfer.infrastructure.rest.controller;
 
-import com.damian.xBank.modules.banking.transfer.application.usecase.transfer.incoming.ProcessIncomingTransfer;
-import com.damian.xBank.modules.banking.transfer.application.usecase.transfer.incoming.authorize.AuthorizeIncomingTransfer;
-import com.damian.xBank.modules.banking.transfer.application.usecase.transfer.incoming.authorize.AuthorizeIncomingTransferCommand;
-import com.damian.xBank.modules.banking.transfer.application.usecase.transfer.incoming.authorize.AuthorizeIncomingTransferResult;
-import com.damian.xBank.modules.banking.transfer.application.usecase.transfer.outgoing.authorize.HandleOutgoingTransferAuthorizationFailure;
+import com.damian.xBank.modules.banking.transfer.application.usecase.incoming.ProcessIncomingTransfer;
+import com.damian.xBank.modules.banking.transfer.application.usecase.incoming.authorize.AuthorizeIncomingTransfer;
+import com.damian.xBank.modules.banking.transfer.application.usecase.incoming.authorize.AuthorizeIncomingTransferCommand;
+import com.damian.xBank.modules.banking.transfer.application.usecase.incoming.authorize.AuthorizeIncomingTransferResult;
+import com.damian.xBank.modules.banking.transfer.application.usecase.outgoing.authorize.HandleOutgoingTransferAuthorizationFailure;
 import com.damian.xBank.modules.banking.transfer.infrastructure.rest.request.AuthorizeIncomingTransferRequest;
 import com.damian.xBank.modules.banking.transfer.infrastructure.rest.request.IncomingTransferRequest;
 import com.damian.xBank.modules.banking.transfer.infrastructure.rest.request.OutgoingTransferFailureRequest;

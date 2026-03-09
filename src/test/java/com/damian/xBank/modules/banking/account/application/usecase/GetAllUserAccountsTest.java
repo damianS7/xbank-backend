@@ -1,8 +1,8 @@
 package com.damian.xBank.modules.banking.account.application.usecase;
 
-import com.damian.xBank.modules.banking.account.application.usecase.account.get.all.GetAllUserAccounts;
-import com.damian.xBank.modules.banking.account.application.usecase.account.get.all.GetAllUserAccountsQuery;
-import com.damian.xBank.modules.banking.account.application.usecase.account.get.all.GetAllUserAccountsResult;
+import com.damian.xBank.modules.banking.account.application.usecase.get.all.GetAllUserAccounts;
+import com.damian.xBank.modules.banking.account.application.usecase.get.all.GetAllUserAccountsQuery;
+import com.damian.xBank.modules.banking.account.application.usecase.get.all.GetAllUserAccountsResult;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;

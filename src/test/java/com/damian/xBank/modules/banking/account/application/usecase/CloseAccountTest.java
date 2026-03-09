@@ -1,8 +1,8 @@
 package com.damian.xBank.modules.banking.account.application.usecase;
 
-import com.damian.xBank.modules.banking.account.application.usecase.account.close.CloseAccount;
-import com.damian.xBank.modules.banking.account.application.usecase.account.close.CloseAccountCommand;
-import com.damian.xBank.modules.banking.account.application.usecase.account.close.CloseAccountResult;
+import com.damian.xBank.modules.banking.account.application.usecase.close.CloseAccount;
+import com.damian.xBank.modules.banking.account.application.usecase.close.CloseAccountCommand;
+import com.damian.xBank.modules.banking.account.application.usecase.close.CloseAccountResult;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotOwnerException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountSuspendedException;

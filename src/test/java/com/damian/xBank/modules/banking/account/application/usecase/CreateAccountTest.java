@@ -1,8 +1,8 @@
 package com.damian.xBank.modules.banking.account.application.usecase;
 
-import com.damian.xBank.modules.banking.account.application.usecase.account.create.CreateAccountResult;
-import com.damian.xBank.modules.banking.account.application.usecase.account.create.CreateBankingAccount;
-import com.damian.xBank.modules.banking.account.application.usecase.account.create.CreateBankingAccountCommand;
+import com.damian.xBank.modules.banking.account.application.usecase.create.CreateAccountResult;
+import com.damian.xBank.modules.banking.account.application.usecase.create.CreateBankingAccount;
+import com.damian.xBank.modules.banking.account.application.usecase.create.CreateBankingAccountCommand;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;

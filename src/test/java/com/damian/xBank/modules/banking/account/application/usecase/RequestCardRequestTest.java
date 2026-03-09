@@ -1,8 +1,8 @@
 package com.damian.xBank.modules.banking.account.application.usecase;
 
-import com.damian.xBank.modules.banking.account.application.usecase.account.card.RequestCard;
-import com.damian.xBank.modules.banking.account.application.usecase.account.card.RequestCardCommand;
-import com.damian.xBank.modules.banking.account.application.usecase.account.card.RequestCardResult;
+import com.damian.xBank.modules.banking.account.application.usecase.request.RequestCard;
+import com.damian.xBank.modules.banking.account.application.usecase.request.RequestCardCommand;
+import com.damian.xBank.modules.banking.account.application.usecase.request.RequestCardResult;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountCardsLimitException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotOwnerException;

@@ -6,9 +6,9 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatu
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
-import com.damian.xBank.modules.banking.transfer.application.usecase.transfer.outgoing.confirm.ConfirmOutgoingTransferResult;
-import com.damian.xBank.modules.banking.transfer.application.usecase.transfer.outgoing.create.CreateOutgoingTransferResult;
-import com.damian.xBank.modules.banking.transfer.application.usecase.transfer.outgoing.reject.RejectOutgoingTransferResult;
+import com.damian.xBank.modules.banking.transfer.application.usecase.outgoing.confirm.ConfirmOutgoingTransferResult;
+import com.damian.xBank.modules.banking.transfer.application.usecase.outgoing.create.CreateOutgoingTransferResult;
+import com.damian.xBank.modules.banking.transfer.application.usecase.outgoing.reject.RejectOutgoingTransferResult;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferStatus;
 import com.damian.xBank.modules.banking.transfer.infrastructure.rest.request.ConfirmOutgoingTransferRequest;

@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.banking.account.application.usecase;
 
-import com.damian.xBank.modules.banking.account.application.usecase.account.set.alias.SetAccountAlias;
-import com.damian.xBank.modules.banking.account.application.usecase.account.set.alias.SetAccountAliasCommand;
+import com.damian.xBank.modules.banking.account.application.usecase.set.alias.SetAccountAlias;
+import com.damian.xBank.modules.banking.account.application.usecase.set.alias.SetAccountAliasCommand;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;

@@ -4,7 +4,7 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
-import com.damian.xBank.modules.banking.transfer.application.usecase.transfer.incoming.authorize.AuthorizeIncomingTransferResult;
+import com.damian.xBank.modules.banking.transfer.application.usecase.incoming.authorize.AuthorizeIncomingTransferResult;
 import com.damian.xBank.modules.banking.transfer.domain.model.TransferAuthorizationStatus;
 import com.damian.xBank.modules.banking.transfer.infrastructure.rest.request.AuthorizeIncomingTransferRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;

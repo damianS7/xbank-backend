@@ -1,8 +1,8 @@
 package com.damian.xBank.modules.banking.transfer.infrastructure.mapper;
 
-import com.damian.xBank.modules.banking.transfer.application.usecase.transfer.outgoing.confirm.ConfirmOutgoingTransferCommand;
-import com.damian.xBank.modules.banking.transfer.application.usecase.transfer.outgoing.create.CreateOutgoingTransferCommand;
-import com.damian.xBank.modules.banking.transfer.application.usecase.transfer.outgoing.reject.RejectOutgoingTransferCommand;
+import com.damian.xBank.modules.banking.transfer.application.usecase.outgoing.confirm.ConfirmOutgoingTransferCommand;
+import com.damian.xBank.modules.banking.transfer.application.usecase.outgoing.create.CreateOutgoingTransferCommand;
+import com.damian.xBank.modules.banking.transfer.application.usecase.outgoing.reject.RejectOutgoingTransferCommand;
 import com.damian.xBank.modules.banking.transfer.infrastructure.rest.request.ConfirmOutgoingTransferRequest;
 import com.damian.xBank.modules.banking.transfer.infrastructure.rest.request.CreateOutgoingTransferRequest;
 import com.damian.xBank.modules.banking.transfer.infrastructure.rest.request.RejectOutgoingTransferRequest;
