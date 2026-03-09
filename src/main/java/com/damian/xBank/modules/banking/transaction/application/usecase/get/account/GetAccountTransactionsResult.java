@@ -4,6 +4,6 @@ import com.damian.xBank.modules.banking.transaction.application.dto.BankingTrans
 import org.springframework.data.domain.Page;
 
 public record GetAccountTransactionsResult(
-    Page<BankingTransactionResult> pagedTransactions
+    Page<BankingTransactionResult> content
 ) {
 }

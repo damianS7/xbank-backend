@@ -4,14 +4,15 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
+import com.damian.xBank.modules.banking.transaction.application.dto.BankingTransactionResult;
 import com.damian.xBank.modules.banking.transaction.application.usecase.get.account.GetAccountTransactions;
 import com.damian.xBank.modules.banking.transaction.application.usecase.get.account.GetAccountTransactionsQuery;
-import com.damian.xBank.modules.banking.transaction.application.usecase.get.account.GetAccountTransactionsResult;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
+import com.damian.xBank.shared.infrastructure.web.dto.response.PageResult;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -97,10 +98,10 @@ public class GetAccountTransactionsTest extends AbstractServiceTest {
             customerBankingAccount.getId(), pageable))
             .thenReturn(page);
 
-        GetAccountTransactionsResult result = getAccountTransactions.execute(query);
+        PageResult<BankingTransactionResult> result = getAccountTransactions.execute(query);
 
         // then
-        assertThat(result.pagedTransactions())
+        assertThat(result.content())
             .isNotNull()
             .hasSize(1);
     }

@@ -3,11 +3,12 @@ package com.damian.xBank.modules.banking.transaction.application.usecase.get.acc
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
+import com.damian.xBank.modules.banking.transaction.application.dto.BankingTransactionResult;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
-import com.damian.xBank.modules.banking.transaction.infrastructure.mapper.BankingTransactionDtoMapper;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
+import com.damian.xBank.shared.infrastructure.web.dto.response.PageResult;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ public class GetAccountTransactions {
      * @param query
      * @return a result containing the paged transactions.
      */
-    public GetAccountTransactionsResult execute(GetAccountTransactionsQuery query) {
+    public PageResult<BankingTransactionResult> execute(GetAccountTransactionsQuery query) {
         // Current user
         final User currentUser = authenticationContext.getCurrentUser();
 
@@ -56,8 +57,6 @@ public class GetAccountTransactions {
         Page<BankingTransaction> pagedTransactions = bankingTransactionRepository
             .findByBankingAccount_Id(query.accountId(), query.pageable());
 
-        return new GetAccountTransactionsResult(
-            BankingTransactionDtoMapper.toBankingTransactionPagedResult(pagedTransactions)
-        );
+        return PageResult.from(pagedTransactions);
     }
 }

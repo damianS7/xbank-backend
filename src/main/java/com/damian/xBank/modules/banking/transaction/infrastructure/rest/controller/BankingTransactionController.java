@@ -1,17 +1,17 @@
 package com.damian.xBank.modules.banking.transaction.infrastructure.rest.controller;
 
-import com.damian.xBank.modules.banking.transaction.application.usecase.get.account.GetAccountTransactionsQuery;
-import com.damian.xBank.modules.banking.transaction.application.usecase.get.card.GetCardTransactionsQuery;
-import com.damian.xBank.modules.banking.transaction.application.usecase.get.pending.GetPendingTransactionsQuery;
-import com.damian.xBank.modules.banking.transaction.application.usecase.get.byid.GetTransactionQuery;
 import com.damian.xBank.modules.banking.transaction.application.dto.BankingTransactionDetailResult;
-import com.damian.xBank.modules.banking.transaction.application.usecase.get.account.GetAccountTransactionsResult;
-import com.damian.xBank.modules.banking.transaction.application.usecase.get.card.GetCardTransactionsResult;
-import com.damian.xBank.modules.banking.transaction.application.usecase.get.pending.GetPendingTransactionsResult;
+import com.damian.xBank.modules.banking.transaction.application.dto.BankingTransactionResult;
 import com.damian.xBank.modules.banking.transaction.application.usecase.get.account.GetAccountTransactions;
-import com.damian.xBank.modules.banking.transaction.application.usecase.get.card.GetCardTransactions;
-import com.damian.xBank.modules.banking.transaction.application.usecase.get.pending.GetPendingTransactions;
+import com.damian.xBank.modules.banking.transaction.application.usecase.get.account.GetAccountTransactionsQuery;
 import com.damian.xBank.modules.banking.transaction.application.usecase.get.byid.GetTransaction;
+import com.damian.xBank.modules.banking.transaction.application.usecase.get.byid.GetTransactionQuery;
+import com.damian.xBank.modules.banking.transaction.application.usecase.get.card.GetCardTransactions;
+import com.damian.xBank.modules.banking.transaction.application.usecase.get.card.GetCardTransactionsQuery;
+import com.damian.xBank.modules.banking.transaction.application.usecase.get.pending.GetPendingTransactions;
+import com.damian.xBank.modules.banking.transaction.application.usecase.get.pending.GetPendingTransactionsQuery;
+import com.damian.xBank.modules.banking.transaction.application.usecase.get.pending.GetPendingTransactionsResult;
+import com.damian.xBank.shared.infrastructure.web.dto.response.PageResult;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,7 +86,7 @@ public class BankingTransactionController {
     ) {
         GetCardTransactionsQuery query = new GetCardTransactionsQuery(id, pageable);
 
-        GetCardTransactionsResult result = getCardTransactions.execute(query);
+        PageResult<BankingTransactionResult> result = getCardTransactions.execute(query);
 
         return ResponseEntity
             .status(HttpStatus.OK)
@@ -102,11 +102,11 @@ public class BankingTransactionController {
         Pageable pageable
     ) {
         GetAccountTransactionsQuery query = new GetAccountTransactionsQuery(id, pageable);
-        GetAccountTransactionsResult transactions = getAccountTransactions.execute(query);
+        PageResult<BankingTransactionResult> result = getAccountTransactions.execute(query);
 
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(transactions);
+            .body(result);
     }
 }
 
