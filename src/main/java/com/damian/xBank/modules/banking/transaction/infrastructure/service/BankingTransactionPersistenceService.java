@@ -16,7 +16,7 @@ public class BankingTransactionPersistenceService {
     private final BankingTransactionRepository bankingTransactionRepository;
 
     public BankingTransactionPersistenceService(
-            BankingTransactionRepository bankingTransactionRepository
+        BankingTransactionRepository bankingTransactionRepository
     ) {
         this.bankingTransactionRepository = bankingTransactionRepository;
     }
@@ -34,45 +34,45 @@ public class BankingTransactionPersistenceService {
         transaction.setUpdatedAt(Instant.now());
 
         // Add the transaction to the owners account
-        bankingAccount.addTransaction(transaction);
+        bankingAccount.addTransaction(transaction); // TODO remove this?
 
         // Record and return the stored transaction
         return bankingTransactionRepository.save(transaction);
     }
 
     public BankingTransaction record(
-            BankingAccount account,
-            BankingTransactionType transactionType,
-            BigDecimal amount,
-            String description
+        BankingAccount account,
+        BankingTransactionType transactionType,
+        BigDecimal amount,
+        String description
     ) {
 
         BankingTransaction transaction = BankingTransaction
-                .create(
-                        transactionType,
-                        account,
-                        amount
-                )
-                .setDescription(description);
+            .create(
+                transactionType,
+                account,
+                amount
+            )
+            .setDescription(description);
 
         return this.record(transaction);
     }
 
     public BankingTransaction record(
-            BankingCard card,
-            BankingTransactionType transactionType,
-            BigDecimal amount,
-            String description
+        BankingCard card,
+        BankingTransactionType transactionType,
+        BigDecimal amount,
+        String description
     ) {
 
         BankingTransaction transaction = BankingTransaction
-                .create(
-                        transactionType,
-                        card.getBankingAccount(),
-                        amount
-                )
-                .setBankingCard(card)
-                .setDescription(description);
+            .create(
+                transactionType,
+                card.getBankingAccount(),
+                amount
+            )
+            .setBankingCard(card)
+            .setDescription(description);
 
         return this.record(transaction);
     }

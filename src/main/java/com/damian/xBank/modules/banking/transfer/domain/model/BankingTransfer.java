@@ -271,7 +271,6 @@ public class BankingTransfer {
     }
 
     public void confirm() {
-        // TODO assertIsPending();
         this.setStatus(BankingTransferStatus.CONFIRMED);
         this.updatedAt = Instant.now();
     }

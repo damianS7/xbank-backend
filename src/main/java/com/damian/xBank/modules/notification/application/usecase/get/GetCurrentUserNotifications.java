@@ -30,7 +30,7 @@ public class GetCurrentUserNotifications {
      *
      * @param query pagination params
      * @return Page<Notification> a page of notifications
-     */
+     */ // TODO change to PageResult<NotificationResult>?
     public GetCurrentUserNotificationsResult execute(GetCurrentUserNotificationsQuery query) {
         // Current user
         final User currentUser = authenticationContext.getCurrentUser();

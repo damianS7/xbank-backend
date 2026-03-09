@@ -44,7 +44,7 @@ public class BankingAccount {
     private User user;
 
     @OneToMany(mappedBy = "bankingAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<BankingTransaction> accountTransactions;
+    private Set<BankingTransaction> accountTransactions; // TODO remove this?
 
     @OneToMany(mappedBy = "bankingAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<BankingCard> bankingCards;
@@ -182,16 +182,6 @@ public class BankingAccount {
 
     public BankingAccount setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
-        return this;
-    }
-
-    // TODO: add pagination to this
-    public Set<BankingTransaction> getAccountTransactions() {
-        return accountTransactions;
-    }
-
-    public BankingAccount setAccountTransactions(Set<BankingTransaction> accountTransactions) {
-        this.accountTransactions = accountTransactions;
         return this;
     }
 

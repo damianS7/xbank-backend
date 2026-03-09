@@ -21,7 +21,9 @@ import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class BankingTransactionPersistenceServiceTest extends AbstractServiceTest {
 
@@ -43,18 +45,18 @@ public class BankingTransactionPersistenceServiceTest extends AbstractServiceTes
     @BeforeEach
     void setUp() {
         customer = UserTestBuilder.aCustomer()
-                                  .withId(1L)
-                                  .withEmail("customer@demo.com")
-                                  .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                  .build();
+            .withId(1L)
+            .withEmail("customer@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .build();
 
         customerBankingAccount = BankingAccount
-                .create(customer)
-                .setId(5L)
-                .setBalance(BigDecimal.valueOf(1000))
-                .setCurrency(BankingAccountCurrency.EUR)
-                .setType(BankingAccountType.SAVINGS)
-                .setAccountNumber("US9900001111112233334444");
+            .create(customer)
+            .setId(5L)
+            .setBalance(BigDecimal.valueOf(1000))
+            .setCurrency(BankingAccountCurrency.EUR)
+            .setType(BankingAccountType.SAVINGS)
+            .setAccountNumber("US9900001111112233334444");
     }
 
     @Test
@@ -62,30 +64,27 @@ public class BankingTransactionPersistenceServiceTest extends AbstractServiceTes
     void recordTransaction_WhenValidTransaction_ReturnsSavedTransaction() {
         // given
         BankingTransaction givenTransaction = BankingTransaction
-                .create(
-                        BankingTransactionType.DEPOSIT,
-                        customerBankingAccount,
-                        BigDecimal.valueOf(100)
-                )
-                .setId(1L)
-                .setDescription("Deposit transaction");
+            .create(
+                BankingTransactionType.DEPOSIT,
+                customerBankingAccount,
+                BigDecimal.valueOf(100)
+            )
+            .setId(1L)
+            .setDescription("Deposit transaction");
 
         // when
         when(bankingTransactionRepository.save(any(BankingTransaction.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
+            .thenAnswer(invocation -> invocation.getArgument(0));
 
         BankingTransaction result = bankingTransactionPersistenceService
-                .record(givenTransaction);
+            .record(givenTransaction);
 
         // then
         assertThat(result).isNotNull();
         assertThat(result.getUpdatedAt()).isNotNull();
-        assertThat(customerBankingAccount.getAccountTransactions())
-                .contains(result);
         assertThat(result.getAmount()).isEqualTo(givenTransaction.getAmount());
         assertThat(result.getType()).isEqualTo(givenTransaction.getType());
         assertThat(result.getDescription()).isEqualTo(givenTransaction.getDescription());
-        assertThat(customerBankingAccount.getAccountTransactions().size()).isEqualTo(1);
         verify(bankingTransactionRepository, times(1)).save(any(BankingTransaction.class));
     }
 }

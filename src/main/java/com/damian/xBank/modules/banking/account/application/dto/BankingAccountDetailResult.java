@@ -7,7 +7,6 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.card.application.dto.BankingCardResult;
 import com.damian.xBank.modules.banking.card.infrastructure.mapper.BankingCardDtoMapper;
 import com.damian.xBank.modules.banking.transaction.application.dto.BankingTransactionResult;
-import com.damian.xBank.modules.banking.transaction.infrastructure.mapper.BankingTransactionDtoMapper;
 import com.damian.xBank.shared.infrastructure.web.dto.response.PageResult;
 
 import java.math.BigDecimal;
@@ -32,10 +31,10 @@ public record BankingAccountDetailResult(
 ) {
     public static BankingAccountDetailResult from(BankingAccount bankingAccount) {
         // TODO review this
-        PageResult<BankingTransactionResult> bankingAccountTransactions = BankingTransactionDtoMapper
-            .toBankingTransactionPagedResult(
-                bankingAccount.getAccountTransactions()
-            );
+        //        PageResult<BankingTransactionResult> bankingAccountTransactions = BankingTransactionDtoMapper
+        //            .toBankingTransactionPagedResult(
+        //                bankingAccount.getAccountTransactions()
+        //            );
 
         Set<BankingCardResult> bankingCardsDto = Optional
             .ofNullable(bankingAccount.getBankingCards())
@@ -52,7 +51,7 @@ public record BankingAccountDetailResult(
             bankingAccount.getType(),
             bankingAccount.getCurrency(),
             bankingAccount.getStatus(),
-            bankingAccountTransactions,
+            null,
             bankingCardsDto,
             bankingAccount.getCreatedAt(),
             bankingAccount.getUpdatedAt()

@@ -51,7 +51,6 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
             .setBalance(BigDecimal.valueOf(1000))
             .setAccountNumber("US9900001111112233334444");
 
-
         customerBankingCard = BankingCard
             .create(customerBankingAccount)
             .setCardNumber("1234123412341234")
@@ -68,6 +67,7 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
                 .setStatus(BankingTransactionStatus.PENDING)
         );
 
+        // TODO remove or change this?
         customerBankingAccount.addTransaction(
             BankingTransaction.create(
                     BankingTransactionType.CARD_CHARGE,
