@@ -55,7 +55,7 @@ public class GetCardTransactions {
         }
 
         Page<BankingTransaction> pagedResult = bankingTransactionRepository
-            .findByBankingCardId(
+            .findByBankingCard_Id(
                 query.cardId(),
                 query.pageable()
             );

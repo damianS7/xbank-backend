@@ -2,10 +2,8 @@ package com.damian.xBank.modules.banking.transfer.application.scheduler;
 
 import com.damian.xBank.modules.banking.transfer.application.usecase.outgoing.authorize.AuthorizeOutgoingExternalTransfer;
 import com.damian.xBank.modules.banking.transfer.application.usecase.outgoing.authorize.AuthorizeOutgoingInternalTransfer;
-import com.damian.xBank.modules.banking.transfer.application.usecase.outgoing.authorize.AuthorizeOutgoingTransferCommand;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferStatus;
-import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferType;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +40,7 @@ public class OutgoingTransferAuthorizationJob {
         log.debug("Authorizing transfers...");
         Set<BankingTransfer> confirmedTransfers = bankingTransferRepository
             .findAllByStatus(BankingTransferStatus.CONFIRMED);
-
+        /*
         for (BankingTransfer transfer : confirmedTransfers) {
             log.debug("Authorizing transfer: {}", transfer);
             AuthorizeOutgoingTransferCommand command = new AuthorizeOutgoingTransferCommand(
@@ -57,6 +55,6 @@ public class OutgoingTransferAuthorizationJob {
                 authorizeOutgoingExternalTransfer.execute(command);
             }
 
-        }
+        }*/
     }
 }

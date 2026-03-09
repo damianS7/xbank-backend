@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.banking.transfer.application.usecase.outgoing.get;
 
+import com.damian.xBank.modules.banking.transfer.application.dto.BankingTransferResult;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -27,6 +28,8 @@ public class GetOutgoingTransfers {
         Page<BankingTransfer> paginatedTransfers = bankingTransferRepository
             .findAllByFromAccount_UserId(currentUser.getId(), query.pageable());
 
-        return GetOutgoingTransfersResult.from(paginatedTransfers);
+        return GetOutgoingTransfersResult.from(paginatedTransfers.map(
+            BankingTransferResult::from
+        ));
     }
 }

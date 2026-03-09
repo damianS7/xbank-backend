@@ -54,7 +54,7 @@ public class GetAccountTransactions {
         }
 
         Page<BankingTransaction> pagedTransactions = bankingTransactionRepository
-            .findByBankingAccountId(query.accountId(), query.pageable());
+            .findByBankingAccount_Id(query.accountId(), query.pageable());
 
         return new GetAccountTransactionsResult(
             BankingTransactionDtoMapper.toBankingTransactionPagedResult(pagedTransactions)

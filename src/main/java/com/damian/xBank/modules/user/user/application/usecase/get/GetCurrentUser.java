@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.user.user.application.usecase.get;
 
+import com.damian.xBank.modules.user.profile.application.dto.UserProfileResult;
 import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
@@ -43,6 +44,7 @@ public class GetCurrentUser {
             storedUser.getId(),
             storedUser.getEmail(),
             storedUser.getRole(),
+            UserProfileResult.from(storedUser.getProfile()),
             storedUser.getCreatedAt()
         );
     }

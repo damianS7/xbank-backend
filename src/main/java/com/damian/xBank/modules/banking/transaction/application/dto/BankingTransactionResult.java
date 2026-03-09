@@ -10,8 +10,8 @@ import java.time.Instant;
 
 public record BankingTransactionResult(
     Long id,
-    Long accountId,
-    Long cardId,
+    Long bankingAccountId,
+    Long bankingCardId,
     BigDecimal amount,
     BankingAccountCurrency currency,
     BigDecimal balanceBefore,

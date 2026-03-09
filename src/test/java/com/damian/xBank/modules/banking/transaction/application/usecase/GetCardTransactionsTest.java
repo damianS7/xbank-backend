@@ -6,9 +6,9 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
+import com.damian.xBank.modules.banking.transaction.application.usecase.get.card.GetCardTransactions;
 import com.damian.xBank.modules.banking.transaction.application.usecase.get.card.GetCardTransactionsQuery;
 import com.damian.xBank.modules.banking.transaction.application.usecase.get.card.GetCardTransactionsResult;
-import com.damian.xBank.modules.banking.transaction.application.usecase.get.card.GetCardTransactions;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
@@ -103,7 +103,7 @@ public class GetCardTransactionsTest extends AbstractServiceTest {
         when(bankingCardRepository.findById(customerBankingCard.getId()))
             .thenReturn(Optional.of(customerBankingCard));
 
-        when(bankingTransactionRepository.findByBankingCardId(
+        when(bankingTransactionRepository.findByBankingCard_Id(
             customerBankingCard.getId(), pageable))
             .thenReturn(page);
 
