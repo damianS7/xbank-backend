@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.banking.account.infrastructure.rest.controller;
 
-import com.damian.xBank.modules.banking.account.application.result.BankingAccountResult;
+import com.damian.xBank.modules.banking.account.application.dto.BankingAccountResult;
 import com.damian.xBank.modules.banking.account.application.usecase.account.card.RequestCardResult;
 import com.damian.xBank.modules.banking.account.application.usecase.account.close.CloseAccountResult;
 import com.damian.xBank.modules.banking.account.application.usecase.account.create.CreateAccountResult;

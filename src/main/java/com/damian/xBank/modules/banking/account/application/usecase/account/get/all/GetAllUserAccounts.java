@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.banking.account.application.usecase.account.get.all;
 
-import com.damian.xBank.modules.banking.account.application.result.BankingAccountResult;
+import com.damian.xBank.modules.banking.account.application.dto.BankingAccountResult;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;

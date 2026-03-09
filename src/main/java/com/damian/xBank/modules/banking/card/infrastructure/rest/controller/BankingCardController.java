@@ -1,15 +1,15 @@
 package com.damian.xBank.modules.banking.card.infrastructure.rest.controller;
 
-import com.damian.xBank.modules.banking.card.application.cqrs.command.AuthorizeCardPaymentCommand;
-import com.damian.xBank.modules.banking.card.application.cqrs.command.CaptureCardPaymentCommand;
-import com.damian.xBank.modules.banking.card.application.cqrs.query.GetAllCurrentUserCardsQuery;
-import com.damian.xBank.modules.banking.card.application.cqrs.result.CaptureCardPaymentResult;
-import com.damian.xBank.modules.banking.card.application.cqrs.result.GetAllCurrentUserBankingCardsResult;
-import com.damian.xBank.modules.banking.card.application.usecase.AuthorizeCardPayment;
-import com.damian.xBank.modules.banking.card.application.usecase.CaptureCardPayment;
-import com.damian.xBank.modules.banking.card.application.usecase.GetAllCurrentUserBankingCards;
-import com.damian.xBank.modules.banking.card.infrastructure.rest.dto.request.AuthorizeCardPaymentRequest;
-import com.damian.xBank.modules.banking.card.infrastructure.rest.dto.request.CaptureCardPaymentRequest;
+import com.damian.xBank.modules.banking.card.application.usecase.authorize.AuthorizeCardPaymentCommand;
+import com.damian.xBank.modules.banking.card.application.usecase.capture.CaptureCardPaymentCommand;
+import com.damian.xBank.modules.banking.card.application.usecase.get.GetAllCurrentUserCardsQuery;
+import com.damian.xBank.modules.banking.card.application.usecase.capture.CaptureCardPaymentResult;
+import com.damian.xBank.modules.banking.card.application.usecase.get.GetAllCurrentUserBankingCardsResult;
+import com.damian.xBank.modules.banking.card.application.usecase.authorize.AuthorizeCardPayment;
+import com.damian.xBank.modules.banking.card.application.usecase.capture.CaptureCardPayment;
+import com.damian.xBank.modules.banking.card.application.usecase.get.GetAllCurrentUserBankingCards;
+import com.damian.xBank.modules.banking.card.infrastructure.rest.request.AuthorizeCardPaymentRequest;
+import com.damian.xBank.modules.banking.card.infrastructure.rest.request.CaptureCardPaymentRequest;
 import com.damian.xBank.modules.payment.checkout.infrastructure.http.response.PaymentAuthorizationResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;

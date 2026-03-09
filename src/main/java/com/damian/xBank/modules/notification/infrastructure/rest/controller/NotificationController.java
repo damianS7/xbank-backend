@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.notification.infrastructure.rest.controller;
 
-import com.damian.xBank.modules.notification.application.usecase.NotificationResult;
+import com.damian.xBank.modules.notification.application.dto.NotificationResult;
 import com.damian.xBank.modules.notification.application.usecase.delete.DeleteNotification;
 import com.damian.xBank.modules.notification.application.usecase.delete.DeleteNotificationCommand;
 import com.damian.xBank.modules.notification.application.usecase.delete.DeleteNotifications;

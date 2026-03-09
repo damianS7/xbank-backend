@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.banking.transaction.infrastructure.mapper;
 
-import com.damian.xBank.modules.banking.transaction.application.cqrs.result.BankingTransactionDetailResult;
-import com.damian.xBank.modules.banking.transaction.application.cqrs.result.BankingTransactionResult;
+import com.damian.xBank.modules.banking.transaction.application.dto.BankingTransactionDetailResult;
+import com.damian.xBank.modules.banking.transaction.application.dto.BankingTransactionResult;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.shared.infrastructure.web.dto.response.PageResult;
 import org.springframework.data.domain.Page;

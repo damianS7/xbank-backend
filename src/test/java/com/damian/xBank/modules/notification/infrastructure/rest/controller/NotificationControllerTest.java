@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.notification.infrastructure.rest.controller;
 
-import com.damian.xBank.modules.notification.application.usecase.NotificationResult;
+import com.damian.xBank.modules.notification.application.dto.NotificationResult;
 import com.damian.xBank.modules.notification.application.usecase.get.GetCurrentUserSinkNotifications;
 import com.damian.xBank.modules.notification.domain.model.Notification;
 import com.damian.xBank.modules.notification.domain.model.NotificationType;

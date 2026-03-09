@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.notification.application.usecase;
 
+import com.damian.xBank.modules.notification.application.dto.NotificationResult;
 import com.damian.xBank.modules.notification.application.usecase.get.GetCurrentUserSinkNotifications;
 import com.damian.xBank.modules.notification.infrastructure.sink.NotificationSinkRegistry;
 import com.damian.xBank.modules.user.user.domain.model.User;

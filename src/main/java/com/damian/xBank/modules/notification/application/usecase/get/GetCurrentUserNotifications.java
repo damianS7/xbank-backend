@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.notification.application.usecase.get;
 
-import com.damian.xBank.modules.notification.application.usecase.NotificationResult;
+import com.damian.xBank.modules.notification.application.dto.NotificationResult;
 import com.damian.xBank.modules.notification.domain.model.Notification;
 import com.damian.xBank.modules.notification.infrastructure.repository.NotificationRepository;
 import com.damian.xBank.modules.notification.infrastructure.rest.mapper.NotificationDtoMapper;

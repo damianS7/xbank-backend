@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.banking.card.infrastructure.mapper;
 
-import com.damian.xBank.modules.banking.card.application.cqrs.result.BankingCardResult;
+import com.damian.xBank.modules.banking.card.application.dto.BankingCardResult;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 
 import java.util.Set;

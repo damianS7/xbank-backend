@@ -1,9 +1,9 @@
 package com.damian.xBank.modules.banking.card.infrastructure.rest.controller;
 
-import com.damian.xBank.modules.banking.card.application.cqrs.command.WithdrawFromATMCommand;
-import com.damian.xBank.modules.banking.card.application.cqrs.result.WithdrawFromATMResult;
-import com.damian.xBank.modules.banking.card.application.usecase.WithdrawFromATM;
-import com.damian.xBank.modules.banking.card.infrastructure.rest.dto.request.WithdrawFromATMRequest;
+import com.damian.xBank.modules.banking.card.application.usecase.withdraw.WithdrawFromATMCommand;
+import com.damian.xBank.modules.banking.card.application.usecase.withdraw.WithdrawFromATMResult;
+import com.damian.xBank.modules.banking.card.application.usecase.withdraw.WithdrawFromATM;
+import com.damian.xBank.modules.banking.card.infrastructure.rest.request.WithdrawFromATMRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;

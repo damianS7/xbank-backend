@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.user.user.infrastructure.mapper;
 
-import com.damian.xBank.modules.user.user.application.usecase.UserResult;
+import com.damian.xBank.modules.user.user.application.dto.UserResult;
 import com.damian.xBank.modules.user.user.application.usecase.register.RegisterUserCommand;
 import com.damian.xBank.modules.user.user.application.usecase.update.UpdateUserEmailCommand;
 import com.damian.xBank.modules.user.user.application.usecase.update.UpdateUserPasswordCommand;

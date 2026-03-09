@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.banking.transfer.application.usecase.transfer.outgoing.authorize;
 
-import com.damian.xBank.modules.banking.transaction.application.cqrs.result.BankingTransactionResult;
+import com.damian.xBank.modules.banking.transaction.application.dto.BankingTransactionResult;
 import com.damian.xBank.modules.banking.transaction.infrastructure.mapper.BankingTransactionDtoMapper;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferStatus;

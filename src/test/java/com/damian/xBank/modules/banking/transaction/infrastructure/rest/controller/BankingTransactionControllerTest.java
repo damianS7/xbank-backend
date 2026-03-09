@@ -5,7 +5,7 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurre
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
-import com.damian.xBank.modules.banking.transaction.application.cqrs.result.BankingTransactionResult;
+import com.damian.xBank.modules.banking.transaction.application.dto.BankingTransactionResult;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;

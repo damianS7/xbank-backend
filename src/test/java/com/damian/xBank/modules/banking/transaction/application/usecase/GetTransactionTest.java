@@ -5,8 +5,9 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurre
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
-import com.damian.xBank.modules.banking.transaction.application.cqrs.query.GetTransactionQuery;
-import com.damian.xBank.modules.banking.transaction.application.cqrs.result.BankingTransactionDetailResult;
+import com.damian.xBank.modules.banking.transaction.application.dto.BankingTransactionDetailResult;
+import com.damian.xBank.modules.banking.transaction.application.usecase.get.byid.GetTransactionQuery;
+import com.damian.xBank.modules.banking.transaction.application.usecase.get.byid.GetTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotFoundException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotOwnerException;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;

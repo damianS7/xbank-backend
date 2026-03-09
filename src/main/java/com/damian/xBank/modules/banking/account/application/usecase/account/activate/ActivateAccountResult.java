@@ -4,7 +4,7 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
-import com.damian.xBank.modules.banking.card.application.cqrs.result.BankingCardResult;
+import com.damian.xBank.modules.banking.card.application.dto.BankingCardResult;
 import com.damian.xBank.modules.banking.card.infrastructure.mapper.BankingCardDtoMapper;
 
 import java.math.BigDecimal;
