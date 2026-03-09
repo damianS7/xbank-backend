@@ -10,7 +10,6 @@ import com.damian.xBank.modules.banking.transaction.application.usecase.get.card
 import com.damian.xBank.modules.banking.transaction.application.usecase.get.card.GetCardTransactionsQuery;
 import com.damian.xBank.modules.banking.transaction.application.usecase.get.pending.GetPendingTransactions;
 import com.damian.xBank.modules.banking.transaction.application.usecase.get.pending.GetPendingTransactionsQuery;
-import com.damian.xBank.modules.banking.transaction.application.usecase.get.pending.GetPendingTransactionsResult;
 import com.damian.xBank.shared.infrastructure.web.dto.response.PageResult;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -69,11 +68,11 @@ public class BankingTransactionController {
         Pageable pageable
     ) {
         GetPendingTransactionsQuery query = new GetPendingTransactionsQuery(pageable);
-        GetPendingTransactionsResult result = getPendingTransactions.execute(query);
+        PageResult<BankingTransactionResult> result = getPendingTransactions.execute(query);
 
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(result.pagedTransactions());
+            .body(result);
     }
 
     // endpoint for logged customer to get all transactions of a BankingCard

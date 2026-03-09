@@ -57,7 +57,7 @@ public class HandleOutgoingTransferAuthorizationFailureTest extends AbstractServ
     @Test
     void transferFailure_ChangesTransferStatusToFailedAndRevertsBalance() {
         // given
-        bankingAccount.setBalance(BigDecimal.ZERO);
+        bankingAccount.setBalance(BigDecimal.valueOf(100));
 
         OutgoingTransferFailureRequest request = new OutgoingTransferFailureRequest(
             "123/123",

@@ -12,8 +12,9 @@ import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransact
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
+import com.damian.xBank.shared.infrastructure.web.dto.response.PageResult;
 import com.damian.xBank.shared.utils.UserTestBuilder;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -167,19 +168,16 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
             .andExpect(status().is(200))
             .andReturn();
 
-        String json = result.getResponse().getContentAsString();
-        JsonNode root = objectMapper.readTree(json);
-        JsonNode contentNode = root.get("content");
-
-        BankingTransactionResult[] transactionResponseDto = objectMapper.readValue(
-            contentNode.toString(),
-            BankingTransactionResult[].class
+        PageResult<BankingTransactionResult> response = objectMapper.readValue(
+            result.getResponse().getContentAsString(),
+            new TypeReference<>() {
+            }
         );
 
-        assertThat(transactionResponseDto).isNotNull();
-        assertThat(transactionResponseDto)
+        assertThat(response).isNotNull();
+        assertThat(response.content())
             .allSatisfy(tx -> {
-                assertThat(tx.accountId()).isEqualTo(customerBankingAccount.getId());
+                assertThat(tx.bankingAccountId()).isEqualTo(customerBankingAccount.getId());
                 assertThat(tx.status()).isEqualTo(BankingTransactionStatus.PENDING);
             });
     }
@@ -209,20 +207,17 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
             .andExpect(status().is(200))
             .andReturn();
 
-        String json = result.getResponse().getContentAsString();
-        JsonNode root = objectMapper.readTree(json);
-        JsonNode contentNode = root.get("content");
-
-        BankingTransactionResult[] transactionResponseDto = objectMapper.readValue(
-            contentNode.toString(),
-            BankingTransactionResult[].class
+        PageResult<BankingTransactionResult> response = objectMapper.readValue(
+            result.getResponse().getContentAsString(),
+            new TypeReference<>() {
+            }
         );
 
-        assertThat(transactionResponseDto).isNotNull();
-        assertThat(transactionResponseDto)
+        assertThat(response).isNotNull();
+        assertThat(response.content())
             .allSatisfy(tx -> {
-                assertThat(tx.accountId()).isEqualTo(customerBankingAccount.getId());
-                assertThat(tx.cardId()).isEqualTo(customerBankingCard.getId());
+                assertThat(tx.bankingAccountId()).isEqualTo(customerBankingAccount.getId());
+                assertThat(tx.bankingCardId()).isEqualTo(customerBankingCard.getId());
             });
 
     }

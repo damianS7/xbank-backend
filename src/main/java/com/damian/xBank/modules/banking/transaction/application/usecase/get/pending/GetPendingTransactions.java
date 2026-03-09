@@ -1,10 +1,11 @@
 package com.damian.xBank.modules.banking.transaction.application.usecase.get.pending;
 
+import com.damian.xBank.modules.banking.transaction.application.dto.BankingTransactionResult;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
-import com.damian.xBank.modules.banking.transaction.infrastructure.mapper.BankingTransactionDtoMapper;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.shared.infrastructure.web.dto.response.PageResult;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,7 @@ public class GetPendingTransactions {
      * @param query the query containing the pagination information
      * @return a paginated result containing the pending transactions from current customer
      */
-    public GetPendingTransactionsResult execute(GetPendingTransactionsQuery query) {
+    public PageResult<BankingTransactionResult> execute(GetPendingTransactionsQuery query) {
         // Current user
         final User currentUser = authenticationContext.getCurrentUser();
 
@@ -41,8 +42,6 @@ public class GetPendingTransactions {
                 query.pageable()
             );
 
-        return new GetPendingTransactionsResult(
-            BankingTransactionDtoMapper.toBankingTransactionPagedResult(pagedTransactions)
-        );
+        return PageResult.from(pagedTransactions);
     }
 }
