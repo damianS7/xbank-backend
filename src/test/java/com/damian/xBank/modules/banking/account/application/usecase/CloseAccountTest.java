@@ -15,6 +15,7 @@ import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.utils.BankingAccountTestBuilder;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,13 +55,15 @@ public class CloseAccountTest extends AbstractServiceTest {
             .withPassword(RAW_PASSWORD)
             .build();
 
-        bankingAccount = BankingAccount
-            .create(customer)
-            .setId(1L)
-            .setBalance(BigDecimal.valueOf(1000))
-            .setCurrency(BankingAccountCurrency.EUR)
-            .setType(BankingAccountType.SAVINGS)
-            .setAccountNumber("US9900001111112233334444");
+        bankingAccount = BankingAccountTestBuilder.builder()
+            .withId(5L)
+            .withOwner(customer)
+            .withCurrency(BankingAccountCurrency.EUR)
+            .withBalance(BigDecimal.valueOf(1000))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("US1200001111112233335555")
+            .build();
+        ;
 
         customer.addBankingAccount(bankingAccount);
     }
@@ -102,8 +105,7 @@ public class CloseAccountTest extends AbstractServiceTest {
             RAW_PASSWORD
         );
 
-        bankingAccount.setStatus(BankingAccountStatus.ACTIVE);
-        bankingAccount.setStatus(BankingAccountStatus.SUSPENDED);
+        bankingAccount.suspend();
 
         // when
         when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.of(bankingAccount));

@@ -5,37 +5,45 @@ import java.util.Set;
 public enum BankingTransferStatus {
 
     /**
-     * Emitted but not activated by user.
-     * <p>
-     * From this state transitions to REJECTED, CONFIRMED are allowed.
+     * Transfer is created and pending confirmation.
      */
     PENDING,
 
     /**
-     * Transfer rejected
-     * <p>
-     * From this state no transitions are not allowed.
+     * Transfer is confirmed by the user. Hold funds and wait for bank authorization.
+     */
+    CONFIRMED,
+
+    /**
+     * Transfer is rejected by the user.
      */
     REJECTED,
 
     /**
-     * Transfer confirmed.
-     * <p>
-     * From this state no transitions are allowed.
+     * Transfer fails. Funds are released.
+     */
+    FAILED,
+
+    /**
+     * Transfer is authorized by the bank.
      */
     AUTHORIZED,
-    CONFIRMED,
+
+    /**
+     * Transfer is completed. Funds are moved.
+     */
     COMPLETED;
 
     private Set<BankingTransferStatus> allowedTransitions;
 
     static {
-        REJECTED.allowedTransitions = Set.of();
         PENDING.allowedTransitions = Set.of(
             CONFIRMED,
             REJECTED
         );
-        CONFIRMED.allowedTransitions = Set.of(AUTHORIZED, REJECTED);
+        FAILED.allowedTransitions = Set.of(PENDING);
+        REJECTED.allowedTransitions = Set.of();
+        CONFIRMED.allowedTransitions = Set.of(AUTHORIZED, FAILED);
         AUTHORIZED.allowedTransitions = Set.of(COMPLETED);
         COMPLETED.allowedTransitions = Set.of();
     }

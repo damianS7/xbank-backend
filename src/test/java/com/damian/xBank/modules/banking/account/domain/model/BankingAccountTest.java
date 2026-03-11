@@ -1,12 +1,17 @@
 package com.damian.xBank.modules.banking.account.domain.model;
 
-import com.damian.xBank.modules.banking.account.domain.exception.*;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountCardsLimitException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountClosedException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountInsufficientFundsException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotOwnerException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountSuspendedException;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.utils.BankingAccountTestBuilder;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,13 +45,14 @@ public class BankingAccountTest extends AbstractServiceTest {
             .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
             .build();
 
-        bankingAccount = BankingAccount
-            .create(customer)
-            .setId(1L)
-            .setBalance(BigDecimal.valueOf(1000))
-            .setCurrency(BankingAccountCurrency.EUR)
-            .setType(BankingAccountType.SAVINGS)
-            .setAccountNumber("US9900001111112233334444");
+        bankingAccount = BankingAccountTestBuilder.builder()
+            .withId(5L)
+            .withOwner(customer)
+            .withCurrency(BankingAccountCurrency.EUR)
+            .withBalance(BigDecimal.valueOf(0))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("US1200001111112233335555")
+            .build();
 
         customer.addBankingAccount(bankingAccount);
     }
@@ -55,7 +61,7 @@ public class BankingAccountTest extends AbstractServiceTest {
     @DisplayName("assertSufficientFunds: should pass when balance is greater than or equal to amount")
     void assertSufficientFunds_WhenBalanceIsEnough_DoesNotThrow() {
         // given
-        bankingAccount.setBalance(BigDecimal.valueOf(500));
+        bankingAccount.deposit(BigDecimal.valueOf(500));
 
         BigDecimal amount = BigDecimal.valueOf(200);
 
@@ -68,7 +74,7 @@ public class BankingAccountTest extends AbstractServiceTest {
     @DisplayName("assertSufficientFunds: should pass when amount is equal to balance")
     void assertSufficientFunds_WhenAmountIsEqualToBalance_DoesNotThrow() {
         // given
-        bankingAccount.setBalance(BigDecimal.valueOf(500));
+        bankingAccount.deposit(BigDecimal.valueOf(500));
 
         BigDecimal amount = bankingAccount.getBalance();
 
@@ -81,17 +87,22 @@ public class BankingAccountTest extends AbstractServiceTest {
     @DisplayName("assertSufficientFunds: should throw exception when balance is insufficient")
     void assertSufficientFunds_WhenBalanceIsInsufficient_ThrowsException() {
         // given
-        BankingAccount account = new BankingAccount();
-        account.setId(1L);
-        account.setBalance(BigDecimal.valueOf(100));
+        BankingAccount account = BankingAccountTestBuilder.builder()
+            .withId(1L)
+            .withOwner(customer)
+            .withCurrency(BankingAccountCurrency.EUR)
+            .withBalance(BigDecimal.valueOf(0))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("US1200001111112233335555")
+            .build();
 
-        BigDecimal amount = BigDecimal.valueOf(300);
+        BigDecimal withdrawAmount = BigDecimal.valueOf(300);
 
         // when
         BankingAccountInsufficientFundsException exception =
             assertThrows(
                 BankingAccountInsufficientFundsException.class,
-                () -> account.assertSufficientFunds(amount)
+                () -> account.assertSufficientFunds(withdrawAmount)
             );
 
         // then
@@ -100,15 +111,15 @@ public class BankingAccountTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("subtractBalance: should subtract amount when balance is sufficient")
-    void subtractBalance_WhenBalanceIsSufficient_SubtractsAmount() {
+    @DisplayName("withdraw: should subtract amount when balance is sufficient")
+    void withdrawIsSufficient_SubtractsAmount() {
         // given
-        bankingAccount.setBalance(BigDecimal.valueOf(500));
+        bankingAccount.deposit(BigDecimal.valueOf(500));
 
         BigDecimal amount = BigDecimal.valueOf(200);
 
         // when
-        bankingAccount.subtractBalance(amount);
+        bankingAccount.withdraw(amount);
 
         // then
         assertThat(bankingAccount.getBalance())
@@ -116,33 +127,32 @@ public class BankingAccountTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("subtractBalance: should throw exception when balance is insufficient")
-    void subtractBalance_WhenBalanceIsInsufficient_ThrowsException() {
+    @DisplayName("withdraw: should throw exception when balance is insufficient")
+    void withdrawIsInsufficient_ThrowsException() {
         // given
-        bankingAccount.setBalance(BigDecimal.valueOf(100));
+        bankingAccount.deposit(BigDecimal.valueOf(100));
 
         BigDecimal amount = BigDecimal.valueOf(300);
 
         // when / then
         assertThrows(
             BankingAccountInsufficientFundsException.class,
-            () -> bankingAccount.subtractBalance(amount)
+            () -> bankingAccount.withdraw(amount)
         );
     }
 
     @Test
     @DisplayName("addBalance: should add amount to balance and return new balance")
-    void addBalance_WhenCalled_AddsAmountAndReturnsNewBalance() {
+    void deposit() {
         // given
-        bankingAccount.setBalance(BigDecimal.valueOf(100));
+        bankingAccount.deposit(BigDecimal.valueOf(100));
 
         BigDecimal amount = BigDecimal.valueOf(250);
 
         // when
-        BigDecimal result = bankingAccount.addBalance(amount);
+        bankingAccount.deposit(amount);
 
         // then
-        assertThat(result).isEqualByComparingTo(BigDecimal.valueOf(350));
         assertThat(bankingAccount.getBalance()).isEqualByComparingTo(BigDecimal.valueOf(350));
     }
 
@@ -176,7 +186,15 @@ public class BankingAccountTest extends AbstractServiceTest {
     @DisplayName("assertNotSuspended: should pass when account is not suspended")
     void assertNotSuspended_WhenAccountIsNotSuspended_DoesNotThrow() {
         // given
-        bankingAccount.setStatus(BankingAccountStatus.ACTIVE);
+        bankingAccount = BankingAccountTestBuilder.builder()
+            .withId(5L)
+            .withOwner(customer)
+            .withStatus(BankingAccountStatus.ACTIVE)
+            .withCurrency(BankingAccountCurrency.EUR)
+            .withBalance(BigDecimal.valueOf(1000))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("US1200001111112233335555")
+            .build();
 
         // when / then
         assertDoesNotThrow(bankingAccount::assertNotSuspended);
@@ -186,7 +204,15 @@ public class BankingAccountTest extends AbstractServiceTest {
     @DisplayName("assertNotSuspended: should throw exception when account is suspended")
     void assertNotSuspended_WhenAccountIsSuspended_ThrowsException() {
         // given
-        bankingAccount.setStatus(BankingAccountStatus.SUSPENDED);
+        bankingAccount = BankingAccountTestBuilder.builder()
+            .withId(5L)
+            .withOwner(customer)
+            .withStatus(BankingAccountStatus.SUSPENDED)
+            .withCurrency(BankingAccountCurrency.EUR)
+            .withBalance(BigDecimal.valueOf(1000))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("US1200001111112233335555")
+            .build();
 
         // when / then
         assertThrows(
@@ -199,7 +225,15 @@ public class BankingAccountTest extends AbstractServiceTest {
     @DisplayName("assertNotClosed: should pass when account is not closed")
     void assertNotClosed_WhenAccountIsNotClosed_DoesNotThrow() {
         // given
-        bankingAccount.setStatus(BankingAccountStatus.ACTIVE);
+        bankingAccount = BankingAccountTestBuilder.builder()
+            .withId(5L)
+            .withOwner(customer)
+            .withStatus(BankingAccountStatus.ACTIVE)
+            .withCurrency(BankingAccountCurrency.EUR)
+            .withBalance(BigDecimal.valueOf(1000))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("US1200001111112233335555")
+            .build();
 
         // when / then
         assertDoesNotThrow(bankingAccount::assertNotClosed);
@@ -209,7 +243,15 @@ public class BankingAccountTest extends AbstractServiceTest {
     @DisplayName("assertNotClosed: should throw exception when account is closed")
     void assertNotClosed_WhenAccountIsClosed_ThrowsException() {
         // given
-        bankingAccount.setStatus(BankingAccountStatus.CLOSED);
+        bankingAccount = BankingAccountTestBuilder.builder()
+            .withId(5L)
+            .withOwner(customer)
+            .withStatus(BankingAccountStatus.CLOSED)
+            .withCurrency(BankingAccountCurrency.EUR)
+            .withBalance(BigDecimal.valueOf(1000))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("US1200001111112233335555")
+            .build();
 
         // when / then
         assertThrows(
@@ -222,7 +264,15 @@ public class BankingAccountTest extends AbstractServiceTest {
     @DisplayName("activateBy: should activate account when actor is admin")
     void activateBy_WhenActorIsAdmin_ActivatesAccount() {
         // given
-        bankingAccount.setStatus(BankingAccountStatus.SUSPENDED);
+        bankingAccount = BankingAccountTestBuilder.builder()
+            .withId(5L)
+            .withOwner(customer)
+            .withStatus(BankingAccountStatus.SUSPENDED)
+            .withCurrency(BankingAccountCurrency.EUR)
+            .withBalance(BigDecimal.valueOf(1000))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("US1200001111112233335555")
+            .build();
 
         // when
         bankingAccount.activateBy(admin);
@@ -236,7 +286,15 @@ public class BankingAccountTest extends AbstractServiceTest {
     @DisplayName("activateBy: should throws exception when actor is not admin")
     void activateBy_WhenActorIsNotAdmin_AccountNotActivated() {
         // given
-        bankingAccount.setStatus(BankingAccountStatus.SUSPENDED);
+        bankingAccount = BankingAccountTestBuilder.builder()
+            .withId(5L)
+            .withOwner(customer)
+            .withStatus(BankingAccountStatus.SUSPENDED)
+            .withCurrency(BankingAccountCurrency.EUR)
+            .withBalance(BigDecimal.valueOf(1000))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("US1200001111112233335555")
+            .build();
 
         // when
         bankingAccount.activateBy(customer);
@@ -250,7 +308,15 @@ public class BankingAccountTest extends AbstractServiceTest {
     @DisplayName("closeBy: should activate account when actor is admin")
     void closeBy_WhenActorIsAdmin_ClosesAccount() {
         // given
-        bankingAccount.setStatus(BankingAccountStatus.ACTIVE);
+        bankingAccount = BankingAccountTestBuilder.builder()
+            .withId(5L)
+            .withOwner(customer)
+            .withStatus(BankingAccountStatus.ACTIVE)
+            .withCurrency(BankingAccountCurrency.EUR)
+            .withBalance(BigDecimal.valueOf(1000))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("US1200001111112233335555")
+            .build();
 
         // when
         bankingAccount.closeBy(admin);
@@ -264,7 +330,15 @@ public class BankingAccountTest extends AbstractServiceTest {
     @DisplayName("closeBy: should throws exception when actor is not admin")
     void closeBy_WhenActorIsNotAdmin_AccountNotClosed() {
         // given
-        bankingAccount.setStatus(BankingAccountStatus.ACTIVE);
+        bankingAccount = BankingAccountTestBuilder.builder()
+            .withId(5L)
+            .withOwner(customer)
+            .withStatus(BankingAccountStatus.ACTIVE)
+            .withCurrency(BankingAccountCurrency.EUR)
+            .withBalance(BigDecimal.valueOf(1000))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("US1200001111112233335555")
+            .build();
 
         // when
         bankingAccount.activateBy(customer);

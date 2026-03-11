@@ -1,11 +1,14 @@
 package com.damian.xBank.modules.banking.transaction.domain.model;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotOwnerException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionStatusTransitionException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.utils.BankingAccountTestBuilder;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -25,7 +28,15 @@ public class BankingTransactionTest {
     @BeforeEach
     void setUp() {
         customer = User.create().setId(1L);
-        account = BankingAccount.create(customer);
+        account = BankingAccountTestBuilder.builder()
+            .withId(5L)
+            .withOwner(customer)
+            .withCurrency(BankingAccountCurrency.EUR)
+            .withBalance(BigDecimal.valueOf(1000))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("US1200001111112233335555")
+            .build();
+
         transaction = BankingTransaction
             .create(
                 BankingTransactionType.DEPOSIT,
@@ -120,7 +131,7 @@ public class BankingTransactionTest {
     @DisplayName("setBankingAccount sets the account and assigns the customer from the account")
     void setBankingAccount_WhenAssignsAccountAndCustomer_ReturnsTransaction() {
         // given
-        BankingAccount account = BankingAccount.create(customer);
+        //        BankingAccount account = BankingAccount.create(customer);
 
         // when
         BankingTransaction result = transaction.setBankingAccount(account);
@@ -134,7 +145,7 @@ public class BankingTransactionTest {
     @DisplayName("setBankingCard sets the card and assigns the customer from the card")
     void setBankingCard_WhenAssignsCardAndCustomer_ReturnsTransaction() {
         // given
-        BankingAccount account = BankingAccount.create(customer);
+        //        BankingAccount account = BankingAccount.create(customer);
 
         BankingCard card = BankingCard.create(account);
 

@@ -2,7 +2,6 @@ package com.damian.xBank.modules.banking.card.infrastructure.rest.controller;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.card.application.usecase.capture.CaptureCardPaymentResult;
 import com.damian.xBank.modules.banking.card.application.usecase.withdraw.WithdrawFromATMResult;
@@ -22,6 +21,7 @@ import com.damian.xBank.modules.payment.checkout.infrastructure.http.response.Pa
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
+import com.damian.xBank.shared.utils.BankingAccountTestBuilder;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -58,13 +58,13 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
 
         userRepository.save(customer);
 
-        customerBankingAccount = BankingAccount
-            .create(customer)
-            .setCurrency(BankingAccountCurrency.EUR)
-            .setType(BankingAccountType.SAVINGS)
-            .setStatus(BankingAccountStatus.ACTIVE)
-            .setBalance(BigDecimal.valueOf(1000))
-            .setAccountNumber("US9900001111112233334444");
+        customerBankingAccount = BankingAccountTestBuilder.builder()
+            .withOwner(customer)
+            .withCurrency(BankingAccountCurrency.EUR)
+            .withBalance(BigDecimal.valueOf(1000))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("US1200001111112233335555")
+            .build();
 
         customerBankingCard = BankingCard
             .create(customerBankingAccount)

@@ -2,7 +2,6 @@ package com.damian.xBank.modules.banking.account.domain.service;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import org.springframework.stereotype.Service;
@@ -30,11 +29,7 @@ public class BankingAccountDomainService {
         BankingAccountType accountType,
         BankingAccountCurrency accountCurrency
     ) {
-        return BankingAccount
-            .create(user)
-            .setStatus(BankingAccountStatus.ACTIVE)
-            .setType(accountType)
-            .setCurrency(accountCurrency)
-            .setAccountNumber(bankingAccountNumberGenerator.generate());
+        String accountNumber = bankingAccountNumberGenerator.generate();
+        return BankingAccount.create(user, accountNumber, accountType, accountCurrency);
     }
 }

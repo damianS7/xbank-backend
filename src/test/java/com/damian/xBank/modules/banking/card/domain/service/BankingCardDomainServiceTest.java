@@ -7,6 +7,7 @@ import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardType;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
+import com.damian.xBank.shared.utils.BankingAccountTestBuilder;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -39,13 +40,14 @@ public class BankingCardDomainServiceTest extends AbstractServiceTest {
             .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
             .build();
 
-        bankingAccount = BankingAccount
-            .create(customer)
-            .setId(1L)
-            .setBalance(BigDecimal.valueOf(1000))
-            .setCurrency(BankingAccountCurrency.EUR)
-            .setType(BankingAccountType.SAVINGS)
-            .setAccountNumber("US9900001111112233334444");
+        bankingAccount = BankingAccountTestBuilder.builder()
+            .withId(5L)
+            .withOwner(customer)
+            .withCurrency(BankingAccountCurrency.EUR)
+            .withBalance(BigDecimal.valueOf(1000))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("US1200001111112233335555")
+            .build();
 
         customer.addBankingAccount(bankingAccount);
 

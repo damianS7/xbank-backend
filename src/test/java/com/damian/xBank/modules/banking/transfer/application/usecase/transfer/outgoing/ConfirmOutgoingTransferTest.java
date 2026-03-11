@@ -12,6 +12,7 @@ import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordCo
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.utils.BankingAccountTestBuilder;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -51,13 +52,14 @@ public class ConfirmOutgoingTransferTest extends AbstractServiceTest {
             .withPassword(RAW_PASSWORD)
             .build();
 
-        fromAccount = BankingAccount
-            .create(fromCustomer)
-            .setId(1L)
-            .setBalance(BigDecimal.valueOf(1000))
-            .setCurrency(BankingAccountCurrency.EUR)
-            .setType(BankingAccountType.SAVINGS)
-            .setAccountNumber("US9900001111112233334444");
+        fromAccount = BankingAccountTestBuilder.builder()
+            .withId(1L)
+            .withOwner(fromCustomer)
+            .withCurrency(BankingAccountCurrency.EUR)
+            .withBalance(BigDecimal.valueOf(1000))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("US9900001111112233334444")
+            .build();
 
         toCustomer = UserTestBuilder.aCustomer()
             .withId(2L)
@@ -65,13 +67,14 @@ public class ConfirmOutgoingTransferTest extends AbstractServiceTest {
             .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
             .build();
 
-        toAccount = BankingAccount
-            .create(toCustomer)
-            .setId(2L)
-            .setBalance(BigDecimal.valueOf(1000))
-            .setCurrency(BankingAccountCurrency.EUR)
-            .setType(BankingAccountType.SAVINGS)
-            .setAccountNumber("US1200001111112233335555");
+        toAccount = BankingAccountTestBuilder.builder()
+            .withId(2L)
+            .withOwner(toCustomer)
+            .withCurrency(BankingAccountCurrency.EUR)
+            .withBalance(BigDecimal.valueOf(1000))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("US1200001111112233335555")
+            .build();
     }
 
     @Test

@@ -3,11 +3,16 @@ package com.damian.xBank.modules.banking.card.domain.model;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
-import com.damian.xBank.modules.banking.card.domain.exception.*;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardDisabledException;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardInsufficientFundsException;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardInvalidPinException;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardLockedException;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotOwnerException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.utils.BankingAccountTestBuilder;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -41,13 +46,14 @@ public class BankingCardTest extends AbstractServiceTest {
             .withPassword(RAW_PASSWORD)
             .build();
 
-        bankingAccount = BankingAccount
-            .create(user)
-            .setId(1L)
-            .setBalance(BigDecimal.valueOf(1000))
-            .setCurrency(BankingAccountCurrency.EUR)
-            .setType(BankingAccountType.SAVINGS)
-            .setAccountNumber("US9900001111112233334444");
+        bankingAccount = BankingAccountTestBuilder.builder()
+            .withId(1L)
+            .withOwner(user)
+            .withCurrency(BankingAccountCurrency.EUR)
+            .withBalance(BigDecimal.valueOf(1000))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("US1200001111112233335555")
+            .build();
 
         user.addBankingAccount(bankingAccount);
 
@@ -87,7 +93,7 @@ public class BankingCardTest extends AbstractServiceTest {
     @DisplayName("should pass when balance is greater than or equal to amount")
     void assertSufficientFunds_WhenBalanceIsEnough_DoesNotThrow() {
         // given
-        bankingAccount.setBalance(BigDecimal.valueOf(500));
+        bankingAccount.deposit(BigDecimal.valueOf(500));
 
         BigDecimal amount = BigDecimal.valueOf(200);
 
@@ -100,7 +106,7 @@ public class BankingCardTest extends AbstractServiceTest {
     @DisplayName("should pass when amount is equal to balance")
     void assertSufficientFunds_WhenAmountIsEqualToBalance_DoesNotThrow() {
         // given
-        bankingAccount.setBalance(BigDecimal.valueOf(500));
+        bankingAccount.deposit(BigDecimal.valueOf(500));
 
         BigDecimal amount = bankingCard.getBalance();
 
@@ -113,7 +119,21 @@ public class BankingCardTest extends AbstractServiceTest {
     @DisplayName("should throw exception when balance is insufficient")
     void assertSufficientFunds_WhenBalanceIsInsufficient_ThrowsException() {
         // given
-        bankingAccount.setBalance(BigDecimal.valueOf(0));
+        BankingAccount bankingAccount = BankingAccountTestBuilder.builder()
+            .withId(1L)
+            .withOwner(user)
+            .withBalance(BigDecimal.valueOf(0))
+            .withAccountNumber("US1200001111112233335555")
+            .build();
+
+        BankingCard bankingCard = BankingCard
+            .create(bankingAccount)
+            .setId(11L)
+            .setStatus(BankingCardStatus.ACTIVE)
+            .setCardNumber("1234123412341234")
+            .setExpiration(CardExpiration.defaultExpiration())
+            .setCardCvv("123")
+            .setCardPin("1234");
 
         BigDecimal amount = BigDecimal.valueOf(300);
 
@@ -207,7 +227,7 @@ public class BankingCardTest extends AbstractServiceTest {
     @DisplayName("should pass when card is can spend")
     void assertCanSpend_WhenValid_DoesNotThrow() {
         // given
-        bankingAccount.setBalance(BigDecimal.valueOf(100));
+        bankingAccount.deposit(BigDecimal.valueOf(100));
         bankingCard.setCardPin("1234");
         bankingCard.setStatus(BankingCardStatus.ACTIVE);
 

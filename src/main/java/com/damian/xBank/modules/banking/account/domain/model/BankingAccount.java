@@ -58,6 +58,9 @@ public class BankingAccount {
     @Column(precision = 15, scale = 2)
     private BigDecimal balance;
 
+    @Column(precision = 15, scale = 2)
+    private BigDecimal reservedBalance;
+
     @Column(name = "account_type")
     @Enumerated(EnumType.STRING)
     private BankingAccountType type;
@@ -82,6 +85,7 @@ public class BankingAccount {
         this.accountTransactions = new HashSet<>();
         this.bankingCards = new HashSet<>();
         this.balance = BigDecimal.valueOf(0);
+        this.reservedBalance = BigDecimal.valueOf(0);
         this.currency = BankingAccountCurrency.EUR;
         this.type = BankingAccountType.SAVINGS;
         this.status = BankingAccountStatus.ACTIVE;
@@ -89,78 +93,75 @@ public class BankingAccount {
         this.createdAt = Instant.now();
     }
 
-    public BankingAccount(User user) {
+    public BankingAccount(
+        Long id,
+        User user,
+        String accountNumber,
+        BankingAccountType type,
+        BankingAccountCurrency currency,
+        BigDecimal initialBalance,
+        BankingAccountStatus initialStatus
+    ) {
         this();
+        this.id = id;
+        this.accountNumber = accountNumber;
         this.user = user;
+        this.type = type;
+        this.currency = currency;
+        this.balance = initialBalance;
+        this.status = initialStatus;
         this.user.addBankingAccount(this);
     }
 
-    public static BankingAccount create(User user) {
-        return new BankingAccount(user);
+    public static BankingAccount create(
+        User accountOwner,
+        String accountNumber,
+        BankingAccountType accountType,
+        BankingAccountCurrency accountCurrency
+    ) {
+        return new BankingAccount(
+            null,
+            accountOwner,
+            accountNumber,
+            accountType,
+            accountCurrency,
+            BigDecimal.valueOf(0),
+            BankingAccountStatus.ACTIVE
+        );
     }
 
     public Long getId() {
         return id;
     }
 
-    public BankingAccount setId(Long id) {
-        this.id = id;
-        return this;
-    }
-
     public User getOwner() {
         return user;
-    }
-
-    public BankingAccount setOwner(User user) {
-        this.user = user;
-        return this;
     }
 
     public String getAccountNumber() {
         return accountNumber;
     }
 
-    public BankingAccount setAccountNumber(String number) {
-        this.accountNumber = number;
-        return this;
-    }
-
     public BigDecimal getBalance() {
         return balance;
-    }
-
-    public BankingAccount setBalance(BigDecimal balance) {
-        this.balance = balance;
-        return this;
     }
 
     public BankingAccountType getType() {
         return type;
     }
 
-    public BankingAccount setType(BankingAccountType type) {
-        this.type = type;
-        return this;
-    }
-
     public BankingAccountCurrency getCurrency() {
         return currency;
-    }
-
-    public BankingAccount setCurrency(BankingAccountCurrency accountCurrency) {
-        this.currency = accountCurrency;
-        return this;
     }
 
     public BankingAccountStatus getStatus() {
         return status;
     }
 
-    public BankingAccount setStatus(BankingAccountStatus newStatus) {
+    private void setStatus(BankingAccountStatus newStatus) {
         // if the actual status is the same as the new ... do nothing
         if (this.status == newStatus) {
-            return this;
+            return;
         }
 
         if (!this.status.canTransitionTo(newStatus)) {
@@ -171,32 +172,24 @@ public class BankingAccount {
             );
         }
 
-        this.updatedAt = Instant.now();
         this.status = newStatus;
-        return this;
+        markAsUpdated();
     }
 
     public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public BankingAccount setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-        return this;
-    }
-
     public int getCardLimit() {
         return MAX_CARDS_PER_ACCOUNT;
     }
 
-    public BankingAccount addTransaction(BankingTransaction transaction) {
+    public void addTransaction(BankingTransaction transaction) {
         if (transaction.getBankingAccount() != this) {
             transaction.setBankingAccount(this);
         }
 
         this.accountTransactions.add(transaction);
-
-        return this;
     }
 
     public Set<BankingCard> getBankingCards() {
@@ -220,18 +213,17 @@ public class BankingAccount {
         return updatedAt;
     }
 
-    public BankingAccount setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
-        return this;
+    private void markAsUpdated() {
+        this.updatedAt = Instant.now();
     }
 
     public String getAlias() {
         return alias;
     }
 
-    public BankingAccount setAlias(String alias) {
+    public void changeAlias(String alias) {
         this.alias = alias;
-        return this;
+        markAsUpdated();
     }
 
     public void close() {
@@ -249,6 +241,12 @@ public class BankingAccount {
         return this.getBalance().compareTo(amount) >= 0;
     }
 
+    public boolean hasSufficientReservedFunds(BigDecimal amount) {
+        // if its 0 then balance is equal to the amount willing to spend
+        // if its 1 then balance is greater than the amount willing to spend
+        return this.getReservedBalance().compareTo(amount) >= 0;
+    }
+
     /**
      * Assert the account has sufficient funds.
      *
@@ -264,15 +262,26 @@ public class BankingAccount {
         return this;
     }
 
-    public void subtractBalance(BigDecimal amount) {
-        this.assertSufficientFunds(amount);
+    public BankingAccount assertSufficientReservedFunds(BigDecimal amount) {
+        if (!this.hasSufficientReservedFunds(amount)) {
+            throw new BankingAccountInsufficientFundsException(this.getId(), getBalance(), amount);
+        }
 
-        this.setBalance(this.getBalance().subtract(amount));
+        return this;
     }
 
-    public BigDecimal addBalance(BigDecimal amount) {
-        this.setBalance(this.getBalance().add(amount));
-        return this.getBalance();
+    /**
+     * Withdraw the given amount from the account balance.
+     *
+     * @param amount
+     */
+    public void withdraw(BigDecimal amount) {
+        this.assertSufficientFunds(amount);
+        this.balance = this.getBalance().subtract(amount);
+    }
+
+    public void deposit(BigDecimal amount) {
+        this.balance = this.getBalance().add(amount);
     }
 
     public boolean isOwnedBy(Long customerId) {
@@ -305,17 +314,14 @@ public class BankingAccount {
     /**
      * Assert the account is not SUSPENDED.
      *
-     * @return the current validator instance for chaining
      * @throws BankingAccountSuspendedException if the account does not belong to the customer
      */
-    public BankingAccount assertNotSuspended() {
+    public void assertNotSuspended() {
 
         // check if account is SUSPENDED
         if (isSuspended()) {
             throw new BankingAccountSuspendedException(getId());
         }
-
-        return this;
     }
 
     public boolean isClosed() {
@@ -355,7 +361,6 @@ public class BankingAccount {
             //            assertOwnedBy(actor.getId());
             setStatus(BankingAccountStatus.ACTIVE);
         }
-
     }
 
     public void closeBy(User actor) {
@@ -393,5 +398,26 @@ public class BankingAccount {
         if (this.currency != currency) {
             throw new BankingAccountCurrencyMismatchException(getId());
         }
+    }
+
+    public BigDecimal getReservedBalance() {
+        return reservedBalance;
+    }
+
+    public void reserveAmount(BigDecimal amount) {
+        assertSufficientFunds(amount);
+        this.balance = this.balance.subtract(amount);
+        this.reservedBalance = this.reservedBalance.add(amount);
+    }
+
+    public void releaseReservedAmount(BigDecimal amount) {
+        assertSufficientReservedFunds(amount);
+        this.reservedBalance = this.reservedBalance.subtract(amount);
+        this.balance = this.balance.add(amount);
+    }
+
+    public void captureReservedAmount(BigDecimal amount) {
+        assertSufficientReservedFunds(amount);
+        this.reservedBalance = this.reservedBalance.subtract(amount);
     }
 }

@@ -6,8 +6,8 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.banking.transaction.application.dto.BankingTransactionDetailResult;
-import com.damian.xBank.modules.banking.transaction.application.usecase.get.byid.GetTransactionQuery;
 import com.damian.xBank.modules.banking.transaction.application.usecase.get.byid.GetTransaction;
+import com.damian.xBank.modules.banking.transaction.application.usecase.get.byid.GetTransactionQuery;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotFoundException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotOwnerException;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
@@ -16,6 +16,7 @@ import com.damian.xBank.modules.banking.transaction.infrastructure.repository.Ba
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.utils.BankingAccountTestBuilder;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -56,13 +57,14 @@ public class GetTransactionTest extends AbstractServiceTest {
             .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
             .build();
 
-        customerBankingAccount = BankingAccount
-            .create(customer)
-            .setId(5L)
-            .setBalance(BigDecimal.valueOf(1000))
-            .setCurrency(BankingAccountCurrency.EUR)
-            .setType(BankingAccountType.SAVINGS)
-            .setAccountNumber("US9900001111112233334444");
+        customerBankingAccount = BankingAccountTestBuilder.builder()
+            .withId(5L)
+            .withOwner(customer)
+            .withCurrency(BankingAccountCurrency.EUR)
+            .withBalance(BigDecimal.valueOf(1000))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("US1200001111112233335555")
+            .build();
     }
 
     @Test
@@ -121,15 +123,13 @@ public class GetTransactionTest extends AbstractServiceTest {
     @DisplayName("should throw exception when not owner of transaction")
     void getTransaction_WhenNotOwner_ThrowsException() {
         // given
-        setUpContext(customer);
-
         User otherCustomer = UserTestBuilder.aCustomer()
             .withId(2L)
             .withEmail("otherCustomer@demo.com")
             .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
             .build();
 
-        customerBankingAccount.setOwner(otherCustomer);
+        setUpContext(otherCustomer);
 
         BankingTransaction givenTransaction = BankingTransaction
             .create(

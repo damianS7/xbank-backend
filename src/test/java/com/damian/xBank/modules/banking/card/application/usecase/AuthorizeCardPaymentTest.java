@@ -3,8 +3,8 @@ package com.damian.xBank.modules.banking.card.application.usecase;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
-import com.damian.xBank.modules.banking.card.application.usecase.authorize.AuthorizeCardPaymentCommand;
 import com.damian.xBank.modules.banking.card.application.usecase.authorize.AuthorizeCardPayment;
+import com.damian.xBank.modules.banking.card.application.usecase.authorize.AuthorizeCardPaymentCommand;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardInsufficientFundsException;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotActiveException;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoundException;
@@ -20,6 +20,7 @@ import com.damian.xBank.modules.payment.checkout.infrastructure.http.response.Pa
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.utils.BankingAccountTestBuilder;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -58,13 +59,14 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
             .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
             .build();
 
-        bankingAccount = BankingAccount
-            .create(customer)
-            .setId(5L)
-            .setCurrency(BankingAccountCurrency.EUR)
-            .setType(BankingAccountType.SAVINGS)
-            .setBalance(BigDecimal.valueOf(1000))
-            .setAccountNumber("US9900001111112233334444");
+        bankingAccount = BankingAccountTestBuilder.builder()
+            .withId(5L)
+            .withOwner(customer)
+            .withCurrency(BankingAccountCurrency.EUR)
+            .withBalance(BigDecimal.valueOf(1000))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("US1200001111112233335555")
+            .build();
 
         bankingCard = BankingCard
             .create(bankingAccount)
@@ -224,7 +226,22 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
     @DisplayName("should throw exception when insufficient funds")
     void authorizePayment_WhenInsufficientFunds_ThrowsException() {
         // given
-        bankingAccount.setBalance(BigDecimal.valueOf(0));
+        BankingAccount bankingAccount = BankingAccountTestBuilder.builder()
+            .withId(1L)
+            .withOwner(customer)
+            .withBalance(BigDecimal.valueOf(0))
+            .withAccountNumber("US1200001111112233335555")
+            .build();
+
+        BankingCard bankingCard = BankingCard
+            .create(bankingAccount)
+            .setId(11L)
+            .setStatus(BankingCardStatus.ACTIVE)
+            .setCardNumber("1234123412341234")
+            .setExpiration(CardExpiration.defaultExpiration())
+            .setCardCvv("123")
+            .setCardPin("1234");
+
         AuthorizeCardPaymentCommand command = new AuthorizeCardPaymentCommand(
             "Amazon.com",
             "",

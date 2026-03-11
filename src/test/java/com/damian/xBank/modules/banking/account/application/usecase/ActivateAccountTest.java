@@ -13,6 +13,7 @@ import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.utils.BankingAccountTestBuilder;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -49,13 +50,14 @@ public class ActivateAccountTest extends AbstractServiceTest {
             .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
             .build();
 
-        bankingAccount = BankingAccount
-            .create(customer)
-            .setId(1L)
-            .setBalance(BigDecimal.valueOf(1000))
-            .setCurrency(BankingAccountCurrency.EUR)
-            .setType(BankingAccountType.SAVINGS)
-            .setAccountNumber("US9900001111112233334444");
+        bankingAccount = BankingAccountTestBuilder.builder()
+            .withId(1L)
+            .withOwner(customer)
+            .withCurrency(BankingAccountCurrency.EUR)
+            .withBalance(BigDecimal.valueOf(1000))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("US1200001111112233335555")
+            .build();
 
         customer.addBankingAccount(bankingAccount);
     }
@@ -67,7 +69,7 @@ public class ActivateAccountTest extends AbstractServiceTest {
         customer.setRole(UserRole.ADMIN);
         setUpContext(customer);
 
-        bankingAccount.setStatus(BankingAccountStatus.SUSPENDED);
+        bankingAccount.suspend();
 
         ActivateAccountCommand command = new ActivateAccountCommand(
             bankingAccount.getId()
@@ -95,7 +97,7 @@ public class ActivateAccountTest extends AbstractServiceTest {
         // given
         setUpContext(customer);
 
-        bankingAccount.setStatus(BankingAccountStatus.SUSPENDED);
+        bankingAccount.suspend();
 
         ActivateAccountCommand command = new ActivateAccountCommand(
             bankingAccount.getId()
@@ -124,7 +126,7 @@ public class ActivateAccountTest extends AbstractServiceTest {
         customer.setRole(UserRole.ADMIN);
         setUpContext(customer);
 
-        bankingAccount.setStatus(BankingAccountStatus.CLOSED);
+        bankingAccount.close();
 
         ActivateAccountCommand command = new ActivateAccountCommand(
             bankingAccount.getId()

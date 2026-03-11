@@ -45,7 +45,7 @@ public class ProcessIncomingTransfer {
         bankingTransaction.setAmount(request.amount());
         bankingTransaction.complete();
 
-        customerAccount.addBalance(request.amount());
+        customerAccount.deposit(request.amount());
 
         bankingTransactionRepository.save(bankingTransaction);
     }

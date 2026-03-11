@@ -26,9 +26,7 @@ public class HandleOutgoingTransferAuthorizationFailure {
                 () -> new BankingTransferNotFoundException(request.authorizationId())
             );
 
-        transfer.reject(request.failure());
-
         // revert money
-        transfer.getFromAccount().addBalance(transfer.getAmount());
+        transfer.fail(request.failure());
     }
 }

@@ -234,7 +234,7 @@ public class BankingCard {
         // assert sufficient funds or throw exception
         this.assertSufficientFunds(amount);
 
-        this.getBankingAccount().subtractBalance(amount);
+        this.getBankingAccount().withdraw(amount);
         return this;
     }
 

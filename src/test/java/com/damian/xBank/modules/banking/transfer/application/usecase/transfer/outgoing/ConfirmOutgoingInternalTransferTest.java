@@ -6,8 +6,7 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
-import com.damian.xBank.modules.banking.transfer.application.usecase.outgoing.authorize.AuthorizeOutgoingInternalTransfer;
-import com.damian.xBank.modules.banking.transfer.application.usecase.outgoing.authorize.AuthorizeOutgoingTransferCommand;
+import com.damian.xBank.modules.banking.transfer.application.usecase.outgoing.complete.CompleteOutgoingInternalTransfer;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferStatus;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
@@ -24,19 +23,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-public class AuthorizeOutgoingInternalTransferTest extends AbstractServiceTest {
+public class ConfirmOutgoingInternalTransferTest extends AbstractServiceTest {
 
     @InjectMocks
-    private AuthorizeOutgoingInternalTransfer authorizeOutgoingInternalTransfer;
+    private CompleteOutgoingInternalTransfer completeOutgoingInternalTransfer;
 
     @Mock
     private NotificationEventFactory notificationEventFactory;
@@ -86,16 +82,20 @@ public class AuthorizeOutgoingInternalTransferTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("should return authorized transfer when request is valid")
-    void authorizeTransfer_ReturnsAuthorizedTransfer() {
+    @DisplayName("should return completed transfer when request is valid")
+    void completeTransfer_ReturnsConfirmedTransfer() {
         // given
         //        setUpContext(fromCustomer);
+        final BigDecimal fromAccountInitialBalance = fromAccount.getBalance();
+        final BigDecimal toAccountInitialBalance = toAccount.getBalance();
 
         BankingTransfer givenTransfer = BankingTransfer
             .create(fromAccount, toAccount, BigDecimal.valueOf(100))
             .setId(1L)
-            .setStatus(BankingTransferStatus.CONFIRMED)
             .setDescription("a gift!");
+
+        givenTransfer.confirm();
+        givenTransfer.authorize();
 
         BankingTransaction fromTransaction = BankingTransaction
             .create(
@@ -118,17 +118,20 @@ public class AuthorizeOutgoingInternalTransferTest extends AbstractServiceTest {
         givenTransfer.addTransaction(fromTransaction);
         givenTransfer.addTransaction(toTransaction);
 
-        AuthorizeOutgoingTransferCommand command = new AuthorizeOutgoingTransferCommand(
-            givenTransfer.getId()
-        );
-
         // when
-        when(bankingTransferRepository.findById(anyLong())).thenReturn(Optional.of(givenTransfer));
+        //        when(bankingTransferRepository.findById(anyLong())).thenReturn(Optional.of(givenTransfer));
 
         // then
-        authorizeOutgoingInternalTransfer.execute(command);
+        completeOutgoingInternalTransfer.execute(givenTransfer);
 
         verify(bankingTransferRepository, times(1)).save(any(BankingTransfer.class));
-        assertThat(givenTransfer.getStatus()).isEqualTo(BankingTransferStatus.AUTHORIZED);
+
+        // check balances
+        assertThat(givenTransfer.getStatus()).isEqualTo(BankingTransferStatus.COMPLETED);
+        assertThat(fromAccount.getBalance())
+            .isEqualTo(fromAccountInitialBalance.subtract(givenTransfer.getAmount()));
+
+        assertThat(toAccount.getBalance())
+            .isEqualTo(toAccountInitialBalance.add(givenTransfer.getAmount()));
     }
 }

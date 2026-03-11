@@ -3,8 +3,8 @@ package com.damian.xBank.modules.banking.card.application.usecase;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
-import com.damian.xBank.modules.banking.card.application.usecase.lock.UnlockBankingCardCommand;
 import com.damian.xBank.modules.banking.card.application.usecase.lock.UnlockBankingCard;
+import com.damian.xBank.modules.banking.card.application.usecase.lock.UnlockBankingCardCommand;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoundException;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotOwnerException;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
@@ -14,6 +14,7 @@ import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordCo
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.utils.BankingAccountTestBuilder;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,13 +53,14 @@ public class UnlockBankingCardTest extends AbstractServiceTest {
             .withPassword(RAW_PASSWORD)
             .build();
 
-        bankingAccount = BankingAccount
-            .create(customer)
-            .setId(5L)
-            .setCurrency(BankingAccountCurrency.EUR)
-            .setType(BankingAccountType.SAVINGS)
-            .setAccountNumber("US9900001111112233334444");
-
+        bankingAccount = BankingAccountTestBuilder.builder()
+            .withId(5L)
+            .withOwner(customer)
+            .withCurrency(BankingAccountCurrency.EUR)
+            .withBalance(BigDecimal.valueOf(1000))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("US1200001111112233335555")
+            .build();
 
         bankingCard = BankingCard
             .create(bankingAccount)

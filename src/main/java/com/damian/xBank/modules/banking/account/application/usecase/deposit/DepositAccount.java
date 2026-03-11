@@ -79,7 +79,7 @@ public class DepositAccount {
             .setDescription("DEPOSIT by " + command.depositorName());
 
         // if the transaction is created, add the amount to balance
-        bankingAccount.addBalance(command.amount());
+        bankingAccount.deposit(command.amount());
 
         // transaction is completed
         transaction.setStatus(BankingTransactionStatus.COMPLETED);

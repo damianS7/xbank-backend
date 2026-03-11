@@ -10,6 +10,7 @@ import com.damian.xBank.modules.banking.transfer.application.usecase.incoming.Pr
 import com.damian.xBank.modules.banking.transfer.infrastructure.rest.request.IncomingTransferRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
+import com.damian.xBank.shared.utils.BankingAccountTestBuilder;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,12 +49,14 @@ public class ProcessIncomingTransferTest extends AbstractServiceTest {
             .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
             .build();
 
-        bankingAccount = BankingAccount
-            .create(customer)
-            .setId(5L)
-            .setCurrency(BankingAccountCurrency.EUR)
-            .setType(BankingAccountType.SAVINGS)
-            .setAccountNumber("US9900001111112233334444");
+        bankingAccount = BankingAccountTestBuilder.builder()
+            .withId(5L)
+            .withOwner(customer)
+            .withCurrency(BankingAccountCurrency.EUR)
+            .withBalance(BigDecimal.valueOf(0))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("US1200001111112233335555")
+            .build();
     }
 
     @Test
@@ -68,7 +71,7 @@ public class ProcessIncomingTransferTest extends AbstractServiceTest {
             "JOHN DOE"
         );
 
-        bankingAccount.setBalance(BigDecimal.valueOf(0));
+        bankingAccount.deposit(BigDecimal.valueOf(0));
 
         ArgumentCaptor<BankingTransaction> captor =
             ArgumentCaptor.forClass(BankingTransaction.class);

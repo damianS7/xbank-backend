@@ -2,7 +2,6 @@ package com.damian.xBank.modules.banking.transaction.infrastructure.rest.control
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.transaction.application.dto.BankingTransactionResult;
@@ -13,6 +12,7 @@ import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.infrastructure.web.dto.response.PageResult;
+import com.damian.xBank.shared.utils.BankingAccountTestBuilder;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,13 +43,13 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
 
         userRepository.save(customer);
 
-        customerBankingAccount = BankingAccount
-            .create(customer)
-            .setCurrency(BankingAccountCurrency.EUR)
-            .setType(BankingAccountType.SAVINGS)
-            .setStatus(BankingAccountStatus.ACTIVE)
-            .setBalance(BigDecimal.valueOf(1000))
-            .setAccountNumber("US9900001111112233334444");
+        customerBankingAccount = BankingAccountTestBuilder.builder()
+            .withOwner(customer)
+            .withCurrency(BankingAccountCurrency.EUR)
+            .withBalance(BigDecimal.valueOf(1000))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("US1200001111112233335555")
+            .build();
 
         customerBankingCard = BankingCard
             .create(customerBankingAccount)
@@ -130,13 +130,13 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
 
         userRepository.save(anotherCustomer);
 
-        BankingAccount anotherCustomerBankingAccount = BankingAccount
-            .create(anotherCustomer)
-            .setCurrency(BankingAccountCurrency.EUR)
-            .setType(BankingAccountType.SAVINGS)
-            .setStatus(BankingAccountStatus.ACTIVE)
-            .setBalance(BigDecimal.valueOf(1000))
-            .setAccountNumber("US9900001111112233334444");
+        BankingAccount anotherCustomerBankingAccount = BankingAccountTestBuilder.builder()
+            .withOwner(anotherCustomer)
+            .withCurrency(BankingAccountCurrency.EUR)
+            .withBalance(BigDecimal.valueOf(1000))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("US1200001111112233334444")
+            .build();
 
         anotherCustomerBankingAccount.addTransaction(
             BankingTransaction.create(

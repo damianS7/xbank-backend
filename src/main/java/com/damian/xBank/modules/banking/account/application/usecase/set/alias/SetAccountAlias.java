@@ -7,8 +7,6 @@ import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-
 @Service
 public class SetAccountAlias {
     private final BankingAccountRepository bankingAccountRepository;
@@ -49,10 +47,7 @@ public class SetAccountAlias {
         }
 
         // we mark the account as closed
-        bankingAccount.setAlias(command.alias());
-
-        // we change the updateAt timestamp field
-        bankingAccount.setUpdatedAt(Instant.now());
+        bankingAccount.changeAlias(command.alias());
 
         // save the data and return BankingAccount
         bankingAccountRepository.save(bankingAccount);

@@ -2,7 +2,6 @@ package com.damian.xBank.modules.banking.transfer.infrastructure.rest.controller
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
@@ -18,6 +17,7 @@ import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.utils.BankingAccountTestBuilder;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -53,12 +53,14 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
 
         userRepository.save(fromCustomer);
 
-        fromBankingAccount = new BankingAccount(fromCustomer);
-        fromBankingAccount.setAccountNumber("ES1234567890123456789012");
-        fromBankingAccount.setType(BankingAccountType.SAVINGS);
-        fromBankingAccount.setCurrency(BankingAccountCurrency.EUR);
-        fromBankingAccount.setStatus(BankingAccountStatus.ACTIVE);
-        fromBankingAccount.setBalance(BigDecimal.valueOf(3200));
+        fromBankingAccount = BankingAccountTestBuilder.builder()
+            .withOwner(fromCustomer)
+            .withCurrency(BankingAccountCurrency.EUR)
+            .withBalance(BigDecimal.valueOf(3200))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("ES1234567890123456789012")
+            .build();
+
         bankingAccountRepository.save(fromBankingAccount);
 
         toCustomer = UserTestBuilder.aCustomer()
@@ -69,12 +71,14 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
 
         userRepository.save(toCustomer);
 
-        toBankingAccount = new BankingAccount(toCustomer);
-        toBankingAccount.setAccountNumber("DE1234567890123456789012");
-        toBankingAccount.setType(BankingAccountType.SAVINGS);
-        toBankingAccount.setCurrency(BankingAccountCurrency.EUR);
-        toBankingAccount.setStatus(BankingAccountStatus.ACTIVE);
-        toBankingAccount.setBalance(BigDecimal.valueOf(200));
+        toBankingAccount = BankingAccountTestBuilder.builder()
+            .withOwner(toCustomer)
+            .withCurrency(BankingAccountCurrency.EUR)
+            .withBalance(BigDecimal.valueOf(200))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("DE1234567890123456789012")
+            .build();
+        
         bankingAccountRepository.save(toBankingAccount);
 
         admin = UserTestBuilder.aCustomer()
@@ -187,7 +191,7 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
         // given
         login(fromCustomer);
 
-        toBankingAccount.setStatus(BankingAccountStatus.CLOSED);
+        toBankingAccount.close();
         bankingAccountRepository.save(toBankingAccount);
 
         CreateOutgoingTransferRequest request = new CreateOutgoingTransferRequest(
@@ -217,7 +221,7 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
         // given
         login(fromCustomer);
 
-        toBankingAccount.setStatus(BankingAccountStatus.SUSPENDED);
+        toBankingAccount.suspend();
         bankingAccountRepository.save(toBankingAccount);
 
         CreateOutgoingTransferRequest request = new CreateOutgoingTransferRequest(

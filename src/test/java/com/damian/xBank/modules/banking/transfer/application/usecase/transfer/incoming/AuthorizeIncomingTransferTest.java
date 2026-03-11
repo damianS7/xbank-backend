@@ -43,12 +43,12 @@ public class AuthorizeIncomingTransferTest extends AbstractServiceTest {
             .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
             .build();
 
-        bankingAccount = BankingAccount
-            .create(customer)
-            .setId(2L)
-            .setCurrency(BankingAccountCurrency.EUR)
-            .setType(BankingAccountType.SAVINGS)
-            .setAccountNumber("US9900001111112233334444");
+        bankingAccount = BankingAccount.create(
+            customer,
+            "US9900001111112233334444",
+            BankingAccountType.SAVINGS,
+            BankingAccountCurrency.EUR
+        );
     }
 
     @Test
@@ -164,7 +164,8 @@ public class AuthorizeIncomingTransferTest extends AbstractServiceTest {
     @Test
     void authorizeIncomingTransfer_WhenCurrencyMismatch_ReturnsRejectedResponse() {
         // given
-        bankingAccount.setCurrency(BankingAccountCurrency.EUR);
+        // TODO review this
+        //        bankingAccount.setCurrency(BankingAccountCurrency.EUR);
 
         AuthorizeIncomingTransferCommand command = new AuthorizeIncomingTransferCommand(
             bankingAccount.getAccountNumber(),

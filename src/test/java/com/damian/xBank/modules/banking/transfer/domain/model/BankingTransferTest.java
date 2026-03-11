@@ -2,6 +2,7 @@ package com.damian.xBank.modules.banking.transfer.domain.model;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferCurrencyMismatchException;
@@ -10,6 +11,7 @@ import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransfe
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferStatusTransitionException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.utils.BankingAccountTestBuilder;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,6 +21,7 @@ import java.math.BigDecimal;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 public class BankingTransferTest {
 
@@ -37,12 +40,23 @@ public class BankingTransferTest {
             .withId(2L)
             .build();
 
-        fromAccount = BankingAccount.create(fromCustomer)
-            .setCurrency(BankingAccountCurrency.EUR);
+        fromAccount = BankingAccountTestBuilder.builder()
+            .withId(5L)
+            .withOwner(fromCustomer)
+            .withCurrency(BankingAccountCurrency.EUR)
+            .withBalance(BigDecimal.valueOf(0))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("ES1234567890123456789012")
+            .build();
 
-        toAccount = BankingAccount.create(toCustomer)
-            .setId(1L)
-            .setCurrency(BankingAccountCurrency.EUR);
+        toAccount = BankingAccountTestBuilder.builder()
+            .withId(1L)
+            .withOwner(toCustomer)
+            .withCurrency(BankingAccountCurrency.EUR)
+            .withBalance(BigDecimal.valueOf(0))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("ES1234567890123456781012")
+            .build();
 
         transfer = BankingTransfer.create(fromAccount, toAccount, BigDecimal.ZERO)
             .setId(2L);
@@ -283,29 +297,55 @@ public class BankingTransferTest {
     @DisplayName("assertCurrenciesMatch should return transfer when currencies are equal")
     void assertCurrenciesMatch_WhenCurrenciesAreEqual_ReturnsTransfer() {
         // given
-        fromAccount.setCurrency(BankingAccountCurrency.EUR);
+        fromAccount = BankingAccountTestBuilder.builder()
+            .withId(1L)
+            .withOwner(fromCustomer)
+            .withCurrency(BankingAccountCurrency.EUR)
+            .withBalance(BigDecimal.valueOf(1000))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("ES1234567890123456783012")
+            .build();
 
-        toAccount.setCurrency(BankingAccountCurrency.EUR);
+        toAccount = BankingAccountTestBuilder.builder()
+            .withId(5L)
+            .withOwner(toCustomer)
+            .withCurrency(BankingAccountCurrency.EUR)
+            .withBalance(BigDecimal.valueOf(1000))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("ES1234567890123456789012")
+            .build();
 
         // when
-        BankingTransfer result = transfer.assertCurrenciesMatch();
-
+        assertDoesNotThrow(() -> transfer.assertCurrenciesMatch());
         // then
-        assertThat(result).isSameAs(transfer);
     }
 
     @Test
     @DisplayName("assertCurrenciesMatch should return exception when currencies are not equal")
     void assertCurrenciesMatch_WhenCurrenciesAreDifferent_ThrowsException() {
         // given
-        fromAccount.setCurrency(BankingAccountCurrency.USD);
+        BankingAccount fromAccount = BankingAccountTestBuilder.builder()
+            .withId(1L)
+            .withOwner(fromCustomer)
+            .withCurrency(BankingAccountCurrency.USD)
+            .withBalance(BigDecimal.valueOf(1000))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("ES1234567890123456783012")
+            .build();
 
-        toAccount.setCurrency(BankingAccountCurrency.EUR);
+        BankingAccount toAccount = BankingAccountTestBuilder.builder()
+            .withId(5L)
+            .withOwner(toCustomer)
+            .withCurrency(BankingAccountCurrency.EUR)
+            .withBalance(BigDecimal.valueOf(1000))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("ES9000567890123456789012")
+            .build();
 
         // when
         BankingTransferCurrencyMismatchException exception = assertThrows(
             BankingTransferCurrencyMismatchException.class,
-            transfer::assertCurrenciesMatch
+            () -> BankingTransfer.create(fromAccount, toAccount, BigDecimal.valueOf(100))
         );
 
         assertThat(exception)

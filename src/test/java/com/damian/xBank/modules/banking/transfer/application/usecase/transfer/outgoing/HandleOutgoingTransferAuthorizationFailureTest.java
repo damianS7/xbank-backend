@@ -11,6 +11,7 @@ import com.damian.xBank.modules.banking.transfer.infrastructure.repository.Banki
 import com.damian.xBank.modules.banking.transfer.infrastructure.rest.request.OutgoingTransferFailureRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
+import com.damian.xBank.shared.utils.BankingAccountTestBuilder;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,19 +47,20 @@ public class HandleOutgoingTransferAuthorizationFailureTest extends AbstractServ
             .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
             .build();
 
-        bankingAccount = BankingAccount
-            .create(customer)
-            .setId(5L)
-            .setCurrency(BankingAccountCurrency.EUR)
-            .setType(BankingAccountType.SAVINGS)
-            .setAccountNumber("US9900001111112233334444");
+        bankingAccount = BankingAccountTestBuilder.builder()
+            .withId(5L)
+            .withOwner(customer)
+            .withCurrency(BankingAccountCurrency.EUR)
+            .withBalance(BigDecimal.valueOf(3000))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("US1200001111112233335555")
+            .build();
     }
 
     @Test
     void transferFailure_ChangesTransferStatusToFailedAndRevertsBalance() {
         // given
-        bankingAccount.setBalance(BigDecimal.valueOf(100));
-
+        BigDecimal accountInitialBalance = bankingAccount.getBalance();
         OutgoingTransferFailureRequest request = new OutgoingTransferFailureRequest(
             "123/123",
             "Error"
@@ -67,8 +69,12 @@ public class HandleOutgoingTransferAuthorizationFailureTest extends AbstractServ
         BankingTransfer transfer = BankingTransfer.create(
             bankingAccount,
             null,
-            BigDecimal.valueOf(100)
+            accountInitialBalance
         );
+
+        transfer.confirm();
+        System.out.println(transfer.getAmount());
+        System.out.println(transfer.getFromAccount().getBalance());
 
         // when
         when(bankingTransferRepository.findByProviderAuthorizationId(anyString()))
@@ -76,17 +82,19 @@ public class HandleOutgoingTransferAuthorizationFailureTest extends AbstractServ
 
         // then
         handleOutgoingTransferAuthorizationFailure.execute(request);
+        System.out.println(transfer.getAmount());
+        System.out.println(transfer.getFromAccount().getBalance());
 
         assertThat(transfer)
             .extracting(
                 BankingTransfer::getStatus
             )
             .isEqualTo(
-                BankingTransferStatus.REJECTED
+                BankingTransferStatus.FAILED
             );
 
         assertThat(transfer.getFromAccount())
             .extracting(BankingAccount::getBalance)
-            .isEqualTo(transfer.getAmount());
+            .isEqualTo(accountInitialBalance);
     }
 }

@@ -166,6 +166,7 @@ public class BankingTransfer {
         }
 
         this.status = newStatus;
+        this.updatedAt = Instant.now();
         return this;
     }
 
@@ -271,46 +272,51 @@ public class BankingTransfer {
     }
 
     public void confirm() {
+        this.fromAccount.reserveAmount(amount);
         this.setStatus(BankingTransferStatus.CONFIRMED);
-        this.updatedAt = Instant.now();
-    }
-
-    public void authorize() {
-        // deduct balance from source
-        this.getFromAccount().subtractBalance(getAmount());
-
-        // add balance to source (if internal)
-        if (this.getToAccount() != null) {
-            this.getToAccount().addBalance(getAmount());
-        }
-
-        // Confirm transactions
-        this.getTransactions().forEach(BankingTransaction::complete);
-        this.setStatus(BankingTransferStatus.AUTHORIZED);
-        this.updatedAt = Instant.now();
     }
 
     public void reject(String rejectReason) {
         // reject transactions
         this.getTransactions().forEach((tx) -> tx.fail(rejectReason));
         this.setStatus(BankingTransferStatus.REJECTED);
-        this.updatedAt = Instant.now();
+    }
+
+    public void fail(String failedReason) {
+        this.fromAccount.releaseReservedAmount(amount);
+        this.getTransactions().forEach((tx) -> tx.fail(failedReason));
+        this.setStatus(BankingTransferStatus.FAILED);
+    }
+
+    public void authorize() {
+        this.setStatus(BankingTransferStatus.AUTHORIZED);
+    }
+
+    public void complete() {
+        // deduct balance from sender account
+        this.getFromAccount().captureReservedAmount(amount);
+
+        // add balance to destination (if internal)
+        if (this.type == BankingTransferType.INTERNAL && this.getToAccount() != null) {
+            this.getToAccount().deposit(amount);
+        }
+
+        // Confirm transactions
+        this.getTransactions().forEach(BankingTransaction::complete);
+        this.setStatus(BankingTransferStatus.COMPLETED);
     }
 
     /**
      * Validate that current account and {@code toBankingAccount} have the same currency
      *
-     * @return the current validator instance for chaining
      * @throws BankingTransferCurrencyMismatchException if fromAccount and toAccount have different currencies
      */
-    public BankingTransfer assertCurrenciesMatch() {
-
+    public void assertCurrenciesMatch() {
         // if currencies are different, throw exception
         if (!Objects.equals(fromAccount.getCurrency(), toAccount.getCurrency())) {
             throw new BankingTransferCurrencyMismatchException(toAccount.getId());
         }
 
-        return this;
     }
 
     /**
