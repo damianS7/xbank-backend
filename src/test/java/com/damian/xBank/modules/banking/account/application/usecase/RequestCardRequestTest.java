@@ -71,7 +71,6 @@ public class RequestCardRequestTest extends AbstractServiceTest {
             .withAccountNumber("US1200001111112233335555")
             .build();
 
-        customer.addBankingAccount(bankingAccount);
     }
 
     @Test

@@ -61,6 +61,6 @@ public class GetCardTransactions {
                 query.pageable()
             );
 
-        return PageResult.from(pagedResult);
+        return PageResult.fromPagedTransactions(pagedResult);
     }
 }

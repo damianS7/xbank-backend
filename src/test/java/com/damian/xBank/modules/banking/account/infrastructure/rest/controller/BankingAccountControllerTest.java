@@ -58,7 +58,6 @@ public class BankingAccountControllerTest extends AbstractControllerTest {
             .withAccountNumber("US1200001111112233335555")
             .build();
 
-        customer.addBankingAccount(bankingAccount);
         bankingAccountRepository.save(bankingAccount);
     }
 

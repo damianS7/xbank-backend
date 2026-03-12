@@ -58,8 +58,6 @@ public class ActivateAccountTest extends AbstractServiceTest {
             .withType(BankingAccountType.SAVINGS)
             .withAccountNumber("US1200001111112233335555")
             .build();
-
-        customer.addBankingAccount(bankingAccount);
     }
 
     @Test

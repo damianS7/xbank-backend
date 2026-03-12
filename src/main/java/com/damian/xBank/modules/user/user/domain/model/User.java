@@ -119,19 +119,10 @@ public class User {
         return bankingAccounts;
     }
 
-    public User addBankingAccount(BankingAccount bankingAccount) {
-        if (bankingAccount.getOwner() != this) {
-            // TODO review this
-            //            bankingAccount.setOwner(this);
+    public void addBankingAccount(BankingAccount bankingAccount) {
+        if (bankingAccount.getOwner() == this) {
+            this.bankingAccounts.add(bankingAccount);
         }
-
-        this.bankingAccounts.add(bankingAccount);
-        return this;
-    }
-
-    public User setBankingAccounts(Set<BankingAccount> bankingAccounts) {
-        this.bankingAccounts = bankingAccounts;
-        return this;
     }
 
     public User setRole(UserRole role) {

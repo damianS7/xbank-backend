@@ -43,27 +43,15 @@ public class GetAllUserAccountsTest extends AbstractServiceTest {
             .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
             .build();
 
-        BankingAccount account1 = BankingAccountTestBuilder.builder()
-            .withId(1L)
-            .withOwner(customer)
-            .withCurrency(BankingAccountCurrency.EUR)
-            .withBalance(BigDecimal.valueOf(1000))
-            .withType(BankingAccountType.SAVINGS)
-            .withAccountNumber("US1200001111112233335555")
-            .build();
-        ;
+    }
 
-        BankingAccount account2 = BankingAccountTestBuilder.builder()
-            .withId(2L)
-            .withOwner(customer)
-            .withCurrency(BankingAccountCurrency.EUR)
-            .withBalance(BigDecimal.valueOf(1000))
-            .withType(BankingAccountType.SAVINGS)
-            .withAccountNumber("US1200001111112233335511")
-            .build();
-        ;
+    @Test
+    @DisplayName("should return a set containing all banking accounts from authenticated user")
+    void getCustomerBankingAccounts_WhenValidRequest_ReturnsCustomerBankingAccounts() {
+        // given
+        setUpContext(customer);
 
-        BankingAccount account3 = BankingAccountTestBuilder.builder()
+        BankingAccount account = BankingAccountTestBuilder.builder()
             .withId(3L)
             .withOwner(customer)
             .withCurrency(BankingAccountCurrency.EUR)
@@ -72,16 +60,7 @@ public class GetAllUserAccountsTest extends AbstractServiceTest {
             .withAccountNumber("US1200001111112233335516")
             .build();
 
-        customer.addBankingAccount(account1);
-        customer.addBankingAccount(account2);
-        customer.addBankingAccount(account3);
-    }
-
-    @Test
-    @DisplayName("should return a set containing all banking accounts from authenticated user")
-    void getCustomerBankingAccounts_WhenValidRequest_ReturnsCustomerBankingAccounts() {
-        // given
-        setUpContext(customer);
+        customer.addBankingAccount(account);
 
         GetAllUserAccountsQuery query = new GetAllUserAccountsQuery();
 
@@ -93,7 +72,7 @@ public class GetAllUserAccountsTest extends AbstractServiceTest {
         GetAllUserAccountsResult result = getAllUserAccounts.execute(query);
 
         // then
-        assertThat(result.accounts().size()).isEqualTo(customer.getBankingAccounts().size());
+        assertThat(result.accounts().size()).isEqualTo(1);
         verify(bankingAccountRepository, times(1)).findByUser_Id(anyLong());
     }
 }

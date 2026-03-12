@@ -54,7 +54,6 @@ public class SetAccountAliasTest extends AbstractServiceTest {
             .withAccountNumber("US9900001111112233334444")
             .build();
 
-        customer.addBankingAccount(bankingAccount);
     }
 
     @Test

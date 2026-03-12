@@ -49,8 +49,6 @@ public class BankingCardDomainServiceTest extends AbstractServiceTest {
             .withAccountNumber("US1200001111112233335555")
             .build();
 
-        customer.addBankingAccount(bankingAccount);
-
         bankingCard = BankingCard
             .create(bankingAccount)
             .setId(11L)

@@ -1,12 +1,13 @@
 package com.damian.xBank.modules.notification.application.usecase;
 
+import com.damian.xBank.modules.notification.application.dto.NotificationResult;
 import com.damian.xBank.modules.notification.application.usecase.get.GetCurrentUserNotifications;
 import com.damian.xBank.modules.notification.application.usecase.get.GetCurrentUserNotificationsQuery;
-import com.damian.xBank.modules.notification.application.usecase.get.GetCurrentUserNotificationsResult;
 import com.damian.xBank.modules.notification.domain.model.Notification;
 import com.damian.xBank.modules.notification.infrastructure.repository.NotificationRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
+import com.damian.xBank.shared.infrastructure.web.dto.response.PageResult;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -55,19 +56,22 @@ public class GetCurrentUserNotificationsTest extends AbstractServiceTest {
                 Notification.create(customer),
                 Notification.create(customer),
                 Notification.create(customer)
-            )
+            ),
+            pageable,
+            3
         );
 
         GetCurrentUserNotificationsQuery query = new GetCurrentUserNotificationsQuery(pageable);
 
         // when
-        when(notificationRepository.findAllByUserId(customer.getId(), pageable)).thenReturn(page);
+        when(notificationRepository.findAllByUserId(customer.getId(), pageable))
+            .thenReturn(page);
 
-        GetCurrentUserNotificationsResult result = getCurrentUserNotifications.execute(query);
+        PageResult<NotificationResult> result = getCurrentUserNotifications.execute(query);
 
         // then
         assertThat(result).isNotNull();
-        assertThat(result.pagedResult().getTotalElements()).isEqualTo(page.getTotalElements());
+        assertThat(result.totalElements()).isEqualTo(page.getTotalElements());
         verify(notificationRepository).findAllByUserId(customer.getId(), pageable);
     }
 }

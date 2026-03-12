@@ -3,8 +3,8 @@ package com.damian.xBank.modules.notification.application.usecase.get;
 import com.damian.xBank.modules.notification.application.dto.NotificationResult;
 import com.damian.xBank.modules.notification.domain.model.Notification;
 import com.damian.xBank.modules.notification.infrastructure.repository.NotificationRepository;
-import com.damian.xBank.modules.notification.infrastructure.rest.mapper.NotificationDtoMapper;
 import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.shared.infrastructure.web.dto.response.PageResult;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,8 +30,8 @@ public class GetCurrentUserNotifications {
      *
      * @param query pagination params
      * @return Page<Notification> a page of notifications
-     */ // TODO change to PageResult<NotificationResult>?
-    public GetCurrentUserNotificationsResult execute(GetCurrentUserNotificationsQuery query) {
+     */
+    public PageResult<NotificationResult> execute(GetCurrentUserNotificationsQuery query) {
         // Current user
         final User currentUser = authenticationContext.getCurrentUser();
 
@@ -41,9 +41,7 @@ public class GetCurrentUserNotifications {
             currentUser.getId(),
             query.pageable()
         );
-        Page<NotificationResult> notificationsResult = NotificationDtoMapper.toPageResult(notifications);
 
-        // Fetch and return notifications for the current user
-        return new GetCurrentUserNotificationsResult(notificationsResult);
+        return PageResult.fromPagedNotifications(notifications);
     }
 }

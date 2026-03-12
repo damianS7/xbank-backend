@@ -110,7 +110,6 @@ public class BankingAccount {
         this.currency = currency;
         this.balance = initialBalance;
         this.status = initialStatus;
-        this.user.addBankingAccount(this);
     }
 
     public static BankingAccount create(
@@ -191,7 +190,7 @@ public class BankingAccount {
     public Instant getUpdatedAt() {
         return updatedAt;
     }
-    
+
     public Set<BankingCard> getBankingCards() {
         return this.bankingCards;
     }

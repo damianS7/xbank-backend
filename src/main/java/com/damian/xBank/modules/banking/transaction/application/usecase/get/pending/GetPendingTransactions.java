@@ -42,6 +42,6 @@ public class GetPendingTransactions {
                 query.pageable()
             );
 
-        return PageResult.from(pagedTransactions);
+        return PageResult.fromPagedTransactions(pagedTransactions);
     }
 }

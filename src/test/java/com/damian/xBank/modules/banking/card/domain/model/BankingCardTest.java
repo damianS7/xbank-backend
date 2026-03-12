@@ -55,8 +55,6 @@ public class BankingCardTest extends AbstractServiceTest {
             .withAccountNumber("US1200001111112233335555")
             .build();
 
-        user.addBankingAccount(bankingAccount);
-
         bankingCard = BankingCard
             .create(bankingAccount)
             .setCardNumber("1234123412341234");

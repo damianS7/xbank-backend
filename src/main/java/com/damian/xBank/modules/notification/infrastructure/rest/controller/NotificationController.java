@@ -7,10 +7,10 @@ import com.damian.xBank.modules.notification.application.usecase.delete.DeleteNo
 import com.damian.xBank.modules.notification.application.usecase.delete.DeleteNotificationsCommand;
 import com.damian.xBank.modules.notification.application.usecase.get.GetCurrentUserNotifications;
 import com.damian.xBank.modules.notification.application.usecase.get.GetCurrentUserNotificationsQuery;
-import com.damian.xBank.modules.notification.application.usecase.get.GetCurrentUserNotificationsResult;
 import com.damian.xBank.modules.notification.application.usecase.get.GetCurrentUserSinkNotifications;
 import com.damian.xBank.modules.notification.infrastructure.rest.request.NotificationDeleteRequest;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
+import com.damian.xBank.shared.infrastructure.web.dto.response.PageResult;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.data.domain.Pageable;
@@ -62,11 +62,11 @@ public class NotificationController {
         Pageable pageable
     ) {
         GetCurrentUserNotificationsQuery query = new GetCurrentUserNotificationsQuery(pageable);
-        GetCurrentUserNotificationsResult notifications = getCurrentUserNotifications.execute(query);
+        PageResult<NotificationResult> notifications = getCurrentUserNotifications.execute(query);
 
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(notifications.pagedResult());
+            .body(notifications);
     }
 
     // endpoint to delete a batch of notifications by its id

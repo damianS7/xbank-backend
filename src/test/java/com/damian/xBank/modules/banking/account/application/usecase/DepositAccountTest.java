@@ -70,8 +70,6 @@ public class DepositAccountTest extends AbstractServiceTest {
             .withType(BankingAccountType.SAVINGS)
             .withAccountNumber("ES1234567890123456789012")
             .build();
-
-        customer.addBankingAccount(bankingAccount);
     }
 
     @Test
