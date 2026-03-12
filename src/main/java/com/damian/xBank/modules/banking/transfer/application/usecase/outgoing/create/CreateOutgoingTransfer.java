@@ -49,11 +49,10 @@ public class CreateOutgoingTransfer {
         BankingTransfer transfer = BankingTransfer.create(
             fromAccount,
             toAccount,
-            command.amount()
+            command.toAccountNumber(),
+            command.amount(),
+            command.description()
         );
-
-        transfer.setDescription(command.description());
-        transfer.setToAccountIban(command.toAccountNumber());
 
         bankingTransferRepository.save(transfer);
 

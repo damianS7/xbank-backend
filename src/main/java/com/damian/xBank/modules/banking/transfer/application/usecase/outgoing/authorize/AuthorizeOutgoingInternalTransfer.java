@@ -21,7 +21,7 @@ public class AuthorizeOutgoingInternalTransfer {
             .findById(command.transferId())
             .orElseThrow();
 
-        transfer.authorize();
+        transfer.authorize("provider-id");
 
         bankingTransferRepository.save(transfer);
     }

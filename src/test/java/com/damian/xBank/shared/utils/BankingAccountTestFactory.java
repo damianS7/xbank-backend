@@ -1,6 +1,7 @@
 package com.damian.xBank.shared.utils;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestBuilder;
 import com.damian.xBank.modules.user.user.domain.model.User;
 
 public class BankingAccountTestFactory {

@@ -2,6 +2,7 @@ package com.damian.xBank.modules.banking.card.application.usecase;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestBuilder;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.card.application.usecase.set.pin.SetBankingCardPin;
 import com.damian.xBank.modules.banking.card.application.usecase.set.pin.SetBankingCardPinCommand;
@@ -13,7 +14,6 @@ import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordCo
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
-import com.damian.xBank.shared.utils.BankingAccountTestBuilder;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;

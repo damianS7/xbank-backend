@@ -2,6 +2,7 @@ package com.damian.xBank.modules.banking.transfer.infrastructure.rest.controller
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestBuilder;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.transfer.application.usecase.incoming.authorize.AuthorizeIncomingTransferResult;
 import com.damian.xBank.modules.banking.transfer.domain.model.TransferAuthorizationStatus;
@@ -9,7 +10,6 @@ import com.damian.xBank.modules.banking.transfer.infrastructure.rest.request.Aut
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
-import com.damian.xBank.shared.utils.BankingAccountTestBuilder;
 import com.damian.xBank.shared.utils.JsonHelper;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;

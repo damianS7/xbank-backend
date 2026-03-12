@@ -81,7 +81,7 @@ public class BankingAccount {
 
     private static final int MAX_CARDS_PER_ACCOUNT = 5;
 
-    public BankingAccount() {
+    protected BankingAccount() {
         this.accountTransactions = new HashSet<>();
         this.bankingCards = new HashSet<>();
         this.balance = BigDecimal.valueOf(0);
@@ -93,7 +93,7 @@ public class BankingAccount {
         this.createdAt = Instant.now();
     }
 
-    public BankingAccount(
+    BankingAccount(
         Long id,
         User user,
         String accountNumber,
@@ -184,6 +184,14 @@ public class BankingAccount {
         return MAX_CARDS_PER_ACCOUNT;
     }
 
+    public String getAlias() {
+        return alias;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
     public void addTransaction(BankingTransaction transaction) {
         if (transaction.getBankingAccount() != this) {
             transaction.setBankingAccount(this);
@@ -196,7 +204,7 @@ public class BankingAccount {
         return this.bankingCards;
     }
 
-    public BankingAccount addBankingCard(BankingCard bankingCard) {
+    public void addBankingCard(BankingCard bankingCard) {
         // check that the card can be added
         assertCanAddCard();
 
@@ -205,20 +213,10 @@ public class BankingAccount {
         }
 
         this.bankingCards.add(bankingCard);
-
-        return this;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
     }
 
     private void markAsUpdated() {
         this.updatedAt = Instant.now();
-    }
-
-    public String getAlias() {
-        return alias;
     }
 
     public void changeAlias(String alias) {
@@ -254,20 +252,16 @@ public class BankingAccount {
      * @return the current validator instance for chaining
      * @throws BankingAccountInsufficientFundsException if the account does not have sufficient funds
      */
-    public BankingAccount assertSufficientFunds(BigDecimal amount) {
+    public void assertSufficientFunds(BigDecimal amount) {
         if (!this.hasSufficientFunds(amount)) {
             throw new BankingAccountInsufficientFundsException(this.getId(), getBalance(), amount);
         }
-
-        return this;
     }
 
-    public BankingAccount assertSufficientReservedFunds(BigDecimal amount) {
+    public void assertSufficientReservedFunds(BigDecimal amount) {
         if (!this.hasSufficientReservedFunds(amount)) {
             throw new BankingAccountInsufficientFundsException(this.getId(), getBalance(), amount);
         }
-
-        return this;
     }
 
     /**
@@ -331,29 +325,24 @@ public class BankingAccount {
     /**
      * Validate account is not CLOSED.
      *
-     * @return the current validator instance for chaining
      * @throws BankingAccountClosedException if the account does not belong to the customer
      */
-    public BankingAccount assertNotClosed() {
+    public void assertNotClosed() {
         // check if account is CLOSED
         if (isClosed()) {
             throw new BankingAccountClosedException(getId());
         }
-
-        return this;
     }
 
     /**
      * Assert account is not CLOSED or SUSPENDED.
      *
-     * @return the current validator instance for chaining
      * @throws BankingAccountSuspendedException if the account does not belong to the customer
      * @throws BankingAccountClosedException    if the account does not belong to the customer
      */
-    public BankingAccount assertActive() {
+    public void assertActive() {
         this.assertNotSuspended();
         this.assertNotClosed();
-        return this;
     }
 
     public void activateBy(User actor) {

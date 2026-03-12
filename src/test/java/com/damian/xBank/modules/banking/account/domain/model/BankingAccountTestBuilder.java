@@ -1,9 +1,5 @@
-package com.damian.xBank.shared.utils;
+package com.damian.xBank.modules.banking.account.domain.model;
 
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.user.user.domain.model.User;
 
 import java.math.BigDecimal;

@@ -2,14 +2,14 @@ package com.damian.xBank.modules.banking.transfer.infrastructure.rest.controller
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestBuilder;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
-import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
-import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transfer.application.usecase.outgoing.confirm.ConfirmOutgoingTransferResult;
 import com.damian.xBank.modules.banking.transfer.application.usecase.outgoing.create.CreateOutgoingTransferResult;
 import com.damian.xBank.modules.banking.transfer.application.usecase.outgoing.reject.RejectOutgoingTransferResult;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferStatus;
+import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferTestBuilder;
 import com.damian.xBank.modules.banking.transfer.infrastructure.rest.request.ConfirmOutgoingTransferRequest;
 import com.damian.xBank.modules.banking.transfer.infrastructure.rest.request.CreateOutgoingTransferRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -17,7 +17,6 @@ import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
-import com.damian.xBank.shared.utils.BankingAccountTestBuilder;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -78,7 +77,7 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
             .withType(BankingAccountType.SAVINGS)
             .withAccountNumber("DE1234567890123456789012")
             .build();
-        
+
         bankingAccountRepository.save(toBankingAccount);
 
         admin = UserTestBuilder.aCustomer()
@@ -89,27 +88,13 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
 
         userRepository.save(admin);
 
-        transfer = BankingTransfer
-            .create(fromBankingAccount, toBankingAccount, BigDecimal.valueOf(100))
-            .setToAccountIban(toBankingAccount.getAccountNumber())
-            .setDescription("a gift!");
-
-        transfer.addTransaction(
-            BankingTransaction.create(
-                BankingTransactionType.TRANSFER_TO,
-                fromBankingAccount,
-                transfer.getAmount()
-            )
-        );
-
-        transfer.addTransaction(
-            BankingTransaction.create(
-                BankingTransactionType.TRANSFER_FROM,
-                toBankingAccount,
-                transfer.getAmount()
-            )
-        );
-
+        transfer = BankingTransferTestBuilder.builder()
+            .withFromAccount(fromBankingAccount)
+            .withToAccount(toBankingAccount)
+            .withAmount(BigDecimal.valueOf(100))
+            .withDescription("a gift!")
+            .build();
+      
         transferRepository.save(transfer);
     }
 

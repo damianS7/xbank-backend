@@ -54,9 +54,7 @@ public class AuthorizeOutgoingExternalTransfer {
             );
         }
 
-        transfer.setProviderAuthorizationId(response.authorizationId());
-
-        transfer.authorize();
+        transfer.authorize(response.authorizationId());
 
         // Notify sender
         notificationPublisher.publish(

@@ -32,4 +32,9 @@ public class BankingAccountNumberGeneratorImpl implements BankingAccountNumberGe
 
         return BIN + sb;
     }
+
+    @Override
+    public String getBIN() {
+        return BIN;
+    }
 }

@@ -32,4 +32,8 @@ public class BankingAccountDomainService {
         String accountNumber = bankingAccountNumberGenerator.generate();
         return BankingAccount.create(user, accountNumber, accountType, accountCurrency);
     }
+
+    public boolean isExternalBIN(String BIN) {
+        return BIN.startsWith(bankingAccountNumberGenerator.getBIN());
+    }
 }

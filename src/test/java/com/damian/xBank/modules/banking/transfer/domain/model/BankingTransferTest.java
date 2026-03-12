@@ -2,6 +2,7 @@ package com.damian.xBank.modules.banking.transfer.domain.model;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestBuilder;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
@@ -11,7 +12,6 @@ import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransfe
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferStatusTransitionException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.exception.ErrorCodes;
-import com.damian.xBank.shared.utils.BankingAccountTestBuilder;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -44,7 +44,7 @@ public class BankingTransferTest {
             .withId(5L)
             .withOwner(fromCustomer)
             .withCurrency(BankingAccountCurrency.EUR)
-            .withBalance(BigDecimal.valueOf(0))
+            .withBalance(BigDecimal.valueOf(1000))
             .withType(BankingAccountType.SAVINGS)
             .withAccountNumber("ES1234567890123456789012")
             .build();
@@ -53,30 +53,18 @@ public class BankingTransferTest {
             .withId(1L)
             .withOwner(toCustomer)
             .withCurrency(BankingAccountCurrency.EUR)
-            .withBalance(BigDecimal.valueOf(0))
+            .withBalance(BigDecimal.valueOf(1000))
             .withType(BankingAccountType.SAVINGS)
             .withAccountNumber("ES1234567890123456781012")
             .build();
 
-        transfer = BankingTransfer.create(fromAccount, toAccount, BigDecimal.ZERO)
-            .setId(2L);
-
-        BankingTransaction fromTx = BankingTransaction
-            .create(
-                BankingTransactionType.TRANSFER_TO,
-                fromAccount,
-                BigDecimal.ZERO
-            );
-
-        BankingTransaction toTx = BankingTransaction
-            .create(
-                BankingTransactionType.TRANSFER_FROM,
-                toAccount,
-                BigDecimal.ZERO
-            );
-
-        transfer.addTransaction(fromTx);
-        transfer.addTransaction(toTx);
+        transfer = BankingTransferTestBuilder.builder()
+            .withId(2L)
+            .withFromAccount(fromAccount)
+            .withToAccount(toAccount)
+            .withAmount(BigDecimal.ZERO)
+            .withDescription("a gift!")
+            .build();
     }
 
     @Test
@@ -165,28 +153,13 @@ public class BankingTransferTest {
     @DisplayName("setStatus set status COMPLETED")
     void setStatus_WhenValidTransition_UpdatesStatus() {
         // given
-        transfer.setStatus(BankingTransferStatus.CONFIRMED);
+        transfer.confirm();
 
         // when
-        BankingTransfer result = transfer.setStatus(BankingTransferStatus.AUTHORIZED);
+        transfer.authorize("1234");
 
         // then
-        assertThat(result).isSameAs(transfer);
         assertThat(transfer.getStatus()).isEqualTo(BankingTransferStatus.AUTHORIZED);
-    }
-
-    @Test
-    @DisplayName("setStatus same status does nothing")
-    void setStatus_WhenSameStatus_DoesNothing() {
-        // given
-        transfer.setStatus(BankingTransferStatus.PENDING);
-
-        // when
-        BankingTransfer result = transfer.setStatus(BankingTransferStatus.PENDING);
-
-        // then
-        assertThat(result).isSameAs(transfer);
-        assertThat(transfer.getStatus()).isEqualTo(BankingTransferStatus.PENDING);
     }
 
     @Test
@@ -196,7 +169,7 @@ public class BankingTransferTest {
         // when / then
         BankingTransferStatusTransitionException exception = assertThrows(
             BankingTransferStatusTransitionException.class,
-            () -> transfer.setStatus(BankingTransferStatus.COMPLETED)
+            () -> transfer.complete()
         );
 
         assertThat(exception)
@@ -240,31 +213,6 @@ public class BankingTransferTest {
             ).containsExactly(
                 BankingTransactionType.TRANSFER_FROM,
                 toAccount
-            );
-
-    }
-
-    @Test
-    @DisplayName("addTransaction should set transfer on transaction")
-    void addTransaction_WhenValid_SetTransferOnTransaction() {
-        // given
-        // when
-        BankingTransaction testTx = BankingTransaction
-            .create(
-                BankingTransactionType.TRANSFER_FROM,
-                toAccount,
-                BigDecimal.ZERO
-            );
-
-        transfer.addTransaction(testTx);
-
-        // then
-        assertThat(testTx.getTransfer())
-            .isNotNull()
-            .extracting(
-                BankingTransfer::getId
-            ).isEqualTo(
-                transfer.getId()
             );
 
     }
@@ -345,7 +293,8 @@ public class BankingTransferTest {
         // when
         BankingTransferCurrencyMismatchException exception = assertThrows(
             BankingTransferCurrencyMismatchException.class,
-            () -> BankingTransfer.create(fromAccount, toAccount, BigDecimal.valueOf(100))
+            () -> BankingTransfer.create(
+                fromAccount, toAccount, null, BigDecimal.valueOf(100), "")
         );
 
         assertThat(exception)
@@ -357,8 +306,13 @@ public class BankingTransferTest {
     @DisplayName("assertDifferentAccounts should return transfer when accounts are different")
     void assertDifferentAccounts_WhenAccountAreDifferent_ReturnsTransfer() {
         // given
-        transfer.setFromAccount(fromAccount);
-        transfer.setToAccount(toAccount);
+        BankingTransfer transfer = BankingTransferTestBuilder.builder()
+            .withId(1L)
+            .withFromAccount(fromAccount)
+            .withToAccount(toAccount)
+            .withAmount(BigDecimal.valueOf(100))
+            .withDescription("a gift!")
+            .build();
 
         // when
         BankingTransfer result = transfer.assertDifferentAccounts();
@@ -368,16 +322,19 @@ public class BankingTransferTest {
     }
 
     @Test
-    @DisplayName("assertDifferentAccounts should return exception when accounts are equal")
-    void assertDifferentAccounts_WhenAccountsAreEqual_ThrowsException() {
+    @DisplayName("throws exception when accounts are equal")
+    void create_WhenAccountsAreEqual_ThrowsException() {
         // given
-        transfer.setFromAccount(fromAccount);
-        transfer.setToAccount(fromAccount);
-
         // when
         BankingTransferSameAccountException exception = assertThrows(
             BankingTransferSameAccountException.class,
-            transfer::assertDifferentAccounts
+            () -> BankingTransfer.create(
+                fromAccount,
+                fromAccount,
+                null,
+                BigDecimal.valueOf(100),
+                "a gift!"
+            )
         );
 
         assertThat(exception)

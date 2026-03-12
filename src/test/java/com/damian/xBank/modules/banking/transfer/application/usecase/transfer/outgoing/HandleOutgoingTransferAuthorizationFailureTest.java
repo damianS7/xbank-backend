@@ -2,16 +2,17 @@ package com.damian.xBank.modules.banking.transfer.application.usecase.transfer.o
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestBuilder;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.transfer.application.usecase.outgoing.authorize.HandleOutgoingTransferAuthorizationFailure;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferStatus;
+import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferTestBuilder;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
 import com.damian.xBank.modules.banking.transfer.infrastructure.rest.request.OutgoingTransferFailureRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.utils.BankingAccountTestBuilder;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -66,11 +67,14 @@ public class HandleOutgoingTransferAuthorizationFailureTest extends AbstractServ
             "Error"
         );
 
-        BankingTransfer transfer = BankingTransfer.create(
-            bankingAccount,
-            null,
-            accountInitialBalance
-        );
+        BankingTransfer transfer = BankingTransferTestBuilder.builder()
+            .withId(1L)
+            .withFromAccount(bankingAccount)
+            .withToAccount(null)
+            .withToAccountIban("ES9900001111112233334444")
+            .withAmount(accountInitialBalance)
+            .withDescription("a gift!")
+            .build();
 
         transfer.confirm();
         System.out.println(transfer.getAmount());

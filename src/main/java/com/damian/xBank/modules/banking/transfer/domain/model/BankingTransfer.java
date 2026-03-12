@@ -32,6 +32,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "banking_transfers")
 public class BankingTransfer {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -77,7 +78,7 @@ public class BankingTransfer {
     @Column
     private Instant updatedAt;
 
-    public BankingTransfer() {
+    protected BankingTransfer() {
         this.type = BankingTransferType.INTERNAL;
         this.status = BankingTransferStatus.PENDING;
         this.updatedAt = Instant.now();
@@ -85,29 +86,52 @@ public class BankingTransfer {
         this.description = "";
     }
 
-    public static BankingTransfer create(
+    BankingTransfer(
+        Long transferId,
         BankingAccount fromAccount,
         BankingAccount toAccount,
-        BigDecimal amount
+        String toAccountIban,
+        BigDecimal amount,
+        String description
     ) {
-        BankingTransferType type = toAccount != null
+        this();
+        this.id = transferId;
+        this.fromAccount = fromAccount;
+        this.toAccount = toAccount;
+        this.amount = amount;
+        this.description = description;
+        this.toAccountIban = toAccountIban;
+
+        if (this.toAccount != null) {
+            this.toAccountIban = this.toAccount.getAccountNumber();
+        }
+
+        this.type = toAccount != null
             ? BankingTransferType.INTERNAL
             : BankingTransferType.EXTERNAL;
 
-        // Create the transfer
-        BankingTransfer transfer = new BankingTransfer();
-        transfer.setFromAccount(fromAccount);
-        transfer.setToAccount(toAccount);
-        transfer.setAmount(amount);
-        transfer.setType(type);
-
         // validate transfer
-        transfer.assertTransferPossible();
+        this.assertTransferPossible();
 
         // Generate transactions
-        transfer.generateTransactions();
+        this.generateTransactions();
+    }
 
-        return transfer;
+    public static BankingTransfer create(
+        BankingAccount fromAccount,
+        BankingAccount toAccount,
+        String toAccountIban,
+        BigDecimal amount,
+        String description
+    ) {
+        return new BankingTransfer(
+            null,
+            fromAccount,
+            toAccount,
+            toAccountIban,
+            amount,
+            description
+        );
     }
 
     private void generateTransactions() {
@@ -142,71 +166,36 @@ public class BankingTransfer {
         return id;
     }
 
-    public BankingTransfer setId(Long id) {
-        this.id = id;
-        return this;
-    }
-
     public BankingTransferStatus getStatus() {
         return status;
     }
 
-    public BankingTransfer setStatus(BankingTransferStatus newStatus) {
-        // if the actual status is the same as the new ... do nothing
-        if (this.status == newStatus) {
-            return this;
-        }
+    public BankingTransferType getType() {
+        return type;
+    }
 
-        if (!this.status.canTransitionTo(newStatus)) {
-            throw new BankingTransferStatusTransitionException(
-                this.id,
-                this.status.name(),
-                newStatus.name()
-            );
-        }
+    public String getToAccountIban() {
+        return toAccountIban;
+    }
 
-        this.status = newStatus;
-        this.updatedAt = Instant.now();
-        return this;
+    public String getProviderAuthorizationId() {
+        return providerAuthorizationId;
     }
 
     public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public BankingTransfer setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-        return this;
-    }
-
     public Instant getUpdatedAt() {
         return updatedAt;
-    }
-
-    public BankingTransfer setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
-        return this;
     }
 
     public BigDecimal getAmount() {
         return amount;
     }
 
-    public BankingTransfer setAmount(BigDecimal amount) {
-        this.amount = amount;
-        return this;
-    }
-
     public BankingAccount getToAccount() {
         return toAccount;
-    }
-
-    public BankingTransfer setToAccount(BankingAccount toAccount) {
-        this.toAccount = toAccount;
-        if (this.toAccount != null) {
-            this.toAccountIban = this.toAccount.getAccountNumber();
-        }
-        return this;
     }
 
     public BankingAccount getFromAccount() {
@@ -215,21 +204,6 @@ public class BankingTransfer {
 
     public String getDescription() {
         return description;
-    }
-
-    public BankingTransfer setDescription(String description) {
-        this.description = description;
-        return this;
-    }
-
-    public BankingTransfer setFromAccount(BankingAccount fromAccount) {
-        this.fromAccount = fromAccount;
-        return this;
-    }
-
-    public void addTransaction(BankingTransaction tx) {
-        tx.setTransfer(this);
-        this.transactions.add(tx);
     }
 
     public List<BankingTransaction> getTransactions() {
@@ -246,6 +220,33 @@ public class BankingTransfer {
         return getTransactions().stream().filter(
             tx -> tx.isOwnedBy(toAccount.getOwner().getId())
         ).findFirst().orElseThrow();
+    }
+
+    private void setStatus(BankingTransferStatus newStatus) {
+        // if the actual status is the same as the new ... do nothing
+        if (this.status == newStatus) {
+            return;
+        }
+
+        if (!this.status.canTransitionTo(newStatus)) {
+            throw new BankingTransferStatusTransitionException(
+                this.id,
+                this.status.name(),
+                newStatus.name()
+            );
+        }
+
+        this.status = newStatus;
+        markAsUpdated();
+    }
+
+    private void addTransaction(BankingTransaction tx) {
+        tx.setTransfer(this);
+        this.transactions.add(tx);
+    }
+
+    private void markAsUpdated() {
+        this.updatedAt = Instant.now();
     }
 
     public boolean isOwnedBy(Long userId) {
@@ -288,7 +289,8 @@ public class BankingTransfer {
         this.setStatus(BankingTransferStatus.FAILED);
     }
 
-    public void authorize() {
+    public void authorize(String providerAuthorizationId) {
+        this.providerAuthorizationId = providerAuthorizationId;
         this.setStatus(BankingTransferStatus.AUTHORIZED);
     }
 
@@ -338,11 +340,10 @@ public class BankingTransfer {
     /**
      * Assert a transfer between {@link #fromAccount} and {@link #toAccount} can be performed.
      *
-     * @return the current BankingTransfer
      * @throws BankingTransferCurrencyMismatchException if fromAccount and toAccount have different currencies
      * @throws BankingTransferSameAccountException      if fromAccount and toAccount are the same
      */
-    public BankingTransfer assertTransferPossible() {
+    public void assertTransferPossible() {
         // check if the source account is active
         fromAccount.assertActive();
 
@@ -359,34 +360,6 @@ public class BankingTransfer {
             // check currencies are the same
             this.assertCurrenciesMatch();
         }
-
-        return this;
     }
 
-    public BankingTransferType getType() {
-        return type;
-    }
-
-    public BankingTransfer setType(BankingTransferType type) {
-        this.type = type;
-        return this;
-    }
-
-    public String getToAccountIban() {
-        return toAccountIban;
-    }
-
-    public BankingTransfer setToAccountIban(String toAccountIban) {
-        this.toAccountIban = toAccountIban;
-        return this;
-    }
-
-    public String getProviderAuthorizationId() {
-        return providerAuthorizationId;
-    }
-
-    public BankingTransfer setProviderAuthorizationId(String providerAuthorizationId) {
-        this.providerAuthorizationId = providerAuthorizationId;
-        return this;
-    }
 }

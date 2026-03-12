@@ -1,6 +1,7 @@
 package com.damian.xBank.modules.banking.transfer.application.usecase.outgoing.complete;
 
 import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
+import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransferType;
 import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
 import com.damian.xBank.modules.notification.domain.factory.NotificationEventFactory;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
@@ -27,15 +28,18 @@ public class CompleteOutgoingInternalTransfer {
     public void execute(BankingTransfer transfer) {
         transfer.complete();
 
-        // Notify recipient
-        notificationPublisher.publish(
-            notificationEventFactory.transferReceived(transfer)
-        );
-
+        // TODO check this notifications ...
         // Notify sender
         notificationPublisher.publish(
             notificationEventFactory.transferAuthorized(transfer)
         );
+
+        if (transfer.getType() == BankingTransferType.INTERNAL) {
+            // Notify recipient
+            notificationPublisher.publish(
+                notificationEventFactory.transferReceived(transfer)
+            );
+        }
 
         bankingTransferRepository.save(transfer);
     }
