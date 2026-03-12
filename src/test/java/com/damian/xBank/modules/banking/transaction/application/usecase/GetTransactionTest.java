@@ -12,6 +12,8 @@ import com.damian.xBank.modules.banking.transaction.application.usecase.get.byid
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotFoundException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotOwnerException;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionTestBuilder;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -73,28 +75,28 @@ public class GetTransactionTest extends AbstractServiceTest {
         // given
         setUpContext(customer);
 
-        BankingTransaction givenTransaction = BankingTransaction
-            .create(
-                BankingTransactionType.DEPOSIT,
-                customerBankingAccount,
-                BigDecimal.valueOf(100)
-            )
-            .setId(1L)
-            .setDescription("Deposit transaction");
+        BankingTransaction transaction = BankingTransactionTestBuilder.builder()
+            .withId(1L)
+            .withAccount(customerBankingAccount)
+            .withAmount(BigDecimal.valueOf(100))
+            .withStatus(BankingTransactionStatus.PENDING)
+            .withType(BankingTransactionType.DEPOSIT)
+            .withDescription("Deposit transaction")
+            .build();
 
-        GetTransactionQuery query = new GetTransactionQuery(givenTransaction.getId());
+        GetTransactionQuery query = new GetTransactionQuery(transaction.getId());
 
         // when
-        when(bankingTransactionRepository.findById(givenTransaction.getId()))
-            .thenReturn(Optional.of(givenTransaction));
+        when(bankingTransactionRepository.findById(transaction.getId()))
+            .thenReturn(Optional.of(transaction));
 
         BankingTransactionDetailResult result = getTransaction.execute(query);
 
         // then
         assertThat(result).isNotNull();
-        assertThat(result.amount()).isEqualTo(givenTransaction.getAmount());
-        assertThat(result.type()).isEqualTo(givenTransaction.getType());
-        assertThat(result.description()).isEqualTo(givenTransaction.getDescription());
+        assertThat(result.amount()).isEqualTo(transaction.getAmount());
+        assertThat(result.type()).isEqualTo(transaction.getType());
+        assertThat(result.description()).isEqualTo(transaction.getDescription());
     }
 
     @Test
@@ -131,20 +133,20 @@ public class GetTransactionTest extends AbstractServiceTest {
 
         setUpContext(otherCustomer);
 
-        BankingTransaction givenTransaction = BankingTransaction
-            .create(
-                BankingTransactionType.DEPOSIT,
-                customerBankingAccount,
-                BigDecimal.valueOf(100)
-            )
-            .setId(1L)
-            .setDescription("Deposit transaction");
+        BankingTransaction transaction = BankingTransactionTestBuilder.builder()
+            .withId(1L)
+            .withAccount(customerBankingAccount)
+            .withAmount(BigDecimal.valueOf(100))
+            .withStatus(BankingTransactionStatus.PENDING)
+            .withType(BankingTransactionType.DEPOSIT)
+            .withDescription("Deposit transaction")
+            .build();
 
-        GetTransactionQuery query = new GetTransactionQuery(givenTransaction.getId());
+        GetTransactionQuery query = new GetTransactionQuery(transaction.getId());
 
         // when
         when(bankingTransactionRepository.findById(anyLong()))
-            .thenReturn(Optional.of(givenTransaction));
+            .thenReturn(Optional.of(transaction));
 
         BankingTransactionNotOwnerException exception = assertThrows(
             BankingTransactionNotOwnerException.class,

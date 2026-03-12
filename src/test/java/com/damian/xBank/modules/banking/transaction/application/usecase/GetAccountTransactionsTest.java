@@ -9,6 +9,8 @@ import com.damian.xBank.modules.banking.transaction.application.dto.BankingTrans
 import com.damian.xBank.modules.banking.transaction.application.usecase.get.account.GetAccountTransactions;
 import com.damian.xBank.modules.banking.transaction.application.usecase.get.account.GetAccountTransactionsQuery;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionTestBuilder;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -72,17 +74,17 @@ public class GetAccountTransactionsTest extends AbstractServiceTest {
 
         Pageable pageable = PageRequest.of(0, 10);
 
-        BankingTransaction givenTransaction = BankingTransaction
-            .create(
-                BankingTransactionType.DEPOSIT,
-                customerBankingAccount,
-                BigDecimal.valueOf(100)
-            )
-            .setId(1L)
-            .setDescription("Deposit transaction");
+        BankingTransaction transaction = BankingTransactionTestBuilder.builder()
+            .withId(1L)
+            .withAccount(customerBankingAccount)
+            .withAmount(BigDecimal.valueOf(100))
+            .withStatus(BankingTransactionStatus.PENDING)
+            .withType(BankingTransactionType.DEPOSIT)
+            .withDescription("Deposit transaction")
+            .build();
 
         Page<BankingTransaction> page = new PageImpl<>(
-            List.of(givenTransaction),
+            List.of(transaction),
             pageable,
             1
         );

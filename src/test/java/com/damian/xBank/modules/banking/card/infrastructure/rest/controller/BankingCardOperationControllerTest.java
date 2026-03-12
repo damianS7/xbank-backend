@@ -14,6 +14,7 @@ import com.damian.xBank.modules.banking.card.infrastructure.rest.request.Capture
 import com.damian.xBank.modules.banking.card.infrastructure.rest.request.WithdrawFromATMRequest;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionTestBuilder;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.payment.checkout.application.PaymentNetworkGateway;
 import com.damian.xBank.modules.payment.checkout.domain.PaymentAuthorizationStatus;
@@ -83,6 +84,7 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
     void postWithdraw_WhenValidRequest_Returns201Created() throws Exception {
         // given
         login(customer);
+        BigDecimal initialBalance = customerBankingAccount.getBalance();
 
         WithdrawFromATMRequest request = new WithdrawFromATMRequest(
             BigDecimal.valueOf(100),
@@ -108,10 +110,9 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
         assertThat(response).isNotNull();
         assertThat(response.amount()).isEqualTo(request.amount());
         assertThat(response.status()).isEqualTo(BankingTransactionStatus.COMPLETED);
-        assertThat(response.balanceBefore())
-            .isEqualByComparingTo(customerBankingAccount.getBalance());
+        assertThat(response.balanceBefore()).isEqualByComparingTo(initialBalance);
         assertThat(response.balanceAfter())
-            .isEqualByComparingTo(customerBankingAccount.getBalance().subtract(request.amount()));
+            .isEqualByComparingTo(initialBalance.subtract(request.amount()));
     }
 
     @Test
@@ -154,13 +155,15 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
 
         BigDecimal initialBalance = customerBankingAccount.getBalance();
 
-        BankingTransaction transaction = BankingTransaction.create(
-            BankingTransactionType.CARD_CHARGE,
-            customerBankingCard,
-            BigDecimal.valueOf(100)
-        );
-        transaction.setStatus(BankingTransactionStatus.PENDING);
-        bankingTransactionRepository.save(transaction);
+        BankingTransaction transaction = BankingTransactionTestBuilder.builder()
+            .withCard(customerBankingCard)
+            .withAmount(BigDecimal.valueOf(100))
+            .withStatus(BankingTransactionStatus.PENDING)
+            .withType(BankingTransactionType.CARD_CHARGE)
+            .withDescription("Deposit transaction")
+            .build();
+
+        transactionRepository.save(transaction);
 
         CaptureCardPaymentRequest request = new CaptureCardPaymentRequest(
             transaction.getId()

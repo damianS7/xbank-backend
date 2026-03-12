@@ -191,15 +191,7 @@ public class BankingAccount {
     public Instant getUpdatedAt() {
         return updatedAt;
     }
-
-    public void addTransaction(BankingTransaction transaction) {
-        if (transaction.getBankingAccount() != this) {
-            transaction.setBankingAccount(this);
-        }
-
-        this.accountTransactions.add(transaction);
-    }
-
+    
     public Set<BankingCard> getBankingCards() {
         return this.bankingCards;
     }

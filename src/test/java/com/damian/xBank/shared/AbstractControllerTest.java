@@ -71,9 +71,6 @@ public abstract class AbstractControllerTest {
     protected UserTokenRepository userTokenRepository;
 
     @Autowired
-    protected BankingTransactionRepository bankingTransactionRepository;
-
-    @Autowired
     protected UserRepository userRepository;
 
     @Autowired

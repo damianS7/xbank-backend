@@ -14,8 +14,9 @@ import com.damian.xBank.modules.banking.card.domain.model.CardExpiration;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionTestBuilder;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
-import com.damian.xBank.modules.banking.transaction.infrastructure.service.BankingTransactionPersistenceService;
+import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.notification.domain.factory.NotificationEventFactory;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -46,7 +47,7 @@ public class WithdrawFromATMTest extends AbstractServiceTest {
     private NotificationPublisher notificationPublisher;
 
     @Mock
-    private BankingTransactionPersistenceService bankingTransactionPersistenceService;
+    private BankingTransactionRepository bankingTransactionRepository;
 
     @Mock
     private BankingCardRepository bankingCardRepository;
@@ -90,30 +91,31 @@ public class WithdrawFromATMTest extends AbstractServiceTest {
         // given
         setUpContext(customer);
 
-        WithdrawFromATMCommand
-            command
-            = new WithdrawFromATMCommand(
+        WithdrawFromATMCommand command = new WithdrawFromATMCommand(
             bankingCard.getId(),
             bankingAccount.getBalance(),
             bankingCard.getCardPin()
         );
 
-        BankingTransaction givenBankingTransaction = new BankingTransaction(bankingAccount);
-        givenBankingTransaction.setType(BankingTransactionType.WITHDRAWAL);
-        givenBankingTransaction.setAmount(command.amount());
+        BankingTransaction transaction = BankingTransactionTestBuilder.builder()
+            .withCard(bankingCard)
+            .withType(BankingTransactionType.WITHDRAWAL)
+            .withAmount(command.amount())
+            .build();
 
-        when(bankingCardRepository.findById(anyLong())).thenReturn(Optional.of(bankingCard));
+        when(bankingCardRepository.findById(anyLong())).
+            thenReturn(Optional.of(bankingCard));
 
-        when(bankingTransactionPersistenceService.record(
+        when(bankingTransactionRepository.save(
             any(BankingTransaction.class)
-        )).thenReturn(givenBankingTransaction);
+        )).thenReturn(transaction);
 
         // then
         WithdrawFromATMResult result = withdrawFromATM.execute(command);
 
         // then
         assertThat(result).isNotNull();
-        assertThat(result.type()).isEqualTo(givenBankingTransaction.getType());
+        assertThat(result.type()).isEqualTo(transaction.getType());
         assertThat(result.status()).isEqualTo(BankingTransactionStatus.COMPLETED);
         assertThat(bankingAccount.getBalance()).isEqualTo(BigDecimal.ZERO);
     }
@@ -146,12 +148,8 @@ public class WithdrawFromATMTest extends AbstractServiceTest {
             bankingCard.getCardPin()
         );
 
-        BankingTransaction givenBankingTransaction = new BankingTransaction(bankingAccount);
-        givenBankingTransaction.setType(BankingTransactionType.WITHDRAWAL);
-        givenBankingTransaction.setAmount(command.amount());
-        givenBankingTransaction.setDescription("WITHDRAWAL");
-
-        when(bankingCardRepository.findById(anyLong())).thenReturn(Optional.of(bankingCard));
+        when(bankingCardRepository.findById(anyLong()))
+            .thenReturn(Optional.of(bankingCard));
 
         // then
         BankingCardInsufficientFundsException exception = assertThrows(

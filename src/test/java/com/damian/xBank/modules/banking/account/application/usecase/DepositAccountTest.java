@@ -12,7 +12,7 @@ import com.damian.xBank.modules.banking.account.infrastructure.repository.Bankin
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
-import com.damian.xBank.modules.banking.transaction.infrastructure.service.BankingTransactionPersistenceService;
+import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.notification.domain.factory.NotificationEventFactory;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -46,7 +46,7 @@ public class DepositAccountTest extends AbstractServiceTest {
     private BankingAccountRepository bankingAccountRepository;
 
     @Mock
-    private BankingTransactionPersistenceService bankingTransactionPersistenceService;
+    private BankingTransactionRepository bankingTransactionRepository;
 
     @Mock
     private NotificationPublisher notificationPublisher;
@@ -83,10 +83,7 @@ public class DepositAccountTest extends AbstractServiceTest {
 
         BigDecimal initialBalance = bankingAccount.getBalance();
         BigDecimal depositAmount = BigDecimal.valueOf(3000);
-
-        BankingTransaction transaction = new BankingTransaction(bankingAccount);
-        transaction.setType(BankingTransactionType.DEPOSIT);
-        transaction.setAmount(depositAmount);
+        BigDecimal afterBalance = initialBalance.add(depositAmount);
 
         DepositAccountCommand command = new DepositAccountCommand(
             bankingAccount.getId(),
@@ -94,10 +91,11 @@ public class DepositAccountTest extends AbstractServiceTest {
             depositAmount
         );
 
-        when(bankingAccountRepository.findById(bankingAccount.getId())).thenReturn(Optional.of(
-            bankingAccount));
+        // when
+        when(bankingAccountRepository.findById(bankingAccount.getId()))
+            .thenReturn(Optional.of(bankingAccount));
 
-        when(bankingTransactionPersistenceService.record(
+        when(bankingTransactionRepository.save(
             any(BankingTransaction.class)
         )).thenAnswer(i -> i.getArgument(0));
 
@@ -110,16 +108,15 @@ public class DepositAccountTest extends AbstractServiceTest {
             .extracting(
                 DepositAccountResult::type,
                 DepositAccountResult::status,
-                DepositAccountResult::amount,
                 DepositAccountResult::balanceBefore,
+                DepositAccountResult::amount,
                 DepositAccountResult::balanceAfter
-
             ).containsExactly(
                 BankingTransactionType.DEPOSIT,
                 BankingTransactionStatus.COMPLETED,
-                depositAmount,
                 initialBalance,
-                initialBalance.add(depositAmount)
+                depositAmount,
+                afterBalance
             );
     }
 

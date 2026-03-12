@@ -65,58 +65,92 @@ public class BankingTransaction {
     @Column
     private Instant updatedAt;
 
-    public BankingTransaction() {
+    protected BankingTransaction() {
         this.amount = BigDecimal.valueOf(0);
         this.status = BankingTransactionStatus.PENDING;
         this.updatedAt = Instant.now();
         this.createdAt = Instant.now();
     }
 
-    public BankingTransaction(BankingAccount bankingAccount) {
+    BankingTransaction(
+        Long transactionId,
+        BankingAccount bankingAccount,
+        BankingCard bankingCard,
+        BankingTransfer transfer,
+        BigDecimal amount,
+        String description,
+        BankingTransactionType type,
+        BankingTransactionStatus status
+    ) {
         this();
+        this.id = transactionId;
         this.bankingAccount = bankingAccount;
-    }
-
-    public BankingTransaction(BankingCard bankingCard) {
-        this(bankingCard.getBankingAccount());
         this.bankingCard = bankingCard;
+        this.transfer = transfer;
+        this.amount = amount;
+        this.description = description;
+        this.type = type;
+        this.status = status;
+        this.calcBalanceBefore();
+        this.calcBalanceAfter();
     }
 
     public static BankingTransaction create(
         BankingTransactionType type,
         BankingAccount account,
-        BigDecimal amount
+        BigDecimal amount,
+        String description
     ) {
-        BankingTransaction transaction = new BankingTransaction();
-        transaction.setBankingAccount(account);
-        transaction.setType(type);
-        transaction.setAmount(amount);
-        transaction.setBalanceBefore(account.getBalance());
-        transaction.setBalanceAfter(transaction.calcBalanceAfter());
-        return transaction;
+        return new BankingTransaction(
+            null,
+            account,
+            null,
+            null,
+            amount,
+            description,
+            type,
+            BankingTransactionStatus.PENDING
+        );
     }
 
     public static BankingTransaction create(
         BankingTransactionType type,
         BankingCard card,
-        BigDecimal amount
+        BigDecimal amount,
+        String description
     ) {
-        BankingTransaction t = create(type, card.getBankingAccount(), amount);
-        t.setBankingCard(card);
-        return t;
+        return new BankingTransaction(
+            null,
+            card.getBankingAccount(),
+            card,
+            null,
+            amount,
+            description,
+            type,
+            BankingTransactionStatus.PENDING
+        );
     }
 
-    public boolean isOwnedBy(Long userId) {
-        return Objects.equals(getBankingAccount().getOwner().getId(), userId);
+    public static BankingTransaction create(
+        BankingTransactionType type,
+        BankingAccount account,
+        BankingTransfer transfer,
+        String description
+    ) {
+        return new BankingTransaction(
+            null,
+            account,
+            null,
+            transfer,
+            transfer.getAmount(),
+            description,
+            type,
+            BankingTransactionStatus.PENDING
+        );
     }
 
     public Long getId() {
         return id;
-    }
-
-    public BankingTransaction setId(Long id) {
-        this.id = id;
-        return this;
     }
 
     public BankingAccount getBankingAccount() {
@@ -127,37 +161,22 @@ public class BankingTransaction {
         return this.bankingAccount != null ? this.bankingAccount.getId() : null;
     }
 
-    public BankingTransaction setBankingAccount(BankingAccount account) {
-        this.bankingAccount = account;
-        return this;
-    }
-
     public BigDecimal getAmount() {
         return amount;
-    }
-
-    public BankingTransaction setAmount(BigDecimal amount) {
-        this.amount = amount;
-        return this;
     }
 
     public BankingTransactionType getType() {
         return type;
     }
 
-    public BankingTransaction setType(BankingTransactionType transactionType) {
-        this.type = transactionType;
-        return this;
-    }
-
     public BankingTransactionStatus getStatus() {
         return status;
     }
 
-    public BankingTransaction setStatus(BankingTransactionStatus newStatus) {
+    private void setStatus(BankingTransactionStatus newStatus) {
         // if the actual status is the same as the new ... do nothing
         if (this.status == newStatus) {
-            return this;
+            return;
         }
 
         if (!this.status.canTransitionTo(newStatus)) {
@@ -169,7 +188,7 @@ public class BankingTransaction {
         }
 
         this.status = newStatus;
-        return this;
+        markAsUpdated();
     }
 
     public BankingTransfer getTransfer() {
@@ -180,36 +199,20 @@ public class BankingTransaction {
         return transfer != null ? transfer.getId() : null;
     }
 
-    public BankingTransaction setTransfer(BankingTransfer transfer) {
-        this.transfer = transfer;
-        return this;
-    }
-
     public Instant getCreatedAt() {
         return createdAt;
-    }
-
-    public BankingTransaction setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-        return this;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public BankingTransaction setDescription(String description) {
-        this.description = description;
-        return this;
-    }
-
     public Instant getUpdatedAt() {
         return updatedAt;
     }
 
-    public BankingTransaction setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
-        return this;
+    private void markAsUpdated() {
+        this.updatedAt = Instant.now();
     }
 
     public BankingCard getBankingCard() {
@@ -220,39 +223,32 @@ public class BankingTransaction {
         return this.bankingCard != null ? this.bankingCard.getId() : null;
     }
 
-    public BankingTransaction setBankingCard(BankingCard bankingCard) {
-        this.bankingCard = bankingCard;
-        return this;
-    }
-
     public BigDecimal getBalanceBefore() {
         return balanceBefore;
-    }
-
-    public BankingTransaction setBalanceBefore(BigDecimal balanceBefore) {
-        this.balanceBefore = balanceBefore;
-        return this;
     }
 
     public BigDecimal getBalanceAfter() {
         return balanceAfter;
     }
 
-    public BankingTransaction setBalanceAfter(BigDecimal balanceAfter) {
-        this.balanceAfter = balanceAfter;
-        return this;
+    public boolean isOwnedBy(Long userId) {
+        return Objects.equals(getBankingAccount().getOwner().getId(), userId);
     }
 
-    private BigDecimal calcBalanceAfter() {
-        if (type == BankingTransactionType.DEPOSIT || type == BankingTransactionType.TRANSFER_FROM) {
-            return balanceBefore.add(this.amount);
+    private void calcBalanceBefore() {
+        if (this.bankingAccount != null) {
+            this.balanceBefore = this.bankingAccount.getBalance();
+            return;
         }
+        this.balanceBefore = BigDecimal.valueOf(0);
+    }
 
-        if (type == BankingTransactionType.TRANSFER_TO || type == BankingTransactionType.CARD_CHARGE) {
-            return balanceBefore.subtract(this.amount);
+    private void calcBalanceAfter() {
+        switch (type) {
+            case DEPOSIT, TRANSFER_FROM -> this.balanceAfter = balanceBefore.add(this.amount);
+            case TRANSFER_TO, CARD_CHARGE, WITHDRAWAL -> this.balanceAfter = balanceBefore.subtract(this.amount);
+            default -> this.balanceAfter = balanceBefore;
         }
-
-        return balanceBefore.subtract(this.amount);
     }
 
     public void capture() {
@@ -261,14 +257,12 @@ public class BankingTransaction {
     }
 
     public void complete() {
-        this.balanceBefore = bankingAccount.getBalance();
-        this.balanceAfter = calcBalanceAfter();
         this.setStatus(BankingTransactionStatus.COMPLETED);
         this.updatedAt = Instant.now();
     }
 
     public void fail(String failReason) {
-        this.setDescription(failReason);
+        this.description = failReason;
         this.setStatus(BankingTransactionStatus.FAILED);
         this.updatedAt = Instant.now();
     }

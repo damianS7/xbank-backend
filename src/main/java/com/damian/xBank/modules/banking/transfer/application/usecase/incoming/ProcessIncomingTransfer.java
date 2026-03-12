@@ -38,11 +38,13 @@ public class ProcessIncomingTransfer {
                 () -> new BankingAccountNotFoundException(request.toIban())
             );
 
-        BankingTransaction bankingTransaction = new BankingTransaction();
-        bankingTransaction.setType(BankingTransactionType.TRANSFER_FROM);
-        bankingTransaction.setBankingAccount(customerAccount);
-        bankingTransaction.setDescription("Incoming transfer. reference: " + request.reference());
-        bankingTransaction.setAmount(request.amount());
+        BankingTransaction bankingTransaction = BankingTransaction.create(
+            BankingTransactionType.TRANSFER_FROM,
+            customerAccount,
+            request.amount(),
+            "Incoming transfer. reference: " + request.reference()
+        );
+
         bankingTransaction.complete();
 
         customerAccount.deposit(request.amount());

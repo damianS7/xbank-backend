@@ -5,9 +5,8 @@ import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountN
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
-import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
-import com.damian.xBank.modules.banking.transaction.infrastructure.service.BankingTransactionPersistenceService;
+import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.notification.domain.factory.NotificationEventFactory;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -23,21 +22,21 @@ public class DepositAccount {
     private final NotificationEventFactory notificationEventFactory;
     private final BankingAccountRepository bankingAccountRepository;
     private final AuthenticationContext authenticationContext;
-    private final BankingTransactionPersistenceService bankingTransactionPersistenceService;
     private final NotificationPublisher notificationPublisher;
+    private final BankingTransactionRepository bankingTransactionRepository;
 
     public DepositAccount(
         NotificationEventFactory notificationEventFactory,
         BankingAccountRepository bankingAccountRepository,
         AuthenticationContext authenticationContext,
-        BankingTransactionPersistenceService bankingTransactionPersistenceService,
-        NotificationPublisher notificationPublisher
+        NotificationPublisher notificationPublisher,
+        BankingTransactionRepository bankingTransactionRepository
     ) {
         this.notificationEventFactory = notificationEventFactory;
-        this.bankingTransactionPersistenceService = bankingTransactionPersistenceService;
         this.notificationPublisher = notificationPublisher;
         this.bankingAccountRepository = bankingAccountRepository;
         this.authenticationContext = authenticationContext;
+        this.bankingTransactionRepository = bankingTransactionRepository;
     }
 
     /**
@@ -70,22 +69,19 @@ public class DepositAccount {
         // Validate account is operable
         bankingAccount.assertActive();
 
-        BankingTransaction transaction = BankingTransaction
-            .create(
-                BankingTransactionType.DEPOSIT,
-                bankingAccount,
-                command.amount()
-            )
-            .setDescription("DEPOSIT by " + command.depositorName());
-
         // if the transaction is created, add the amount to balance
-        bankingAccount.deposit(command.amount());
+        BankingTransaction transaction = BankingTransaction.create(
+            BankingTransactionType.DEPOSIT,
+            bankingAccount,
+            command.amount(),
+            "DEPOSIT by " + command.depositorName()
+        );
 
-        // transaction is completed
-        transaction.setStatus(BankingTransactionStatus.COMPLETED);
+        bankingAccount.deposit(command.amount());
+        transaction.complete();
 
         // save the transaction
-        bankingTransactionPersistenceService.record(transaction);
+        bankingTransactionRepository.save(transaction);
 
         // Notify receiver
         notificationPublisher.publish(

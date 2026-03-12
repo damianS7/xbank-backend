@@ -82,17 +82,15 @@ public class GetCardTransactionsTest extends AbstractServiceTest {
 
         Pageable pageable = PageRequest.of(0, 10);
 
-        BankingTransaction givenTransaction = BankingTransaction
-            .create(
-                BankingTransactionType.CARD_CHARGE,
-                customerBankingCard,
-                BigDecimal.valueOf(100)
-            )
-            .setId(1L)
-            .setDescription("Deposit transaction");
+        BankingTransaction transaction = BankingTransaction.create(
+            BankingTransactionType.CARD_CHARGE,
+            customerBankingCard,
+            BigDecimal.valueOf(100),
+            "Amazon.com"
+        );
 
         Page<BankingTransaction> page = new PageImpl<>(
-            List.of(givenTransaction),
+            List.of(transaction),
             pageable,
             1
         );

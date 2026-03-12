@@ -9,6 +9,7 @@ import com.damian.xBank.modules.banking.card.application.usecase.capture.Capture
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionTestBuilder;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -67,12 +68,15 @@ public class CaptureCardPaymentTest extends AbstractServiceTest {
     @DisplayName("should capture payment when payment is authorized")
     void capturePayment_WhenAuthorized_ReturnsTransactionCaptured() {
         // given
-        BankingTransaction transaction = new BankingTransaction(bankingAccount);
-        transaction.setId(1L);
-        transaction.setBankingCard(bankingCard);
-        transaction.setType(BankingTransactionType.CARD_CHARGE);
-        transaction.setAmount(bankingAccount.getBalance());
-        transaction.setDescription("AMAZON.COM");
+        BankingTransaction transaction = BankingTransactionTestBuilder.builder()
+            .withId(1L)
+            .withAccount(bankingAccount)
+            .withCard(bankingCard)
+            .withAmount(bankingAccount.getBalance())
+            .withStatus(BankingTransactionStatus.PENDING)
+            .withType(BankingTransactionType.CARD_CHARGE)
+            .withDescription("AMAZON.COM")
+            .build();
 
         CaptureCardPaymentCommand command = new CaptureCardPaymentCommand(
             transaction.getId()

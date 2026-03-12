@@ -4,9 +4,7 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestBuilder;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
-import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotOwnerException;
-import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionStatusTransitionException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import org.assertj.core.api.Assertions;
@@ -37,12 +35,12 @@ public class BankingTransactionTest {
             .withAccountNumber("US1200001111112233335555")
             .build();
 
-        transaction = BankingTransaction
-            .create(
-                BankingTransactionType.DEPOSIT,
-                account,
-                BigDecimal.valueOf(100)
-            );
+        transaction = BankingTransaction.create(
+            BankingTransactionType.DEPOSIT,
+            account,
+            BigDecimal.valueOf(100),
+            "Test deposit transaction"
+        );
     }
 
     @Test
@@ -128,119 +126,41 @@ public class BankingTransactionTest {
     }
 
     @Test
-    @DisplayName("setBankingAccount sets the account and assigns the customer from the account")
-    void setBankingAccount_WhenAssignsAccountAndCustomer_ReturnsTransaction() {
-        // given
-        //        BankingAccount account = BankingAccount.create(customer);
-
-        // when
-        BankingTransaction result = transaction.setBankingAccount(account);
-
-        // then
-        assertThat(result).isSameAs(transaction);
-        assertThat(transaction.getBankingAccount()).isSameAs(account);
-    }
-
-    @Test
-    @DisplayName("setBankingCard sets the card and assigns the customer from the card")
-    void setBankingCard_WhenAssignsCardAndCustomer_ReturnsTransaction() {
-        // given
-        //        BankingAccount account = BankingAccount.create(customer);
-
-        BankingCard card = BankingCard.create(account);
-
-        // when
-        BankingTransaction result = transaction.setBankingCard(card);
-
-        // then
-        assertThat(result).isSameAs(transaction);
-        assertThat(transaction.getBankingCard()).isSameAs(card);
-    }
-
-    @Test
-    @DisplayName("setStatus set status COMPLETED")
-    void setStatus_WhenValidTransition_UpdatesStatus() {
-        // given
-        transaction.setStatus(BankingTransactionStatus.PENDING);
-
-        // when
-        BankingTransaction result = transaction.setStatus(BankingTransactionStatus.COMPLETED);
-
-        // then
-        assertThat(result).isSameAs(transaction);
-        assertThat(transaction.getStatus()).isEqualTo(BankingTransactionStatus.COMPLETED);
-    }
-
-    @Test
-    @DisplayName("setStatus same status does nothing")
-    void setStatus_WhenSameStatus_DoesNothing() {
-        // given
-        transaction.setStatus(BankingTransactionStatus.PENDING);
-
-        // when
-        BankingTransaction result = transaction.setStatus(BankingTransactionStatus.PENDING);
-
-        // then
-        assertThat(result).isSameAs(transaction);
-        assertThat(transaction.getStatus()).isEqualTo(BankingTransactionStatus.PENDING);
-    }
-
-    @Test
-    @DisplayName("setStatus invalid transition throws BankingTransactionStatusTransitionException")
-    void setStatus_WhenInvalidTransition_ThrowsException() {
-        // given
-        transaction.setStatus(BankingTransactionStatus.COMPLETED);
-
-        // when / then
-        BankingTransactionStatusTransitionException exception = assertThrows(
-            BankingTransactionStatusTransitionException.class,
-            () -> transaction.setStatus(BankingTransactionStatus.PENDING)
-        );
-
-        assertThat(exception)
-            .isNotNull()
-            .hasMessage(ErrorCodes.BANKING_TRANSACTION_INVALID_TRANSITION_STATUS);
-    }
-
-    @Test
     @DisplayName("Should confirm a transaction")
     void capture_WhenAuthorizedTransaction_ChangesStatusToCompleted() {
         // given
-        BankingTransaction givenTransaction = BankingTransaction
-            .create(
-                BankingTransactionType.DEPOSIT,
-                account,
-                BigDecimal.valueOf(100)
-            )
-            .setId(1L)
-            .setStatus(BankingTransactionStatus.PENDING)
-            .setDescription("Deposit transaction");
+        BankingTransaction transaction = BankingTransactionTestBuilder.builder()
+            .withId(1L)
+            .withType(BankingTransactionType.DEPOSIT)
+            .withAccount(account)
+            .withAmount(BigDecimal.valueOf(100))
+            .withDescription("Deposit transaction")
+            .withStatus(BankingTransactionStatus.PENDING)
+            .build();
 
         // when
-        givenTransaction.capture();
+        transaction.capture();
 
         // then
-        Assertions.assertThat(givenTransaction.getStatus()).isEqualTo(BankingTransactionStatus.COMPLETED);
+        Assertions.assertThat(transaction.getStatus()).isEqualTo(BankingTransactionStatus.COMPLETED);
     }
 
     @Test
     @DisplayName("Should reject a transaction")
     void failTransaction_WhenPendingTransaction_ChangesStatusToRejected() {
         // given
-        BankingTransaction givenTransaction = BankingTransaction
-            .create(
-                BankingTransactionType.DEPOSIT,
-                account,
-                BigDecimal.valueOf(100)
-            )
-            .setId(1L)
-            .setStatus(BankingTransactionStatus.PENDING)
-            .setDescription("Deposit transaction");
+        BankingTransaction transaction = BankingTransaction.create(
+            BankingTransactionType.DEPOSIT,
+            account,
+            BigDecimal.valueOf(100),
+            "Deposit transaction"
+        );
 
         // when
-        givenTransaction.fail("failed");
+        transaction.fail("failed");
 
         // then
-        Assertions.assertThat(givenTransaction).isNotNull();
+        Assertions.assertThat(transaction.getStatus())
+            .isEqualTo(BankingTransactionStatus.FAILED);
     }
 }

@@ -14,8 +14,9 @@ import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.domain.model.CardExpiration;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionTestBuilder;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
-import com.damian.xBank.modules.banking.transaction.infrastructure.service.BankingTransactionPersistenceService;
+import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.payment.checkout.domain.PaymentAuthorizationStatus;
 import com.damian.xBank.modules.payment.checkout.infrastructure.http.response.PaymentAuthorizationResponse;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -42,7 +43,7 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
     private BankingCardRepository bankingCardRepository;
 
     @Mock
-    private BankingTransactionPersistenceService bankingTransactionPersistenceService;
+    private BankingTransactionRepository bankingTransactionRepository;
 
     @InjectMocks
     private AuthorizeCardPayment cardAuthorize;
@@ -92,19 +93,21 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
             BigDecimal.valueOf(100)
         );
 
-        BankingTransaction givenBankingTransaction = new BankingTransaction(bankingAccount);
-        givenBankingTransaction.setId(1L);
-        givenBankingTransaction.setBankingCard(bankingCard);
-        givenBankingTransaction.setType(BankingTransactionType.CARD_CHARGE);
-        givenBankingTransaction.setAmount(command.amount());
-        givenBankingTransaction.setDescription(command.merchant());
+        BankingTransaction transaction = BankingTransactionTestBuilder.builder()
+            .withId(1L)
+            .withAccount(bankingAccount)
+            .withCard(bankingCard)
+            .withType(BankingTransactionType.CARD_CHARGE)
+            .withAmount(command.amount())
+            .withDescription(command.merchant())
+            .build();
 
         when(bankingCardRepository.findByCardNumber(anyString()))
             .thenReturn(Optional.of(bankingCard));
 
-        when(bankingTransactionPersistenceService.record(
+        when(bankingTransactionRepository.save(
             any(BankingTransaction.class)
-        )).thenReturn(givenBankingTransaction);
+        )).thenReturn(transaction);
 
         // then
         PaymentAuthorizationResponse response = cardAuthorize.execute(command);
@@ -116,7 +119,7 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
                 PaymentAuthorizationResponse::declineReason
             ).containsExactly(
                 PaymentAuthorizationStatus.AUTHORIZED,
-                givenBankingTransaction.getId().toString(),
+                transaction.getId().toString(),
                 null
             );
     }
@@ -135,13 +138,9 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
             BigDecimal.valueOf(100)
         );
 
-        BankingTransaction givenBankingTransaction = new BankingTransaction(bankingAccount);
-        givenBankingTransaction.setId(1L);
-        givenBankingTransaction.setType(BankingTransactionType.CARD_CHARGE);
-        givenBankingTransaction.setAmount(command.amount());
-        givenBankingTransaction.setDescription(command.merchant());
-
-        when(bankingCardRepository.findByCardNumber(anyString())).thenReturn(Optional.empty());
+        // when
+        when(bankingCardRepository.findByCardNumber(anyString()))
+            .thenReturn(Optional.empty());
 
         // then
         BankingCardNotFoundException exception = assertThrows(
@@ -169,13 +168,9 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
             BigDecimal.valueOf(100)
         );
 
-        BankingTransaction givenBankingTransaction = new BankingTransaction(bankingAccount);
-        givenBankingTransaction.setId(1L);
-        givenBankingTransaction.setType(BankingTransactionType.CARD_CHARGE);
-        givenBankingTransaction.setAmount(command.amount());
-        givenBankingTransaction.setDescription(command.merchant());
-
-        when(bankingCardRepository.findByCardNumber(anyString())).thenReturn(Optional.of(bankingCard));
+        // when
+        when(bankingCardRepository.findByCardNumber(anyString()))
+            .thenReturn(Optional.of(bankingCard));
 
         // then
         BankingCardNotActiveException exception = assertThrows(
@@ -204,13 +199,9 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
             BigDecimal.valueOf(100)
         );
 
-        BankingTransaction givenBankingTransaction = new BankingTransaction(bankingAccount);
-        givenBankingTransaction.setId(1L);
-        givenBankingTransaction.setType(BankingTransactionType.CARD_CHARGE);
-        givenBankingTransaction.setAmount(command.amount());
-        givenBankingTransaction.setDescription(command.merchant());
-
-        when(bankingCardRepository.findByCardNumber(anyString())).thenReturn(Optional.of(bankingCard));
+        // when
+        when(bankingCardRepository.findByCardNumber(anyString())).
+            thenReturn(Optional.of(bankingCard));
 
         // then
         BankingCardNotActiveException exception = assertThrows(
@@ -252,13 +243,9 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
             BigDecimal.valueOf(100)
         );
 
-        BankingTransaction givenBankingTransaction = new BankingTransaction(bankingAccount);
-        givenBankingTransaction.setId(1L);
-        givenBankingTransaction.setType(BankingTransactionType.CARD_CHARGE);
-        givenBankingTransaction.setAmount(command.amount());
-        givenBankingTransaction.setDescription(command.merchant());
-
-        when(bankingCardRepository.findByCardNumber(anyString())).thenReturn(Optional.of(bankingCard));
+        // when
+        when(bankingCardRepository.findByCardNumber(anyString()))
+            .thenReturn(Optional.of(bankingCard));
 
         // then
         BankingCardInsufficientFundsException exception = assertThrows(

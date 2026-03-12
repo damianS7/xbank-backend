@@ -2,7 +2,6 @@ package com.damian.xBank.modules.banking.transfer.domain.model;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
-import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferCurrencyMismatchException;
 import com.damian.xBank.modules.banking.transfer.domain.exception.BankingTransferNotOwnerException;
@@ -136,29 +135,25 @@ public class BankingTransfer {
 
     private void generateTransactions() {
         // Generate transactions
-        BankingTransaction fromTransaction = BankingTransaction
-            .create(
-                BankingTransactionType.TRANSFER_TO,
-                fromAccount,
-                amount
-            )
-            .setStatus(BankingTransactionStatus.PENDING)
-            .setDescription(description);
+        BankingTransaction fromTransaction = BankingTransaction.create(
+            BankingTransactionType.TRANSFER_TO,
+            fromAccount,
+            this,
+            description
+        );
 
-        addTransaction(fromTransaction);
+        this.transactions.add(fromTransaction);
 
         if (toAccount != null) {
             // create transfer transaction for the receiver of the funds
-            BankingTransaction toTransaction = BankingTransaction
-                .create(
-                    BankingTransactionType.TRANSFER_FROM,
-                    toAccount,
-                    amount
-                )
-                .setStatus(BankingTransactionStatus.PENDING)
-                .setDescription("Transfer from " + fromAccount.getOwner().getProfile().getFullName());
+            BankingTransaction toTransaction = BankingTransaction.create(
+                BankingTransactionType.TRANSFER_FROM,
+                toAccount,
+                this,
+                "Transfer from " + fromAccount.getOwner().getProfile().getFullName()
+            );
 
-            addTransaction(toTransaction);
+            this.transactions.add(toTransaction);
         }
     }
 
@@ -240,10 +235,10 @@ public class BankingTransfer {
         markAsUpdated();
     }
 
-    private void addTransaction(BankingTransaction tx) {
-        tx.setTransfer(this);
-        this.transactions.add(tx);
-    }
+    //    private void addTransaction(BankingTransaction tx) {
+    //        tx.setTransfer(this);
+    //        this.transactions.add(tx);
+    //    }
 
     private void markAsUpdated() {
         this.updatedAt = Instant.now();

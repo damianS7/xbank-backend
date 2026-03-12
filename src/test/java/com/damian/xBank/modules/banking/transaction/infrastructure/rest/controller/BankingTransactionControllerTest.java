@@ -8,6 +8,7 @@ import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.transaction.application.dto.BankingTransactionResult;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionTestBuilder;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
@@ -22,6 +23,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.math.BigDecimal;
+import java.util.Set;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -57,37 +59,6 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
             .setCardCvv("123")
             .setCardPin("1234");
 
-        customerBankingAccount.addTransaction(
-            BankingTransaction.create(
-                    BankingTransactionType.CARD_CHARGE,
-                    customerBankingCard,
-                    BigDecimal.valueOf(100)
-                )
-                .setDescription("Amazon.com")
-                .setStatus(BankingTransactionStatus.PENDING)
-        );
-
-        // TODO remove or change this?
-        customerBankingAccount.addTransaction(
-            BankingTransaction.create(
-                    BankingTransactionType.CARD_CHARGE,
-                    customerBankingCard,
-                    BigDecimal.valueOf(30)
-                )
-                .setDescription("Neyflix.com")
-                .setStatus(BankingTransactionStatus.COMPLETED)
-        );
-
-        customerBankingAccount.addTransaction(
-            BankingTransaction.create(
-                    BankingTransactionType.CARD_CHARGE,
-                    customerBankingCard,
-                    BigDecimal.valueOf(20)
-                )
-                .setDescription("HBO.com")
-                .setStatus(BankingTransactionStatus.PENDING)
-        );
-
         customerBankingAccount.addBankingCard(customerBankingCard);
         bankingAccountRepository.save(customerBankingAccount);
     }
@@ -99,14 +70,12 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
         login(customer);
 
         BankingTransaction transaction = BankingTransaction.create(
-                BankingTransactionType.CARD_CHARGE,
-                customerBankingCard,
-                BigDecimal.valueOf(100)
-            )
-            .setDescription("Amazon.com")
-            .setStatus(BankingTransactionStatus.COMPLETED);
+            BankingTransactionType.CARD_CHARGE,
+            customerBankingCard,
+            BigDecimal.valueOf(120),
+            "Amazon.com"
+        );
 
-        customerBankingAccount.addTransaction(transaction);
         transactionRepository.save(transaction);
 
         // when
@@ -119,46 +88,27 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
 
     @Test
     @DisplayName("GET /banking/transactions/pending - should return only pending transactions for logged user")
-    void getPendingTransactions_WhenLoggedUser_ReturnsOnlyPendingTransactions() throws Exception {
+    void getPendingTransactions_ReturnsOnlyPendingTransactions() throws Exception {
         // given
         login(customer);
-        User anotherCustomer = UserTestBuilder.aCustomer()
-            .withEmail("anotherCustomer@demo.com")
-            .withStatus(UserStatus.VERIFIED)
-            .withPassword(passwordEncoder.encode(RAW_PASSWORD))
+
+        BankingTransaction transaction = BankingTransactionTestBuilder.builder()
+            .withCard(customerBankingCard)
+            .withType(BankingTransactionType.CARD_CHARGE)
+            .withAmount(BigDecimal.valueOf(120))
+            .withDescription("Amazon.com")
+            .withStatus(BankingTransactionStatus.PENDING)
             .build();
 
-        userRepository.save(anotherCustomer);
-
-        BankingAccount anotherCustomerBankingAccount = BankingAccountTestBuilder.builder()
-            .withOwner(anotherCustomer)
-            .withCurrency(BankingAccountCurrency.EUR)
-            .withBalance(BigDecimal.valueOf(1000))
-            .withType(BankingAccountType.SAVINGS)
-            .withAccountNumber("US1200001111112233334444")
+        BankingTransaction transaction2 = BankingTransactionTestBuilder.builder()
+            .withCard(customerBankingCard)
+            .withType(BankingTransactionType.CARD_CHARGE)
+            .withAmount(BigDecimal.valueOf(120))
+            .withDescription("Amazon.com")
+            .withStatus(BankingTransactionStatus.COMPLETED)
             .build();
 
-        anotherCustomerBankingAccount.addTransaction(
-            BankingTransaction.create(
-                    BankingTransactionType.TRANSFER_TO,
-                    anotherCustomerBankingAccount,
-                    BigDecimal.valueOf(100)
-                )
-                .setDescription("Amazon.us")
-                .setStatus(BankingTransactionStatus.PENDING)
-        );
-
-        anotherCustomerBankingAccount.addTransaction(
-            BankingTransaction.create(
-                    BankingTransactionType.TRANSFER_TO,
-                    anotherCustomerBankingAccount,
-                    BigDecimal.valueOf(30)
-                )
-                .setDescription("Netflix.us")
-                .setStatus(BankingTransactionStatus.PENDING)
-        );
-
-        bankingAccountRepository.save(anotherCustomerBankingAccount);
+        transactionRepository.saveAll(Set.of(transaction, transaction2));
 
         // when
         // then
@@ -175,6 +125,7 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
         );
 
         assertThat(response).isNotNull();
+        assertThat(response.totalElements()).isEqualTo(1);
         assertThat(response.content())
             .allSatisfy(tx -> {
                 assertThat(tx.bankingAccountId()).isEqualTo(customerBankingAccount.getId());
@@ -187,17 +138,15 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
     void getCardTransactions_WhenValidCardId_ReturnsPagedTransactions() throws Exception {
         // given
         login(customer);
-        BankingTransaction transaction = BankingTransaction
-            .create(
-                BankingTransactionType.CARD_CHARGE,
-                customerBankingCard,
-                BigDecimal.valueOf(100)
-            )
-            .setDescription("Amazon.us")
-            .setStatus(BankingTransactionStatus.COMPLETED);
+        BankingTransaction transaction = BankingTransactionTestBuilder.builder()
+            .withCard(customerBankingCard)
+            .withType(BankingTransactionType.CARD_CHARGE)
+            .withAmount(BigDecimal.valueOf(100))
+            .withDescription("Amazon.us")
+            .withStatus(BankingTransactionStatus.COMPLETED)
+            .build();
 
-        customerBankingAccount.addTransaction(transaction);
-        bankingAccountRepository.save(customerBankingAccount);
+        transactionRepository.save(transaction);
 
         // when
         // then

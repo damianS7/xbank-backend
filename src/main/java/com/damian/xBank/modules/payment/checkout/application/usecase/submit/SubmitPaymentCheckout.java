@@ -1,6 +1,5 @@
 package com.damian.xBank.modules.payment.checkout.application.usecase.submit;
 
-import com.damian.xBank.modules.banking.transaction.infrastructure.service.BankingTransactionPersistenceService;
 import com.damian.xBank.modules.notification.domain.factory.NotificationEventFactory;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.payment.checkout.application.PaymentNetworkGateway;
@@ -22,20 +21,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class SubmitPaymentCheckout {
     private final NotificationEventFactory notificationEventFactory;
-    private final BankingTransactionPersistenceService bankingTransactionPersistenceService;
     private final PaymentNetworkGateway paymentNetworkGateway;
     private final PaymentIntentRepository paymentIntentRepository;
     private final NotificationPublisher notificationPublisher;
 
     public SubmitPaymentCheckout(
         NotificationEventFactory notificationEventFactory,
-        BankingTransactionPersistenceService bankingTransactionPersistenceService,
         PaymentNetworkGateway paymentNetworkGateway,
         PaymentIntentRepository paymentIntentRepository,
         NotificationPublisher notificationPublisher
     ) {
         this.notificationEventFactory = notificationEventFactory;
-        this.bankingTransactionPersistenceService = bankingTransactionPersistenceService;
         this.paymentNetworkGateway = paymentNetworkGateway;
         this.paymentIntentRepository = paymentIntentRepository;
         this.notificationPublisher = notificationPublisher;

@@ -4,9 +4,8 @@ import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoun
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
-import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
-import com.damian.xBank.modules.banking.transaction.infrastructure.service.BankingTransactionPersistenceService;
+import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.notification.domain.factory.NotificationEventFactory;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -24,20 +23,20 @@ public class WithdrawFromATM {
     private final BankingCardRepository bankingCardRepository;
     private final NotificationPublisher notificationPublisher;
     private final NotificationEventFactory notificationEventFactory;
-    private final BankingTransactionPersistenceService bankingTransactionPersistenceService;
+    private final BankingTransactionRepository bankingTransactionRepository;
 
     public WithdrawFromATM(
         AuthenticationContext authenticationContext,
         BankingCardRepository bankingCardRepository,
         NotificationPublisher notificationPublisher,
         NotificationEventFactory notificationEventFactory,
-        BankingTransactionPersistenceService bankingTransactionPersistenceService
+        BankingTransactionRepository bankingTransactionRepository
     ) {
         this.authenticationContext = authenticationContext;
         this.bankingCardRepository = bankingCardRepository;
         this.notificationPublisher = notificationPublisher;
         this.notificationEventFactory = notificationEventFactory;
-        this.bankingTransactionPersistenceService = bankingTransactionPersistenceService;
+        this.bankingTransactionRepository = bankingTransactionRepository;
     }
 
     /**
@@ -60,28 +59,21 @@ public class WithdrawFromATM {
         // run validations for the card and throw exception
         bankingCard.assertCanSpend(currentUser, command.amount(), command.pin());
 
-        BankingTransaction transaction = BankingTransaction
-            .create(
-                BankingTransactionType.WITHDRAWAL,
-                bankingCard.getBankingAccount(),
-                command.amount()
-            )
-            .setBankingCard(bankingCard)
-            .setStatus(BankingTransactionStatus.COMPLETED)
-            .setDescription("ATM Withdrawal.");
+        BankingTransaction transaction = BankingTransaction.create(
+            BankingTransactionType.WITHDRAWAL,
+            bankingCard,
+            command.amount(),
+            "ATM Withdrawal."
+        );
 
         bankingCard.chargeAmount(command.amount());
-
-        // store here the transaction as PENDING
-        bankingTransactionPersistenceService.record(transaction);
+        transaction.complete();
+        bankingTransactionRepository.save(transaction);
 
         // Notify the user
         notificationPublisher.publish(
             notificationEventFactory.withdrawCompleted(transaction)
         );
-
-        // save the data and return BankingAccount
-        //        return bankingCardRepository.save(bankingCard);
 
         return WithdrawFromATMResult.from(transaction);
     }

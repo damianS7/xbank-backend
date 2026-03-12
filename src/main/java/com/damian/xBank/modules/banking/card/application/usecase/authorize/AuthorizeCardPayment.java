@@ -5,7 +5,7 @@ import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
-import com.damian.xBank.modules.banking.transaction.infrastructure.service.BankingTransactionPersistenceService;
+import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.payment.checkout.domain.PaymentAuthorizationStatus;
 import com.damian.xBank.modules.payment.checkout.infrastructure.http.response.PaymentAuthorizationResponse;
 import org.springframework.stereotype.Service;
@@ -17,14 +17,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthorizeCardPayment {
     private final BankingCardRepository bankingCardRepository;
-    private final BankingTransactionPersistenceService bankingTransactionPersistenceService;
+    private final BankingTransactionRepository bankingTransactionRepository;
 
     public AuthorizeCardPayment(
         BankingCardRepository bankingCardRepository,
-        BankingTransactionPersistenceService bankingTransactionPersistenceService
+        BankingTransactionRepository bankingTransactionRepository
     ) {
-        this.bankingTransactionPersistenceService = bankingTransactionPersistenceService;
         this.bankingCardRepository = bankingCardRepository;
+        this.bankingTransactionRepository = bankingTransactionRepository;
     }
 
     /**
@@ -47,17 +47,15 @@ public class AuthorizeCardPayment {
             command.cvv()
         );
 
-        BankingTransaction transaction = BankingTransaction
-            .create(
-                BankingTransactionType.CARD_CHARGE,
-                bankingCard.getBankingAccount(),
-                command.amount()
-            )
-            .setBankingCard(bankingCard)
-            .setDescription(command.merchant());
+        BankingTransaction transaction = BankingTransaction.create(
+            BankingTransactionType.CARD_CHARGE,
+            bankingCard,
+            command.amount(),
+            command.merchant()
+        );
 
         // store here the transaction as AUTHORIZED
-        transaction = bankingTransactionPersistenceService.record(transaction);
+        transaction = bankingTransactionRepository.save(transaction);
 
         return new PaymentAuthorizationResponse(
             PaymentAuthorizationStatus.AUTHORIZED,
