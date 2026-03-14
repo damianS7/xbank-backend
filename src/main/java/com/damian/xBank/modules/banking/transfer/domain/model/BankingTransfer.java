@@ -133,30 +133,6 @@ public class BankingTransfer {
         );
     }
 
-    private void generateTransactions() {
-        // Generate transactions
-        BankingTransaction fromTransaction = BankingTransaction.create(
-            BankingTransactionType.TRANSFER_TO,
-            fromAccount,
-            this,
-            description
-        );
-
-        this.transactions.add(fromTransaction);
-
-        if (toAccount != null) {
-            // create transfer transaction for the receiver of the funds
-            BankingTransaction toTransaction = BankingTransaction.create(
-                BankingTransactionType.TRANSFER_FROM,
-                toAccount,
-                this,
-                "Transfer from " + fromAccount.getOwner().getProfile().getFullName()
-            );
-
-            this.transactions.add(toTransaction);
-        }
-    }
-
     public Long getId() {
         return id;
     }
@@ -217,6 +193,12 @@ public class BankingTransfer {
         ).findFirst().orElseThrow();
     }
 
+    public boolean isOwnedBy(Long userId) {
+
+        // compare account owner id with given customer id
+        return Objects.equals(getFromAccount().getOwner().getId(), userId);
+    }
+
     private void setStatus(BankingTransferStatus newStatus) {
         // if the actual status is the same as the new ... do nothing
         if (this.status == newStatus) {
@@ -235,36 +217,32 @@ public class BankingTransfer {
         markAsUpdated();
     }
 
-    //    private void addTransaction(BankingTransaction tx) {
-    //        tx.setTransfer(this);
-    //        this.transactions.add(tx);
-    //    }
+    private void generateTransactions() {
+        // Generate transactions
+        BankingTransaction fromTransaction = BankingTransaction.create(
+            BankingTransactionType.TRANSFER_TO,
+            fromAccount,
+            this,
+            description
+        );
+
+        this.transactions.add(fromTransaction);
+
+        if (toAccount != null) {
+            // create transfer transaction for the receiver of the funds
+            BankingTransaction toTransaction = BankingTransaction.create(
+                BankingTransactionType.TRANSFER_FROM,
+                toAccount,
+                this,
+                "Transfer from " + fromAccount.getOwner().getProfile().getFullName()
+            );
+
+            this.transactions.add(toTransaction);
+        }
+    }
 
     private void markAsUpdated() {
         this.updatedAt = Instant.now();
-    }
-
-    public boolean isOwnedBy(Long userId) {
-
-        // compare account owner id with given customer id
-        return Objects.equals(getFromAccount().getOwner().getId(), userId);
-    }
-
-    /**
-     * Assert the ownership of the account belongs to {@link User}.
-     *
-     * @param userId the customer to check ownership against
-     * @return the current validator instance for chaining
-     * @throws BankingTransferNotOwnerException if the account does not belong to the customer
-     */
-    public BankingTransfer assertOwnedBy(Long userId) {
-
-        // compare card owner id with given customer id
-        if (!isOwnedBy(userId)) {
-            throw new BankingTransferNotOwnerException(getFromAccount().getOwner().getId(), userId);
-        }
-
-        return this;
     }
 
     public void confirm() {
@@ -355,6 +333,23 @@ public class BankingTransfer {
             // check currencies are the same
             this.assertCurrenciesMatch();
         }
+    }
+
+    /**
+     * Assert the ownership of the account belongs to {@link User}.
+     *
+     * @param userId the customer to check ownership against
+     * @return the current validator instance for chaining
+     * @throws BankingTransferNotOwnerException if the account does not belong to the customer
+     */
+    public BankingTransfer assertOwnedBy(Long userId) {
+
+        // compare card owner id with given customer id
+        if (!isOwnedBy(userId)) {
+            throw new BankingTransferNotOwnerException(getFromAccount().getOwner().getId(), userId);
+        }
+
+        return this;
     }
 
 }

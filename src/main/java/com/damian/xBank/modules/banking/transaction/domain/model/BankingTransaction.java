@@ -173,24 +173,6 @@ public class BankingTransaction {
         return status;
     }
 
-    private void setStatus(BankingTransactionStatus newStatus) {
-        // if the actual status is the same as the new ... do nothing
-        if (this.status == newStatus) {
-            return;
-        }
-
-        if (!this.status.canTransitionTo(newStatus)) {
-            throw new BankingTransactionStatusTransitionException(
-                this.id,
-                this.status.name(),
-                newStatus.name()
-            );
-        }
-
-        this.status = newStatus;
-        markAsUpdated();
-    }
-
     public BankingTransfer getTransfer() {
         return transfer;
     }
@@ -211,10 +193,6 @@ public class BankingTransaction {
         return updatedAt;
     }
 
-    private void markAsUpdated() {
-        this.updatedAt = Instant.now();
-    }
-
     public BankingCard getBankingCard() {
         return bankingCard;
     }
@@ -233,6 +211,28 @@ public class BankingTransaction {
 
     public boolean isOwnedBy(Long userId) {
         return Objects.equals(getBankingAccount().getOwner().getId(), userId);
+    }
+
+    private void markAsUpdated() {
+        this.updatedAt = Instant.now();
+    }
+
+    private void setStatus(BankingTransactionStatus newStatus) {
+        // if the actual status is the same as the new ... do nothing
+        if (this.status == newStatus) {
+            return;
+        }
+
+        if (!this.status.canTransitionTo(newStatus)) {
+            throw new BankingTransactionStatusTransitionException(
+                this.id,
+                this.status.name(),
+                newStatus.name()
+            );
+        }
+
+        this.status = newStatus;
+        markAsUpdated();
     }
 
     private void calcBalanceBefore() {
