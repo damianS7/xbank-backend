@@ -42,10 +42,12 @@ public class CloseAccount {
                 ) // Banking account not found
             );
 
-        passwordValidator.validatePassword(currentUser, command.password());
+        if (!currentUser.isAdmin()) {
+            bankingAccount.assertOwnedBy(currentUser.getId());
+            passwordValidator.validatePassword(currentUser, command.password());
+        }
 
-        // validations rules only for customers
-        bankingAccount.closeBy(currentUser);
+        bankingAccount.close();
 
         bankingAccountRepository.save(bankingAccount);
 

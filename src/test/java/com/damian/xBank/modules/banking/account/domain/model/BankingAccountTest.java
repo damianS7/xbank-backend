@@ -258,52 +258,8 @@ public class BankingAccountTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("activateBy: should activate account when actor is admin")
-    void activateBy_WhenActorIsAdmin_ActivatesAccount() {
-        // given
-        bankingAccount = BankingAccountTestBuilder.builder()
-            .withId(5L)
-            .withOwner(customer)
-            .withStatus(BankingAccountStatus.SUSPENDED)
-            .withCurrency(BankingAccountCurrency.EUR)
-            .withBalance(BigDecimal.valueOf(1000))
-            .withType(BankingAccountType.SAVINGS)
-            .withAccountNumber("US1200001111112233335555")
-            .build();
-
-        // when
-        bankingAccount.activateBy(admin);
-
-        // then
-        assertThat(bankingAccount.getStatus())
-            .isEqualTo(BankingAccountStatus.ACTIVE);
-    }
-
-    @Test
-    @DisplayName("activateBy: should throws exception when actor is not admin")
-    void activateBy_WhenActorIsNotAdmin_AccountNotActivated() {
-        // given
-        bankingAccount = BankingAccountTestBuilder.builder()
-            .withId(5L)
-            .withOwner(customer)
-            .withStatus(BankingAccountStatus.SUSPENDED)
-            .withCurrency(BankingAccountCurrency.EUR)
-            .withBalance(BigDecimal.valueOf(1000))
-            .withType(BankingAccountType.SAVINGS)
-            .withAccountNumber("US1200001111112233335555")
-            .build();
-
-        // when
-        bankingAccount.activateBy(customer);
-
-        // then
-        assertThat(bankingAccount.getStatus())
-            .isEqualTo(BankingAccountStatus.SUSPENDED);
-    }
-
-    @Test
-    @DisplayName("closeBy: should activate account when actor is admin")
-    void closeBy_WhenActorIsAdmin_ClosesAccount() {
+    @DisplayName("closeBy: should close account")
+    void close_ClosesAccount() {
         // given
         bankingAccount = BankingAccountTestBuilder.builder()
             .withId(5L)
@@ -316,7 +272,7 @@ public class BankingAccountTest extends AbstractServiceTest {
             .build();
 
         // when
-        bankingAccount.closeBy(admin);
+        bankingAccount.close();
 
         // then
         assertThat(bankingAccount.getStatus())
@@ -325,7 +281,7 @@ public class BankingAccountTest extends AbstractServiceTest {
 
     @Test
     @DisplayName("closeBy: should throws exception when actor is not admin")
-    void closeBy_WhenActorIsNotAdmin_AccountNotClosed() {
+    void activate_WhenActorIsNotAdmin_AccountNotClosed() {
         // given
         bankingAccount = BankingAccountTestBuilder.builder()
             .withId(5L)
@@ -338,7 +294,7 @@ public class BankingAccountTest extends AbstractServiceTest {
             .build();
 
         // when
-        bankingAccount.activateBy(customer);
+        bankingAccount.activate();
 
         // then
         assertThat(bankingAccount.getStatus())
@@ -350,7 +306,7 @@ public class BankingAccountTest extends AbstractServiceTest {
     void assertCanAddCard_WhenBelowLimit_DoesNotThrowException() {
         // given
 
-        for (int i = 0; i < bankingAccount.getCardLimit() - 1; i++) {
+        for (int i = 0; i < BankingAccount.MAX_CARDS_PER_ACCOUNT - 1; i++) {
 
             bankingAccount.issueCard(
                 BankingCardType.CREDIT,
@@ -370,7 +326,7 @@ public class BankingAccountTest extends AbstractServiceTest {
     void assertCanAddCard_WhenAtLimit_ThrowsException() {
         // given
 
-        for (int i = 0; i < bankingAccount.getCardLimit(); i++) {
+        for (int i = 0; i < BankingAccount.MAX_CARDS_PER_ACCOUNT; i++) {
             BankingCard card = bankingAccount.issueCard(
                 BankingCardType.CREDIT,
                 "1234123412341234",

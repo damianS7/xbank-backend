@@ -11,7 +11,6 @@ import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardType;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -156,6 +155,77 @@ public class BankingAccount {
         return status;
     }
 
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public Set<BankingCard> getBankingCards() {
+        return this.bankingCards;
+    }
+
+    public BigDecimal getReservedBalance() {
+        return reservedBalance;
+    }
+
+    public boolean isSuspended() {
+        return getStatus() == BankingAccountStatus.SUSPENDED;
+    }
+
+    public boolean isOwnedBy(Long customerId) {
+
+        // compare account owner id with given customer id
+        return Objects.equals(getOwner().getId(), customerId);
+    }
+
+    public boolean isClosed() {
+        return getStatus() == BankingAccountStatus.CLOSED;
+    }
+
+    /**
+     * Counts how many active cards are associated with the given banking account.
+     *
+     * @return the number of active cards
+     */
+    public int countActiveCards() {
+        return (int) this
+            .getBankingCards()
+            .stream()
+            .filter(bankingCard -> bankingCard.getStatus().equals(BankingCardStatus.ACTIVE))
+            .count();
+    }
+
+    /**
+     * Checks if the account has sufficient funds.
+     *
+     * @param amount the amount to check against the account balance
+     * @return true if the balance is sufficient for the given amount, false otherwise
+     */
+    public boolean hasSufficientFunds(BigDecimal amount) {
+        // if its 0 then balance is equal to the amount willing to spend
+        // if its 1 then balance is greater than the amount willing to spend
+        return this.getBalance().compareTo(amount) >= 0;
+    }
+
+    /**
+     * Checks if the account has sufficient reserved funds.
+     *
+     * @param amount the amount to check against the reserved balance
+     * @return true if the reserved balance is sufficient for the given amount, false otherwise
+     */
+    public boolean hasSufficientReservedFunds(BigDecimal amount) {
+        // if its 0 then balance is equal to the amount willing to spend
+        // if its 1 then balance is greater than the amount willing to spend
+        return this.getReservedBalance().compareTo(amount) >= 0;
+    }
+
     private void setStatus(BankingAccountStatus newStatus) {
         // if the actual status is the same as the new ... do nothing
         if (this.status == newStatus) {
@@ -174,26 +244,15 @@ public class BankingAccount {
         markAsUpdated();
     }
 
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public int getCardLimit() {
-        return MAX_CARDS_PER_ACCOUNT;
-    }
-
-    public String getAlias() {
-        return alias;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public Set<BankingCard> getBankingCards() {
-        return this.bankingCards;
-    }
-
+    /**
+     * Issues a new card associated with this banking account.
+     *
+     * @param type
+     * @param number
+     * @param cvv
+     * @param pin
+     * @return the issued card
+     */
     public BankingCard issueCard(
         BankingCardType type,
         String number,
@@ -216,12 +275,33 @@ public class BankingAccount {
         return card;
     }
 
+    public void changeAlias(String alias) {
+        this.alias = alias;
+        markAsUpdated();
+    }
+
     private void markAsUpdated() {
         this.updatedAt = Instant.now();
     }
 
-    public void changeAlias(String alias) {
-        this.alias = alias;
+    /**
+     * Withdraw the given amount from the account balance.
+     *
+     * @param amount
+     */
+    public void withdraw(BigDecimal amount) {
+        this.assertSufficientFunds(amount);
+        this.balance = this.getBalance().subtract(amount);
+        markAsUpdated();
+    }
+
+    /**
+     * Deposit the given amount to the account balance.
+     *
+     * @param amount
+     */
+    public void deposit(BigDecimal amount) {
+        this.balance = this.getBalance().add(amount);
         markAsUpdated();
     }
 
@@ -233,17 +313,25 @@ public class BankingAccount {
         setStatus(BankingAccountStatus.SUSPENDED);
     }
 
-    // returns true if the operation can be carried
-    public boolean hasSufficientFunds(BigDecimal amount) {
-        // if its 0 then balance is equal to the amount willing to spend
-        // if its 1 then balance is greater than the amount willing to spend
-        return this.getBalance().compareTo(amount) >= 0;
+    public void activate() {
+        setStatus(BankingAccountStatus.ACTIVE);
     }
 
-    public boolean hasSufficientReservedFunds(BigDecimal amount) {
-        // if its 0 then balance is equal to the amount willing to spend
-        // if its 1 then balance is greater than the amount willing to spend
-        return this.getReservedBalance().compareTo(amount) >= 0;
+    public void reserveAmount(BigDecimal amount) {
+        assertSufficientFunds(amount);
+        this.balance = this.balance.subtract(amount);
+        this.reservedBalance = this.reservedBalance.add(amount);
+    }
+
+    public void releaseReservedAmount(BigDecimal amount) {
+        assertSufficientReservedFunds(amount);
+        this.reservedBalance = this.reservedBalance.subtract(amount);
+        this.balance = this.balance.add(amount);
+    }
+
+    public void captureReservedAmount(BigDecimal amount) {
+        assertSufficientReservedFunds(amount);
+        this.reservedBalance = this.reservedBalance.subtract(amount);
     }
 
     /**
@@ -259,32 +347,15 @@ public class BankingAccount {
         }
     }
 
+    /**
+     * Assert the account has sufficient reserved funds.
+     *
+     * @param amount the amount to check
+     */
     public void assertSufficientReservedFunds(BigDecimal amount) {
         if (!this.hasSufficientReservedFunds(amount)) {
             throw new BankingAccountInsufficientFundsException(this.getId(), getBalance(), amount);
         }
-    }
-
-    /**
-     * Withdraw the given amount from the account balance.
-     *
-     * @param amount
-     */
-    public void withdraw(BigDecimal amount) {
-        this.assertSufficientFunds(amount);
-        this.balance = this.getBalance().subtract(amount);
-        markAsUpdated();
-    }
-
-    public void deposit(BigDecimal amount) {
-        this.balance = this.getBalance().add(amount);
-        markAsUpdated();
-    }
-
-    public boolean isOwnedBy(Long customerId) {
-
-        // compare account owner id with given customer id
-        return Objects.equals(getOwner().getId(), customerId);
     }
 
     /**
@@ -304,10 +375,6 @@ public class BankingAccount {
         return this;
     }
 
-    public boolean isSuspended() {
-        return getStatus() == BankingAccountStatus.SUSPENDED;
-    }
-
     /**
      * Assert the account is not SUSPENDED.
      *
@@ -319,10 +386,6 @@ public class BankingAccount {
         if (isSuspended()) {
             throw new BankingAccountSuspendedException(getId());
         }
-    }
-
-    public boolean isClosed() {
-        return getStatus() == BankingAccountStatus.CLOSED;
     }
 
     /**
@@ -348,69 +411,16 @@ public class BankingAccount {
         this.assertNotClosed();
     }
 
-    public void activateBy(User actor) {
-        if (actor.hasRole(UserRole.ADMIN)) {
-            //            assertOwnedBy(actor.getId());
-            setStatus(BankingAccountStatus.ACTIVE);
-        }
-    }
-
-    public void closeBy(User actor) {
-        // assert account is not Suspended or Closed already
-        assertActive();
-
-        // if not admin check ownership
-        if (!actor.hasRole(UserRole.ADMIN)) {
-            assertOwnedBy(actor.getId());
-        }
-
-        setStatus(BankingAccountStatus.CLOSED);
-    }
-
     public void assertCanAddCard() {
         if (countActiveCards() >= MAX_CARDS_PER_ACCOUNT) {
             throw new BankingAccountCardsLimitException(getId());
         }
     }
 
-    /**
-     * Counts how many active (ENABLED) cards are associated with the given banking account.
-     *
-     * @return the number of active cards
-     */
-    public int countActiveCards() {
-        return (int) this
-            .getBankingCards()
-            .stream()
-            .filter(bankingCard -> bankingCard.getStatus().equals(BankingCardStatus.ACTIVE))
-            .count();
-    }
-
     public void assertCurrency(BankingAccountCurrency currency) {
         if (this.currency != currency) {
             throw new BankingAccountCurrencyMismatchException(getId());
         }
-    }
-
-    public BigDecimal getReservedBalance() {
-        return reservedBalance;
-    }
-
-    public void reserveAmount(BigDecimal amount) {
-        assertSufficientFunds(amount);
-        this.balance = this.balance.subtract(amount);
-        this.reservedBalance = this.reservedBalance.add(amount);
-    }
-
-    public void releaseReservedAmount(BigDecimal amount) {
-        assertSufficientReservedFunds(amount);
-        this.reservedBalance = this.reservedBalance.subtract(amount);
-        this.balance = this.balance.add(amount);
-    }
-
-    public void captureReservedAmount(BigDecimal amount) {
-        assertSufficientReservedFunds(amount);
-        this.reservedBalance = this.reservedBalance.subtract(amount);
     }
 
     public String toString() {
