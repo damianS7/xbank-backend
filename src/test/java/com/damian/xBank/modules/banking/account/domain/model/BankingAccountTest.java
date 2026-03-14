@@ -6,7 +6,7 @@ import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountI
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotOwnerException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountSuspendedException;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
-import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardType;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.shared.AbstractServiceTest;
@@ -351,9 +351,13 @@ public class BankingAccountTest extends AbstractServiceTest {
         // given
 
         for (int i = 0; i < bankingAccount.getCardLimit() - 1; i++) {
-            BankingCard card = BankingCard.create(bankingAccount);
-            card.setStatus(BankingCardStatus.ACTIVE);
-            bankingAccount.getBankingCards().add(card);
+
+            bankingAccount.issueCard(
+                BankingCardType.CREDIT,
+                "1234123412341234",
+                "123",
+                "1234"
+            );
         }
 
         // when / then
@@ -367,9 +371,13 @@ public class BankingAccountTest extends AbstractServiceTest {
         // given
 
         for (int i = 0; i < bankingAccount.getCardLimit(); i++) {
-            BankingCard card = BankingCard.create(bankingAccount);
-            card.setStatus(BankingCardStatus.ACTIVE);
-            bankingAccount.getBankingCards().add(card);
+            BankingCard card = bankingAccount.issueCard(
+                BankingCardType.CREDIT,
+                "1234123412341234",
+                "123",
+                "1234"
+            );
+            card.activate(card.getCardCvv());
         }
 
         // when / then

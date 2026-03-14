@@ -5,6 +5,8 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurre
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestBuilder;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardTestBuilder;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardType;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
@@ -49,12 +51,14 @@ public class BankingCardDomainServiceTest extends AbstractServiceTest {
             .withAccountNumber("US1200001111112233335555")
             .build();
 
-        bankingCard = BankingCard
-            .create(bankingAccount)
-            .setId(11L)
-            .setCardNumber("1234123412341234")
-            .setCardCvv("123")
-            .setCardPin("1234");
+        bankingCard = BankingCardTestBuilder.builder()
+            .withId(11L)
+            .withOwnerAccount(bankingAccount)
+            .withCardNumber("1234123412341234")
+            .withStatus(BankingCardStatus.ACTIVE)
+            .withCVV("123")
+            .withPIN("1234")
+            .build();
     }
 
     @Test
@@ -62,8 +66,12 @@ public class BankingCardDomainServiceTest extends AbstractServiceTest {
     void createBankingCard_WhenValidRequest_ReturnsBankingCard() {
         // given
         // when
-        when(bankingCardGenerator.generate(bankingAccount, bankingCard.getCardType()))
-            .thenReturn(bankingCard);
+        when(bankingCardGenerator.generateCardNumber())
+            .thenReturn("1234123412341234");
+        when(bankingCardGenerator.generateCvv())
+            .thenReturn("123");
+        when(bankingCardGenerator.generatePin())
+            .thenReturn("1234");
 
         BankingCard createdCard = bankingCardDomainService.createBankingCard(
             bankingAccount,
@@ -79,7 +87,7 @@ public class BankingCardDomainServiceTest extends AbstractServiceTest {
             )
             .containsExactly(
                 bankingAccount,
-                bankingCard.getCardType()
+                createdCard.getCardType()
             );
     }
 }

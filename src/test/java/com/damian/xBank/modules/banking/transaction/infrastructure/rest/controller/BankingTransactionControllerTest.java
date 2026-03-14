@@ -5,6 +5,8 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurre
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestBuilder;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardTestBuilder;
 import com.damian.xBank.modules.banking.transaction.application.dto.BankingTransactionResult;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
@@ -53,13 +55,14 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
             .withAccountNumber("US1200001111112233335555")
             .build();
 
-        customerBankingCard = BankingCard
-            .create(customerBankingAccount)
-            .setCardNumber("1234123412341234")
-            .setCardCvv("123")
-            .setCardPin("1234");
+        customerBankingCard = BankingCardTestBuilder.builder()
+            .withOwnerAccount(customerBankingAccount)
+            .withCardNumber("1234123412341234")
+            .withStatus(BankingCardStatus.ACTIVE)
+            .withCVV("123")
+            .withPIN("1234")
+            .build();
 
-        customerBankingAccount.addBankingCard(customerBankingCard);
         bankingAccountRepository.save(customerBankingAccount);
     }
 

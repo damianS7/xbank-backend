@@ -6,7 +6,7 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestB
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
-import com.damian.xBank.modules.banking.card.domain.model.CardExpiration;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardTestBuilder;
 import com.damian.xBank.modules.banking.card.infrastructure.rest.request.AuthorizeCardPaymentRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
@@ -48,17 +48,16 @@ public class BankingCardControllerTest extends AbstractControllerTest {
             .withType(BankingAccountType.SAVINGS)
             .withAccountNumber("US1200001111112233335555")
             .build();
-
-        customerBankingCard = BankingCard
-            .create(customerBankingAccount)
-            .setStatus(BankingCardStatus.ACTIVE)
-            .setExpiration(CardExpiration.defaultExpiration())
-            .setCardNumber("1234123412341234")
-            .setCardCvv("123")
-            .setCardPin("1234");
-
-        customerBankingAccount.addBankingCard(customerBankingCard);
         bankingAccountRepository.save(customerBankingAccount);
+
+        customerBankingCard = BankingCardTestBuilder.builder()
+            .withOwnerAccount(customerBankingAccount)
+            .withCardNumber("1234123412341234")
+            .withStatus(BankingCardStatus.ACTIVE)
+            .withCVV("123")
+            .withPIN("1234")
+            .build();
+        bankingCardRepository.save(customerBankingCard);
     }
 
     @Test

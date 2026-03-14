@@ -4,7 +4,7 @@ import com.damian.xBank.modules.banking.transaction.application.dto.BankingTrans
 import com.damian.xBank.modules.banking.transaction.application.dto.BankingTransactionResult;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.shared.infrastructure.web.dto.response.PageResult;
-import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Set;
@@ -68,14 +68,8 @@ public class BankingTransactionDtoMapper {
         ).collect(Collectors.toSet());
     }
 
-    public static Page<BankingTransactionResult> toBankingTransactionPagedResult(Page<BankingTransaction> accountTransactions) {
-        return accountTransactions.map(
-            BankingTransactionDtoMapper::toBankingTransactionResult
-        );
-    }
-
     public static PageResult<BankingTransactionResult> toBankingTransactionPagedResult(
-        Set<BankingTransaction> accountTransactions
+        Set<BankingTransaction> accountTransactions, Pageable pageable
     ) {
         List<BankingTransactionResult> content =
             accountTransactions.stream()
@@ -84,10 +78,10 @@ public class BankingTransactionDtoMapper {
 
         return new PageResult<>(
             content,
-            0,
+            pageable.getPageNumber(),
+            pageable.getPageSize(),
             content.size(),
-            content.size(),
-            1
+            content.size() / pageable.getPageSize()
         );
     }
 }

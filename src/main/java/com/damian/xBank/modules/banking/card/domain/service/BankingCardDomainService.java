@@ -26,9 +26,11 @@ public class BankingCardDomainService {
         BankingAccount bankingAccount,
         BankingCardType cardType
     ) {
-        BankingCard card = bankingCardGenerator.generate(bankingAccount, cardType);
-        //        bankingAccount.addBankingCard(card);
-        //        card.setBankingAccount(bankingAccount);
-        return card;
+        return bankingAccount.issueCard(
+            cardType,
+            bankingCardGenerator.generateCardNumber(),
+            bankingCardGenerator.generateCvv(),
+            bankingCardGenerator.generatePin()
+        );
     }
 }

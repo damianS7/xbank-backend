@@ -10,8 +10,6 @@ import com.damian.xBank.shared.security.PasswordValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-
 @Service
 public class SetBankingCardDailyLimit {
     private final AuthenticationContext authenticationContext;
@@ -54,10 +52,7 @@ public class SetBankingCardDailyLimit {
         }
 
         // we set the limit of the card
-        bankingCard.setDailyLimit(command.dailyLimit());
-
-        // we change the updateAt timestamp field
-        bankingCard.setUpdatedAt(Instant.now());
+        bankingCard.limit(command.dailyLimit());
 
         // save the data and return BankingCard
         bankingCardRepository.save(bankingCard);

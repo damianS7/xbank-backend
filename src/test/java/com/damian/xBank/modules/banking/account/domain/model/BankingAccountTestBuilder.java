@@ -1,8 +1,11 @@
 package com.damian.xBank.modules.banking.account.domain.model;
 
+import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.user.user.domain.model.User;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 
 public class BankingAccountTestBuilder {
     private Long id = null;
@@ -12,6 +15,7 @@ public class BankingAccountTestBuilder {
     private BankingAccountType accountType = BankingAccountType.SAVINGS;
     private String accountNumber = "ES9900001111112233334444";
     private BankingAccountStatus status = BankingAccountStatus.ACTIVE;
+    private Set<BankingCard> bankingCards = new HashSet<>();
 
     public static BankingAccountTestBuilder builder() {
         return new BankingAccountTestBuilder();
@@ -24,6 +28,11 @@ public class BankingAccountTestBuilder {
 
     public BankingAccountTestBuilder withOwner(User owner) {
         this.owner = owner;
+        return this;
+    }
+
+    public BankingAccountTestBuilder withCards(Set<BankingCard> bankingCards) {
+        this.bankingCards = bankingCards;
         return this;
     }
 
@@ -54,7 +63,7 @@ public class BankingAccountTestBuilder {
 
     public BankingAccount build() {
         return new BankingAccount(
-            id, owner, accountNumber, accountType, currency, balance, status
+            id, owner, accountNumber, accountType, currency, balance, status, bankingCards
         );
     }
 }

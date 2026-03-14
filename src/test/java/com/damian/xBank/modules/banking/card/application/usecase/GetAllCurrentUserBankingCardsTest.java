@@ -8,6 +8,8 @@ import com.damian.xBank.modules.banking.card.application.usecase.get.GetAllCurre
 import com.damian.xBank.modules.banking.card.application.usecase.get.GetAllCurrentUserBankingCardsResult;
 import com.damian.xBank.modules.banking.card.application.usecase.get.GetAllCurrentUserCardsQuery;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardTestBuilder;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
@@ -56,12 +58,14 @@ public class GetAllCurrentUserBankingCardsTest extends AbstractServiceTest {
             .withAccountNumber("US1200001111112233335555")
             .build();
 
-        bankingCard = BankingCard
-            .create(bankingAccount)
-            .setId(11L)
-            .setCardNumber("1234123412341234")
-            .setCardCvv("123")
-            .setCardPin("1234");
+        bankingCard = BankingCardTestBuilder.builder()
+            .withId(11L)
+            .withOwnerAccount(bankingAccount)
+            .withCardNumber("1234123412341234")
+            .withStatus(BankingCardStatus.ACTIVE)
+            .withCVV("123")
+            .withPIN("1234")
+            .build();
     }
 
     @Test

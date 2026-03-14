@@ -9,6 +9,8 @@ import com.damian.xBank.modules.banking.card.application.usecase.set.limit.SetBa
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoundException;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotOwnerException;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardTestBuilder;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -60,19 +62,20 @@ public class SetBankingCardDailyLimitTest extends AbstractServiceTest {
             .withType(BankingAccountType.SAVINGS)
             .withAccountNumber("US1200001111112233335555")
             .build();
-        ;
 
-        bankingCard = BankingCard
-            .create(bankingAccount)
-            .setId(11L)
-            .setCardNumber("1234123412341234")
-            .setCardCvv("123")
-            .setCardPin("1234");
+        bankingCard = BankingCardTestBuilder.builder()
+            .withId(1L)
+            .withOwnerAccount(bankingAccount)
+            .withCardNumber("1234123412341234")
+            .withStatus(BankingCardStatus.ACTIVE)
+            .withCVV("123")
+            .withPIN("1234")
+            .build();
     }
 
     @Test
     @DisplayName("should return card with the updated daily limit")
-    void setDailyLimit_WhenValidRequest_ReturnsUpdatedCard() {
+    void limit_WhenValidRequest_ReturnsUpdatedCard() {
         // given
         setUpContext(customer);
 
@@ -83,7 +86,8 @@ public class SetBankingCardDailyLimitTest extends AbstractServiceTest {
         );
 
         // when
-        when(bankingCardRepository.findById(anyLong())).thenReturn(Optional.of(bankingCard));
+        when(bankingCardRepository.findById(anyLong()))
+            .thenReturn(Optional.of(bankingCard));
         when(bankingCardRepository.save(any(BankingCard.class)))
             .thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -97,7 +101,7 @@ public class SetBankingCardDailyLimitTest extends AbstractServiceTest {
 
     @Test
     @DisplayName("should throw exception when card not found")
-    void setDailyLimit_WhenCardNotFound_ThrowsException() {
+    void limit_WhenCardNotFound_ThrowsException() {
         // given
         setUpContext(customer);
 
@@ -121,7 +125,7 @@ public class SetBankingCardDailyLimitTest extends AbstractServiceTest {
 
     @Test
     @DisplayName("should throw exception when customer not owner")
-    void setDailyLimit_WhenNotOwner_ThrowsException() {
+    void limit_WhenNotOwner_ThrowsException() {
         // given
         User customerNotOwner = UserTestBuilder.aCustomer()
             .withId(2L)
@@ -151,7 +155,7 @@ public class SetBankingCardDailyLimitTest extends AbstractServiceTest {
 
     @Test
     @DisplayName("should throw exception when password is invalid")
-    void setDailyLimit_WhenPasswordIsInvalid_ThrowsException() {
+    void limit_WhenPasswordIsInvalid_ThrowsException() {
         // given
         setUpContext(customer);
 

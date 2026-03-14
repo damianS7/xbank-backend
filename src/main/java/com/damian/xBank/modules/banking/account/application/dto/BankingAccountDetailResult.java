@@ -29,13 +29,10 @@ public record BankingAccountDetailResult(
     Instant createdAt,
     Instant updatedAt
 ) {
-    public static BankingAccountDetailResult from(BankingAccount bankingAccount) {
-        // TODO review this
-        //        PageResult<BankingTransactionResult> bankingAccountTransactions = BankingTransactionDtoMapper
-        //            .toBankingTransactionPagedResult(
-        //                bankingAccount.getAccountTransactions()
-        //            );
-
+    public static BankingAccountDetailResult from(
+        BankingAccount bankingAccount,
+        PageResult<BankingTransactionResult> pagedTransactions
+    ) {
         Set<BankingCardResult> bankingCardsDto = Optional
             .ofNullable(bankingAccount.getBankingCards())
             .orElseGet(Collections::emptySet)
@@ -51,7 +48,7 @@ public record BankingAccountDetailResult(
             bankingAccount.getType(),
             bankingAccount.getCurrency(),
             bankingAccount.getStatus(),
-            null,
+            pagedTransactions,
             bankingCardsDto,
             bankingAccount.getCreatedAt(),
             bankingAccount.getUpdatedAt()

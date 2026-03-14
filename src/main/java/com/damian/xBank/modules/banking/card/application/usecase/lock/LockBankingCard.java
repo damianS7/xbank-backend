@@ -3,7 +3,6 @@ package com.damian.xBank.modules.banking.card.application.usecase.lock;
 import com.damian.xBank.modules.banking.card.application.dto.BankingCardResult;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoundException;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
-import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
@@ -54,7 +53,7 @@ public class LockBankingCard {
 
         // validate card status transition
         // we mark the card as locked
-        bankingCard.setStatus(BankingCardStatus.LOCKED);
+        bankingCard.lock();
 
         // save the data and return BankingAccount
         bankingCardRepository.save(bankingCard);

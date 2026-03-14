@@ -6,6 +6,8 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestB
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardTestBuilder;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.banking.transaction.application.usecase.get.pending.GetPendingTransactions;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
@@ -52,11 +54,15 @@ public class GetPendingTransactionsTest extends AbstractServiceTest {
             .withType(BankingAccountType.SAVINGS)
             .withAccountNumber("US1200001111112233335555")
             .build();
-        ;
 
-        customerBankingCard = BankingCard
-            .create(customerBankingAccount)
-            .setId(1L);
+        customerBankingCard = BankingCardTestBuilder.builder()
+            .withId(11L)
+            .withOwnerAccount(customerBankingAccount)
+            .withCardNumber("1234123412341234")
+            .withStatus(BankingCardStatus.ACTIVE)
+            .withCVV("123")
+            .withPIN("1234")
+            .build();
     }
 
 }

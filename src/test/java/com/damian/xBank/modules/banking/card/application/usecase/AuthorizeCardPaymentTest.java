@@ -11,7 +11,7 @@ import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotActi
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoundException;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
-import com.damian.xBank.modules.banking.card.domain.model.CardExpiration;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardTestBuilder;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionTestBuilder;
@@ -69,14 +69,14 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
             .withAccountNumber("US1200001111112233335555")
             .build();
 
-        bankingCard = BankingCard
-            .create(bankingAccount)
-            .setId(11L)
-            .setStatus(BankingCardStatus.ACTIVE)
-            .setCardNumber("1234123412341234")
-            .setExpiration(CardExpiration.defaultExpiration())
-            .setCardCvv("123")
-            .setCardPin("1234");
+        bankingCard = BankingCardTestBuilder.builder()
+            .withId(11L)
+            .withOwnerAccount(bankingAccount)
+            .withCardNumber("1234123412341234")
+            .withStatus(BankingCardStatus.ACTIVE)
+            .withCVV("123")
+            .withPIN("1234")
+            .build();
     }
 
     @Test
@@ -156,7 +156,13 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
     @DisplayName("should throw exception when card is not active")
     void authorizePayment_WhenCardNotActive_ThrowsException() {
         // given
-        bankingCard.setStatus(BankingCardStatus.DISABLED);
+        BankingCard bankingCard = BankingCardTestBuilder.builder()
+            .withOwnerAccount(bankingAccount)
+            .withCardNumber("1234123412341234")
+            .withStatus(BankingCardStatus.DISABLED)
+            .withCVV("123")
+            .withPIN("1234")
+            .build();
 
         AuthorizeCardPaymentCommand command = new AuthorizeCardPaymentCommand(
             "Amazon.com",
@@ -186,8 +192,13 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
     @DisplayName("should throw exception when card is locked")
     void authorizePayment_WhenCardLocked_ThrowsException() {
         // given
-        bankingCard.setStatus(BankingCardStatus.ACTIVE);
-        bankingCard.setStatus(BankingCardStatus.LOCKED);
+        BankingCard bankingCard = BankingCardTestBuilder.builder()
+            .withOwnerAccount(bankingAccount)
+            .withCardNumber("1234123412341234")
+            .withStatus(BankingCardStatus.LOCKED)
+            .withCVV("123")
+            .withPIN("1234")
+            .build();
 
         AuthorizeCardPaymentCommand command = new AuthorizeCardPaymentCommand(
             "Amazon.com",
@@ -224,14 +235,13 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
             .withAccountNumber("US1200001111112233335555")
             .build();
 
-        BankingCard bankingCard = BankingCard
-            .create(bankingAccount)
-            .setId(11L)
-            .setStatus(BankingCardStatus.ACTIVE)
-            .setCardNumber("1234123412341234")
-            .setExpiration(CardExpiration.defaultExpiration())
-            .setCardCvv("123")
-            .setCardPin("1234");
+        BankingCard bankingCard = BankingCardTestBuilder.builder()
+            .withOwnerAccount(bankingAccount)
+            .withCardNumber("1234123412341234")
+            .withStatus(BankingCardStatus.ACTIVE)
+            .withCVV("123")
+            .withPIN("1234")
+            .build();
 
         AuthorizeCardPaymentCommand command = new AuthorizeCardPaymentCommand(
             "Amazon.com",

@@ -55,9 +55,13 @@ public class BankingCardTest extends AbstractServiceTest {
             .withAccountNumber("US1200001111112233335555")
             .build();
 
-        bankingCard = BankingCard
-            .create(bankingAccount)
-            .setCardNumber("1234123412341234");
+        bankingCard = bankingAccount.issueCard(
+            BankingCardType.DEBIT,
+            "1234123412341234",
+            "123",
+            "1234"
+        );
+        bankingCard.activate(bankingCard.getCardCvv());
     }
 
 
@@ -124,14 +128,13 @@ public class BankingCardTest extends AbstractServiceTest {
             .withAccountNumber("US1200001111112233335555")
             .build();
 
-        BankingCard bankingCard = BankingCard
-            .create(bankingAccount)
-            .setId(11L)
-            .setStatus(BankingCardStatus.ACTIVE)
-            .setCardNumber("1234123412341234")
-            .setExpiration(CardExpiration.defaultExpiration())
-            .setCardCvv("123")
-            .setCardPin("1234");
+        BankingCard card = bankingAccount.issueCard(
+            BankingCardType.DEBIT,
+            "1234123412341234",
+            "123",
+            "1234"
+        );
+        card.activate(card.getCardCvv());
 
         BigDecimal amount = BigDecimal.valueOf(300);
 
@@ -139,7 +142,7 @@ public class BankingCardTest extends AbstractServiceTest {
         BankingCardInsufficientFundsException exception =
             assertThrows(
                 BankingCardInsufficientFundsException.class,
-                () -> bankingCard.assertSufficientFunds(amount)
+                () -> card.assertSufficientFunds(amount)
             );
 
         // then
@@ -151,8 +154,7 @@ public class BankingCardTest extends AbstractServiceTest {
     @DisplayName("should pass when given pin matches the pin card")
     void assertCorrectPin_WhenPinMatches_DoesNotThrow() {
         // given
-        bankingCard.setCardPin("1234");
-        bankingCard.setStatus(BankingCardStatus.ACTIVE);
+        bankingCard.changePIN("1234");
 
         // when / then
         assertDoesNotThrow(
@@ -163,8 +165,7 @@ public class BankingCardTest extends AbstractServiceTest {
     @DisplayName("should throw exception when given pin not matches with the pin card")
     void assertCorrectPin_WhenPinNotMatches_ThrowsException() {
         // given
-        bankingCard.setCardPin("1234");
-        bankingCard.setStatus(BankingCardStatus.ACTIVE);
+        bankingCard.changePIN("1234");
 
         // when / then
         assertThrows(
@@ -178,7 +179,7 @@ public class BankingCardTest extends AbstractServiceTest {
     @DisplayName("should pass when card is not disabled")
     void assertEnabled_WhenCardIsActive_DoesNotThrow() {
         // given
-        bankingCard.setStatus(BankingCardStatus.ACTIVE);
+        bankingCard.activate(bankingCard.getCardCvv());
 
         // when / then
         assertDoesNotThrow(bankingCard::assertEnabled);
@@ -188,7 +189,7 @@ public class BankingCardTest extends AbstractServiceTest {
     @DisplayName("should throw exception when card is disabled")
     void assertEnabled_WhenCardIsDisabled_ThrowsException() {
         // given
-        bankingCard.setStatus(BankingCardStatus.DISABLED);
+        bankingCard.disable();
 
         // when / then
         assertThrows(
@@ -201,7 +202,7 @@ public class BankingCardTest extends AbstractServiceTest {
     @DisplayName("should pass when card is not locked")
     void assertUnlocked_WhenCardIsActive_DoesNotThrow() {
         // given
-        bankingCard.setStatus(BankingCardStatus.ACTIVE);
+        bankingCard.activate(bankingCard.getCardCvv());
 
         // when / then
         assertDoesNotThrow(bankingCard::assertUnlocked);
@@ -211,8 +212,8 @@ public class BankingCardTest extends AbstractServiceTest {
     @DisplayName("should throw exception when card is locked")
     void assertUnlocked_WhenCardIsLocked_ThrowsException() {
         // given
-        bankingCard.setStatus(BankingCardStatus.ACTIVE);
-        bankingCard.setStatus(BankingCardStatus.LOCKED);
+        bankingCard.activate(bankingCard.getCardCvv());
+        bankingCard.lock();
 
         // when / then
         assertThrows(
@@ -226,8 +227,8 @@ public class BankingCardTest extends AbstractServiceTest {
     void assertCanSpend_WhenValid_DoesNotThrow() {
         // given
         bankingAccount.deposit(BigDecimal.valueOf(100));
-        bankingCard.setCardPin("1234");
-        bankingCard.setStatus(BankingCardStatus.ACTIVE);
+        bankingCard.changePIN("1234");
+        bankingCard.activate(bankingCard.getCardCvv());
 
         // when / then
         assertDoesNotThrow(

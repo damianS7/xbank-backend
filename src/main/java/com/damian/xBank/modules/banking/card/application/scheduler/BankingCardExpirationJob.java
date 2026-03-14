@@ -50,7 +50,7 @@ public class BankingCardExpirationJob {
 
         log.info("Found {} expired cards", expiredCards.size());
         for (BankingCard bankingCard : expiredCards) {
-            bankingCard.setStatus(BankingCardStatus.EXPIRED);
+            bankingCard.expired();
         }
 
         bankingCardRepository.saveAll(expiredCards);

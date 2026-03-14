@@ -8,11 +8,13 @@ import com.damian.xBank.modules.banking.card.domain.service.BankingCardDomainSer
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RequestCard {
+    private static final int MAX_RETRY_ATTEMPS = 5;
     private final BankingAccountRepository bankingAccountRepository;
     private final AuthenticationContext authenticationContext;
     private final BankingCardDomainService bankingCardDomainService;
@@ -54,18 +56,18 @@ public class RequestCard {
             bankingAccount.assertOwnedBy(currentUser.getId());
         }
 
-        // if customer has reached the maximum amount of cards per account.
-        bankingAccount.assertCanAddCard();
-
-        // create the card and associate to the account and return it.
         BankingCard card = bankingCardDomainService.createBankingCard(bankingAccount, command.type());
+        int retry = 0;
 
-        // generate another card if number exists
-        while (bankingCardRepository.existsByCardNumber(card.getCardNumber())) {
-            card = bankingCardDomainService.createBankingCard(bankingAccount, command.type());
-        }
-
-        bankingAccount.addBankingCard(card);
+        do {
+            try {
+                bankingCardRepository.saveAndFlush(card);
+                break;
+            } catch (DataIntegrityViolationException exception) {
+                card = bankingCardDomainService.createBankingCard(bankingAccount, command.type());
+                retry++;
+            }
+        } while (retry < MAX_RETRY_ATTEMPS);
 
         return RequestCardResult.from(card);
     }

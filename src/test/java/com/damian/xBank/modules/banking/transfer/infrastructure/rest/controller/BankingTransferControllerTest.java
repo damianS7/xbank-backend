@@ -94,7 +94,7 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
             .withAmount(BigDecimal.valueOf(100))
             .withDescription("a gift!")
             .build();
-      
+
         transferRepository.save(transfer);
     }
 
@@ -256,9 +256,8 @@ public class BankingTransferControllerTest extends AbstractControllerTest {
                 .value(ErrorCodes.BANKING_ACCOUNT_INSUFFICIENT_FUNDS));
     }
 
-    // TODO review naming of this test.
     @Test
-    @DisplayName("POST /transfers/confirm a valid request should confirm a transfer")
+    @DisplayName("POST /transfers/confirm with valid request should confirm a transfer")
     void postTransfersConfirm_ValidRequest_Returns200OK() throws Exception {
         // given
         login(fromCustomer);

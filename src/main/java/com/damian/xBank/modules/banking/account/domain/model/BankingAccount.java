@@ -9,7 +9,7 @@ import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountS
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountSuspendedException;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
-import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardType;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import jakarta.persistence.CascadeType;
@@ -44,9 +44,6 @@ public class BankingAccount {
     private User user;
 
     @OneToMany(mappedBy = "bankingAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<BankingTransaction> accountTransactions; // TODO remove this?
-
-    @OneToMany(mappedBy = "bankingAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<BankingCard> bankingCards;
 
     @Column(length = 64)
@@ -79,10 +76,9 @@ public class BankingAccount {
     @Column
     private Instant updatedAt;
 
-    private static final int MAX_CARDS_PER_ACCOUNT = 5;
+    public static final int MAX_CARDS_PER_ACCOUNT = 5;
 
     protected BankingAccount() {
-        this.accountTransactions = new HashSet<>();
         this.bankingCards = new HashSet<>();
         this.balance = BigDecimal.valueOf(0);
         this.reservedBalance = BigDecimal.valueOf(0);
@@ -100,7 +96,8 @@ public class BankingAccount {
         BankingAccountType type,
         BankingAccountCurrency currency,
         BigDecimal initialBalance,
-        BankingAccountStatus initialStatus
+        BankingAccountStatus initialStatus,
+        Set<BankingCard> bankingCards
     ) {
         this();
         this.id = id;
@@ -110,6 +107,7 @@ public class BankingAccount {
         this.currency = currency;
         this.balance = initialBalance;
         this.status = initialStatus;
+        this.bankingCards = bankingCards;
     }
 
     public static BankingAccount create(
@@ -125,7 +123,8 @@ public class BankingAccount {
             accountType,
             accountCurrency,
             BigDecimal.valueOf(0),
-            BankingAccountStatus.ACTIVE
+            BankingAccountStatus.ACTIVE,
+            null
         );
     }
 
@@ -195,15 +194,26 @@ public class BankingAccount {
         return this.bankingCards;
     }
 
-    public void addBankingCard(BankingCard bankingCard) {
+    public BankingCard issueCard(
+        BankingCardType type,
+        String number,
+        String cvv,
+        String pin
+    ) {
         // check that the card can be added
         assertCanAddCard();
 
-        if (bankingCard.getBankingAccount() != this) {
-            bankingCard.setBankingAccount(this);
-        }
+        // create the card
+        BankingCard card = BankingCard.create(
+            type,
+            this,
+            number,
+            cvv,
+            pin
+        );
 
-        this.bankingCards.add(bankingCard);
+        this.bankingCards.add(card);
+        return card;
     }
 
     private void markAsUpdated() {
@@ -263,10 +273,12 @@ public class BankingAccount {
     public void withdraw(BigDecimal amount) {
         this.assertSufficientFunds(amount);
         this.balance = this.getBalance().subtract(amount);
+        markAsUpdated();
     }
 
     public void deposit(BigDecimal amount) {
         this.balance = this.getBalance().add(amount);
+        markAsUpdated();
     }
 
     public boolean isOwnedBy(Long customerId) {

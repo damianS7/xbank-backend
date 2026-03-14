@@ -13,6 +13,7 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardTestBuilder;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardType;
 import com.damian.xBank.modules.banking.card.domain.service.BankingCardDomainService;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
@@ -28,7 +29,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -79,10 +82,14 @@ public class RequestCardRequestTest extends AbstractServiceTest {
         // given
         setUpContext(customer);
 
-        BankingCard givenBankingCard = BankingCard
-            .create(bankingAccount)
-            .setId(11L)
-            .setCardNumber("1234567890123456");
+        BankingCard givenBankingCard = BankingCardTestBuilder.builder()
+            .withId(11L)
+            .withOwnerAccount(bankingAccount)
+            .withCardNumber("1234567890123456")
+            .withStatus(BankingCardStatus.ACTIVE)
+            .withCVV("123")
+            .withPIN("1234")
+            .build();
 
         RequestCardCommand command = new RequestCardCommand(
             bankingAccount.getId(),
@@ -169,10 +176,14 @@ public class RequestCardRequestTest extends AbstractServiceTest {
 
         setUpContext(admin);
 
-        BankingCard givenBankingCard = BankingCard
-            .create(bankingAccount)
-            .setId(11L)
-            .setCardNumber("1234567890123456");
+        BankingCard givenBankingCard = BankingCardTestBuilder.builder()
+            .withId(11L)
+            .withOwnerAccount(bankingAccount)
+            .withCardNumber("1234567890123456")
+            .withStatus(BankingCardStatus.ACTIVE)
+            .withCVV("123")
+            .withPIN("1234")
+            .build();
 
         RequestCardCommand command = new RequestCardCommand(
             bankingAccount.getId(),
@@ -199,11 +210,29 @@ public class RequestCardRequestTest extends AbstractServiceTest {
         // given
         setUpContext(customer);
 
-        for (int i = 0; i < bankingAccount.getCardLimit(); i++) {
-            bankingAccount.addBankingCard(
-                BankingCard.create(bankingAccount).setStatus(BankingCardStatus.ACTIVE)
-            );
+        Set<BankingCard> bankingCards = new HashSet<>();
+
+        for (int i = 0; i <= BankingAccount.MAX_CARDS_PER_ACCOUNT; i++) {
+            BankingCard card = BankingCardTestBuilder.builder()
+                .withId((long) i)
+                .withOwnerAccount(bankingAccount)
+                .withCardNumber("12345678901234" + i)
+                .withStatus(BankingCardStatus.ACTIVE)
+                .withCVV("123")
+                .withPIN("1234")
+                .build();
+            bankingCards.add(card);
         }
+
+        BankingAccount bankingAccount = BankingAccountTestBuilder.builder()
+            .withId(2L)
+            .withOwner(customer)
+            .withCurrency(BankingAccountCurrency.EUR)
+            .withBalance(BigDecimal.valueOf(1000))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("US1200001111112233335555")
+            .withCards(bankingCards)
+            .build();
 
         RequestCardCommand command = new RequestCardCommand(
             bankingAccount.getId(),
@@ -211,7 +240,20 @@ public class RequestCardRequestTest extends AbstractServiceTest {
         );
 
         // when
-        when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.of(bankingAccount));
+        when(bankingAccountRepository.findById(anyLong()))
+            .thenReturn(Optional.of(bankingAccount));
+        when(bankingCardDomainService.createBankingCard(any(), any()))
+            .thenAnswer(invocation -> {
+                BankingAccount account = invocation.getArgument(0);
+                BankingCardType type = invocation.getArgument(1);
+
+                return account.issueCard(
+                    type,
+                    "1234567812345678",
+                    "123",
+                    "1234"
+                );
+            });
 
         BankingAccountCardsLimitException exception = assertThrows(
             BankingAccountCardsLimitException.class,

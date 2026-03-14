@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
  * This class is used by the merchant to capture the funds from an AUTHORIZED payment.
  */
 @Service
-// TODO rename to CapturePayment??
 public class CapturePayment {
     private final PaymentIntentRepository paymentIntentRepository;
     private final AuthenticationContext authenticationContext;

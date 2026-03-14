@@ -71,29 +71,55 @@ public class BankingCard {
     @Column
     private Instant updatedAt;
 
-    public BankingCard() {
-        this.expiration = CardExpiration.defaultExpiration();
-        this.status = BankingCardStatus.PENDING_ACTIVATION;
-        this.cardType = BankingCardType.DEBIT;
-        this.dailyLimit = BigDecimal.valueOf(3000);
+    protected BankingCard() {
+        // for JPA
     }
 
-    public BankingCard(BankingAccount bankingAccount) {
-        this();
+    BankingCard(
+        Long cardId,
+        BankingCardType cardType,
+        BankingCardStatus cardStatus,
+        BankingAccount bankingAccount,
+        String cardNumber,
+        CardExpiration expiration,
+        String cardCvv,
+        String cardPin,
+        BigDecimal dailyLimit
+    ) {
+        this.id = cardId;
+        this.cardType = cardType;
+        this.status = cardStatus;
         this.bankingAccount = bankingAccount;
+        this.cardNumber = cardNumber;
+        this.expiration = expiration;
+        this.cardCvv = cardCvv;
+        this.cardPin = cardPin;
+        this.dailyLimit = dailyLimit;
+        this.createdAt = Instant.now();
     }
 
-    public static BankingCard create(BankingAccount bankingAccount) {
-        return new BankingCard(bankingAccount);
+    public static BankingCard create(
+        BankingCardType bankingCardType,
+        BankingAccount bankingAccount,
+        String cardNumber,
+        String cardCvv,
+        String cardPin
+    ) {
+        return new BankingCard(
+            null,
+            bankingCardType,
+            BankingCardStatus.PENDING_ACTIVATION,
+            bankingAccount,
+            cardNumber,
+            CardExpiration.defaultExpiration(),
+            cardCvv,
+            cardPin,
+            BigDecimal.valueOf(3000)
+        );
     }
 
     public Long getId() {
         return id;
-    }
-
-    public BankingCard setId(Long id) {
-        this.id = id;
-        return this;
     }
 
     public User getOwner() {
@@ -104,28 +130,18 @@ public class BankingCard {
         return cardNumber;
     }
 
-    public BankingCard setCardNumber(String number) {
-        this.cardNumber = number;
-        return this;
-    }
-
     public BankingCardType getCardType() {
         return cardType;
-    }
-
-    public BankingCard setCardType(BankingCardType cardType) {
-        this.cardType = cardType;
-        return this;
     }
 
     public BankingCardStatus getStatus() {
         return status;
     }
 
-    public BankingCard setStatus(BankingCardStatus newStatus) {
+    private void setStatus(BankingCardStatus newStatus) {
         // if the actual status is the same as the new ... do nothing
         if (this.status == newStatus) {
-            return this;
+            return;
         }
 
         if (!this.status.canTransitionTo(newStatus)) {
@@ -136,72 +152,46 @@ public class BankingCard {
             );
         }
 
-        this.updatedAt = Instant.now();
         this.status = newStatus;
-        return this;
+        markAsUpdated();
     }
 
     public BankingAccount getBankingAccount() {
         return bankingAccount;
     }
 
-    public BankingCard setBankingAccount(BankingAccount bankingAccount) {
-        this.bankingAccount = bankingAccount;
-        return this;
-    }
-
     public Instant getCreatedAt() {
         return createdAt;
-    }
-
-    public BankingCard setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-        return this;
     }
 
     public Instant getUpdatedAt() {
         return updatedAt;
     }
 
-    public BankingCard setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
-        return this;
-    }
-
     public CardExpiration getExpiration() {
         return expiration;
-    }
-
-    public BankingCard setExpiration(CardExpiration expiration) {
-        this.expiration = expiration;
-        return this;
     }
 
     public String getCardCvv() {
         return cardCvv;
     }
 
-    public BankingCard setCardCvv(String CVV) {
-        this.cardCvv = CVV;
-        return this;
-    }
-
     public String getCardPin() {
         return cardPin;
     }
 
-    public BankingCard setCardPin(String cardPin) {
+    public void changePIN(String cardPin) {
         this.cardPin = cardPin;
-        return this;
+        markAsUpdated();
     }
 
     public BigDecimal getDailyLimit() {
         return dailyLimit;
     }
 
-    public BankingCard setDailyLimit(BigDecimal dailyLimit) {
+    public void limit(BigDecimal dailyLimit) {
         this.dailyLimit = dailyLimit;
-        return this;
+        markAsUpdated();
     }
 
     public BigDecimal getBalance() {
@@ -254,6 +244,10 @@ public class BankingCard {
 
         // compare card owner id with given user id
         return Objects.equals(getOwner().getId(), userId);
+    }
+
+    private void markAsUpdated() {
+        this.updatedAt = Instant.now();
     }
 
     /**
@@ -444,5 +438,28 @@ public class BankingCard {
     public void activate(String cvv) {
         assertCorrectCvv(cvv);
         setStatus(BankingCardStatus.ACTIVE);
+    }
+
+    public void deactivate(String cvv) {
+    }
+
+    public void disable() {
+        setStatus(BankingCardStatus.DISABLED);
+    }
+
+    public void enable() {
+    }
+
+    public void lock() {
+        setStatus(BankingCardStatus.LOCKED);
+    }
+
+    public void unlock() {
+        setStatus(BankingCardStatus.ACTIVE);
+    }
+
+    public void expired() {
+        setStatus(BankingCardStatus.EXPIRED);
+
     }
 }

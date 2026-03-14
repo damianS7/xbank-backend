@@ -10,8 +10,6 @@ import com.damian.xBank.shared.security.PasswordValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-
 @Service
 public class SetBankingCardPin {
     private final AuthenticationContext authenticationContext;
@@ -53,10 +51,7 @@ public class SetBankingCardPin {
         }
 
         // we set the new pin
-        bankingCard.setCardPin(command.pin());
-
-        // we change the updateAt timestamp field
-        bankingCard.setUpdatedAt(Instant.now());
+        bankingCard.changePIN(command.pin());
 
         // save the data and return BankingAccount
         bankingCardRepository.save(bankingCard);

@@ -9,6 +9,8 @@ import com.damian.xBank.modules.banking.card.application.usecase.set.pin.SetBank
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoundException;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotOwnerException;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardTestBuilder;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -59,12 +61,14 @@ public class SetBankingCardPinTest extends AbstractServiceTest {
             .withAccountNumber("US9900001111112233334444")
             .build();
 
-        bankingCard = BankingCard
-            .create(bankingAccount)
-            .setId(11L)
-            .setCardNumber("1234123412341234")
-            .setCardCvv("123")
-            .setCardPin("1234");
+        bankingCard = BankingCardTestBuilder.builder()
+            .withId(11L)
+            .withOwnerAccount(bankingAccount)
+            .withCardNumber("1234123412341234")
+            .withStatus(BankingCardStatus.ACTIVE)
+            .withCVV("123")
+            .withPIN("1234")
+            .build();
     }
 
     @Test
