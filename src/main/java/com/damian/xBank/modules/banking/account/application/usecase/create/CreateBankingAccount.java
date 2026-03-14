@@ -8,6 +8,7 @@ import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CreateBankingAccount {
@@ -34,6 +35,7 @@ public class CreateBankingAccount {
      * @param command BankingAccountCreateRequest
      * @return a newly created BankingAccount
      */
+    @Transactional
     public CreateAccountResult execute(CreateBankingAccountCommand command) {
         // Current user
         final User currentUser = authenticationContext.getCurrentUser();
@@ -44,13 +46,14 @@ public class CreateBankingAccount {
                 () -> new UserNotFoundException(currentUser.getId())
             );
 
-        final BankingAccount bankingAccount = bankingAccountDomainService.createAccount(
+        BankingAccount bankingAccount = bankingAccountDomainService.createAccount(
             user,
             command.type(),
             command.currency()
         );
 
         bankingAccountRepository.save(bankingAccount);
+        System.out.println(bankingAccount.toString());
 
         return CreateAccountResult.from(bankingAccount);
     }

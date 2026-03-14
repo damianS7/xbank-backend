@@ -78,7 +78,7 @@ public class BankingAccount {
 
     public static final int MAX_CARDS_PER_ACCOUNT = 5;
 
-    protected BankingAccount() {
+    public BankingAccount() {
         this.bankingCards = new HashSet<>();
         this.balance = BigDecimal.valueOf(0);
         this.reservedBalance = BigDecimal.valueOf(0);
@@ -124,7 +124,7 @@ public class BankingAccount {
             accountCurrency,
             BigDecimal.valueOf(0),
             BankingAccountStatus.ACTIVE,
-            null
+            Set.of()
         );
     }
 
@@ -411,5 +411,20 @@ public class BankingAccount {
     public void captureReservedAmount(BigDecimal amount) {
         assertSufficientReservedFunds(amount);
         this.reservedBalance = this.reservedBalance.subtract(amount);
+    }
+
+    public String toString() {
+        return "BankingAccount{" +
+               "id=" + id +
+               ", user=" + user.getId() +
+               ", accountNumber='" + accountNumber + '\'' +
+               ", balance=" + balance +
+               ", type=" + type +
+               ", currency=" + currency +
+               ", status=" + status +
+               ", cards=" + (bankingCards != null ? bankingCards.size() : "null") +
+               ", createdAt=" + createdAt +
+               ", updatedAt=" + updatedAt +
+               '}';
     }
 }
