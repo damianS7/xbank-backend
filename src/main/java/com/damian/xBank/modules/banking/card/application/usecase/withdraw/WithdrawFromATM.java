@@ -66,7 +66,7 @@ public class WithdrawFromATM {
             "ATM Withdrawal."
         );
 
-        bankingCard.chargeAmount(command.amount());
+        bankingCard.withdraw(command.amount());
         transaction.complete();
         bankingTransactionRepository.save(transaction);
 

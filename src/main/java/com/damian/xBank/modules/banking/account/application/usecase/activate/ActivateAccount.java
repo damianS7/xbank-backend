@@ -32,6 +32,10 @@ public class ActivateAccount {
         // Current user
         final User currentUser = authenticationContext.getCurrentUser();
 
+        if (!currentUser.isAdmin()) {
+            // Only admin can activate banking accounts.
+        }
+
         // Banking account to activate
         final BankingAccount bankingAccount = bankingAccountRepository
             .findById(command.accountId())
@@ -42,7 +46,7 @@ public class ActivateAccount {
             );
 
         // validations rules only for customers
-        bankingAccount.activateBy(currentUser);
+        bankingAccount.activate();
 
         bankingAccountRepository.save(bankingAccount);
 

@@ -40,7 +40,7 @@ public class AuthorizeCardPayment {
             );
 
         // check security
-        bankingCard.authorizePayment(
+        bankingCard.authorize(
             command.amount(),
             command.expiryMonth(),
             command.expiryYear(),

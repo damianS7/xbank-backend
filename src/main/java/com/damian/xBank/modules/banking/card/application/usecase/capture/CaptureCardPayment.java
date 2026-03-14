@@ -40,7 +40,7 @@ public class CaptureCardPayment {
 
         // deduct from card
         BankingCard card = transaction.getBankingCard();
-        card.chargeAmount(transaction.getAmount());
+        card.charge(transaction.getAmount());
 
         // Notify the user
         //        notificationPublisher.publish(

@@ -28,12 +28,8 @@ public enum BankingAccountStatus {
 
     static {
         CLOSED.allowedTransitions = Set.of();
-        SUSPENDED.allowedTransitions = Set.of(ACTIVE);
-
-        ACTIVE.allowedTransitions = Set.of(
-                CLOSED,
-                SUSPENDED
-        );
+        SUSPENDED.allowedTransitions = Set.of(ACTIVE, CLOSED);
+        ACTIVE.allowedTransitions = Set.of(CLOSED, SUSPENDED);
     }
 
     public boolean canTransitionTo(BankingAccountStatus newStatus) {

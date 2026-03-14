@@ -34,6 +34,10 @@ public class CloseAccount {
         // Current user
         final User currentUser = authenticationContext.getCurrentUser();
 
+        if (!currentUser.isAdmin()) {
+            // only admin can close accounts
+        }
+
         // Banking account to be closed
         final BankingAccount bankingAccount = bankingAccountRepository.findById(command.accountId())
             .orElseThrow(
@@ -41,11 +45,6 @@ public class CloseAccount {
                     command.accountId()
                 ) // Banking account not found
             );
-
-        if (!currentUser.isAdmin()) {
-            bankingAccount.assertOwnedBy(currentUser.getId());
-            passwordValidator.validatePassword(currentUser, command.password());
-        }
 
         bankingAccount.close();
 

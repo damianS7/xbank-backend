@@ -138,24 +138,6 @@ public class BankingCard {
         return status;
     }
 
-    private void setStatus(BankingCardStatus newStatus) {
-        // if the actual status is the same as the new ... do nothing
-        if (this.status == newStatus) {
-            return;
-        }
-
-        if (!this.status.canTransitionTo(newStatus)) {
-            throw new BankingCardStatusTransitionException(
-                this.id,
-                this.status.name(),
-                newStatus.name()
-            );
-        }
-
-        this.status = newStatus;
-        markAsUpdated();
-    }
-
     public BankingAccount getBankingAccount() {
         return bankingAccount;
     }
@@ -180,22 +162,34 @@ public class BankingCard {
         return cardPin;
     }
 
-    public void changePIN(String cardPin) {
-        this.cardPin = cardPin;
-        markAsUpdated();
-    }
-
     public BigDecimal getDailyLimit() {
         return dailyLimit;
     }
 
-    public void limit(BigDecimal dailyLimit) {
-        this.dailyLimit = dailyLimit;
-        markAsUpdated();
-    }
-
     public BigDecimal getBalance() {
         return this.getBankingAccount().getBalance();
+    }
+
+    public String getHolderName() {
+        return this.getBankingAccount().getOwner().getProfile().getFullName();
+    }
+
+    private void setStatus(BankingCardStatus newStatus) {
+        // if the actual status is the same as the new ... do nothing
+        if (this.status == newStatus) {
+            return;
+        }
+
+        if (!this.status.canTransitionTo(newStatus)) {
+            throw new BankingCardStatusTransitionException(
+                this.id,
+                this.status.name(),
+                newStatus.name()
+            );
+        }
+
+        this.status = newStatus;
+        markAsUpdated();
     }
 
     // returns true if the operation can be carried
@@ -203,33 +197,6 @@ public class BankingCard {
         // if its 0 then balance is equal to the amount willing to spend
         // if its 1 then balance is greater than the amount willing to spend
         return this.getBankingAccount().hasSufficientFunds(amount);
-    }
-
-    /**
-     * Assert the has sufficient funds.
-     *
-     * @param amount the amount to check
-     * @return the current validator instance for chaining
-     * @throws BankingCardInsufficientFundsException if the card does not have sufficient funds
-     */
-    public BankingCard assertSufficientFunds(BigDecimal amount) {
-        if (!this.hasSufficientFunds(amount)) {
-            throw new BankingCardInsufficientFundsException(this.getId(), getBalance(), amount);
-        }
-
-        return this;
-    }
-
-    public BankingCard chargeAmount(BigDecimal amount) {
-        // assert sufficient funds or throw exception
-        this.assertSufficientFunds(amount);
-
-        this.getBankingAccount().withdraw(amount);
-        return this;
-    }
-
-    public String getHolderName() {
-        return this.getBankingAccount().getOwner().getProfile().getFullName();
     }
 
     public boolean isLocked() {
@@ -248,6 +215,87 @@ public class BankingCard {
 
     private void markAsUpdated() {
         this.updatedAt = Instant.now();
+    }
+
+    public void changePIN(String cardPin) {
+        this.cardPin = cardPin;
+        markAsUpdated();
+    }
+
+    public void limit(BigDecimal dailyLimit) {
+        this.dailyLimit = dailyLimit;
+        markAsUpdated();
+    }
+
+    /**
+     * Authorize a payment.
+     *
+     * @param amount
+     * @param expiryMonth
+     * @param expiryYear
+     * @param cvv
+     */
+    public void authorize(
+        BigDecimal amount,
+        Integer expiryMonth,
+        Integer expiryYear,
+        String cvv
+    ) {
+        assertUsable();
+        assertSufficientFunds(amount);
+        validateExpirationYear(expiryYear);
+        validateExpirationMonth(expiryMonth);
+        assertCorrectCvv(cvv);
+    }
+
+    public void charge(BigDecimal amount) {
+        this.assertSufficientFunds(amount);
+        this.getBankingAccount().withdraw(amount);
+        markAsUpdated();
+    }
+
+    public void withdraw(BigDecimal amount) {
+        this.assertSufficientFunds(amount);
+        this.getBankingAccount().withdraw(amount);
+        markAsUpdated();
+    }
+
+    /**
+     * Activate the card.
+     *
+     * @param cvv
+     */
+    public void activate(String cvv) {
+        assertCorrectCvv(cvv);
+        setStatus(BankingCardStatus.ACTIVE);
+    }
+
+    public void disable() {
+        setStatus(BankingCardStatus.DISABLED);
+    }
+
+    public void lock() {
+        setStatus(BankingCardStatus.LOCKED);
+    }
+
+    public void unlock() {
+        setStatus(BankingCardStatus.ACTIVE);
+    }
+
+    public void expired() {
+        setStatus(BankingCardStatus.EXPIRED);
+    }
+
+    /**
+     * Assert the has sufficient funds.
+     *
+     * @param amount the amount to check
+     * @throws BankingCardInsufficientFundsException if the card does not have sufficient funds
+     */
+    public void assertSufficientFunds(BigDecimal amount) {
+        if (!this.hasSufficientFunds(amount)) {
+            throw new BankingCardInsufficientFundsException(this.getId(), getBalance(), amount);
+        }
     }
 
     /**
@@ -286,83 +334,61 @@ public class BankingCard {
     /**
      * Assert the card cvv matches.
      *
-     * @return the current validator instance for chaining
      * @throws BankingCardInvalidCvvException if the card CVV does not equals to the given CVV
      */
-    public BankingCard assertCorrectCvv(String cvv) {
+    public void assertCorrectCvv(String cvv) {
 
         // check card pin
         if (!Objects.equals(getCardCvv(), cvv)) {
             throw new BankingCardInvalidCvvException(getId());
         }
-
-        return this;
     }
 
-    public BankingCard assertActivated() {
-        // check card status
+    public void assertActivated() {
         if (status != BankingCardStatus.ACTIVE) {
             throw new BankingCardNotActiveException(getId());
         }
-
-        return this;
     }
 
-    public BankingCard assertNotExpired() {
-        // check card expiration
+    public void assertNotExpired() {
         if (expiration.isExpired()) {
             throw new BankingCardExpiredException(getId());
         }
-
-        return this;
     }
 
     /**
      * Assert card is not DISABLED.
      *
-     * @return the current validator instance for chaining
      * @throws BankingCardDisabledException if the card is locked
      */
-    public BankingCard assertEnabled() {
-
+    public void assertEnabled() {
         // check card status
         if (isDisabled()) {
             throw new BankingCardDisabledException(getId());
         }
-
-        return this;
     }
 
     /**
      * Assert card is not LOCKED.
      *
-     * @return the current validator instance for chaining
      * @throws BankingCardLockedException if the card is locked
      */
-    public BankingCard assertUnlocked() {
-
-        // check lock status
+    public void assertUnlocked() {
         if (isLocked()) {
             throw new BankingCardLockedException(getId());
         }
-
-        return this;
     }
 
     /**
      * Assert card is not DISABLED or LOCKED and can be used for any operation.
      *
-     * @return the current validator instance for chaining
      * @throws BankingCardDisabledException if the card is disabled
      * @throws BankingCardLockedException   if the card is locked
      */
-    public BankingCard assertUsable() {
-
-        this.assertActivated()
-            .assertNotExpired()
-            .assertUnlocked();
-
-        return this;
+    public void assertUsable() {
+        this.assertActivated();
+        this.assertNotExpired();
+        this.assertUnlocked();
     }
 
     /**
@@ -370,21 +396,18 @@ public class BankingCard {
      *
      * @param amount  the amount to spend
      * @param cardPin the pin of the card
-     * @return the current validator instance for chaining
      */
-    public BankingCard assertCanSpend(
+    public void assertCanSpend(
         User actor,
         BigDecimal amount,
         String cardPin
     ) {
         // check the account status and see if can be used to operate
         // run validations for the card and throw exception
-        this.assertOwnedBy(actor.getId())
-            .assertUsable()
-            .assertCorrectPin(cardPin)
-            .assertSufficientFunds(amount);
-
-        return this;
+        this.assertOwnedBy(actor.getId());
+        this.assertUsable();
+        this.assertCorrectPin(cardPin);
+        this.assertSufficientFunds(amount);
     }
 
     /**
@@ -409,57 +432,4 @@ public class BankingCard {
         }
     }
 
-    /**
-     * Authorize a payment.
-     *
-     * @param amount
-     * @param expiryMonth
-     * @param expiryYear
-     * @param cvv
-     */
-    public void authorizePayment(
-        BigDecimal amount,
-        Integer expiryMonth,
-        Integer expiryYear,
-        String cvv
-    ) {
-        assertUsable();
-        assertSufficientFunds(amount);
-        validateExpirationYear(expiryYear);
-        validateExpirationMonth(expiryMonth);
-        assertCorrectCvv(cvv);
-    }
-
-    /**
-     * Activate the card.
-     *
-     * @param cvv
-     */
-    public void activate(String cvv) {
-        assertCorrectCvv(cvv);
-        setStatus(BankingCardStatus.ACTIVE);
-    }
-
-    public void deactivate(String cvv) {
-    }
-
-    public void disable() {
-        setStatus(BankingCardStatus.DISABLED);
-    }
-
-    public void enable() {
-    }
-
-    public void lock() {
-        setStatus(BankingCardStatus.LOCKED);
-    }
-
-    public void unlock() {
-        setStatus(BankingCardStatus.ACTIVE);
-    }
-
-    public void expired() {
-        setStatus(BankingCardStatus.EXPIRED);
-
-    }
 }

@@ -117,7 +117,7 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
 
     @Test
     @DisplayName("should return 200 OK when authorize payment")
-    void authorizePayment_WhenValidRequest_Returns200OK() throws Exception {
+    void authorize_WhenValidRequest_Returns200OK() throws Exception {
         // given
         AuthorizeCardPaymentRequest request = new AuthorizeCardPaymentRequest(
             "Amazon.com",

@@ -5,7 +5,6 @@ import com.damian.xBank.modules.banking.account.application.usecase.close.CloseA
 import com.damian.xBank.modules.banking.account.application.usecase.close.CloseAccountResult;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotOwnerException;
-import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountSuspendedException;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
@@ -89,31 +88,6 @@ public class CloseAccountTest extends AbstractServiceTest {
         Assertions.assertThat(bankingAccount.getStatus()).isEqualTo(BankingAccountStatus.CLOSED);
         verify(bankingAccountRepository).findById(bankingAccount.getId());
         verify(bankingAccountRepository, times(1)).save(any(BankingAccount.class));
-    }
-
-    @Test
-    @DisplayName("Should throws when BankingAccount when is suspended")
-    void closeAccount_WhenAccountSuspended_ThrowsException() {
-        // given
-        setUpContext(customer);
-
-        CloseAccountCommand command = new CloseAccountCommand(
-            bankingAccount.getId(),
-            RAW_PASSWORD
-        );
-
-        bankingAccount.suspend();
-
-        // when
-        when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.of(bankingAccount));
-
-        BankingAccountSuspendedException exception = assertThrows(
-            BankingAccountSuspendedException.class,
-            () -> closeAccount.execute(command)
-        );
-
-        // then
-        assertThat(exception).hasMessage(ErrorCodes.BANKING_ACCOUNT_SUSPENDED);
     }
 
     @Test

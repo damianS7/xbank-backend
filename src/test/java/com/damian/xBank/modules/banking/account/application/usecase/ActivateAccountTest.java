@@ -90,34 +90,6 @@ public class ActivateAccountTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("Should throws exception when customer tries to activate suspended account")
-    void execute_WhenSuspendedAccountActiveByCustomer_ReturnSuspendedAccount() {
-        // given
-        setUpContext(customer);
-
-        bankingAccount.suspend();
-
-        ActivateAccountCommand command = new ActivateAccountCommand(
-            bankingAccount.getId()
-        );
-
-        // when
-        when(bankingAccountRepository.findById(anyLong()))
-            .thenReturn(Optional.of(bankingAccount));
-
-        when(bankingAccountRepository.save(any(BankingAccount.class)))
-            .thenAnswer(i -> i.getArgument(0));
-
-        ActivateAccountResult result = activateAccount.execute(command);
-
-        // then
-        assertThat(result)
-            .isNotNull()
-            .extracting(ActivateAccountResult::accountStatus)
-            .isEqualTo(BankingAccountStatus.SUSPENDED);
-    }
-
-    @Test
     @DisplayName("Should throws exception when trying to activate closed account")
     void execute_WhenClosedAccount_ThrowsException() {
         // given
