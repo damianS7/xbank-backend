@@ -9,46 +9,44 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.client.RestClient;
 
 @Component
 public class PaymentNetworkHttpGateway implements PaymentNetworkGateway {
     private static final Logger log = LoggerFactory.getLogger(PaymentNetworkHttpGateway.class);
-    private final WebClient webClient;
+    private final RestClient restClient;
 
     @Value("${payment-network.endpoint}")
     private String paymentNetworkEndpoint;
 
     public PaymentNetworkHttpGateway(
-        WebClient.Builder builder,
-        @Value("${payment-network.base-url}")
-        String paymentNetworkBaseUrl
+        RestClient.Builder builder,
+        @Value("${payment-network.base-url}") String paymentNetworkBaseUrl
     ) {
-        this.webClient = builder
+        this.restClient = builder
             .baseUrl(paymentNetworkBaseUrl)
             .build();
     }
 
     @Override
     public PaymentAuthorizationResponse authorizePayment(PaymentAuthorizationRequest request) {
-        return webClient
+        return restClient
             .post()
             .uri(paymentNetworkEndpoint)
-            .bodyValue(request)
-            .exchangeToMono(response -> {
+            .body(request)
+            .exchange((req, response) -> {
                 // response if error
-                if (response.statusCode().isError()) {
-                    return response.bodyToMono(ApiResponse.class)
-                        .map(body -> new PaymentAuthorizationResponse(
-                            PaymentAuthorizationStatus.DECLINED,
-                            null,
-                            body.getMessage()
-                        ));
+                if (response.getStatusCode().isError()) {
+                    ApiResponse apiResponse = response.bodyTo(ApiResponse.class);
+                    return new PaymentAuthorizationResponse(
+                        PaymentAuthorizationStatus.DECLINED,
+                        null,
+                        apiResponse != null ? apiResponse.getMessage() : "Unknown error"
+                    );
                 }
 
                 // response if success
-                return response.bodyToMono(PaymentAuthorizationResponse.class);
-            })
-            .block();
+                return response.bodyTo(PaymentAuthorizationResponse.class);
+            });
     }
 }

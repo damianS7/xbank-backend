@@ -9,23 +9,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.client.RestClient;
 
-// TODO migrate to RestClient
 @Component
 public class TransferAuthorizationHttpGateway implements TransferAuthorizationGateway {
     private static final Logger log = LoggerFactory.getLogger(TransferAuthorizationHttpGateway.class);
-    private final WebClient webClient;
+    private final RestClient restClient;
 
     @Value("${transfer-network.endpoint}")
     private String paymentNetworkEndpoint;
 
     public TransferAuthorizationHttpGateway(
-        WebClient.Builder builder,
-        @Value("${transfer-network.base-url}")
-        String paymentNetworkBaseUrl
+        RestClient.Builder builder,
+        @Value("${transfer-network.base-url}") String paymentNetworkBaseUrl
     ) {
-        this.webClient = builder
+        this.restClient = builder
             .baseUrl(paymentNetworkBaseUrl)
             .build();
     }
@@ -34,24 +32,23 @@ public class TransferAuthorizationHttpGateway implements TransferAuthorizationGa
     public TransferAuthorizationResponse authorizeTransfer(
         TransferAuthorizationRequest request
     ) {
-        return webClient
+        return restClient
             .post()
             .uri(paymentNetworkEndpoint)
-            .bodyValue(request)
-            .exchangeToMono(response -> {
+            .body(request)
+            .exchange((req, response) -> {
                 // response if error
-                if (response.statusCode().isError()) {
-                    return response.bodyToMono(ApiResponse.class)
-                        .map(body -> new TransferAuthorizationResponse(
-                            null,
-                            TransferAuthorizationStatus.REJECTED,
-                            body.getMessage()
-                        ));
+                if (response.getStatusCode().isError()) {
+                    ApiResponse apiResponse = response.bodyTo(ApiResponse.class);
+                    return new TransferAuthorizationResponse(
+                        null,
+                        TransferAuthorizationStatus.REJECTED,
+                        apiResponse != null ? apiResponse.getMessage() : "Unknown error"
+                    );
                 }
 
                 // response if success
-                return response.bodyToMono(TransferAuthorizationResponse.class);
-            })
-            .block();
+                return response.bodyTo(TransferAuthorizationResponse.class);
+            });
     }
 }
