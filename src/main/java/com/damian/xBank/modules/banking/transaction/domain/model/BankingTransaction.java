@@ -5,7 +5,8 @@ import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotOwnerException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotPendingStatusException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionStatusTransitionException;
-import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
+import com.damian.xBank.modules.banking.transfer.incoming.domain.model.IncomingTransfer;
+import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransfer;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -37,8 +38,12 @@ public class BankingTransaction {
     private BankingCard bankingCard;
 
     @ManyToOne
-    @JoinColumn(name = "transfer_id", referencedColumnName = "id")
-    private BankingTransfer transfer;
+    @JoinColumn(name = "outgoing_transfer_id", referencedColumnName = "id")
+    private OutgoingTransfer outgoingTransfer;
+
+    @ManyToOne
+    @JoinColumn(name = "incoming_transfer_id", referencedColumnName = "id")
+    private IncomingTransfer incomingTransfer;
 
     @Column(precision = 15, scale = 2)
     private BigDecimal amount;
@@ -76,7 +81,8 @@ public class BankingTransaction {
         Long transactionId,
         BankingAccount bankingAccount,
         BankingCard bankingCard,
-        BankingTransfer transfer,
+        OutgoingTransfer outgoingTransfer,
+        IncomingTransfer incomingTransfer,
         BigDecimal amount,
         String description,
         BankingTransactionType type,
@@ -86,7 +92,8 @@ public class BankingTransaction {
         this.id = transactionId;
         this.bankingAccount = bankingAccount;
         this.bankingCard = bankingCard;
-        this.transfer = transfer;
+        this.outgoingTransfer = outgoingTransfer;
+        this.incomingTransfer = incomingTransfer;
         this.amount = amount;
         this.description = description;
         this.type = type;
@@ -104,6 +111,7 @@ public class BankingTransaction {
         return new BankingTransaction(
             null,
             account,
+            null,
             null,
             null,
             amount,
@@ -124,6 +132,7 @@ public class BankingTransaction {
             card.getBankingAccount(),
             card,
             null,
+            null,
             amount,
             description,
             type,
@@ -134,7 +143,7 @@ public class BankingTransaction {
     public static BankingTransaction create(
         BankingTransactionType type,
         BankingAccount account,
-        BankingTransfer transfer,
+        OutgoingTransfer transfer,
         String description
     ) {
         return new BankingTransaction(
@@ -142,7 +151,27 @@ public class BankingTransaction {
             account,
             null,
             transfer,
+            null,
             transfer.getAmount(),
+            description,
+            type,
+            BankingTransactionStatus.PENDING
+        );
+    }
+
+    public static BankingTransaction create(
+        BankingTransactionType type,
+        BankingAccount account,
+        IncomingTransfer incomingTransfer,
+        String description
+    ) {
+        return new BankingTransaction(
+            null,
+            account,
+            null,
+            null,
+            incomingTransfer,
+            incomingTransfer.getAmount(),
             description,
             type,
             BankingTransactionStatus.PENDING
@@ -173,12 +202,12 @@ public class BankingTransaction {
         return status;
     }
 
-    public BankingTransfer getTransfer() {
-        return transfer;
+    public OutgoingTransfer getOutgoingTransfer() {
+        return outgoingTransfer;
     }
 
     public Long getTransferId() {
-        return transfer != null ? transfer.getId() : null;
+        return outgoingTransfer != null ? outgoingTransfer.getId() : null;
     }
 
     public Instant getCreatedAt() {
@@ -245,8 +274,8 @@ public class BankingTransaction {
 
     private void calcBalanceAfter() {
         switch (type) {
-            case DEPOSIT, TRANSFER_FROM -> this.balanceAfter = balanceBefore.add(this.amount);
-            case TRANSFER_TO, CARD_CHARGE, WITHDRAWAL -> this.balanceAfter = balanceBefore.subtract(this.amount);
+            case DEPOSIT, INCOMING_TRANSFER -> this.balanceAfter = balanceBefore.add(this.amount);
+            case OUTGOING_TRANSFER, CARD_CHARGE, WITHDRAWAL -> this.balanceAfter = balanceBefore.subtract(this.amount);
             default -> this.balanceAfter = balanceBefore;
         }
     }
@@ -258,13 +287,19 @@ public class BankingTransaction {
 
     public void complete() {
         this.setStatus(BankingTransactionStatus.COMPLETED);
-        this.updatedAt = Instant.now();
+        markAsUpdated();
+    }
+
+    public void reject(String rejectReason) {
+        this.description = rejectReason;
+        this.setStatus(BankingTransactionStatus.REJECTED);
+        markAsUpdated();
     }
 
     public void fail(String failReason) {
         this.description = failReason;
         this.setStatus(BankingTransactionStatus.FAILED);
-        this.updatedAt = Instant.now();
+        markAsUpdated();
     }
 
     public void assertPending() {
@@ -288,5 +323,24 @@ public class BankingTransaction {
         }
 
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "BankingTransaction{" +
+               "id=" + id +
+               ", bankingAccountId=" + bankingAccount.getId() +
+               ", bankingCardId=" + bankingCard.getId() +
+               ", outgoingTransferId=" + outgoingTransfer.getId() +
+               ", incomingTransferId=" + incomingTransfer.getId() +
+               ", amount=" + amount +
+               ", balanceBefore=" + balanceBefore +
+               ", balanceAfter=" + balanceAfter +
+               ", description='" + description + '\'' +
+               ", type=" + type +
+               ", status=" + status +
+               ", createdAt=" + createdAt +
+               ", updatedAt=" + updatedAt +
+               '}';
     }
 }

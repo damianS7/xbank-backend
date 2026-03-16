@@ -3,12 +3,10 @@ package com.damian.xBank.modules.banking.transaction.domain.model;
 import java.util.Set;
 
 public enum BankingTransactionStatus {
-    FAILED(Set.of()), // From FAILED no transitions are allowed
+    REJECTED(Set.of()),
+    FAILED(Set.of()),
     COMPLETED(Set.of()),
-    PENDING(Set.of(
-        COMPLETED,
-        FAILED
-    )); // From PENDING transitions to FAILED and COMPLETED are allowed
+    PENDING(Set.of(COMPLETED, FAILED, REJECTED));
 
     private final Set<BankingTransactionStatus> allowedTransitions;
 

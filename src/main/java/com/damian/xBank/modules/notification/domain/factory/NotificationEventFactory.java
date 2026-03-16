@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.notification.domain.factory;
 
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
-import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
+import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransfer;
 import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
 import com.damian.xBank.modules.notification.domain.model.NotificationType;
 import org.springframework.stereotype.Component;
@@ -56,7 +56,7 @@ public class NotificationEventFactory {
         );
     }
 
-    public NotificationEvent transferAuthorized(BankingTransfer transfer) {
+    public NotificationEvent transferAuthorized(OutgoingTransfer transfer) {
         return new NotificationEvent(
             transfer.getFromAccount().getOwner().getId(),
             NotificationType.TRANSACTION,
@@ -71,7 +71,7 @@ public class NotificationEventFactory {
         );
     }
 
-    public NotificationEvent transferReceived(BankingTransfer transfer) {
+    public NotificationEvent transferReceived(OutgoingTransfer transfer) {
         return new NotificationEvent(
             transfer.getToAccount().getOwner().getId(),
             NotificationType.TRANSACTION,

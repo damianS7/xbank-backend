@@ -32,23 +32,25 @@ public class BankingTransactionDtoMapper {
         return new BankingTransactionDetailResult(
             transaction.getId(),
             transaction.getBankingAccount().getId(),
-            transaction.getTransfer() != null ? transaction
-                .getTransfer()
+            transaction.getOutgoingTransfer() != null ? transaction
+                .getOutgoingTransfer()
                 .getFromAccount()
                 .getOwner()
                 .getProfile()
                 .getFullName() : null,
-            transaction.getTransfer() != null ? transaction
-                .getTransfer()
+            transaction.getOutgoingTransfer() != null ? transaction
+                .getOutgoingTransfer()
                 .getFromAccount()
                 .getAccountNumber() : null,
-            transaction.getTransfer() != null ? transaction
-                .getTransfer()
+            transaction.getOutgoingTransfer() != null ? transaction
+                .getOutgoingTransfer()
                 .getToAccount()
                 .getOwner()
                 .getProfile()
                 .getFullName() : null,
-            transaction.getTransfer() != null ? transaction.getTransfer().getToAccount().getAccountNumber() : null,
+            transaction.getOutgoingTransfer() != null ? transaction.getOutgoingTransfer()
+                .getToAccount()
+                .getAccountNumber() : null,
             transaction.getBankingCard() != null ? transaction.getBankingCard().getId() : null,
             transaction.getAmount(),
             transaction.getBankingAccount().getCurrency(),

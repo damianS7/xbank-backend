@@ -2,7 +2,8 @@ package com.damian.xBank.modules.banking.transaction.domain.model;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
-import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
+import com.damian.xBank.modules.banking.transfer.incoming.domain.model.IncomingTransfer;
+import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransfer;
 
 import java.math.BigDecimal;
 
@@ -10,7 +11,8 @@ public class BankingTransactionTestBuilder {
     private Long transactionId;
     private BankingAccount bankingAccount;
     private BankingCard bankingCard;
-    private BankingTransfer transfer;
+    private OutgoingTransfer outgoingTransfer;
+    private IncomingTransfer incomingTransfer;
     private BigDecimal amount;
     private String description;
     private BankingTransactionType type;
@@ -36,8 +38,8 @@ public class BankingTransactionTestBuilder {
         return this;
     }
 
-    public BankingTransactionTestBuilder withTransfer(BankingTransfer transfer) {
-        this.transfer = transfer;
+    public BankingTransactionTestBuilder withTransfer(OutgoingTransfer transfer) {
+        this.outgoingTransfer = transfer;
         return this;
     }
 
@@ -66,7 +68,8 @@ public class BankingTransactionTestBuilder {
             transactionId,
             bankingAccount,
             bankingCard,
-            transfer,
+            outgoingTransfer,
+            incomingTransfer,
             amount,
             description,
             type,

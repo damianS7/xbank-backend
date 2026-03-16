@@ -6,7 +6,8 @@ import com.damian.xBank.modules.auth.infrastructure.rest.response.Authentication
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
-import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
+import com.damian.xBank.modules.banking.transfer.incoming.infrastructure.repository.IncomingTransferRepository;
+import com.damian.xBank.modules.banking.transfer.outgoing.infrastructure.repository.OutgoingTransferRepository;
 import com.damian.xBank.modules.notification.infrastructure.repository.NotificationRepository;
 import com.damian.xBank.modules.payment.intent.infrastructure.repository.PaymentIntentRepository;
 import com.damian.xBank.modules.setting.infrastructure.persistence.repository.SettingRepository;
@@ -56,7 +57,10 @@ public abstract class AbstractControllerTest {
     protected ObjectMapper objectMapper;
 
     @Autowired
-    protected BankingTransferRepository transferRepository;
+    protected OutgoingTransferRepository outgoingTransferRepository;
+
+    @Autowired
+    protected IncomingTransferRepository incomingTransferRepository;
 
     @Autowired
     protected BankingTransactionRepository transactionRepository;
@@ -91,7 +95,8 @@ public abstract class AbstractControllerTest {
     void tearDown() {
         notificationRepository.deleteAll();
         settingRepository.deleteAll();
-        transferRepository.deleteAll();
+        outgoingTransferRepository.deleteAll();
+        incomingTransferRepository.deleteAll();
         transactionRepository.deleteAll();
         bankingCardRepository.deleteAll();
         bankingAccountRepository.deleteAll();

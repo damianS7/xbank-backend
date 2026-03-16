@@ -9,8 +9,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BankingTransactionRepository extends JpaRepository<BankingTransaction, Long> {
-    Page<BankingTransaction> findByTransfer_Id(Long transferId, Pageable pageable);
-
     Page<BankingTransaction> findByBankingCard_Id(Long bankingCardId, Pageable pageable);
 
     Page<BankingTransaction> findByBankingAccount_Id(Long bankingAccountId, Pageable pageable);

@@ -126,25 +126,44 @@ CREATE TABLE public.banking_cards
 
 -- Banking Transfers
 
-CREATE TABLE public.banking_transfers
+CREATE TABLE public.outgoing_transfers
 (
     id                        int4 GENERATED ALWAYS AS IDENTITY NOT NULL,
     from_account_id           int4                              NOT NULL,
     to_account_id             int4 NULL,
-    to_account_iban           int4                              NOT NULL,
-    provider_authorization_id int4 NULL,
+    to_account_iban           VARCHAR(32)                       NOT NULL, -- TODO delete?
+    provider_authorization_id VARCHAR(36) NULL, -- delete?
     amount                    numeric(15, 2) DEFAULT 0.00       NOT NULL,
     type                      VARCHAR(30)                       NOT NULL,
     status                    VARCHAR(30)                       NOT NULL,
     description               text NULL,
     created_at                timestamp      DEFAULT CURRENT_TIMESTAMP NULL,
     updated_at                timestamp      DEFAULT CURRENT_TIMESTAMP NULL,
-    CONSTRAINT banking_transfers_pkey PRIMARY KEY (id),
-    CONSTRAINT banking_transfers_from_account_fk
+    CONSTRAINT outgoing_transfers_pkey PRIMARY KEY (id),
+    CONSTRAINT outgoing_transfers_from_account_fk
         FOREIGN KEY (from_account_id)
             REFERENCES public.banking_accounts (id)
             ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT banking_transfers_to_account_fk
+    CONSTRAINT outgoing_transfers_to_account_fk
+        FOREIGN KEY (to_account_id)
+            REFERENCES public.banking_accounts (id)
+            ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE public.incoming_transfers
+(
+    id                        int4 GENERATED ALWAYS AS IDENTITY NOT NULL,
+    from_account_iban         VARCHAR(32)                       NOT NULL,
+    to_account_id             int4                              NOT NULL,
+    to_account_iban           VARCHAR(32)                       NOT NULL,
+    provider_authorization_id VARCHAR(36)                       NOT NULL,
+    amount                    numeric(15, 2) DEFAULT 0.00       NOT NULL,
+    status                    VARCHAR(30)                       NOT NULL,
+    reference                 text NULL,
+    created_at                timestamp      DEFAULT CURRENT_TIMESTAMP NULL,
+    updated_at                timestamp      DEFAULT CURRENT_TIMESTAMP NULL,
+    CONSTRAINT incoming_transfers_pkey PRIMARY KEY (id),
+    CONSTRAINT incoming_transfers_to_account_fk
         FOREIGN KEY (to_account_id)
             REFERENCES public.banking_accounts (id)
             ON DELETE CASCADE ON UPDATE CASCADE
@@ -154,26 +173,30 @@ CREATE TABLE public.banking_transfers
 
 CREATE TABLE public.banking_transactions
 (
-    id               int4 GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    account_id       int4           NOT NULL,
-    transfer_id      int4 NULL,
-    card_id          int4 NULL,
-    balance_before   numeric(15, 2) NOT NULL,
-    balance_after    numeric(15, 2) NOT NULL,
-    transaction_type VARCHAR(30)    NOT NULL,
-    amount           numeric(15, 2) NOT NULL,
-    description      text NULL,
-    status           VARCHAR(30)    NOT NULL,
-    created_at       timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-    updated_at       timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+    id                   int4 GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    account_id           int4           NOT NULL,
+    outgoing_transfer_id int4 NULL,
+    incoming_transfer_id int4 NULL,
+    card_id              int4 NULL,
+    balance_before       numeric(15, 2) NOT NULL,
+    balance_after        numeric(15, 2) NOT NULL,
+    transaction_type     VARCHAR(30)    NOT NULL,
+    amount               numeric(15, 2) NOT NULL,
+    description          text NULL,
+    status               VARCHAR(30)    NOT NULL,
+    created_at           timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+    updated_at           timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     CONSTRAINT fk_transactions_account FOREIGN KEY (account_id)
         REFERENCES public.banking_accounts (id)
         ON DELETE CASCADE,
     CONSTRAINT fk_transactions_card FOREIGN KEY (card_id)
         REFERENCES public.banking_cards (id)
         ON DELETE SET NULL,
-    CONSTRAINT fk_transactions_transfer FOREIGN KEY (transfer_id)
-        REFERENCES public.banking_transfers (id)
+    CONSTRAINT fk_transactions_outgoing_transfer FOREIGN KEY (outgoing_transfer_id)
+        REFERENCES public.outgoing_transfers (id)
+        ON DELETE SET NULL,
+    CONSTRAINT fk_transactions_incoming_transfer FOREIGN KEY (incoming_transfer_id)
+        REFERENCES public.incoming_transfers (id)
         ON DELETE SET NULL
 );
 
