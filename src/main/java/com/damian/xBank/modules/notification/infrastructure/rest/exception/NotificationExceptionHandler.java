@@ -27,7 +27,7 @@ public class NotificationExceptionHandler {
     }
 
     @ExceptionHandler(NotificationNotOwnerException.class)
-    public ResponseEntity<ApiResponse<String>> handleException(NotificationNotOwnerException ex) {
+    public ResponseEntity<ApiResponse<String>> handleNotOwner(NotificationNotOwnerException ex) {
         log.warn("Notification: {} not owner", ex.getResourceId());
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -35,7 +35,7 @@ public class NotificationExceptionHandler {
     }
 
     @ExceptionHandler(NotificationNotFoundException.class)
-    public ResponseEntity<ApiResponse<String>> handleNotFoundException(NotificationNotFoundException ex) {
+    public ResponseEntity<ApiResponse<String>> handleNotFound(NotificationNotFoundException ex) {
         log.warn("Notification: {} not found", ex.getResourceId());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -44,7 +44,7 @@ public class NotificationExceptionHandler {
 
 
     @ExceptionHandler(NotificationException.class)
-    public ResponseEntity<ApiResponse<String>> handleApplicationException(NotificationException ex) {
+    public ResponseEntity<ApiResponse<String>> handle(NotificationException ex) {
         log.warn("Notification: {} internal error.", ex.getResourceId());
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

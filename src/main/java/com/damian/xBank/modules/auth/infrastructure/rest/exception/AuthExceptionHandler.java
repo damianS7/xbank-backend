@@ -28,7 +28,7 @@ public class AuthExceptionHandler {
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<?> handleBadCredentials(BadCredentialsException e) {
+    public ResponseEntity<?> handleBadCredentialsException(BadCredentialsException e) {
         log.warn("Failed login attempt. Bad credentials.", e);
 
         ApplicationException ex = new ApplicationException(
@@ -51,8 +51,8 @@ public class AuthExceptionHandler {
             UserSuspendedException.class
         }
     )
-    public ResponseEntity<?> handleLocked(RuntimeException e) {
-        log.warn("Failed login attempt. Account is suspended.", e);
+    public ResponseEntity<?> handleAccountSuspendedException(RuntimeException exception) {
+        log.warn("Failed login attempt. Account is suspended.", exception);
 
         ApplicationException ex = new ApplicationException(
             ErrorCodes.USER_SUSPENDED,
@@ -72,8 +72,8 @@ public class AuthExceptionHandler {
             DisabledException.class
         }
     )
-    public ResponseEntity<?> handleDisabled(RuntimeException e) {
-        log.warn("Failed login attempt. Account not verified.", e);
+    public ResponseEntity<?> handleAccountNotVerifiedException(RuntimeException exception) {
+        log.warn("Failed login attempt. Account not verified.", exception);
 
         ApplicationException ex = new ApplicationException(
             ErrorCodes.USER_NOT_VERIFIED,

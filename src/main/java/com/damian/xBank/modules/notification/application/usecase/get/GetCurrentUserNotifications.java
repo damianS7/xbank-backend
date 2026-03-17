@@ -11,6 +11,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+/**
+ * Caso de uso que devuelve todas las notificaciones del usuario actual.
+ */
 @Service
 public class GetCurrentUserNotifications {
     private static final Logger log = LoggerFactory.getLogger(GetCurrentUserNotifications.class);
@@ -26,16 +29,14 @@ public class GetCurrentUserNotifications {
     }
 
     /**
-     * Get notifications for the current user.
-     *
-     * @param query pagination params
-     * @return Page<Notification> a page of notifications
+     * @param query La consulta con los datos necesarios
+     * @return Page<Notification> Notificaciones paginadas
      */
     public PageResult<NotificationResult> execute(GetCurrentUserNotificationsQuery query) {
-        // Current user
+        // Usuario actual
         final User currentUser = authenticationContext.getCurrentUser();
-
         log.debug("Fetching notifications for user: {}", currentUser.getId());
+
 
         Page<Notification> notifications = notificationRepository.findAllByUserId(
             currentUser.getId(),

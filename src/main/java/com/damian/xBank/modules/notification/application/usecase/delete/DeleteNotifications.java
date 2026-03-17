@@ -8,6 +8,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Caso de uso para borrar varias notificaciones pertenecientes al usuario actual.
+ */
 @Service
 public class DeleteNotifications {
     private static final Logger log = LoggerFactory.getLogger(DeleteNotifications.class);
@@ -23,20 +26,23 @@ public class DeleteNotifications {
     }
 
     /**
-     * Delete all notifications for the current user.
-     *
-     * @param command command with the list of notification ids to delete
+     * @param command Comando con un List de ids para borrar
      */
     @Transactional
     public void execute(DeleteNotificationsCommand command) {
         final User currentUser = authenticationContext.getCurrentUser();
 
-        // delete selected notifications
+        // Borrar notificaciones
         notificationRepository.deleteAllByIdInAndUser_Id(
             command.notificationIds(),
             currentUser.getId()
         );
 
-        log.debug("Deleted {} notifications from user: {}", command.notificationIds().size(), currentUser.getId());
+        log.debug(
+            "Deleted {} notifications with ids: {} from user: {}",
+            command.notificationIds().size(),
+            command.notificationIds(),
+            currentUser.getId()
+        );
     }
 }

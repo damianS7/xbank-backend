@@ -4,14 +4,14 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 /**
- * Request with required fields for login
+ * Request para iniciar sesión.
  */
 public record AuthenticationRequest(
-    @NotBlank(message = "Email must not be blank")
-    @Email(message = "Email must be a well-formed email address.")
+    @NotBlank(message = "{validation.email.required}")
+    @Email(message = "{validation.email.invalid}")
     String email,
 
-    @NotBlank(message = "Password must not be blank")
+    @NotBlank(message = "{validation.password.required}")
     String password
 ) {
 }

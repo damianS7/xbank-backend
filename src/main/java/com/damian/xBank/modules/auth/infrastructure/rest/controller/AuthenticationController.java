@@ -26,7 +26,12 @@ public class AuthenticationController {
         this.authenticationLogin = authenticationLogin;
     }
 
-    // endpoint for login
+    /**
+     * Endpoint para autenticación.
+     *
+     * @param request La petición con los datos necesarios para iniciar sesión.
+     * @return La respuesta con un JWT token de inicio de sesión.
+     */
     @PostMapping("/auth/login")
     public ResponseEntity<?> login(
         @Valid @RequestBody
@@ -40,7 +45,11 @@ public class AuthenticationController {
             .body(authResponse);
     }
 
-    // endpoint for token validation
+    /**
+     * Endpoint para validar un token jwt.
+     *
+     * @return 200 si es valido.
+     */
     @GetMapping("/auth/token/validate")
     public ResponseEntity<?> tokenValidation(
     ) {
@@ -49,7 +58,10 @@ public class AuthenticationController {
             .build();
     }
 
-    // endpoint for token validation
+    /**
+     * Endpoint para pruebas
+     *
+     */
     @GetMapping("/test")
     public ResponseEntity<?> test(
     ) {

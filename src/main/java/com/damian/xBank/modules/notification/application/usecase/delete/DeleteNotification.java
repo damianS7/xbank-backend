@@ -10,6 +10,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Caso de uso para borrar una notificación perteneciente al usuario actual.
+ */
 @Service
 public class DeleteNotification {
     private static final Logger log = LoggerFactory.getLogger(DeleteNotification.class);
@@ -25,12 +28,11 @@ public class DeleteNotification {
     }
 
     /**
-     * Delete notification for the current user.
-     *
-     * @param command with the Notification id
+     * @param command Comando con los datos necesarios.
      */
     @Transactional
     public void execute(DeleteNotificationCommand command) {
+        // Usuario actual
         final User currentUser = authenticationContext.getCurrentUser();
 
         Notification notification = notificationRepository
@@ -39,12 +41,12 @@ public class DeleteNotification {
                 () -> new NotificationNotFoundException(command.id())
             );
 
-        // Assert notification is owned by currentUser or throw
+        // Comprobar que la notificación es del usuario actual
         notification.assertOwnedBy(currentUser.getId());
 
-        // delete notification
+        // Borra la notificación
         notificationRepository.delete(notification);
 
-        log.debug("Deleted notification: {}", notification.getId());
+        log.debug("Deleted notification: {}", command.id());
     }
 }

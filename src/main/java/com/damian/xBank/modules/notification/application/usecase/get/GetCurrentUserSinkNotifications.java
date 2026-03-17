@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
 
+/**
+ * Caso de uso para obtener las notificaciones en tiempo real.
+ */
 @Service
 public class GetCurrentUserSinkNotifications {
     private static final Logger log = LoggerFactory.getLogger(GetCurrentUserSinkNotifications.class);
@@ -25,36 +28,35 @@ public class GetCurrentUserSinkNotifications {
     }
 
     /**
-     * Get notifications for the current user as a Flux stream.
-     *
-     * @return Flux<NotificationEvent> a stream of notifications
+     * @return Flux<NotificationEvent> Un stream de notificaciones
      */
     public Flux<NotificationResult> execute() {
-        // Current user
+        // Usuario actual
         final User currentUser = authenticationContext.getCurrentUser();
 
+        // Crea o recupera (si existe) el sink del usuario actual
         Sinks.Many<NotificationResult> sink =
             notificationSinkRegistry.getSinkForUserOrCreate(currentUser.getId());
 
+        // Devuelve un stream con las notificaciones
         return sink.asFlux()
             .doOnSubscribe(subscription ->
-                log.debug("✅ User {} subscribed to SSE stream", currentUser.getId()))
+                log.debug("User {} subscribed to SSE stream", currentUser.getId()))
             .doOnNext(event ->
                 log.debug(
-                    "📤 Sending SSE event: {} to user {}",
+                    "Sending SSE event: {} to user {}",
                     event.toString(), currentUser.getId()
                 ))
             .doOnError(error ->
                 log.error(
-                    "❌ SSE error for user {}: {}",
+                    "SSE error for user {}: {}",
                     currentUser.getId(), error.getMessage()
                 ))
             .doFinally(signalType -> {
                     log.debug(
-                        "🔚 SSE stream ended for user {}: {}",
+                        "SSE stream ended for user {}: {}",
                         currentUser.getId(), signalType
                     );
-                    //                               notificationSinkRegistry.removeSink(currentUser.getId());
                 }
             );
     }

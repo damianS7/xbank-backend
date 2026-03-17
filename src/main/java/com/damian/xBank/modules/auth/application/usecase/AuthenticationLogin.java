@@ -5,7 +5,7 @@ import com.damian.xBank.modules.auth.domain.exception.UserSuspendedException;
 import com.damian.xBank.modules.auth.infrastructure.rest.request.AuthenticationRequest;
 import com.damian.xBank.modules.auth.infrastructure.rest.response.AuthenticationResponse;
 import com.damian.xBank.shared.security.UserPrincipal;
-import com.damian.xBank.shared.utils.JwtUtil;
+import com.damian.xBank.shared.security.utils.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,8 +19,9 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 
 /**
- * Manages user authentication flow with login validation and token generation.
- * Performs account status checks and enforces security policies.
+ * Caso de uso que controla el inicio de sesión.
+ * <p>
+ * Realiza comprobaciones de seguridad.
  */
 @Service
 public class AuthenticationLogin {
@@ -37,20 +38,15 @@ public class AuthenticationLogin {
     }
 
     /**
-     * Controls the login flow.
      *
-     * @param request Contains the fields needed to login into the service
-     * @return Contains the data (User, Profile) and the token
-     * @throws BadCredentialsException  if credentials are invalid
-     * @throws UserNotVerifiedException if the account is not verified
+     * @param request Request con los datos para inicio de sesión.
+     * @return La respuesta con el token.
+     * @throws BadCredentialsException  si los credenciales son incorrectos.
+     * @throws UserNotVerifiedException si la cuenta no esta verificada.
      */
     public AuthenticationResponse execute(AuthenticationRequest request) {
         final String email = request.email();
         final String password = request.password();
-
-        //                final Authentication auth = authenticationManager.authenticate(
-        //                        new UsernamePasswordAuthenticationToken(email, password)
-        //                );
 
         Authentication auth = null;
 
@@ -64,21 +60,17 @@ public class AuthenticationLogin {
             throw new UserSuspendedException(email);
         }
 
-
-        // Get the authenticated user
-        final UserPrincipal currentUser = ((UserPrincipal) auth.getPrincipal());
+        final UserPrincipal principal = ((UserPrincipal) auth.getPrincipal());
         final HashMap<String, Object> claims = new HashMap<>();
-        claims.put("email", currentUser.getEmail());
-        claims.put("role", currentUser.getRole());
+        claims.put("email", principal.getEmail());
+        claims.put("role", principal.getRole());
 
-        // Generate a token for the authenticated user
+        // Genera un token de inicio de sesión.
         final String token = jwtUtil.generateToken(
             claims,
             email
         );
 
-        // Return the user data and the token
-        log.info("Login successful for user: {}", email);
         return new AuthenticationResponse(token);
     }
 }
