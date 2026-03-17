@@ -17,12 +17,12 @@ public class BankingAccountDomainService {
     }
 
     /**
-     * Create a BankingAccount for a specific user.
+     * Crea una cuenta bancaria
      *
-     * @param user            Customer owner of the BankingAccount
-     * @param accountType     the type of BankingAccount
-     * @param accountCurrency the currency of the BankingAccount
-     * @return a newly created BankingAccount
+     * @param user            El owner de la cuenta
+     * @param accountType     Tipo de cuenta a crear
+     * @param accountCurrency Moneda de la cuenta
+     * @return La cuenta creada
      */
     public BankingAccount createAccount(
         User user,

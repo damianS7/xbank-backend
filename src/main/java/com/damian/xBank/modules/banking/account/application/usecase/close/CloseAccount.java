@@ -9,6 +9,9 @@ import com.damian.xBank.shared.security.AuthenticationContext;
 import com.damian.xBank.shared.security.PasswordValidator;
 import org.springframework.stereotype.Service;
 
+/**
+ * Caso de uso para cerrar una cuenta bancaria.
+ */
 @Service
 public class CloseAccount {
     private final BankingAccountRepository bankingAccountRepository;
@@ -26,13 +29,11 @@ public class CloseAccount {
     }
 
     /**
-     * Closes a BankingAccount from the logged customer.
-     *
-     * @param command BankingAccountCloseRequest the command
-     * @return the banking account with the CLOSED status.
+     * @param command Comando con los datos requeridos
+     * @return La cuenta cerrada
      */
     public CloseAccountResult execute(CloseAccountCommand command) {
-        // Current user
+        // Usuario actual
         final User currentUser = authenticationContext.getCurrentUser();
 
         // only admin can close accounts
@@ -49,7 +50,6 @@ public class CloseAccount {
             );
 
         bankingAccount.close();
-
         bankingAccountRepository.save(bankingAccount);
 
         return CloseAccountResult.from(bankingAccount);

@@ -7,6 +7,9 @@ import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.stereotype.Service;
 
+/**
+ * Caso de uso para cambiar el alias de una cuenta.
+ */
 @Service
 public class SetAccountAlias {
     private final BankingAccountRepository bankingAccountRepository;
@@ -21,35 +24,27 @@ public class SetAccountAlias {
     }
 
     /**
-     * Set an alias for a banking account
-     *
-     * @param command BankingAccountAliasUpdateRequest the command containing the new alias
-     * @return the updated BankingAccount
+     * @param command Comando con los datos requeridos
+     *                                                                                           TODO cambiar a void?
      */
     public SetAccountAliasResult execute(SetAccountAliasCommand command) {
-        // Customer logged
+        // Usuario actual
         final User currentUser = authenticationContext.getCurrentUser();
 
-        // Banking account to set alias
+        // Buscar la cuenta a la que se cambiará el alias
         final BankingAccount bankingAccount = bankingAccountRepository
             .findById(command.accountId())
             .orElseThrow(
-                () -> new BankingAccountNotFoundException(
-                    command.accountId()
-                ) // Banking account not found
+                () -> new BankingAccountNotFoundException(command.accountId())
             );
 
-        // validations rules only for customers
+        // Si no es admin comprueba que sea el owner de la cuenta.
         if (!currentUser.isAdmin()) {
-
-            bankingAccount.assertOwnedBy(currentUser.getId())
-                .assertActive();
+            bankingAccount.assertOwnedBy(currentUser.getId());
         }
 
-        // we mark the account as closed
+        // Cambiar el alias
         bankingAccount.changeAlias(command.alias());
-
-        // save the data and return BankingAccount
         bankingAccountRepository.save(bankingAccount);
 
         return SetAccountAliasResult.from(bankingAccount);

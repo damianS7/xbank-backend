@@ -190,9 +190,7 @@ public class BankingAccount {
     }
 
     /**
-     * Counts how many active cards are associated with the given banking account.
-     *
-     * @return the number of active cards
+     * @return El número de tarjetas activas que tiene la cuenta
      */
     public int countActiveCards() {
         return (int) this
@@ -203,31 +201,27 @@ public class BankingAccount {
     }
 
     /**
-     * Checks if the account has sufficient funds.
+     * Comprueba si la cuenta tiene suficientes fondos
      *
-     * @param amount the amount to check against the account balance
-     * @return true if the balance is sufficient for the given amount, false otherwise
+     * @param amount La cantidad a comprobar
+     * @return True si tiene fondos, false sino.
      */
     public boolean hasSufficientFunds(BigDecimal amount) {
-        // if its 0 then balance is equal to the amount willing to spend
-        // if its 1 then balance is greater than the amount willing to spend
         return this.getBalance().compareTo(amount) >= 0;
     }
 
     /**
-     * Checks if the account has sufficient reserved funds.
+     * Comprueba si la cuenta tiene suficientes fondos reservados.
      *
-     * @param amount the amount to check against the reserved balance
-     * @return true if the reserved balance is sufficient for the given amount, false otherwise
+     * @param amount La cantidad a comprobar
+     * @return True si tiene fondos, false sino.
      */
     public boolean hasSufficientReservedFunds(BigDecimal amount) {
-        // if its 0 then balance is equal to the amount willing to spend
-        // if its 1 then balance is greater than the amount willing to spend
         return this.getReservedBalance().compareTo(amount) >= 0;
     }
 
     private void setStatus(BankingAccountStatus newStatus) {
-        // if the actual status is the same as the new ... do nothing
+        // Si el nuevo estado es el mismo que el actual ...
         if (this.status == newStatus) {
             return;
         }
@@ -245,13 +239,13 @@ public class BankingAccount {
     }
 
     /**
-     * Issues a new card associated with this banking account.
+     * Emite una tarjeta asociada a la cuenta.
      *
      * @param type
      * @param number
      * @param cvv
      * @param pin
-     * @return the issued card
+     * @return La tarjeta emitida.
      */
     public BankingCard issueCard(
         BankingCardType type,
@@ -259,10 +253,10 @@ public class BankingAccount {
         String cvv,
         String pin
     ) {
-        // check that the card can be added
+        // Comprueba que se pueda agregar una nueva tarjeta
         assertCanAddCard();
 
-        // create the card
+        // Crea la tarjeta
         BankingCard card = BankingCard.create(
             type,
             this,
@@ -285,7 +279,7 @@ public class BankingAccount {
     }
 
     /**
-     * Withdraw the given amount from the account balance.
+     * Retira una cantidad de la cuenta
      *
      * @param amount
      */
@@ -296,7 +290,7 @@ public class BankingAccount {
     }
 
     /**
-     * Deposit the given amount to the account balance.
+     * Deposita una cantidad en la cuenta
      *
      * @param amount
      */
@@ -335,11 +329,10 @@ public class BankingAccount {
     }
 
     /**
-     * Assert the account has sufficient funds.
+     * Asegura que la cuenta tiene suficientes fondos o lanza excepción
      *
-     * @param amount the amount to check
-     * @return the current validator instance for chaining
-     * @throws BankingAccountInsufficientFundsException if the account does not have sufficient funds
+     * @param amount La cantidad a comprobar
+     * @throws BankingAccountInsufficientFundsException Si la cuenta no tiene fondos
      */
     public void assertSufficientFunds(BigDecimal amount) {
         if (!this.hasSufficientFunds(amount)) {
@@ -348,9 +341,9 @@ public class BankingAccount {
     }
 
     /**
-     * Assert the account has sufficient reserved funds.
+     * Asegura que la cuenta tiene suficientes fondos reservados o lanza excepción
      *
-     * @param amount the amount to check
+     * @param amount La cantidad a comprobar
      */
     public void assertSufficientReservedFunds(BigDecimal amount) {
         if (!this.hasSufficientReservedFunds(amount)) {
@@ -359,40 +352,28 @@ public class BankingAccount {
     }
 
     /**
-     * Assert the ownership of the account belongs to {@link User}.
+     * Asegura que el owner de la cuenta sea el
      *
-     * @param userId the customer to check ownership against
-     * @return the current validator instance for chaining
-     * @throws BankingAccountNotOwnerException if the account does not belong to the customer
+     * @param userId El userId que debe ser el owner
+     * @throws BankingAccountNotOwnerException Si la cuenta no le pertenece
      */
-    public BankingAccount assertOwnedBy(Long userId) {
-
-        // compare card owner id with given customer id
+    public void assertOwnedBy(Long userId) {
         if (!isOwnedBy(userId)) {
             throw new BankingAccountNotOwnerException(getId(), userId);
         }
-
-        return this;
     }
 
     /**
-     * Assert the account is not SUSPENDED.
+     * Asegura que la cuenta no esté suspendida.
      *
-     * @throws BankingAccountSuspendedException if the account does not belong to the customer
+     * @throws BankingAccountSuspendedException Si la cuenta está suspendida
      */
     public void assertNotSuspended() {
-
-        // check if account is SUSPENDED
         if (isSuspended()) {
             throw new BankingAccountSuspendedException(getId());
         }
     }
 
-    /**
-     * Validate account is not CLOSED.
-     *
-     * @throws BankingAccountClosedException if the account does not belong to the customer
-     */
     public void assertNotClosed() {
         // check if account is CLOSED
         if (isClosed()) {
@@ -400,12 +381,6 @@ public class BankingAccount {
         }
     }
 
-    /**
-     * Assert account is not CLOSED or SUSPENDED.
-     *
-     * @throws BankingAccountSuspendedException if the account does not belong to the customer
-     * @throws BankingAccountClosedException    if the account does not belong to the customer
-     */
     public void assertActive() {
         this.assertNotSuspended();
         this.assertNotClosed();

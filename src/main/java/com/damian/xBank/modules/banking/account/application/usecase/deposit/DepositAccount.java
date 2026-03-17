@@ -16,6 +16,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Caso de uso para depositar en una cuenta bancaria por parte de un administrador o personal del banco.
+ */
 @Service
 public class DepositAccount {
     private static final Logger log = LoggerFactory.getLogger(DepositAccount.class);
@@ -40,36 +43,32 @@ public class DepositAccount {
     }
 
     /**
-     * Deposit into banking account
-     *
-     * @param command
-     * @return BankingTransaction
+     * @param command Comando con los datos requeridos
+     * @return Los datos del depósito
      */
     @Transactional
     public DepositAccountResult execute(DepositAccountCommand command) {
-        // Current user
+        // Usuario actual
         final User currentUser = authenticationContext.getCurrentUser();
 
-        // if the logged customer is not admin or bank manager
+        // Si el usuario actual no es admin ...
         if (!currentUser.isAdmin()) {
             throw new BankingAccountDepositNotAdminException(
                 command.bankingAccountId(), currentUser.getId()
             );
         }
 
-        // The account to deposit into
+        // La cuenta donde se va a despositar
         final BankingAccount bankingAccount = bankingAccountRepository
             .findById(command.bankingAccountId())
             .orElseThrow(
-                () -> new BankingAccountNotFoundException(
-                    command.bankingAccountId()
-                ) // Banking account not found
+                () -> new BankingAccountNotFoundException(command.bankingAccountId())
             );
 
-        // Validate account is operable
+        // Comprobar que la cuenta está activa y puede recibir fondos
         bankingAccount.assertActive();
 
-        // if the transaction is created, add the amount to balance
+        // Crear la transacción asociada
         BankingTransaction transaction = BankingTransaction.create(
             BankingTransactionType.DEPOSIT,
             bankingAccount,
@@ -79,18 +78,15 @@ public class DepositAccount {
 
         bankingAccount.deposit(command.amount());
         transaction.complete();
-
-        // save the transaction
         bankingTransactionRepository.save(transaction);
 
-        // Notify receiver
+        // Notificar al usuario receptor
         notificationPublisher.publish(
             notificationEventFactory.depositCompleted(transaction)
         );
 
         log.debug(
-            "Admin {} processed deposit with transaction id {}",
-            currentUser.getId(),
+            "Processed deposit with transaction id {}",
             transaction.getId()
         );
 

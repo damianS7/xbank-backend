@@ -8,6 +8,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 
+/**
+ * Caso de uso que devuelve los balances de cada día asociados al balance de todas las cuentas
+ * de la misma currency.
+ */
 @Service
 public class GetDailyBalancesByCurrency {
     private final BankingAccountRepository bankingAccountRepository;
@@ -22,17 +26,16 @@ public class GetDailyBalancesByCurrency {
     }
 
     /**
-     * Returns a set of data containing the total balance for every day
-     * of every account with the same currency that the logged user posses.
      *
-     * @return the updated banking account
+     * @param query La query con los datos que se necesitan
+     * @return Los balances de cada día para una currency
      */
     @Transactional
     public GetDailyBalancesByCurrencyResult execute(GetDailyBalancesByCurrencyQuery query) {
-        // Current user
+        // Usuario actual
         final User currentUser = authenticationContext.getCurrentUser();
 
-        // Banking accounts balances for the given currency
+        // Balances por currency
         Set<Object> dailyBalancesSet = bankingAccountRepository
             .findDailyBalancesForUserAndCurrency(currentUser.getId(), query.currency());
 

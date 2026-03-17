@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Caso de uso que devuelve todas las cuentas asociadas al usuario actual
+ */
 @Service
 public class GetAllUserAccounts {
     private final BankingAccountRepository bankingAccountRepository;
@@ -24,16 +27,13 @@ public class GetAllUserAccounts {
     }
 
     /**
-     * Get a set of BankingAccount with all the accounts from the logged customer
-     *
-     * @return a Set with all the BankingAccounts from the logged customer
+     * @return Todas las cuentas asociadas al usuario actual
      */
     public GetAllUserAccountsResult execute(GetAllUserAccountsQuery query) {
-        // we extract the customer logged from the SecurityContext
+        // Usuario actual
         final User currentUser = authenticationContext.getCurrentUser();
 
         Set<BankingAccount> accounts = bankingAccountRepository.findByUser_Id(currentUser.getId());
-
         Set<BankingAccountResult> accountsResultSet = accounts.stream()
             .map(BankingAccountResult::from)
             .collect(Collectors.toSet());

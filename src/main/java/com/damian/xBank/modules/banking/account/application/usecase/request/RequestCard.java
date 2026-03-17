@@ -12,6 +12,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Caso de uso donde se pide una nueva tarjeta asociada a una cuenta.
+ */
 @Service
 public class RequestCard {
     private static final int MAX_RETRY_ATTEMPS = 5;
@@ -33,29 +36,28 @@ public class RequestCard {
     }
 
     /**
-     * Request a new banking card for the given banking account.
-     *
-     * @param command
-     * @return the created BankingCard
+     * @param command Comando con los datos requeridos
+     * @return La tarjeta creada
      */
     @Transactional
     public RequestCardResult execute(RequestCardCommand command) {
-        // Current user
+        // Usuario actual
         final User currentUser = authenticationContext.getCurrentUser();
 
-        // we get the BankingAccount to associate the card created.
+        // La cuenta a la que se asociara la tarjeta
         final BankingAccount bankingAccount = bankingAccountRepository
             .findById(command.bankingAccountId())
             .orElseThrow(
                 () -> new BankingAccountNotFoundException(command.bankingAccountId())
             );
 
-        // if the logged customer is not admin
+        // Si no es admin ...
         if (!currentUser.isAdmin()) {
-            // check if the account belongs to this customer.
+            // Comprobar que el owner de la cuenta
             bankingAccount.assertOwnedBy(currentUser.getId());
         }
 
+        // TODO usar issueCard desde el banking account
         BankingCard card = bankingCardDomainService.createBankingCard(bankingAccount, command.type());
         int retry = 0;
 

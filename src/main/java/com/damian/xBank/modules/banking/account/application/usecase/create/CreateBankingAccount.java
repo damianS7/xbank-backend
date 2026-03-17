@@ -10,6 +10,9 @@ import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Caso de uso para abrir/crear nuevas cuentas bancarias por parte del usuario actual.
+ */
 @Service
 public class CreateBankingAccount {
     private final BankingAccountDomainService bankingAccountDomainService;
@@ -30,22 +33,21 @@ public class CreateBankingAccount {
     }
 
     /**
-     * Create a BankingAccount for the logged customer.
-     *
-     * @param command BankingAccountCreateRequest
-     * @return a newly created BankingAccount
+     * @param command Comando con los datos requeridos para abrir la cuenta.
+     * @return Los datos de la cuenta que se ha creado.
      */
     @Transactional
     public CreateAccountResult execute(CreateBankingAccountCommand command) {
-        // Current user
+        // Usuario actual
         final User currentUser = authenticationContext.getCurrentUser();
 
-        // we get the Customer entity so we can save at the end
+        // Usuario actual
         final User user = userRepository.findById(currentUser.getId())
             .orElseThrow(
                 () -> new UserNotFoundException(currentUser.getId())
             );
 
+        // Creación de la nueva cuenta
         BankingAccount bankingAccount = bankingAccountDomainService.createAccount(
             user,
             command.type(),
@@ -53,7 +55,6 @@ public class CreateBankingAccount {
         );
 
         bankingAccountRepository.save(bankingAccount);
-        System.out.println(bankingAccount.toString());
 
         return CreateAccountResult.from(bankingAccount);
     }
