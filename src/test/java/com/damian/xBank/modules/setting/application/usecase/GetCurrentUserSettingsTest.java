@@ -43,16 +43,13 @@ public class GetCurrentUserSettingsTest extends AbstractServiceTest {
         // given
         setUpContext(customer);
 
-        UserSettings givenUserSettings = UserSettings.defaults();
-
-        Setting givenSettings = Setting.create(customer)
-            .setSettings(givenUserSettings);
+        Setting setting = Setting.create(customer, UserSettings.defaults());
 
         GetCurrentUserSettingsQuery query = new GetCurrentUserSettingsQuery();
 
         // when
         when(settingRepository.findByUser_Id(customer.getId()))
-            .thenReturn(Optional.of(givenSettings));
+            .thenReturn(Optional.of(setting));
 
         GetCurrentUserSettingsResult result = getCurrentUserSettings.execute(query);
 
@@ -64,8 +61,8 @@ public class GetCurrentUserSettingsTest extends AbstractServiceTest {
                 r -> r.settings().emailNotifications()
             )
             .containsExactly(
-                givenUserSettings.language(),
-                givenUserSettings.emailNotifications()
+                setting.getSettings().language(),
+                setting.getSettings().emailNotifications()
             );
         verify(settingRepository, times(1)).findByUser_Id(customer.getId());
     }

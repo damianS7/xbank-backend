@@ -67,7 +67,7 @@ public class User {
         this.role = UserRole.CUSTOMER;
         this.status = UserStatus.PENDING_VERIFICATION;
         this.profile = new UserProfile(this);
-        this.settings = new Setting();
+        this.settings = Setting.create(this, null);
     }
 
     public User(UserProfile profile) {
@@ -196,10 +196,8 @@ public class User {
         return this;
     }
 
-    public User setSettings(Setting setting) {
-        this.settings = setting;
-        this.settings.setUser(this);
-        return this;
+    public Setting getSettings() {
+        return settings;
     }
 
     public User setProfile(UserProfile newProfile) {

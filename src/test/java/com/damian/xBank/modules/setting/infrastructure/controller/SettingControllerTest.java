@@ -2,7 +2,6 @@ package com.damian.xBank.modules.setting.infrastructure.controller;
 
 import com.damian.xBank.modules.setting.application.usecase.get.GetCurrentUserSettingsResult;
 import com.damian.xBank.modules.setting.application.usecase.update.UpdateCurrentUserSettingsResult;
-import com.damian.xBank.modules.setting.domain.model.Setting;
 import com.damian.xBank.modules.setting.domain.model.SettingLanguage;
 import com.damian.xBank.modules.setting.domain.model.SettingMultifactor;
 import com.damian.xBank.modules.setting.domain.model.SettingTheme;
@@ -59,13 +58,6 @@ public class SettingControllerTest extends AbstractControllerTest {
         // given
         login(customer);
 
-        UserSettings givenSettings = UserSettings.defaults();
-
-        Setting givenSetting = Setting.create(customer)
-            .setSettings(givenSettings);
-
-        settingRepository.save(givenSetting);
-
         // when
         MvcResult result = mockMvc
             .perform(
@@ -83,7 +75,15 @@ public class SettingControllerTest extends AbstractControllerTest {
         );
 
         // then
-        assertThat(settings.settings()).isNotNull();
+        assertThat(settings.settings())
+            .isNotNull()
+            .extracting(
+                UserSettings::emailNotifications,
+                UserSettings::language
+            ).containsExactly(
+                customer.getSettings().getSettings().emailNotifications(),
+                customer.getSettings().getSettings().language()
+            );
     }
 
     @Test
@@ -91,13 +91,6 @@ public class SettingControllerTest extends AbstractControllerTest {
     void updateSettings_ValidRequest_ReturnsUpdatedSettingsAnd200OK() throws Exception {
         // given
         login(customer);
-
-        UserSettings givenSettings = UserSettings.defaults();
-
-        Setting givenSetting = Setting.create(customer)
-            .setSettings(givenSettings);
-
-        settingRepository.save(givenSetting);
 
         UpdateCurrentUserSettingsRequest request = new UpdateCurrentUserSettingsRequest(
             new UserSettings(

@@ -9,6 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+/**
+ * Caso de uso para obtener las settings del usuario actual.
+ */
 @Service
 public class GetCurrentUserSettings {
     private static final Logger log = LoggerFactory.getLogger(GetCurrentUserSettings.class);
@@ -24,15 +27,13 @@ public class GetCurrentUserSettings {
     }
 
     /**
-     * Get current user settings
-     *
-     * @return current user settings
+     * @return Settings del usuario actual
      */
     public GetCurrentUserSettingsResult execute(GetCurrentUserSettingsQuery query) {
-        // User logged
+        // Usuario actual
         final User currentUser = authenticationContext.getCurrentUser();
 
-        // find the settings for the currentUser
+        // Buscar las settings del usuario
         Setting userSettings = settingRepository
             .findByUser_Id(currentUser.getId())
             .orElseThrow(

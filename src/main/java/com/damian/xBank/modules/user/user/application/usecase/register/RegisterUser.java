@@ -1,7 +1,5 @@
 package com.damian.xBank.modules.user.user.application.usecase.register;
 
-import com.damian.xBank.modules.setting.domain.factory.SettingFactory;
-import com.damian.xBank.modules.setting.domain.model.Setting;
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileException;
 import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
@@ -29,7 +27,6 @@ public class RegisterUser {
     private final UserTokenVerificationNotifier userTokenVerificationNotifier;
     private final UserProfileFactory userProfileFactory;
     private final UserTokenFactory userTokenFactory;
-    private final SettingFactory settingFactory;
 
     public RegisterUser(
         UserRepository userRepository,
@@ -37,8 +34,7 @@ public class RegisterUser {
         UserTokenLinkBuilder userTokenLinkBuilder,
         UserTokenVerificationNotifier userTokenVerificationNotifier,
         UserProfileFactory userProfileFactory,
-        UserTokenFactory userTokenFactory,
-        SettingFactory settingFactory
+        UserTokenFactory userTokenFactory
     ) {
         this.userRepository = userRepository;
         this.userDomainService = userDomainService;
@@ -46,7 +42,6 @@ public class RegisterUser {
         this.userTokenVerificationNotifier = userTokenVerificationNotifier;
         this.userProfileFactory = userProfileFactory;
         this.userTokenFactory = userTokenFactory;
-        this.settingFactory = settingFactory;
     }
 
     /**
@@ -75,8 +70,8 @@ public class RegisterUser {
         user.setProfile(profile);
 
         // Create default settings for the new user
-        Setting userSettings = settingFactory.createDefault();
-        user.setSettings(userSettings);
+        //        Setting userSettings = settingFactory.createDefault();
+        //        user.setSettings(userSettings);
 
         // Create a token for the account activation
         UserToken userToken = userTokenFactory.verificationToken();

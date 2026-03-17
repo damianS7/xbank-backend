@@ -1,6 +1,5 @@
 package com.damian.xBank.modules.user.user.application.usecase;
 
-import com.damian.xBank.modules.setting.domain.factory.SettingFactory;
 import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.profile.domain.model.UserGender;
 import com.damian.xBank.modules.user.token.domain.factory.UserTokenFactory;
@@ -49,9 +48,6 @@ public class RegisterUserTest extends AbstractServiceTest {
 
     @Spy
     private UserTokenFactory userTokenFactory;
-
-    @Spy
-    private SettingFactory settingFactory;
 
     @InjectMocks
     private RegisterUser registerUser;

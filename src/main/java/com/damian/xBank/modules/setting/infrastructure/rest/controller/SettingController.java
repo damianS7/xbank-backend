@@ -35,7 +35,11 @@ public class SettingController {
         this.updateCurrentUserSettings = updateCurrentUserSettings;
     }
 
-    // endpoint to fetch all setting from logged user
+    /**
+     * Endpoint para obtener las settings
+     *
+     * @return GetCurrentUserSettingsResult
+     */
     @GetMapping("/settings")
     public ResponseEntity<?> getSettings() {
         GetCurrentUserSettingsQuery query = SettingMapper.toGetCurrentUserSettingsQuery();
@@ -46,7 +50,12 @@ public class SettingController {
             .body(result);
     }
 
-    // endpoint to update a setting
+    /**
+     * Endpoint para actualizar las settings
+     *
+     * @param request Petición con los datos a modificar
+     * @return UpdateCurrentUserSettingsRequest
+     */
     @PatchMapping("/settings")
     public ResponseEntity<?> updateSettings(
         @Valid @RequestBody

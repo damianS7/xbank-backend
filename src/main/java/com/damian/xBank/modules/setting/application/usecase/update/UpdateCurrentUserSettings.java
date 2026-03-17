@@ -10,6 +10,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Caso de uso para actualizar las settings del usuario actual.
+ */
 @Service
 public class UpdateCurrentUserSettings {
     private static final Logger log = LoggerFactory.getLogger(UpdateCurrentUserSettings.class);
@@ -25,30 +28,24 @@ public class UpdateCurrentUserSettings {
     }
 
     /**
-     * It updates the settings for the current user
      *
-     * @param command settings to update
-     * @return updated settings
+     * @param command Comando con los datos a actualizar.
+     * @return Las settings actualizadas.
      */
     @Transactional
     public UpdateCurrentUserSettingsResult execute(UpdateCurrentUserSettingsCommand command) {
-        // User logged
+        // Usuario actual
         final User currentUser = authenticationContext.getCurrentUser();
 
-        // find the settings for the currentUser
+        // Buscar las settings del usuario
         Setting userSettings = settingRepository
             .findByUser_Id(currentUser.getId())
             .orElseThrow(
                 () -> new SettingNotFoundException(currentUser.getId())
             );
 
-        // check if the logged user is the owner of the setting.
-        userSettings.assertOwnedBy(currentUser.getId());
-
-        // update settings
+        // Actualizar las settings
         userSettings.setSettings(command.settings());
-
-        // Save
         settingRepository.save(userSettings);
 
         log.debug(

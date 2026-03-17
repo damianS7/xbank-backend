@@ -2,10 +2,17 @@ package com.damian.xBank.modules.setting.domain.model;
 
 import com.damian.xBank.modules.setting.domain.exception.SettingNotOwnerException;
 import com.damian.xBank.modules.setting.infrastructure.persistence.converter.UserSettingsConverter;
-import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.shared.security.UserPrincipal;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -27,62 +34,40 @@ public class Setting {
     @Column(columnDefinition = "jsonb")
     private UserSettings settings;
 
-    public Setting() {
+    protected Setting() {
+        // Constructor JPA
+        this.settings = UserSettings.defaults();
     }
 
-    public Setting(User user) {
+    Setting(User user, UserSettings settings) {
+        this();
         this.user = user;
+        this.settings = settings != null ? settings : UserSettings.defaults();
     }
 
-    public Setting(UserPrincipal owner) {
-        this(owner.getUser());
-    }
-
-    public static Setting create(User owner) {
-        return new Setting(owner);
-    }
-
-    public static Setting create(UserPrincipal owner) {
-        return new Setting(owner);
+    public static Setting create(User owner, UserSettings settings) {
+        return new Setting(owner, settings);
     }
 
     public Long getId() {
         return id;
     }
 
-    public Setting setId(Long id) {
-        this.id = id;
-        return this;
-    }
-
-    @Override
-    public String toString() {
-        return "Setting {" +
-               "id=" + id +
-               "userId=" + user.getId() +
-               "}";
-    }
-
-    public User getUserAccount() {
+    public User getUser() {
         return user;
-    }
-
-    public Setting setUser(User user) {
-        this.user = user;
-        return this;
-    }
-
-    public boolean isOwnedBy(UserProfile customer) {
-        return this.isOwnedBy(customer.getUser().getId());
-    }
-
-    public boolean isOwnedBy(UserPrincipal user) {
-        return this.isOwnedBy(user.getUser().getId());
     }
 
     public boolean isOwnedBy(Long userId) {
         // compare account owner id with given customer id
         return Objects.equals(user.getId(), userId);
+    }
+
+    public UserSettings getSettings() {
+        return settings;
+    }
+
+    public void setSettings(UserSettings settings) {
+        this.settings = settings;
     }
 
     public Setting assertOwnedBy(Long userId) {
@@ -95,12 +80,11 @@ public class Setting {
         return this;
     }
 
-    public UserSettings getSettings() {
-        return settings;
-    }
-
-    public Setting setSettings(UserSettings settings) {
-        this.settings = settings;
-        return this;
+    @Override
+    public String toString() {
+        return "Setting {" +
+               "id=" + id +
+               "userId=" + user.getId() +
+               "}";
     }
 }
