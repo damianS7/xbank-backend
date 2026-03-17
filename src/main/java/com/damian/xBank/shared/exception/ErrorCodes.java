@@ -9,6 +9,7 @@ public class ErrorCodes {
     public static final String AUTH_LOGIN_BAD_CREDENTIALS = "auth.login.bad_credentials";
     public static final String AUTH_JWT_TOKEN_EXPIRED = "auth.jwt.token.expired";
     public static final String AUTH_JWT_TOKEN_INVALID = "auth.jwt.token.invalid";
+    public static final String AUTHORIZATION = "auth.not_authorized";
 
     // User account
     public static final String USER_NOT_FOUND = "user.not_found";
