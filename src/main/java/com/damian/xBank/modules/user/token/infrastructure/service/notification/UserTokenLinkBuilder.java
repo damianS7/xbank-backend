@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.user.token.infrastructure.service.notification;
 
-import com.damian.xBank.shared.security.utils.LinkBuilder;
+import com.damian.xBank.shared.utils.LinkBuilder;
 import org.springframework.stereotype.Component;
 
 @Component

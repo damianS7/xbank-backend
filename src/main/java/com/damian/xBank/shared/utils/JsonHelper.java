@@ -11,8 +11,8 @@ import java.io.IOException;
 
 public class JsonHelper {
     protected static ObjectMapper objectMapper = new ObjectMapper()
-            .registerModule(new JavaTimeModule())
-            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        .registerModule(new JavaTimeModule())
+        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     //    mapper.registerModule(new JavaTimeModule());
     //    mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
@@ -36,8 +36,8 @@ public class JsonHelper {
     public static <T> T fromJson(String json, Class<T> type) {
         try {
             return objectMapper.readValue(
-                    json,
-                    type
+                json,
+                type
             );
         } catch (IOException e) {
             throw new RuntimeException(e);

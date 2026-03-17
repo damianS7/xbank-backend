@@ -5,7 +5,7 @@ import com.damian.xBank.modules.auth.domain.exception.UserSuspendedException;
 import com.damian.xBank.modules.auth.infrastructure.rest.request.AuthenticationRequest;
 import com.damian.xBank.modules.auth.infrastructure.rest.response.AuthenticationResponse;
 import com.damian.xBank.shared.security.UserPrincipal;
-import com.damian.xBank.shared.security.utils.JwtUtil;
+import com.damian.xBank.shared.utils.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;

@@ -1,6 +1,6 @@
 package com.damian.xBank.shared.infrastructure.storage;
 
-import com.damian.xBank.shared.security.utils.ImageHelper;
+import com.damian.xBank.shared.utils.ImageHelper;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;

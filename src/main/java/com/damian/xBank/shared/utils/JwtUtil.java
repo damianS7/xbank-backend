@@ -1,6 +1,11 @@
 package com.damian.xBank.shared.utils;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,30 +30,30 @@ public class JwtUtil {
 
     private Claims getAllClaims(String token) {
         return Jwts.parserBuilder()
-                   .setSigningKey(getSigningKey())
-                   .build()
-                   .parseClaimsJws(token)
-                   .getBody();
+            .setSigningKey(getSigningKey())
+            .build()
+            .parseClaimsJws(token)
+            .getBody();
     }
 
     public String generateToken(String email, Date expiration) {
         return Jwts.builder()
-                   .setClaims(Map.of())
-                   .setSubject(email)
-                   .setIssuedAt(new Date())
-                   .setExpiration(expiration) // 1 hora
-                   .signWith(getSigningKey(), SignatureAlgorithm.HS256)
-                   .compact();
+            .setClaims(Map.of())
+            .setSubject(email)
+            .setIssuedAt(new Date())
+            .setExpiration(expiration) // 1 hora
+            .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+            .compact();
     }
 
     public String generateToken(Map<String, Object> claims, String email) {
         return Jwts.builder()
-                   .setClaims(claims)
-                   .setSubject(email)
-                   .setIssuedAt(new Date())
-                   .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1 hora
-                   .signWith(getSigningKey(), SignatureAlgorithm.HS256)
-                   .compact();
+            .setClaims(claims)
+            .setSubject(email)
+            .setIssuedAt(new Date())
+            .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1 hora
+            .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+            .compact();
     }
 
     public boolean isTokenExpired(String token) {

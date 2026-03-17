@@ -10,7 +10,7 @@ import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.security.UserPrincipal;
-import com.damian.xBank.shared.security.utils.JwtUtil;
+import com.damian.xBank.shared.utils.JwtUtil;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.BeforeEach;
