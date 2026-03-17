@@ -4,6 +4,7 @@ import com.damian.xBank.modules.notification.application.dto.NotificationResult;
 import com.damian.xBank.modules.notification.application.usecase.get.GetCurrentUserNotifications;
 import com.damian.xBank.modules.notification.application.usecase.get.GetCurrentUserNotificationsQuery;
 import com.damian.xBank.modules.notification.domain.model.Notification;
+import com.damian.xBank.modules.notification.domain.model.NotificationType;
 import com.damian.xBank.modules.notification.infrastructure.repository.NotificationRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
@@ -20,6 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -50,12 +52,24 @@ public class GetCurrentUserNotificationsTest extends AbstractServiceTest {
         // given
         setUpContext(customer);
 
+        Notification notification = Notification.create(
+            customer,
+            NotificationType.TRANSFER,
+            Map.of(
+                "transactionId", 1L,
+                "toUser", 1L,
+                "amount", 100L,
+                "currency", "EUR"
+            ),
+            "templateKey"
+        );
+
         Pageable pageable = PageRequest.of(0, 10);
         Page<Notification> page = new PageImpl<>(
             List.of(
-                Notification.create(customer),
-                Notification.create(customer),
-                Notification.create(customer)
+                notification,
+                notification,
+                notification
             ),
             pageable,
             3

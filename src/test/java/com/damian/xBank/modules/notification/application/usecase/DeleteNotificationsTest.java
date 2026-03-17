@@ -3,6 +3,8 @@ package com.damian.xBank.modules.notification.application.usecase;
 import com.damian.xBank.modules.notification.application.usecase.delete.DeleteNotifications;
 import com.damian.xBank.modules.notification.application.usecase.delete.DeleteNotificationsCommand;
 import com.damian.xBank.modules.notification.domain.model.Notification;
+import com.damian.xBank.modules.notification.domain.model.NotificationTestBuilder;
+import com.damian.xBank.modules.notification.domain.model.NotificationType;
 import com.damian.xBank.modules.notification.infrastructure.repository.NotificationRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.AbstractServiceTest;
@@ -14,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.anyLong;
@@ -44,8 +47,18 @@ public class DeleteNotificationsTest extends AbstractServiceTest {
         // given
         setUpContext(customer);
 
-        Notification notification = Notification.create(customer)
-            .setId(1L);
+        Notification notification = NotificationTestBuilder.builder()
+            .withId(1L)
+            .withOwner(customer)
+            .withType(NotificationType.TRANSFER)
+            .withPayload(Map.of(
+                "transactionId", 1L,
+                "toUser", 1L,
+                "amount", 100L,
+                "currency", "EUR"
+            ))
+            .withTemplateKey("testTemplateKey")
+            .build();
 
         DeleteNotificationsCommand command = new DeleteNotificationsCommand(
             List.of(notification.getId())

@@ -4,6 +4,7 @@ import com.damian.xBank.modules.notification.application.usecase.delete.DeleteNo
 import com.damian.xBank.modules.notification.application.usecase.delete.DeleteNotificationCommand;
 import com.damian.xBank.modules.notification.domain.exception.NotificationNotOwnerException;
 import com.damian.xBank.modules.notification.domain.model.Notification;
+import com.damian.xBank.modules.notification.domain.model.NotificationTestBuilder;
 import com.damian.xBank.modules.notification.domain.model.NotificationType;
 import com.damian.xBank.modules.notification.infrastructure.repository.NotificationRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -52,26 +53,26 @@ public class DeleteNotificationTest extends AbstractServiceTest {
         // given
         setUpContext(customer);
 
-        Notification givenNotification = Notification
-            .create(customer)
-            .setId(1L)
-            .setType(NotificationType.TRANSFER)
-            .setMetadata(
-                Map.of(
-                    "transactionId", 1L,
-                    "toUser", 1L,
-                    "amount", 100L,
-                    "currency", "EUR"
-                )
-            );
+        Notification notification = NotificationTestBuilder.builder()
+            .withId(1L)
+            .withOwner(customer)
+            .withType(NotificationType.TRANSFER)
+            .withPayload(Map.of(
+                "transactionId", 1L,
+                "toUser", 1L,
+                "amount", 100L,
+                "currency", "EUR"
+            ))
+            .withTemplateKey("testTemplateKey")
+            .build();
 
         DeleteNotificationCommand command = new DeleteNotificationCommand(
-            givenNotification.getId()
+            notification.getId()
         );
 
         // when
         when(notificationRepository.findById(anyLong()))
-            .thenReturn(Optional.of(givenNotification));
+            .thenReturn(Optional.of(notification));
 
         deleteNotification.execute(command);
 
@@ -91,26 +92,26 @@ public class DeleteNotificationTest extends AbstractServiceTest {
             .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
             .build();
 
-        Notification givenNotification = Notification
-            .create(anotherCustomer)
-            .setId(1L)
-            .setType(NotificationType.TRANSFER)
-            .setMetadata(
-                Map.of(
-                    "transactionId", 1L,
-                    "toUser", 1L,
-                    "amount", 100L,
-                    "currency", "EUR"
-                )
-            );
+        Notification notification = NotificationTestBuilder.builder()
+            .withId(1L)
+            .withOwner(anotherCustomer)
+            .withType(NotificationType.TRANSFER)
+            .withPayload(Map.of(
+                "transactionId", 1L,
+                "toUser", 1L,
+                "amount", 100L,
+                "currency", "EUR"
+            ))
+            .withTemplateKey("testTemplateKey")
+            .build();
 
         DeleteNotificationCommand command = new DeleteNotificationCommand(
-            givenNotification.getId()
+            notification.getId()
         );
 
         // when
         when(notificationRepository.findById(anyLong()))
-            .thenReturn(Optional.of(givenNotification));
+            .thenReturn(Optional.of(notification));
 
         NotificationNotOwnerException exception = assertThrows(
             NotificationNotOwnerException.class,

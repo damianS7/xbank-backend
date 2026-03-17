@@ -48,7 +48,7 @@ public class Notification {
         this.createdAt = Instant.now();
     }
 
-    private Notification(
+    Notification(
         Long id,
         User user,
         NotificationType type,
@@ -74,15 +74,6 @@ public class Notification {
 
     public Long getId() {
         return id;
-    }
-
-    /**
-     * Solo para test
-     *
-     * @param id
-     */
-    void setId(Long id) {
-        this.id = id;
     }
 
     public Instant getCreatedAt() {

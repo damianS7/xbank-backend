@@ -11,7 +11,7 @@ import com.damian.xBank.modules.banking.card.infrastructure.rest.request.Authori
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
-import com.damian.xBank.shared.utils.JsonHelper;
+import com.damian.xBank.shared.security.utils.JsonHelper;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

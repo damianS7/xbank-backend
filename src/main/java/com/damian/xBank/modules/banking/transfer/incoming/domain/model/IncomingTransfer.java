@@ -76,7 +76,7 @@ public class IncomingTransfer {
         this.reference = "";
     }
 
-    IncomingTransfer(
+    private IncomingTransfer(
         Long transferId,
         String fromAccountIban,
         BankingAccount toAccount,
@@ -122,6 +122,11 @@ public class IncomingTransfer {
 
     public Long getId() {
         return id;
+    }
+
+    // for testing
+    void setId(Long id) {
+        this.id = id;
     }
 
     public IncomingTransferStatus getStatus() {

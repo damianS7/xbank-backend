@@ -10,7 +10,7 @@ import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.security.UserPrincipal;
-import com.damian.xBank.shared.utils.JwtUtil;
+import com.damian.xBank.shared.security.utils.JwtUtil;
 import com.damian.xBank.shared.utils.UserTestBuilder;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.BeforeEach;
@@ -71,17 +71,17 @@ public class NotificationControllerTest extends AbstractControllerTest {
     @DisplayName("GET /notifications with valid request should get notifications for authenticated user")
     void getNotifications_ValidRequest_Returns200OK() throws Exception {
         // given
-        Notification notification = Notification
-            .create(customer)
-            .setType(NotificationType.TRANSFER)
-            .setMetadata(
-                Map.of(
-                    "transactionId", 1L,
-                    "toUser", 1L,
-                    "amount", 100L,
-                    "currency", "EUR"
-                )
-            );
+        Notification notification = Notification.create(
+            customer,
+            NotificationType.TRANSFER,
+            Map.of(
+                "transactionId", 1L,
+                "toUser", 1L,
+                "amount", 100L,
+                "currency", "EUR"
+            ),
+            "templateKey"
+        );
 
         notificationRepository.save(notification);
 
@@ -111,17 +111,17 @@ public class NotificationControllerTest extends AbstractControllerTest {
     @DisplayName("DELETE /notifications should delete notifications for authenticated user")
     void deleteNotifications_ValidRequest_Returns204NoContent() throws Exception {
         // given
-        Notification notification = Notification
-            .create(customer)
-            .setType(NotificationType.TRANSFER)
-            .setMetadata(
-                Map.of(
-                    "transactionId", 1L,
-                    "toUser", 1L,
-                    "amount", 100L,
-                    "currency", "EUR"
-                )
-            );
+        Notification notification = Notification.create(
+            customer,
+            NotificationType.TRANSFER,
+            Map.of(
+                "transactionId", 1L,
+                "toUser", 1L,
+                "amount", 100L,
+                "currency", "EUR"
+            ),
+            "templateKey"
+        );
 
         notificationRepository.save(notification);
 
