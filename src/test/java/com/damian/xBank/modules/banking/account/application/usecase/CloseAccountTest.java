@@ -4,7 +4,6 @@ import com.damian.xBank.modules.banking.account.application.usecase.close.CloseA
 import com.damian.xBank.modules.banking.account.application.usecase.close.CloseAccountCommand;
 import com.damian.xBank.modules.banking.account.application.usecase.close.CloseAccountResult;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
-import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotOwnerException;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
@@ -68,7 +67,14 @@ public class CloseAccountTest extends AbstractServiceTest {
     @DisplayName("Should returns a closed a BankingAccount")
     void closeAccount_WhenValidRequest_ReturnsClosedBankingAccount() {
         // given
-        setUpContext(customer);
+        User customerAdmin = UserTestBuilder.aCustomer()
+            .withId(2L)
+            .withEmail("customerAdmin@demo.com")
+            .withRole(UserRole.ADMIN)
+            .withPassword(RAW_PASSWORD)
+            .build();
+
+        setUpContext(customerAdmin);
 
         CloseAccountCommand command = new CloseAccountCommand(
             bankingAccount.getId(),
@@ -94,7 +100,14 @@ public class CloseAccountTest extends AbstractServiceTest {
     @DisplayName("Should throws when BankingAccount is not found")
     void closeAccount_WhenAccountNotFound_ThrowsException() {
         // given
-        setUpContext(customer);
+        User customerAdmin = UserTestBuilder.aCustomer()
+            .withId(2L)
+            .withEmail("customerAdmin@demo.com")
+            .withRole(UserRole.ADMIN)
+            .withPassword(RAW_PASSWORD)
+            .build();
+
+        setUpContext(customerAdmin);
 
         CloseAccountCommand command = new CloseAccountCommand(
             bankingAccount.getId(),
@@ -111,35 +124,6 @@ public class CloseAccountTest extends AbstractServiceTest {
 
         // then
         assertTrue(exception.getMessage().contains(ErrorCodes.BANKING_ACCOUNT_NOT_FOUND));
-    }
-
-    @Test
-    @DisplayName("Should throws exception when authenticated customer is not the owner of the account")
-    void closeAccount_WhenAccountNotOwnedByCustomer_ThrowsException() {
-        // given
-        User customer2 = UserTestBuilder.aCustomer()
-            .withId(2L)
-            .withEmail("customer2@demo.com")
-            .withPassword(RAW_PASSWORD)
-            .build();
-
-        setUpContext(customer2);
-
-        CloseAccountCommand command = new CloseAccountCommand(
-            bankingAccount.getId(),
-            RAW_PASSWORD
-        );
-
-        // when
-        when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.of(bankingAccount));
-
-        BankingAccountNotOwnerException exception = assertThrows(
-            BankingAccountNotOwnerException.class,
-            () -> closeAccount.execute(command)
-        );
-
-        // then
-        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.BANKING_ACCOUNT_NOT_OWNER);
     }
 
     @Test
@@ -162,7 +146,6 @@ public class CloseAccountTest extends AbstractServiceTest {
 
         // when
         when(bankingAccountRepository.findById(anyLong())).thenReturn(Optional.of(bankingAccount));
-
         when(bankingAccountRepository.save(any(BankingAccount.class))).thenReturn(bankingAccount);
 
         CloseAccountResult result = closeAccount.execute(command);

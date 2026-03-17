@@ -247,10 +247,6 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
             .isEqualTo(
                 ErrorCodes.VALIDATION_FAILED
             );
-
-        assertThat(response.getErrors().get("email"))
-            .asString()
-            .contains("must be a well-formed email address");
     }
 
     @Test

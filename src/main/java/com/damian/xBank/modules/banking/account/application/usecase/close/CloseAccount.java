@@ -4,6 +4,7 @@ import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountN
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.shared.exception.AuthorizationException;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import com.damian.xBank.shared.security.PasswordValidator;
 import org.springframework.stereotype.Service;
@@ -34,8 +35,9 @@ public class CloseAccount {
         // Current user
         final User currentUser = authenticationContext.getCurrentUser();
 
+        // only admin can close accounts
         if (!currentUser.isAdmin()) {
-            // only admin can close accounts
+            throw new AuthorizationException();
         }
 
         // Banking account to be closed
