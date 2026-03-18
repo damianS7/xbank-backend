@@ -6,6 +6,7 @@ import com.damian.xBank.modules.auth.infrastructure.rest.request.AuthenticationR
 import com.damian.xBank.modules.auth.infrastructure.rest.response.AuthenticationResponse;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.security.UserPrincipal;
@@ -103,11 +104,12 @@ public class AuthenticationLoginTest extends AbstractServiceTest {
     @DisplayName("should throw exception when account is suspended")
     void login_WhenAccountSuspended_ThrowsException() {
         // given
-        User user = User.create()
-            .setId(1L)
-            .setEmail("user@demo.com")
-            .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-            .setStatus(UserStatus.SUSPENDED);
+        User user = UserTestBuilder.builder()
+            .withId(1L)
+            .withEmail("user@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .withStatus(UserStatus.SUSPENDED)
+            .build();
 
         AuthenticationRequest request = new AuthenticationRequest(
             user.getEmail(),

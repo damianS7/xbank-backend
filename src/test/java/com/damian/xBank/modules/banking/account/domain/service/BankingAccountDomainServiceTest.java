@@ -6,8 +6,8 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestB
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.rest.request.CreateBankingAccountRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,7 +32,7 @@ public class BankingAccountDomainServiceTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        user = UserTestBuilder.aCustomer()
+        user = UserTestBuilder.builder()
             .withId(1L)
             .withEmail("customer@demo.com")
             .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))

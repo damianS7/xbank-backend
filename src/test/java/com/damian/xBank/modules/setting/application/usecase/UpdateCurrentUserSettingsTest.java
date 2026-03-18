@@ -10,8 +10,8 @@ import com.damian.xBank.modules.setting.domain.model.SettingTheme;
 import com.damian.xBank.modules.setting.domain.model.UserSettings;
 import com.damian.xBank.modules.setting.infrastructure.persistence.repository.SettingRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,13 +40,13 @@ public class UpdateCurrentUserSettingsTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        customerA = UserTestBuilder.aCustomer()
+        customerA = UserTestBuilder.builder()
             .withId(1L)
             .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
             .withEmail("customerA@demo.com")
             .build();
 
-        customerB = UserTestBuilder.aCustomer()
+        customerB = UserTestBuilder.builder()
             .withId(2L)
             .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
             .withEmail("customerB@demo.com")

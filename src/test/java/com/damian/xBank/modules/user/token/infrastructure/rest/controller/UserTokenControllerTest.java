@@ -8,9 +8,9 @@ import com.damian.xBank.modules.user.token.infrastructure.rest.request.ResetPass
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.utils.JsonHelper;
-import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,7 +30,7 @@ public class UserTokenControllerTest extends AbstractControllerTest {
     @BeforeEach
     void setUp() {
         user = UserTestBuilder
-            .aCustomer()
+            .builder()
             .withEmail("user@demo.com")
             .withRole(UserRole.CUSTOMER)
             .withStatus(UserStatus.VERIFIED)
@@ -50,10 +50,12 @@ public class UserTokenControllerTest extends AbstractControllerTest {
     @DisplayName("should verify account when token is valid")
     void getVerifyAccount_WhenValidRequest_Returns200Ok() throws Exception {
         // given
-        User unverifiedUser = User.create()
-            .setEmail("non-verified-user@demo.com")
-            .setPassword(passwordEncoder.encode(this.RAW_PASSWORD))
-            .setStatus(UserStatus.PENDING_VERIFICATION);
+        User unverifiedUser = UserTestBuilder.builder()
+            .withEmail("non-verified-user@demo.com")
+            .withPassword(passwordEncoder.encode(this.RAW_PASSWORD))
+            .withStatus(UserStatus.PENDING_VERIFICATION)
+            .withRole(UserRole.CUSTOMER)
+            .build();
 
         userRepository.save(unverifiedUser);
 
@@ -74,10 +76,12 @@ public class UserTokenControllerTest extends AbstractControllerTest {
     @DisplayName("should resend verification token to user email")
     void postVerification_WhenValidRequest_Returns200Ok() throws Exception {
         // given
-        User unverifiedUser = User.create()
-            .setEmail("non-verified-user@demo.com")
-            .setPassword(passwordEncoder.encode(this.RAW_PASSWORD))
-            .setStatus(UserStatus.PENDING_VERIFICATION);
+        User unverifiedUser = UserTestBuilder.builder()
+            .withEmail("non-verified-user@demo.com")
+            .withPassword(passwordEncoder.encode(this.RAW_PASSWORD))
+            .withStatus(UserStatus.PENDING_VERIFICATION)
+            .withRole(UserRole.CUSTOMER)
+            .build();
 
         userRepository.save(unverifiedUser);
 
@@ -115,11 +119,12 @@ public class UserTokenControllerTest extends AbstractControllerTest {
     @DisplayName("should reset password using token")
     void postPasswordResetToken_WhenValidRequest_Returns200Ok() throws Exception {
         // given
-        User unverifiedUser = User.create()
-            .setEmail("non-verified-user@demo.com")
-            .setPassword(passwordEncoder.encode(this.RAW_PASSWORD))
-            .setRole(UserRole.CUSTOMER)
-            .setStatus(UserStatus.PENDING_VERIFICATION);
+        User unverifiedUser = UserTestBuilder.builder()
+            .withEmail("non-verified-user@demo.com")
+            .withPassword(passwordEncoder.encode(this.RAW_PASSWORD))
+            .withStatus(UserStatus.PENDING_VERIFICATION)
+            .withRole(UserRole.CUSTOMER)
+            .build();
         userRepository.save(unverifiedUser);
 
         UserToken givenToken = UserToken.create()

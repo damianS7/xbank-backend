@@ -1,7 +1,4 @@
-package com.damian.xBank.shared.utils;
-
-import com.damian.xBank.modules.user.profile.domain.model.UserGender;
-import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
+package com.damian.xBank.modules.user.profile.domain.model;
 
 import java.time.LocalDate;
 
@@ -96,17 +93,9 @@ public class UserProfileTestBuilder {
     }
 
     public UserProfile build() {
-        return UserProfile.create()
-                          .setId(id)
-                          .setFirstName(firstName)
-                          .setLastName(lastName)
-                          .setPhoneNumber(phoneNumber)
-                          .setBirthdate(birthdate)
-                          .setPhotoPath(photo)
-                          .setAddress(address)
-                          .setPostalCode(postalCode)
-                          .setCountry(country)
-                          .setNationalId(nationalId)
-                          .setGender(gender);
+        return new UserProfile(
+            id, firstName, lastName, phoneNumber, birthdate, photo,
+            address, postalCode, country, nationalId, gender
+        );
     }
 }

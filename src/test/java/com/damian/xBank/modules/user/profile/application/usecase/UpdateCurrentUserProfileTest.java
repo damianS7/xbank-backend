@@ -4,24 +4,21 @@ import com.damian.xBank.modules.user.profile.application.usecase.update.UpdateCu
 import com.damian.xBank.modules.user.profile.application.usecase.update.UpdateUserProfileCommand;
 import com.damian.xBank.modules.user.profile.application.usecase.update.UpdateUserProfileResult;
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileNotFoundException;
-import com.damian.xBank.modules.user.profile.domain.exception.UserProfileNotOwnerException;
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileUpdateException;
 import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
-import com.damian.xBank.modules.user.profile.infrastructure.repository.UserProfileRepository;
 import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
+import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
-import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,11 +32,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 public class UpdateCurrentUserProfileTest extends AbstractServiceTest {
 
     @Mock
-    private UserProfileRepository userProfileRepository;
+    private UserRepository userRepository;
 
     @InjectMocks
     private UpdateCurrentUserProfile updateCurrentUserProfile;
@@ -50,7 +46,7 @@ public class UpdateCurrentUserProfileTest extends AbstractServiceTest {
     void setUp() {
         UserProfile profile = UserProfileFactory.testProfile();
 
-        customer = UserTestBuilder.aCustomer()
+        customer = UserTestBuilder.builder()
             .withId(1L)
             .withEmail("customer@test.com")
             .withPassword(RAW_PASSWORD)
@@ -77,10 +73,10 @@ public class UpdateCurrentUserProfileTest extends AbstractServiceTest {
         );
 
         // when
-        when(userProfileRepository.findByUserId(customer.getId()))
-            .thenReturn(Optional.of(customer.getProfile()));
+        when(userRepository.findById(customer.getId()))
+            .thenReturn(Optional.of(customer));
 
-        when(userProfileRepository.save(any(UserProfile.class))).thenAnswer(
+        when(userRepository.save(any(User.class))).thenAnswer(
             invocation -> invocation.getArgument(0)
         );
 
@@ -93,7 +89,7 @@ public class UpdateCurrentUserProfileTest extends AbstractServiceTest {
         assertThat(result.phone()).isEqualTo(command.fieldsToUpdate().get("phoneNumber"));
         assertThat(result.birthdate().toString()).isEqualTo(command.fieldsToUpdate().get("birthdate"));
         assertThat(result.gender().toString()).isEqualTo(command.fieldsToUpdate().get("gender"));
-        verify(userProfileRepository, times(1)).save(any(UserProfile.class));
+        verify(userRepository, times(1)).save(any(User.class));
     }
 
     @Test
@@ -111,7 +107,9 @@ public class UpdateCurrentUserProfileTest extends AbstractServiceTest {
         );
 
         // when
-        when(userProfileRepository.findByUserId(customer.getId())).thenReturn(Optional.of(customer.getProfile()));
+        when(userRepository.findById(customer.getId()))
+            .thenReturn(Optional.of(customer));
+
         UserProfileUpdateException exception = assertThrows(
             UserProfileUpdateException.class,
             () -> updateCurrentUserProfile.execute(command)
@@ -135,7 +133,8 @@ public class UpdateCurrentUserProfileTest extends AbstractServiceTest {
         );
 
         // when
-        when(userProfileRepository.findByUserId(customer.getId())).thenReturn(Optional.of(customer.getProfile()));
+        when(userRepository.findById(customer.getId()))
+            .thenReturn(Optional.of(customer));
 
         //        doThrow(
         //                new UserAccountInvalidPasswordConfirmationException(
@@ -168,7 +167,7 @@ public class UpdateCurrentUserProfileTest extends AbstractServiceTest {
         );
 
         // when
-        when(userProfileRepository.findByUserId(customer.getId())).thenReturn(Optional.empty());
+        when(userRepository.findById(customer.getId())).thenReturn(Optional.empty());
         UserProfileNotFoundException exception = assertThrows(
             UserProfileNotFoundException.class,
             () -> updateCurrentUserProfile.execute(command)
@@ -178,39 +177,4 @@ public class UpdateCurrentUserProfileTest extends AbstractServiceTest {
         assertEquals(ErrorCodes.PROFILE_NOT_FOUND, exception.getMessage());
     }
 
-    @Test
-    @DisplayName("should throw exception when user not owner")
-    void updateProfile_WhenUserNotOwner_ThrowsException() {
-        // given
-        setUpContext(customer);
-
-        Map<String, Object> fields = new HashMap<>();
-        fields.put("firstName", "David");
-        UpdateUserProfileCommand command = new UpdateUserProfileCommand(
-            RAW_PASSWORD,
-            fields
-        );
-
-        UserProfile profile = UserProfileFactory.testProfile();
-
-        User givenCustomer = UserTestBuilder.aCustomer()
-            .withId(5L)
-            .withEmail("customer@test.com")
-            .withPassword(RAW_PASSWORD)
-            .withRole(UserRole.CUSTOMER)
-            .withProfile(profile)
-            .build();
-
-        // when
-        when(userProfileRepository.findByUserId(customer.getId()))
-            .thenReturn(Optional.of(givenCustomer.getProfile()));
-
-        UserProfileNotOwnerException exception = assertThrows(
-            UserProfileNotOwnerException.class,
-            () -> updateCurrentUserProfile.execute(command)
-        );
-
-        // Then
-        assertEquals(ErrorCodes.PROFILE_NOT_OWNER, exception.getMessage());
-    }
 }

@@ -9,8 +9,8 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestB
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,7 +37,7 @@ public class GetAllUserAccountsTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        customer = UserTestBuilder.aCustomer()
+        customer = UserTestBuilder.builder()
             .withId(1L)
             .withEmail("customer@demo.com")
             .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
@@ -59,8 +59,8 @@ public class GetAllUserAccountsTest extends AbstractServiceTest {
             .withType(BankingAccountType.SAVINGS)
             .withAccountNumber("US1200001111112233335516")
             .build();
-
-        customer.addBankingAccount(account);
+        // TODO
+        //        customer.addBankingAccount(account);
 
         GetAllUserAccountsQuery query = new GetAllUserAccountsQuery();
 

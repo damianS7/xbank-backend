@@ -6,14 +6,12 @@ import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-
 @Service
 public class UserDomainService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public UserDomainService(
-            BCryptPasswordEncoder passwordEncoder
+        BCryptPasswordEncoder passwordEncoder
     ) {
         this.bCryptPasswordEncoder = passwordEncoder;
     }
@@ -29,10 +27,6 @@ public class UserDomainService {
     public User createUser(String email, String password, UserRole role) {
 
         // we create the user and assign the data
-        return User.create()
-                   .setEmail(email)
-                   .setRole(role)
-                   .setPassword(bCryptPasswordEncoder.encode(password))
-                   .setCreatedAt(Instant.now());
+        return User.create(email, bCryptPasswordEncoder.encode(password), role);
     }
 }

@@ -11,6 +11,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+/**
+ * Caso de uso para obtener la imagen de perfil del usuario actual.
+ */
 @Service
 public class GetCurrentUserProfileImage {
     private static final Logger log = LoggerFactory.getLogger(GetCurrentUserProfileImage.class);
@@ -29,21 +32,19 @@ public class GetCurrentUserProfileImage {
     }
 
     /**
-     * It gets the user photo
-     *
-     * @param query the id of the user to get the photo for
-     * @return the user photo resource
+     * @param query La consulta con el id del usuario
+     * @return Resource
      * @throws UserNotFoundException             if the user does not exist
      * @throws UserProfileImageNotFoundException if the user photo does not exist in the db
      */
     public Resource execute(GetUserProfileImageQuery query) {
-        // find the user
+        // Buscar el usuario por ID
         User user = userRepository.findById(query.userId())
             .orElseThrow(
                 () -> new UserNotFoundException(query.userId())
             );
 
-        // check if the user has a user photo filename stored in db
+        // Comprobar que tenga un path almacenado
         if (user.getProfile().getPhotoPath() == null) {
             throw new UserProfileImageNotFoundException(user.getProfile().getId());
         }
@@ -54,12 +55,10 @@ public class GetCurrentUserProfileImage {
     }
 
     /**
-     * It gets the current user photo
-     *
-     * @return the current user photo resource
+     * @return Resource
      */
     public Resource execute() {
-        // Current user
+        // Usuario actual
         final User currentUser = authenticationContext.getCurrentUser();
 
         return this.execute(new GetUserProfileImageQuery(currentUser.getId()));

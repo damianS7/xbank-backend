@@ -11,8 +11,8 @@ import com.damian.xBank.modules.banking.transfer.outgoing.domain.exception.Outgo
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.exception.OutgoingTransferSameAccountException;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.exception.OutgoingTransferStatusTransitionException;
 import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.shared.exception.ErrorCodes;
-import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,10 +33,10 @@ public class OutgoingTransferTest {
 
     @BeforeEach
     void setUp() {
-        fromCustomer = UserTestBuilder.aCustomer()
+        fromCustomer = UserTestBuilder.builder()
             .withId(1L)
             .build();
-        toCustomer = UserTestBuilder.aCustomer()
+        toCustomer = UserTestBuilder.builder()
             .withId(2L)
             .build();
 

@@ -10,9 +10,9 @@ import com.damian.xBank.modules.setting.infrastructure.rest.request.UpdateCurren
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.utils.JsonHelper;
-import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -37,7 +37,7 @@ public class SettingControllerTest extends AbstractControllerTest {
     @BeforeEach
     void setUp() {
         customer = UserTestBuilder
-            .aCustomer()
+            .builder()
             .withEmail("customer@demo.com")
             .withRole(UserRole.CUSTOMER)
             .withStatus(UserStatus.VERIFIED)

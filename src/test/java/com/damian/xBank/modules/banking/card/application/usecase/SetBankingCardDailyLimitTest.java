@@ -14,9 +14,9 @@ import com.damian.xBank.modules.banking.card.domain.model.BankingCardTestBuilder
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
-import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -48,7 +48,7 @@ public class SetBankingCardDailyLimitTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        customer = UserTestBuilder.aCustomer()
+        customer = UserTestBuilder.builder()
             .withId(1L)
             .withEmail("customer@demo.com")
             .withPassword(RAW_PASSWORD)
@@ -127,7 +127,7 @@ public class SetBankingCardDailyLimitTest extends AbstractServiceTest {
     @DisplayName("should throw exception when customer not owner")
     void limit_WhenNotOwner_ThrowsException() {
         // given
-        User customerNotOwner = UserTestBuilder.aCustomer()
+        User customerNotOwner = UserTestBuilder.builder()
             .withId(2L)
             .withEmail("customerNotOwner@demo.com")
             .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))

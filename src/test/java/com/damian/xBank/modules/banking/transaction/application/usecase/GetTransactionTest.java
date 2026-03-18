@@ -17,9 +17,9 @@ import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransact
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
-import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -53,7 +53,7 @@ public class GetTransactionTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        customer = UserTestBuilder.aCustomer()
+        customer = UserTestBuilder.builder()
             .withId(1L)
             .withEmail("customer@demo.com")
             .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
@@ -125,7 +125,7 @@ public class GetTransactionTest extends AbstractServiceTest {
     @DisplayName("should throw exception when not owner of transaction")
     void getTransaction_WhenNotOwner_ThrowsException() {
         // given
-        User otherCustomer = UserTestBuilder.aCustomer()
+        User otherCustomer = UserTestBuilder.builder()
             .withId(2L)
             .withEmail("otherCustomer@demo.com")
             .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))

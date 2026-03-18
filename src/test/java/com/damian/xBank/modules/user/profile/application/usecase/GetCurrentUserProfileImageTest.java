@@ -8,11 +8,11 @@ import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import com.damian.xBank.modules.user.profile.infrastructure.service.UserProfileImageService;
 import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException;
 import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.ImageTestHelper;
-import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,7 +47,7 @@ public class GetCurrentUserProfileImageTest extends AbstractServiceTest {
     void setUp() {
         UserProfile profile = UserProfileFactory.testProfile();
 
-        customer = UserTestBuilder.aCustomer()
+        customer = UserTestBuilder.builder()
             .withId(1L)
             .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
             .withEmail("customer@demo.com")

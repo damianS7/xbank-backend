@@ -8,7 +8,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 
@@ -19,12 +18,6 @@ public class UserPrincipal implements UserDetails {
         this.user = user;
     }
 
-    public static UserPrincipal create() {
-        return new UserPrincipal(
-                User.create()
-        );
-    }
-
     public UserProfile getProfile() {
         return user.getProfile();
     }
@@ -33,18 +26,13 @@ public class UserPrincipal implements UserDetails {
         return user.getId();
     }
 
-    public UserPrincipal setId(Long id) {
-        this.user.setId(id);
-        return this;
-    }
-
     public UserPrincipal setEmail(String email) {
-        this.user.setEmail(email);
+        this.user.changeEmail(email);
         return this;
     }
 
     public UserPrincipal setPassword(String password) {
-        this.user.setPassword(password);
+        this.user.changePassword(password);
         return this;
     }
 
@@ -60,21 +48,6 @@ public class UserPrincipal implements UserDetails {
         return user.getEmail();
     }
 
-    public UserPrincipal setUpdatedAt(Instant updatedAt) {
-        this.user.setUpdatedAt(updatedAt);
-        return this;
-    }
-
-    public UserPrincipal setCreatedAt(Instant createdAt) {
-        this.user.setCreatedAt(createdAt);
-        return this;
-    }
-
-    public UserPrincipal setAccountStatus(UserStatus status) {
-        this.user.setStatus(status);
-        return this;
-    }
-
     public UserRole getRole() {
         return user.getRole();
     }
@@ -82,7 +55,7 @@ public class UserPrincipal implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         SimpleGrantedAuthority authority =
-                new SimpleGrantedAuthority("ROLE_" + user.getRole().name());
+            new SimpleGrantedAuthority("ROLE_" + user.getRole().name());
         return List.of(authority);
     }
 

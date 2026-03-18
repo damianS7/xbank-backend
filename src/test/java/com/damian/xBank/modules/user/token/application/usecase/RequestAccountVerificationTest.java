@@ -7,10 +7,11 @@ import com.damian.xBank.modules.user.token.domain.notification.UserTokenVerifica
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
 import com.damian.xBank.modules.user.token.infrastructure.service.notification.UserTokenLinkBuilder;
 import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,7 +46,7 @@ public class RequestAccountVerificationTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        user = UserTestBuilder.aCustomer()
+        user = UserTestBuilder.builder()
             .withId(1L)
             .withPassword(RAW_PASSWORD)
             .withEmail("customer@demo.com")
@@ -56,7 +57,12 @@ public class RequestAccountVerificationTest extends AbstractServiceTest {
     @DisplayName("should request user verification email when user is pending for verification")
     void requestAccountVerification_WhenUserPendingVerification_SendsEmail() {
         // given
-        user.setStatus(UserStatus.PENDING_VERIFICATION);
+        User user = UserTestBuilder.builder()
+            .withEmail("user@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(this.RAW_PASSWORD))
+            .withStatus(UserStatus.PENDING_VERIFICATION)
+            .withRole(UserRole.CUSTOMER)
+            .build();
 
         RequestAccountVerificationCommand command = new RequestAccountVerificationCommand(
             user.getEmail()

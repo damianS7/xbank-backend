@@ -6,6 +6,10 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestB
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotOwnerException;
 import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserRole;
+import com.damian.xBank.modules.user.user.domain.model.UserStatus;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
+import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +21,7 @@ import java.math.BigDecimal;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.Assert.assertThrows;
 
-public class BankingTransactionTest {
+public class BankingTransactionTest extends AbstractServiceTest {
 
     private User customer;
     private BankingAccount account;
@@ -25,7 +29,14 @@ public class BankingTransactionTest {
 
     @BeforeEach
     void setUp() {
-        customer = User.create().setId(1L);
+        customer = UserTestBuilder.builder()
+            .withId(1L)
+            .withEmail("customer@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(this.RAW_PASSWORD))
+            .withStatus(UserStatus.VERIFIED)
+            .withRole(UserRole.ADMIN)
+            .build();
+
         account = BankingAccountTestBuilder.builder()
             .withId(5L)
             .withOwner(customer)

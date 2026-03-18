@@ -8,10 +8,10 @@ import com.damian.xBank.modules.user.token.infrastructure.service.notification.U
 import com.damian.xBank.modules.user.user.application.usecase.register.RegisterUser;
 import com.damian.xBank.modules.user.user.application.usecase.register.RegisterUserCommand;
 import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.modules.user.user.domain.service.UserDomainService;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -56,7 +56,7 @@ public class RegisterUserTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        user = UserTestBuilder.aCustomer()
+        user = UserTestBuilder.builder()
             .withId(1L)
             .withPassword(RAW_PASSWORD)
             .withEmail("customer@demo.com")

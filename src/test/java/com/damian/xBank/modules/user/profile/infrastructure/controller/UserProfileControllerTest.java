@@ -2,16 +2,14 @@ package com.damian.xBank.modules.user.profile.infrastructure.controller;
 
 import com.damian.xBank.modules.user.profile.application.usecase.get.GetUserProfileResult;
 import com.damian.xBank.modules.user.profile.application.usecase.update.UpdateUserProfileResult;
-import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.profile.domain.model.UserGender;
-import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import com.damian.xBank.modules.user.profile.infrastructure.rest.request.UserProfileUpdateRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.utils.JsonHelper;
-import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,17 +34,18 @@ public class UserProfileControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setUp() {
-        UserProfile profile = UserProfileFactory.testProfile();
+        //        UserProfile profile = UserProfileFactory.testProfile();
 
         customer = UserTestBuilder
-            .aCustomer()
+            .builder()
             .withEmail("customer@demo.com")
             .withRole(UserRole.CUSTOMER)
             .withStatus(UserStatus.VERIFIED)
             .withPassword(RAW_PASSWORD)
-            .withProfile(profile)
+            //            .withProfile(profile)
             .build();
 
+        customer.getProfile().setFirstName("David");
         userRepository.save(customer);
     }
 
@@ -55,6 +54,18 @@ public class UserProfileControllerTest extends AbstractControllerTest {
     void getProfile_WhenValidRequest_Returns200Ok() throws Exception {
         // given
         login(customer);
+        String firstName = "David";
+
+        User customer = UserTestBuilder
+            .builder()
+            .withEmail("david@demo.com")
+            .withRole(UserRole.CUSTOMER)
+            .withStatus(UserStatus.VERIFIED)
+            .withPassword(RAW_PASSWORD)
+            .build();
+
+        customer.getProfile().setFirstName(firstName);
+        userRepository.save(customer);
 
         // when
         MvcResult result = mockMvc
@@ -74,7 +85,8 @@ public class UserProfileControllerTest extends AbstractControllerTest {
 
         // then
         assertThat(customerWithProfileDTO).isNotNull();
-        assertThat(customerWithProfileDTO.firstName()).isEqualTo(customer.getProfile().getFirstName());
+        assertThat(customerWithProfileDTO.firstName())
+            .isEqualTo(firstName);
     }
 
     @Test

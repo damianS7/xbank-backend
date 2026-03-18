@@ -17,9 +17,10 @@ import com.damian.xBank.modules.notification.domain.factory.NotificationEventFac
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
+import com.damian.xBank.modules.user.user.domain.model.UserStatus;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
-import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -56,7 +57,7 @@ public class DepositAccountTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        customer = UserTestBuilder.aCustomer()
+        customer = UserTestBuilder.builder()
             .withId(1L)
             .withEmail("customer@demo.com")
             .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
@@ -76,7 +77,13 @@ public class DepositAccountTest extends AbstractServiceTest {
     @DisplayName("should return deposit transaction")
     void deposit_WhenValidRequest_ReturnsTransaction() {
         // given
-        customer.setRole(UserRole.ADMIN);
+        User customer = UserTestBuilder.builder()
+            .withEmail("non-verified-user@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(this.RAW_PASSWORD))
+            .withStatus(UserStatus.VERIFIED)
+            .withRole(UserRole.ADMIN)
+            .build();
+
         setUpContext(customer);
 
         BigDecimal initialBalance = bankingAccount.getBalance();

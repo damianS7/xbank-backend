@@ -12,8 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-
 @Service
 public class UpdateCurrentUserEmail {
     private static final Logger log = LoggerFactory.getLogger(UpdateCurrentUserEmail.class);
@@ -60,10 +58,7 @@ public class UpdateCurrentUserEmail {
         log.debug("Updating user: {} to email: {}", user.getId(), command.newEmail());
 
         // set the new email
-        user.setEmail(command.newEmail());
-
-        // we change the updateAt timestamp field
-        user.setUpdatedAt(Instant.now());
+        user.changeEmail(command.newEmail());
 
         // save the changes
         userRepository.save(user);

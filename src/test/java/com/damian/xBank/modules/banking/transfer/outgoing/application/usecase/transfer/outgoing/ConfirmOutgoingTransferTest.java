@@ -12,9 +12,9 @@ import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingT
 import com.damian.xBank.modules.banking.transfer.outgoing.infrastructure.repository.OutgoingTransferRepository;
 import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
-import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,7 +47,7 @@ public class ConfirmOutgoingTransferTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        fromCustomer = UserTestBuilder.aCustomer()
+        fromCustomer = UserTestBuilder.builder()
             .withId(1L)
             .withEmail("fromCustomer@demo.com")
             .withPassword(RAW_PASSWORD)
@@ -62,7 +62,7 @@ public class ConfirmOutgoingTransferTest extends AbstractServiceTest {
             .withAccountNumber("US9900001111112233334444")
             .build();
 
-        toCustomer = UserTestBuilder.aCustomer()
+        toCustomer = UserTestBuilder.builder()
             .withId(2L)
             .withEmail("toCustomer@demo.com")
             .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))

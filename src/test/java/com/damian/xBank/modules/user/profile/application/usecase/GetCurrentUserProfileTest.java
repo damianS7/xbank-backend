@@ -6,12 +6,12 @@ import com.damian.xBank.modules.user.profile.application.usecase.get.GetUserProf
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileNotFoundException;
 import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
-import com.damian.xBank.modules.user.profile.infrastructure.repository.UserProfileRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
+import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
-import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,7 @@ import static org.mockito.Mockito.when;
 public class GetCurrentUserProfileTest extends AbstractServiceTest {
 
     @Mock
-    private UserProfileRepository userProfileRepository;
+    private UserRepository userRepository;
 
     @InjectMocks
     private GetCurrentUserProfile getCurrentUserProfile;
@@ -44,7 +44,7 @@ public class GetCurrentUserProfileTest extends AbstractServiceTest {
     void setUp() {
         UserProfile profile = UserProfileFactory.testProfile();
 
-        customer = UserTestBuilder.aCustomer()
+        customer = UserTestBuilder.builder()
             .withId(1L)
             .withEmail("customer@test.com")
             .withPassword(this.bCryptPasswordEncoder.encode(RAW_PASSWORD))
@@ -60,8 +60,8 @@ public class GetCurrentUserProfileTest extends AbstractServiceTest {
         setUpContext(customer);
 
         // when
-        when(userProfileRepository.findByUserId(anyLong()))
-            .thenReturn(Optional.of(customer.getProfile()));
+        when(userRepository.findById(anyLong()))
+            .thenReturn(Optional.of(customer));
 
         GetUserProfileQuery query = new GetUserProfileQuery();
         GetUserProfileResult result = getCurrentUserProfile.execute(query);
@@ -69,7 +69,7 @@ public class GetCurrentUserProfileTest extends AbstractServiceTest {
         // then
         assertEquals(customer.getProfile().getId(), result.id());
         assertEquals(customer.getProfile().getFirstName(), result.firstName());
-        verify(userProfileRepository, times(1)).findByUserId(customer.getId());
+        verify(userRepository, times(1)).findById(customer.getId());
     }
 
     @Test
@@ -81,7 +81,7 @@ public class GetCurrentUserProfileTest extends AbstractServiceTest {
         GetUserProfileQuery query = new GetUserProfileQuery();
 
         // when
-        when(userProfileRepository.findByUserId(anyLong()))
+        when(userRepository.findById(anyLong()))
             .thenReturn(Optional.empty());
 
         UserProfileNotFoundException exception = assertThrows(

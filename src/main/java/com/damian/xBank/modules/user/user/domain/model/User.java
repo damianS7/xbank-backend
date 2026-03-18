@@ -14,6 +14,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -45,7 +46,8 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserStatus status;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "profile_id")
     private UserProfile profile;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
@@ -60,74 +62,53 @@ public class User {
     @Column
     private Instant updatedAt;
 
-    public User() {
+    protected User() {
+        // JPA constructor
+    }
+
+    User(
+        Long id,
+        String email,
+        String passwordHash,
+        UserRole role,
+        UserStatus status,
+        UserProfile profile
+    ) {
+        this.id = id;
+        this.email = email;
+        this.passwordHash = passwordHash;
+        this.role = role != null ? role : UserRole.CUSTOMER;
+        this.status = status != null ? status : UserStatus.PENDING_VERIFICATION;
+        //        this.profile = profile != null ? profile : UserProfile.create(this);
+        this.profile = profile != null ? profile : UserProfile.create();
+        this.settings = Setting.create(this, null);
         this.createdAt = Instant.now();
         this.updatedAt = Instant.now();
         this.bankingAccounts = new HashSet<>();
-        this.role = UserRole.CUSTOMER;
-        this.status = UserStatus.PENDING_VERIFICATION;
-        this.profile = new UserProfile(this);
-        this.settings = Setting.create(this, null);
     }
 
-    public User(UserProfile profile) {
-        this();
-        this.profile = profile;
-    }
-
-    public static User create() {
-        return new User();
-    }
-
-    public static User create(UserProfile userProfile) {
-        return new User(userProfile);
+    public static User create(
+        String email,
+        String passwordHash,
+        UserRole role
+    ) {
+        return new User(null, email, passwordHash, role, null, null);
     }
 
     public Long getId() {
         return id;
     }
 
-    public User setId(Long id) {
-        this.id = id;
-        return this;
-    }
-
     public String getEmail() {
         return this.email;
-    }
-
-    public User setEmail(String email) {
-        this.email = email;
-        return this;
     }
 
     public String getPassword() {
         return this.passwordHash;
     }
 
-    public User setPassword(String password) {
-        this.passwordHash = password;
-        return this;
-    }
-
-    public void changePassword(String newHashedPassword) {
-        this.passwordHash = newHashedPassword;
-        this.updatedAt = Instant.now();
-    }
-
     public Set<BankingAccount> getBankingAccounts() {
         return bankingAccounts;
-    }
-
-    public void addBankingAccount(BankingAccount bankingAccount) {
-        if (bankingAccount.getOwner() == this) {
-            this.bankingAccounts.add(bankingAccount);
-        }
-    }
-
-    public User setRole(UserRole role) {
-        this.role = role;
-        return this;
     }
 
     public UserRole getRole() {
@@ -142,27 +123,24 @@ public class User {
         return updatedAt;
     }
 
-    public User setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
-        return this;
-    }
-
     public Instant getCreatedAt() {
         return createdAt;
-    }
-
-    public User setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-        return this;
     }
 
     public UserStatus getStatus() {
         return this.status;
     }
 
-    public User setStatus(UserStatus status) {
-        this.status = status;
-        return this;
+    public UserProfile getProfile() {
+        return profile;
+    }
+
+    public Setting getSettings() {
+        return settings;
+    }
+
+    public UserToken getToken() {
+        return token;
     }
 
     public boolean isAdmin() {
@@ -171,6 +149,49 @@ public class User {
 
     public boolean isCustomer() {
         return this.getRole() == UserRole.CUSTOMER;
+    }
+
+    private void markAsUpdated() {
+        this.updatedAt = Instant.now();
+    }
+
+    public void changeEmail(String email) {
+        this.email = email;
+        markAsUpdated();
+    }
+
+    public void changePassword(String newHashedPassword) {
+        this.passwordHash = newHashedPassword;
+        markAsUpdated();
+    }
+
+    private void setStatus(UserStatus status) {
+        this.status = status;
+    }
+
+    public void setToken(UserToken activationToken) {
+        this.token = activationToken;
+    }
+
+    public void assignProfile(UserProfile newProfile) {
+        if (newProfile != null) {
+            this.profile = newProfile;
+        }
+
+        //        this.profile.setUser(this);
+    }
+
+    public void assertAwaitingVerification() {
+        if (this.getStatus() != UserStatus.PENDING_VERIFICATION) {
+            throw new UserVerificationNotPendingException(getId());
+        }
+    }
+
+    public void verifyAccount() {
+        assertAwaitingVerification();
+        setStatus(UserStatus.VERIFIED);
+        //        this.status = UserStatus.VERIFIED;
+        this.updatedAt = Instant.now();
     }
 
     @Override
@@ -186,39 +207,5 @@ public class User {
                '}';
     }
 
-    public UserProfile getProfile() {
-        return profile;
-    }
 
-    public User setToken(UserToken token) {
-        this.token = token;
-        this.token.setUser(this);
-        return this;
-    }
-
-    public Setting getSettings() {
-        return settings;
-    }
-
-    public User setProfile(UserProfile newProfile) {
-        if (newProfile != null) {
-            this.profile = newProfile;
-        }
-
-        this.profile.setUser(this);
-        return this;
-    }
-
-    public void assertAwaitingVerification() {
-        if (this.getStatus() != UserStatus.PENDING_VERIFICATION) {
-            throw new UserVerificationNotPendingException(getId());
-        }
-    }
-
-    public void verifyAccount() {
-        assertAwaitingVerification();
-        setStatus(UserStatus.VERIFIED);
-        //        this.status = UserStatus.VERIFIED;
-        this.updatedAt = Instant.now();
-    }
 }

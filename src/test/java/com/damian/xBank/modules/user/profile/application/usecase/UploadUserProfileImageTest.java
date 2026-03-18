@@ -4,12 +4,12 @@ import com.damian.xBank.modules.user.profile.application.usecase.update.UploadUs
 import com.damian.xBank.modules.user.profile.application.usecase.update.UploadUserProfileImageCommand;
 import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
-import com.damian.xBank.modules.user.profile.infrastructure.repository.UserProfileRepository;
 import com.damian.xBank.modules.user.profile.infrastructure.service.UserProfileImageService;
 import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
+import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.utils.ImageTestHelper;
-import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
 public class UploadUserProfileImageTest extends AbstractServiceTest {
 
     @Mock
-    private UserProfileRepository userProfileRepository;
+    private UserRepository userRepository;
 
     @Mock
     private UserProfileImageService userProfileImageService;
@@ -44,7 +44,7 @@ public class UploadUserProfileImageTest extends AbstractServiceTest {
     void setUp() {
         UserProfile profile = UserProfileFactory.testProfile();
 
-        customer = UserTestBuilder.aCustomer()
+        customer = UserTestBuilder.builder()
             .withId(1L)
             .withPassword(RAW_PASSWORD)
             .withEmail("customer@demo.com")
@@ -65,7 +65,8 @@ public class UploadUserProfileImageTest extends AbstractServiceTest {
         );
 
         // when
-        when(userProfileRepository.save(any(UserProfile.class))).thenReturn(customer.getProfile());
+        when(userRepository.save(any(User.class)))
+            .thenReturn(customer);
 
         when(userProfileImageService.uploadImage(
             anyLong(),
@@ -77,6 +78,6 @@ public class UploadUserProfileImageTest extends AbstractServiceTest {
         // then
         assertNotNull(resultImage);
         assertEquals(resultImage.length(), tempFile.length());
-        verify(userProfileRepository, times(1)).save(any(UserProfile.class));
+        verify(userRepository, times(1)).save(any(User.class));
     }
 }

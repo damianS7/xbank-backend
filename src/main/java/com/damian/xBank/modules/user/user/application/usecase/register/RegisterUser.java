@@ -67,7 +67,7 @@ public class RegisterUser {
 
         // create the user profile
         UserProfile profile = userProfileFactory.create(command);
-        user.setProfile(profile);
+        user.assignProfile(profile);
 
         // Create default settings for the new user
         //        Setting userSettings = settingFactory.createDefault();

@@ -3,93 +3,88 @@ package com.damian.xBank.modules.user.profile.application.usecase.update;
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileNotFoundException;
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileUpdateException;
 import com.damian.xBank.modules.user.profile.domain.model.UserGender;
-import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
-import com.damian.xBank.modules.user.profile.infrastructure.repository.UserProfileRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import com.damian.xBank.shared.security.PasswordValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.time.LocalDate;
 
+/**
+ * Caso de uso para modificar el perfil del usuario actual
+ */
 @Service
 public class UpdateCurrentUserProfile {
     private static final Logger log = LoggerFactory.getLogger(UpdateCurrentUserProfile.class);
-    private final UserProfileRepository userProfileRepository;
+    private final UserRepository userRepository;
     private final AuthenticationContext authenticationContext;
     private final PasswordValidator passwordValidator;
 
     public UpdateCurrentUserProfile(
-        UserProfileRepository userProfileRepository,
+        UserRepository userRepository,
         AuthenticationContext authenticationContext,
         PasswordValidator passwordValidator
     ) {
-        this.userProfileRepository = userProfileRepository;
+        this.userRepository = userRepository;
         this.authenticationContext = authenticationContext;
         this.passwordValidator = passwordValidator;
     }
 
     public UpdateUserProfileResult execute(UpdateUserProfileCommand command) {
-        // Current user
+        // Usuario actual
         final User currentUser = authenticationContext.getCurrentUser();
 
         return execute(currentUser.getId(), command);
     }
 
     /**
-     * It updates the customer profile by its ID.
      *
-     * @param userId  the id of the profile to be updated
-     * @param command the command containing the updated profile information
-     * @return Customer with the updated profile
-     * @throws UserProfileNotFoundException if the profile is not found
+     * @param userId  ID del usuario cuyo perfil se actualizará
+     * @param command El comando con los datos
+     * @return UpdateUserProfileResult
+     * @throws UserProfileNotFoundException
      */
     public UpdateUserProfileResult execute(Long userId, UpdateUserProfileCommand command) {
-        // Current user
+        // Usuario actual
         final User currentUser = authenticationContext.getCurrentUser();
 
-        // find the user we want to modify
-        UserProfile profile = userProfileRepository
-            .findByUserId(userId)
+        // Buscar el usuario del que queremos modificar el perfil
+        User user = userRepository
+            .findById(userId)
             .orElseThrow(
                 () -> new UserProfileNotFoundException(userId)
             );
 
+        // Si no es un admin
         if (!currentUser.isAdmin()) {
-            // we make sure that this profile belongs to the current user
-            profile.assertOwnedBy(currentUser.getId());
-
-            // we validate the password before updating the profile
+            // Validar password
             passwordValidator.validatePassword(currentUser, command.currentPassword());
         }
 
         // we iterate over the fields (if any)
         command.fieldsToUpdate().forEach((key, value) -> {
             switch (key) {
-                case "firstName" -> profile.setFirstName((String) value);
-                case "lastName" -> profile.setLastName((String) value);
-                case "phoneNumber" -> profile.setPhoneNumber((String) value);
-                case "country" -> profile.setCountry((String) value);
-                case "zipCode" -> profile.setPostalCode((String) value);
-                case "address" -> profile.setAddress((String) value);
-                case "photo" -> profile.setPhotoPath((String) value);
-                case "gender" -> profile.setGender(UserGender.valueOf((String) value));
-                case "birthdate" -> profile.setBirthdate(LocalDate.parse((String) value));
+                case "firstName" -> user.getProfile().setFirstName((String) value);
+                case "lastName" -> user.getProfile().setLastName((String) value);
+                case "phoneNumber" -> user.getProfile().setPhoneNumber((String) value);
+                case "country" -> user.getProfile().setCountry((String) value);
+                case "zipCode" -> user.getProfile().setPostalCode((String) value);
+                case "address" -> user.getProfile().setAddress((String) value);
+                case "photo" -> user.getProfile().setPhotoPath((String) value);
+                case "gender" -> user.getProfile().setGender(UserGender.valueOf((String) value));
+                case "birthdate" -> user.getProfile().setBirthdate(LocalDate.parse((String) value));
                 default -> throw new UserProfileUpdateException(
                     userId, new Object[]{key, value.toString()}
                 );
             }
         });
 
-        // we change the updateAt timestamp field
-        profile.setUpdatedAt(Instant.now());
+        // Guardar cambios
+        userRepository.save(user);
 
-        // we save the updated profile to the database
-        userProfileRepository.save(profile);
-
-        return UpdateUserProfileResult.from(profile);
+        return UpdateUserProfileResult.from(user.getProfile());
     }
 }

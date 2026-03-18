@@ -9,8 +9,8 @@ import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntent;
 import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntentStatus;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.shared.AbstractControllerTest;
-import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,7 +35,7 @@ public class PaymentCheckoutControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setUp() {
-        customer = UserTestBuilder.aCustomer()
+        customer = UserTestBuilder.builder()
             .withEmail("customer@demo.com")
             .withStatus(UserStatus.VERIFIED)
             .withPassword(passwordEncoder.encode(RAW_PASSWORD))

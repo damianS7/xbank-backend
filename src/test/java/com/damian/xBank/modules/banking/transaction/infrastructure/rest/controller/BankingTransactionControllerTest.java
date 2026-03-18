@@ -13,9 +13,9 @@ import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransact
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.infrastructure.web.dto.response.PageResult;
-import com.damian.xBank.shared.utils.UserTestBuilder;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -38,7 +38,7 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setUp() {
-        customer = UserTestBuilder.aCustomer()
+        customer = UserTestBuilder.builder()
             .withEmail("customer@demo.com")
             .withStatus(UserStatus.VERIFIED)
             .withPassword(passwordEncoder.encode(RAW_PASSWORD))

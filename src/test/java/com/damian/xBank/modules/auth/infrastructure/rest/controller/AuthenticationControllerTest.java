@@ -5,11 +5,11 @@ import com.damian.xBank.modules.auth.infrastructure.rest.response.Authentication
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.infrastructure.web.dto.response.ApiResponse;
 import com.damian.xBank.shared.utils.JsonHelper;
-import com.damian.xBank.shared.utils.UserTestBuilder;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,7 +32,7 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
     @BeforeEach
     void setUp() {
         customer = UserTestBuilder
-            .aCustomer()
+            .builder()
             .withEmail("customer@demo.com")
             .withRole(UserRole.CUSTOMER)
             .withStatus(UserStatus.VERIFIED)
@@ -133,7 +133,14 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
     @DisplayName("POST /auth/login returns 403 Forbidden when account is suspended")
     void login_WhenAccountSuspended_Returns403Forbidden() throws Exception {
         // given
-        customer.setStatus(UserStatus.SUSPENDED);
+        User customer = UserTestBuilder
+            .builder()
+            .withEmail("user@demo.com")
+            .withRole(UserRole.CUSTOMER)
+            .withStatus(UserStatus.SUSPENDED)
+            .withPassword(passwordEncoder.encode(this.RAW_PASSWORD))
+            .build();
+
         userRepository.save(customer);
 
         AuthenticationRequest request = new AuthenticationRequest(
@@ -167,16 +174,19 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
                 ErrorCodes.USER_SUSPENDED
             );
 
-        // undo changes
-        customer.setStatus(UserStatus.VERIFIED);
-        userRepository.save(customer);
     }
 
     @Test
     @DisplayName("POST /auth/login returns 403 Forbidden when account is disabled")
     void login_WhenAccountDisabled_Returns403Forbidden() throws Exception {
         // given
-        customer.setStatus(UserStatus.PENDING_VERIFICATION);
+        User customer = UserTestBuilder
+            .builder()
+            .withEmail("user@demo.com")
+            .withRole(UserRole.CUSTOMER)
+            .withStatus(UserStatus.PENDING_VERIFICATION)
+            .withPassword(passwordEncoder.encode(this.RAW_PASSWORD))
+            .build();
         userRepository.save(customer);
 
         AuthenticationRequest request = new AuthenticationRequest(
@@ -208,9 +218,6 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
                 ErrorCodes.USER_NOT_VERIFIED
             );
 
-        // undo changes to customer
-        customer.setStatus(UserStatus.VERIFIED);
-        userRepository.save(customer);
     }
 
     @Test

@@ -10,8 +10,8 @@ import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.BankingTr
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransfer;
 import com.damian.xBank.modules.banking.transfer.outgoing.infrastructure.repository.OutgoingTransferRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,7 +39,7 @@ public class RejectOutgoingTransferTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        fromCustomer = UserTestBuilder.aCustomer()
+        fromCustomer = UserTestBuilder.builder()
             .withId(1L)
             .withEmail("fromCustomer@demo.com")
             .withPassword(RAW_PASSWORD)
@@ -54,7 +54,7 @@ public class RejectOutgoingTransferTest extends AbstractServiceTest {
             .withAccountNumber("US1200001111112233334444")
             .build();
 
-        toCustomer = UserTestBuilder.aCustomer()
+        toCustomer = UserTestBuilder.builder()
             .withId(2L)
             .withEmail("toCustomer@demo.com")
             .withPassword(RAW_PASSWORD)

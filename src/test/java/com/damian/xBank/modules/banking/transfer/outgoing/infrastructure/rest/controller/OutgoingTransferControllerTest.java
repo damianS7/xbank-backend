@@ -15,9 +15,9 @@ import com.damian.xBank.modules.banking.transfer.outgoing.infrastructure.rest.re
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
-import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,7 +44,7 @@ public class OutgoingTransferControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setUp() {
-        fromCustomer = UserTestBuilder.aCustomer()
+        fromCustomer = UserTestBuilder.builder()
             .withEmail("fromCustomer@demo.com")
             .withPassword(RAW_PASSWORD)
             .withStatus(UserStatus.VERIFIED)
@@ -62,7 +62,7 @@ public class OutgoingTransferControllerTest extends AbstractControllerTest {
 
         bankingAccountRepository.save(fromBankingAccount);
 
-        toCustomer = UserTestBuilder.aCustomer()
+        toCustomer = UserTestBuilder.builder()
             .withEmail("toCustomer@demo.com")
             .withPassword(RAW_PASSWORD)
             .withStatus(UserStatus.VERIFIED)
@@ -80,7 +80,7 @@ public class OutgoingTransferControllerTest extends AbstractControllerTest {
 
         bankingAccountRepository.save(toBankingAccount);
 
-        admin = UserTestBuilder.aCustomer()
+        admin = UserTestBuilder.builder()
             .withEmail("admin@demo.com")
             .withStatus(UserStatus.VERIFIED)
             .withRole(UserRole.ADMIN)

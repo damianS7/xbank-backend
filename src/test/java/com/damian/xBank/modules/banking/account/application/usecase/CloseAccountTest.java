@@ -12,9 +12,9 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
-import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -47,7 +47,7 @@ public class CloseAccountTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        customer = UserTestBuilder.aCustomer()
+        customer = UserTestBuilder.builder()
             .withId(1L)
             .withEmail("customer@demo.com")
             .withPassword(RAW_PASSWORD)
@@ -67,7 +67,7 @@ public class CloseAccountTest extends AbstractServiceTest {
     @DisplayName("Should returns a closed a BankingAccount")
     void closeAccount_WhenValidRequest_ReturnsClosedBankingAccount() {
         // given
-        User customerAdmin = UserTestBuilder.aCustomer()
+        User customerAdmin = UserTestBuilder.builder()
             .withId(2L)
             .withEmail("customerAdmin@demo.com")
             .withRole(UserRole.ADMIN)
@@ -100,7 +100,7 @@ public class CloseAccountTest extends AbstractServiceTest {
     @DisplayName("Should throws when BankingAccount is not found")
     void closeAccount_WhenAccountNotFound_ThrowsException() {
         // given
-        User customerAdmin = UserTestBuilder.aCustomer()
+        User customerAdmin = UserTestBuilder.builder()
             .withId(2L)
             .withEmail("customerAdmin@demo.com")
             .withRole(UserRole.ADMIN)
@@ -130,7 +130,7 @@ public class CloseAccountTest extends AbstractServiceTest {
     @DisplayName("Should returns a closed BankingAccount when not owner but it is admin")
     void closeAccount_WhenAccountNotOwnedByCustomerButItIsAdmin_ThrowsException() {
         // given
-        User customerAdmin = UserTestBuilder.aCustomer()
+        User customerAdmin = UserTestBuilder.builder()
             .withId(2L)
             .withEmail("customerAdmin@demo.com")
             .withRole(UserRole.ADMIN)

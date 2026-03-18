@@ -2,9 +2,9 @@ package com.damian.xBank.modules.user.user.infrastructure.service;
 
 import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,9 @@ import org.mockito.Mock;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class UserPasswordServiceTest extends AbstractServiceTest {
 
@@ -28,12 +30,12 @@ public class UserPasswordServiceTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        user = UserTestBuilder.aCustomer()
-                              .withId(1L)
-                              .withPassword(RAW_PASSWORD)
-                              .withEmail("user@demo.com")
-                              .withProfile(UserProfileFactory.testProfile())
-                              .build();
+        user = UserTestBuilder.builder()
+            .withId(1L)
+            .withPassword(RAW_PASSWORD)
+            .withEmail("user@demo.com")
+            .withProfile(UserProfileFactory.testProfile())
+            .build();
     }
 
     @Test

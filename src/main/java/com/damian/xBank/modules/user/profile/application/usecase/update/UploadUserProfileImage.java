@@ -1,8 +1,8 @@
 package com.damian.xBank.modules.user.profile.application.usecase.update;
 
-import com.damian.xBank.modules.user.profile.infrastructure.repository.UserProfileRepository;
 import com.damian.xBank.modules.user.profile.infrastructure.service.UserProfileImageService;
 import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.infrastructure.storage.exception.ImageTooLargeException;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import com.damian.xBank.shared.security.PasswordValidator;
@@ -12,40 +12,41 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 
+/**
+ * Caso de uso para actualizar la imagen de perfil del usuario actual.
+ */
 @Service
 public class UploadUserProfileImage {
     private static final Logger log = LoggerFactory.getLogger(UploadUserProfileImage.class);
     private final AuthenticationContext authenticationContext;
-    private final UserProfileRepository userProfileRepository;
+    private final UserRepository userRepository;
     private final UserProfileImageService userProfileImageService;
     private final PasswordValidator passwordValidator;
 
     public UploadUserProfileImage(
         AuthenticationContext authenticationContext,
-        UserProfileRepository userProfileRepository,
+        UserRepository userRepository,
         UserProfileImageService userProfileImageService,
         PasswordValidator passwordValidator
     ) {
         this.authenticationContext = authenticationContext;
-        this.userProfileRepository = userProfileRepository;
+        this.userRepository = userRepository;
         this.userProfileImageService = userProfileImageService;
         this.passwordValidator = passwordValidator;
     }
 
     /**
-     * It uploads an image and set it as user photo
-     *
-     * @param command the command containing the image and the current password for validation
-     * @return image filename
-     * @throws ImageTooLargeException if the image size exceeds the limit
+     * @param command Comando con los datos necesarios
+     * @return File
+     * @throws ImageTooLargeException
      */
     public File execute(UploadUserProfileImageCommand command) {
-        // Current user
+        // Usuario actual
         final User currentUser = authenticationContext.getCurrentUser();
 
         log.debug("Uploading user: {} user image", currentUser.getId());
 
-        // validate password
+        // Validar password
         passwordValidator.validatePassword(currentUser, command.currentPassword());
 
         // Upload the image
@@ -54,9 +55,8 @@ public class UploadUserProfileImage {
             command.image()
         );
 
-        // update user photo in db
         currentUser.getProfile().setPhotoPath(uploadedImage.getName());
-        userProfileRepository.save(currentUser.getProfile());
+        userRepository.save(currentUser);
 
         return uploadedImage;
     }

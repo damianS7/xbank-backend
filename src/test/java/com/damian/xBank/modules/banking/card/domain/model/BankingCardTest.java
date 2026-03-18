@@ -11,9 +11,9 @@ import com.damian.xBank.modules.banking.card.domain.exception.BankingCardLockedE
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotOwnerException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
-import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,14 +33,14 @@ public class BankingCardTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        admin = UserTestBuilder.aCustomer()
+        admin = UserTestBuilder.builder()
             .withId(2L)
             .withRole(UserRole.ADMIN)
             .withEmail("admin@demo.com")
             .withPassword(RAW_PASSWORD)
             .build();
 
-        user = UserTestBuilder.aCustomer()
+        user = UserTestBuilder.builder()
             .withId(1L)
             .withEmail("customer@demo.com")
             .withPassword(RAW_PASSWORD)

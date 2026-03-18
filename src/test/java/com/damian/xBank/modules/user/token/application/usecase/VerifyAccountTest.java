@@ -9,12 +9,12 @@ import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRe
 import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenService;
 import com.damian.xBank.modules.user.user.domain.exception.UserVerificationNotPendingException;
 import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
-import com.damian.xBank.shared.utils.UserTestBuilder;
-import com.damian.xBank.shared.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -53,7 +53,7 @@ public class VerifyAccountTest extends AbstractServiceTest {
     @BeforeEach
     void setUp() {
 
-        customer = UserTestBuilder.aCustomer()
+        customer = UserTestBuilder.builder()
             .withId(1L)
             .withPassword(RAW_PASSWORD)
             .withEmail("customer@demo.com")
@@ -65,7 +65,13 @@ public class VerifyAccountTest extends AbstractServiceTest {
     @DisplayName("should verify account when token is valid")
     void verifyAccount_WhenValidToken_ActivatesAccount() {
         // given
-        User unverifiedUser = UserTestFactory.customer().setStatus(UserStatus.PENDING_VERIFICATION);
+        User unverifiedUser = UserTestBuilder
+            .builder()
+            .withEmail("user@demo.com")
+            .withRole(UserRole.CUSTOMER)
+            .withStatus(UserStatus.PENDING_VERIFICATION)
+            .withPassword(bCryptPasswordEncoder.encode(this.RAW_PASSWORD))
+            .build();
 
         UserToken token = new UserToken(unverifiedUser);
         token.generateVerificationToken();
@@ -90,7 +96,13 @@ public class VerifyAccountTest extends AbstractServiceTest {
     @DisplayName("should throw exception when user is suspended")
     void verifyAccount_WhenUserIsSuspended_ThrowsException() {
         // given
-        User user = UserTestFactory.customer().setStatus(UserStatus.SUSPENDED);
+        User user = UserTestBuilder
+            .builder()
+            .withEmail("user@demo.com")
+            .withRole(UserRole.CUSTOMER)
+            .withStatus(UserStatus.SUSPENDED)
+            .withPassword(bCryptPasswordEncoder.encode(this.RAW_PASSWORD))
+            .build();
 
         UserToken token = new UserToken(user);
         token.generateVerificationToken();
@@ -114,7 +126,13 @@ public class VerifyAccountTest extends AbstractServiceTest {
     @DisplayName("should throw exception when user is active")
     void verifyAccount_WhenUserIsActive_ThrowsException() {
         // given
-        User user = UserTestFactory.customer().setStatus(UserStatus.VERIFIED);
+        User user = UserTestBuilder
+            .builder()
+            .withEmail("user@demo.com")
+            .withRole(UserRole.CUSTOMER)
+            .withStatus(UserStatus.VERIFIED)
+            .withPassword(bCryptPasswordEncoder.encode(this.RAW_PASSWORD))
+            .build();
 
         UserToken token = new UserToken(user);
         token.generateVerificationToken();

@@ -4,6 +4,8 @@ import com.damian.xBank.modules.user.profile.domain.model.UserGender;
 import com.damian.xBank.modules.user.user.application.usecase.register.RegisterUserResult;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
+import com.damian.xBank.modules.user.user.domain.model.UserStatus;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.modules.user.user.infrastructure.rest.request.RegisterUserRequest;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
@@ -178,11 +180,13 @@ public class UserRegistrationControllerTest extends AbstractControllerTest {
             "123123123Z"
         );
 
-        User givenUser = User.create()
-            .setEmail(request.email())
-            .setPassword(passwordEncoder.encode(RAW_PASSWORD));
+        User givenUser = UserTestBuilder.builder()
+            .withEmail(request.email())
+            .withPassword(passwordEncoder.encode(this.RAW_PASSWORD))
+            .withStatus(UserStatus.VERIFIED)
+            .withRole(UserRole.CUSTOMER)
+            .build();
         userRepository.save(givenUser);
-
 
         // when
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders

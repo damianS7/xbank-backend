@@ -3,6 +3,7 @@ package com.damian.xBank.modules.user.user.infrastructure.rest.controller;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.modules.user.user.infrastructure.rest.request.UserPasswordUpdateRequest;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
@@ -13,7 +14,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,17 +24,19 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UserPasswordControllerTest extends AbstractControllerTest {
     private User user;
 
     @BeforeEach
     void setUp() {
-        user = User.create()
-            .setEmail("user@demo.com")
-            .setPassword(passwordEncoder.encode(this.RAW_PASSWORD))
-            .setRole(UserRole.ADMIN)
-            .setStatus(UserStatus.VERIFIED);
+        user = UserTestBuilder
+            .builder()
+            .withEmail("user@demo.com")
+            .withRole(UserRole.CUSTOMER)
+            .withStatus(UserStatus.VERIFIED)
+            .withPassword(this.RAW_PASSWORD)
+            .build();
+
         userRepository.save(user);
     }
 

@@ -6,10 +6,10 @@ import com.damian.xBank.modules.user.token.domain.exception.UserTokenUsedExcepti
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
-import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,7 +22,10 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class UserTokenServiceTest extends AbstractServiceTest {
 
@@ -39,7 +42,7 @@ public class UserTokenServiceTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        user = UserTestBuilder.aCustomer()
+        user = UserTestBuilder.builder()
             .withId(1L)
             .withPassword(RAW_PASSWORD)
             .withEmail("customer@demo.com")

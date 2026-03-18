@@ -8,13 +8,13 @@ import com.damian.xBank.modules.banking.account.infrastructure.repository.Bankin
 import com.damian.xBank.modules.banking.transfer.outgoing.application.usecase.create.CreateOutgoingTransfer;
 import com.damian.xBank.modules.banking.transfer.outgoing.application.usecase.create.CreateOutgoingTransferCommand;
 import com.damian.xBank.modules.banking.transfer.outgoing.application.usecase.create.CreateOutgoingTransferResult;
-import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransferType;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransfer;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransferStatus;
+import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransferType;
 import com.damian.xBank.modules.banking.transfer.outgoing.infrastructure.repository.OutgoingTransferRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -48,7 +48,7 @@ public class CreateOutgoingTransferTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        fromCustomer = UserTestBuilder.aCustomer()
+        fromCustomer = UserTestBuilder.builder()
             .withId(1L)
             .withEmail("fromCustomer@demo.com")
             .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
@@ -64,7 +64,7 @@ public class CreateOutgoingTransferTest extends AbstractServiceTest {
             .build();
         ;
 
-        toCustomer = UserTestBuilder.aCustomer()
+        toCustomer = UserTestBuilder.builder()
             .withId(2L)
             .withEmail("toCustomer@demo.com")
             .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
