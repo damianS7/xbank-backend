@@ -6,7 +6,6 @@ import com.damian.xBank.modules.user.profile.application.usecase.update.UpdateUs
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileNotFoundException;
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileUpdateException;
 import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
-import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
@@ -44,14 +43,12 @@ public class UpdateCurrentUserProfileTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        UserProfile profile = UserProfileFactory.testProfile();
-
         customer = UserTestBuilder.builder()
             .withId(1L)
             .withEmail("customer@test.com")
             .withPassword(RAW_PASSWORD)
             .withRole(UserRole.CUSTOMER)
-            .withProfile(profile)
+            .withProfile(UserProfileFactory.testProfile())
             .build();
     }
 

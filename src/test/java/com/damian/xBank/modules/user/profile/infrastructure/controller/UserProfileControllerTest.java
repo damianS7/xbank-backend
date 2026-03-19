@@ -2,6 +2,7 @@ package com.damian.xBank.modules.user.profile.infrastructure.controller;
 
 import com.damian.xBank.modules.user.profile.application.usecase.get.GetUserProfileResult;
 import com.damian.xBank.modules.user.profile.application.usecase.update.UpdateUserProfileResult;
+import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.profile.domain.model.UserGender;
 import com.damian.xBank.modules.user.profile.infrastructure.rest.request.UserProfileUpdateRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -34,18 +35,15 @@ public class UserProfileControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setUp() {
-        //        UserProfile profile = UserProfileFactory.testProfile();
-
         customer = UserTestBuilder
             .builder()
             .withEmail("customer@demo.com")
             .withRole(UserRole.CUSTOMER)
             .withStatus(UserStatus.VERIFIED)
             .withPassword(RAW_PASSWORD)
-            //            .withProfile(profile)
             .build();
 
-        customer.getProfile().setFirstName("David");
+        customer.getProfile().setFirstName("Anthony");
         userRepository.save(customer);
     }
 
@@ -53,7 +51,6 @@ public class UserProfileControllerTest extends AbstractControllerTest {
     @DisplayName("should return current user profile")
     void getProfile_WhenValidRequest_Returns200Ok() throws Exception {
         // given
-        login(customer);
         String firstName = "David";
 
         User customer = UserTestBuilder
@@ -62,10 +59,13 @@ public class UserProfileControllerTest extends AbstractControllerTest {
             .withRole(UserRole.CUSTOMER)
             .withStatus(UserStatus.VERIFIED)
             .withPassword(RAW_PASSWORD)
+            .withProfile(UserProfileFactory.testProfile())
             .build();
 
         customer.getProfile().setFirstName(firstName);
         userRepository.save(customer);
+
+        login(customer);
 
         // when
         MvcResult result = mockMvc
@@ -78,14 +78,14 @@ public class UserProfileControllerTest extends AbstractControllerTest {
             .andReturn();
 
         // then
-        GetUserProfileResult customerWithProfileDTO = objectMapper.readValue(
+        GetUserProfileResult response = objectMapper.readValue(
             result.getResponse().getContentAsString(),
             GetUserProfileResult.class
         );
 
         // then
-        assertThat(customerWithProfileDTO).isNotNull();
-        assertThat(customerWithProfileDTO.firstName())
+        assertThat(response).isNotNull();
+        assertThat(response.firstName())
             .isEqualTo(firstName);
     }
 

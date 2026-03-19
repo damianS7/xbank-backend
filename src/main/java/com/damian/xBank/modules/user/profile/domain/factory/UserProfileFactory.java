@@ -10,8 +10,15 @@ import java.time.LocalDate;
 
 @Component
 public class UserProfileFactory {
+    public static UserProfile defaultProfile() {
+        return UserProfile.create(
+            "", "", "", LocalDate.now(), "avatar.jpg",
+            "", "", "", "", UserGender.MALE
+        );
+    }
+
     public static UserProfile testProfile() {
-        return UserProfile.create()
+        return UserProfile.create(null)
             .setNationalId("123456789Z")
             .setFirstName("David")
             .setLastName("Brow")
@@ -25,7 +32,7 @@ public class UserProfileFactory {
     }
 
     public UserProfile create(RegisterUserRequest request) {
-        return UserProfile.create()
+        return UserProfile.create(null)
             .setNationalId(request.nationalId())
             .setFirstName(request.firstName())
             .setLastName(request.lastName())
@@ -39,7 +46,7 @@ public class UserProfileFactory {
     }
 
     public UserProfile create(RegisterUserCommand command) {
-        return UserProfile.create()
+        return UserProfile.create(null)
             .setNationalId(command.nationalId())
             .setFirstName(command.firstName())
             .setLastName(command.lastName())

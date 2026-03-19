@@ -1,9 +1,8 @@
 package com.damian.xBank.modules.setting.application.usecase.update;
 
 import com.damian.xBank.modules.setting.domain.exception.SettingNotFoundException;
-import com.damian.xBank.modules.setting.domain.model.Setting;
-import com.damian.xBank.modules.setting.infrastructure.persistence.repository.SettingRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,14 +16,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class UpdateCurrentUserSettings {
     private static final Logger log = LoggerFactory.getLogger(UpdateCurrentUserSettings.class);
     private final AuthenticationContext authenticationContext;
-    private final SettingRepository settingRepository;
+    private final UserRepository userRepository;
 
     public UpdateCurrentUserSettings(
         AuthenticationContext authenticationContext,
-        SettingRepository settingRepository
+        UserRepository userRepository
     ) {
         this.authenticationContext = authenticationContext;
-        this.settingRepository = settingRepository;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -38,22 +37,22 @@ public class UpdateCurrentUserSettings {
         final User currentUser = authenticationContext.getCurrentUser();
 
         // Buscar las settings del usuario
-        Setting userSettings = settingRepository
-            .findByUser_Id(currentUser.getId())
+        User user = userRepository
+            .findById(currentUser.getId())
             .orElseThrow(
                 () -> new SettingNotFoundException(currentUser.getId())
             );
 
         // Actualizar las settings
-        userSettings.setSettings(command.settings());
-        settingRepository.save(userSettings);
+        user.getSettings().setSettings(command.settings());
+        userRepository.save(user);
 
         log.debug(
             "Updated settings: {} by user: {}",
-            userSettings.getSettings().toString(),
+            user.getSettings().toString(),
             currentUser.getId()
         );
 
-        return UpdateCurrentUserSettingsResult.from(userSettings);
+        return UpdateCurrentUserSettingsResult.from(user.getSettings());
     }
 }

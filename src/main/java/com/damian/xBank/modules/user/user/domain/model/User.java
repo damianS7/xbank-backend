@@ -14,7 +14,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -30,9 +29,6 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<BankingAccount> bankingAccounts;
-
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
@@ -46,8 +42,13 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserStatus status;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "profile_id")
+    @Column
+    private Instant createdAt;
+
+    @Column
+    private Instant updatedAt;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserProfile profile;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
@@ -56,11 +57,8 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserToken token;
 
-    @Column
-    private Instant createdAt;
-
-    @Column
-    private Instant updatedAt;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<BankingAccount> bankingAccounts;
 
     protected User() {
         // JPA constructor
@@ -79,12 +77,12 @@ public class User {
         this.passwordHash = passwordHash;
         this.role = role != null ? role : UserRole.CUSTOMER;
         this.status = status != null ? status : UserStatus.PENDING_VERIFICATION;
-        //        this.profile = profile != null ? profile : UserProfile.create(this);
-        this.profile = profile != null ? profile : UserProfile.create();
         this.settings = Setting.create(this, null);
+        this.bankingAccounts = new HashSet<>();
+        this.profile = profile != null ? profile : UserProfile.create(this);
+        this.profile.setUser(this);
         this.createdAt = Instant.now();
         this.updatedAt = Instant.now();
-        this.bankingAccounts = new HashSet<>();
     }
 
     public static User create(
@@ -93,6 +91,15 @@ public class User {
         UserRole role
     ) {
         return new User(null, email, passwordHash, role, null, null);
+    }
+
+    public static User create(
+        String email,
+        String passwordHash,
+        UserRole role,
+        UserProfile profile
+    ) {
+        return new User(null, email, passwordHash, role, null, profile);
     }
 
     public Long getId() {

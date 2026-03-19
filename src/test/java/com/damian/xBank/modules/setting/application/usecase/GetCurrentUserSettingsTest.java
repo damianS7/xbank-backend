@@ -5,8 +5,8 @@ import com.damian.xBank.modules.setting.application.usecase.get.GetCurrentUserSe
 import com.damian.xBank.modules.setting.application.usecase.get.GetCurrentUserSettingsResult;
 import com.damian.xBank.modules.setting.domain.model.Setting;
 import com.damian.xBank.modules.setting.domain.model.UserSettings;
-import com.damian.xBank.modules.setting.infrastructure.persistence.repository.SettingRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.when;
 public class GetCurrentUserSettingsTest extends AbstractServiceTest {
 
     @Mock
-    private SettingRepository settingRepository;
+    private UserRepository userRepository;
 
     @InjectMocks
     private GetCurrentUserSettings getCurrentUserSettings;
@@ -48,8 +48,8 @@ public class GetCurrentUserSettingsTest extends AbstractServiceTest {
         GetCurrentUserSettingsQuery query = new GetCurrentUserSettingsQuery();
 
         // when
-        when(settingRepository.findByUser_Id(customer.getId()))
-            .thenReturn(Optional.of(setting));
+        when(userRepository.findById(customer.getId()))
+            .thenReturn(Optional.of(customer));
 
         GetCurrentUserSettingsResult result = getCurrentUserSettings.execute(query);
 
@@ -64,6 +64,6 @@ public class GetCurrentUserSettingsTest extends AbstractServiceTest {
                 setting.getSettings().language(),
                 setting.getSettings().emailNotifications()
             );
-        verify(settingRepository, times(1)).findByUser_Id(customer.getId());
+        verify(userRepository, times(1)).findById(customer.getId());
     }
 }

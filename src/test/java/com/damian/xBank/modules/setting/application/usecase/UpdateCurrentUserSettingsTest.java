@@ -8,9 +8,9 @@ import com.damian.xBank.modules.setting.domain.model.SettingLanguage;
 import com.damian.xBank.modules.setting.domain.model.SettingMultifactor;
 import com.damian.xBank.modules.setting.domain.model.SettingTheme;
 import com.damian.xBank.modules.setting.domain.model.UserSettings;
-import com.damian.xBank.modules.setting.infrastructure.persistence.repository.SettingRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
+import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
 public class UpdateCurrentUserSettingsTest extends AbstractServiceTest {
 
     @Mock
-    private SettingRepository settingRepository;
+    private UserRepository userRepository;
 
     @InjectMocks
     private UpdateCurrentUserSettings updateCurrentUserSettings;
@@ -90,10 +90,10 @@ public class UpdateCurrentUserSettingsTest extends AbstractServiceTest {
         );
 
         // when
-        when(settingRepository.findByUser_Id(anyLong()))
-            .thenReturn(Optional.of(givenSettings));
+        when(userRepository.findById(anyLong()))
+            .thenReturn(Optional.of(customerA));
 
-        when(settingRepository.save(any(Setting.class)))
+        when(userRepository.save(any(User.class)))
             .thenAnswer(invocation -> invocation.getArgument(0));
 
         UpdateCurrentUserSettingsResult result = updateCurrentUserSettings.execute(request);
@@ -109,7 +109,7 @@ public class UpdateCurrentUserSettingsTest extends AbstractServiceTest {
                 newUserSettings.language(),
                 newUserSettings.emailNotifications()
             );
-        verify(settingRepository, times(1)).findByUser_Id(customerA.getId());
-        verify(settingRepository, times(1)).save(any(Setting.class));
+        verify(userRepository, times(1)).findById(customerA.getId());
+        verify(userRepository, times(1)).save(any(User.class));
     }
 }

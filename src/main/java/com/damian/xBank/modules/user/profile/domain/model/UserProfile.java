@@ -1,12 +1,17 @@
 package com.damian.xBank.modules.user.profile.domain.model;
 
+import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
+import com.damian.xBank.modules.user.user.domain.model.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 import java.time.Instant;
@@ -53,12 +58,17 @@ public class UserProfile {
     @Column
     private Instant updatedAt;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
+
     protected UserProfile() {
         // JPA constructor
     }
 
     UserProfile(
         Long profileId,
+        User user,
         String firstName,
         String lastName,
         String phoneNumber,
@@ -70,13 +80,53 @@ public class UserProfile {
         String nationalId,
         UserGender gender
     ) {
-        this();
         this.id = profileId;
+        this.user = user;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNumber = phoneNumber;
+        this.birthdate = birthdate;
+        this.photo = photo;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+        this.postalCode = postalCode;
+        this.country = country;
+        this.nationalId = nationalId;
+        this.gender = gender;
         this.updatedAt = Instant.now();
     }
 
-    public static UserProfile create() {
-        return new UserProfile();
+    public static UserProfile create(User owner) {
+        UserProfile profile = UserProfileFactory.defaultProfile();
+        profile.user = owner;
+        return profile;
+    }
+
+    public static UserProfile create(
+        String firstName,
+        String lastName,
+        String phoneNumber,
+        LocalDate birthdate,
+        String photo,
+        String address,
+        String postalCode,
+        String country,
+        String nationalId,
+        UserGender gender
+    ) {
+        UserProfile profile = new UserProfile();
+        profile.firstName = firstName;
+        profile.lastName = lastName;
+        profile.phoneNumber = phoneNumber;
+        profile.birthdate = birthdate;
+        profile.photo = photo;
+        profile.address = address;
+        profile.postalCode = postalCode;
+        profile.country = country;
+        profile.nationalId = nationalId;
+        profile.gender = gender;
+        profile.updatedAt = Instant.now();
+        return profile;
     }
 
     public Long getId() {
@@ -193,6 +243,10 @@ public class UserProfile {
         this.gender = gender;
         markAsUpdated();
         return this;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override
