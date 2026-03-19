@@ -3,7 +3,17 @@ package com.damian.xBank.modules.user.token.domain.model;
 import com.damian.xBank.modules.user.token.domain.exception.UserTokenExpiredException;
 import com.damian.xBank.modules.user.token.domain.exception.UserTokenUsedException;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -36,84 +46,64 @@ public class UserToken {
     @Column
     private Instant expiresAt;
 
-    public UserToken() {
-        this.used = false;
-        this.token = generateToken();
-        this.type = UserTokenType.ACCOUNT_VERIFICATION;
-        this.createdAt = Instant.now();
-        this.expiresAt = Instant.now().plus(1, ChronoUnit.DAYS);
+    // JPA constructor
+    protected UserToken() {
     }
 
-    public UserToken(User user) {
-        this();
+    UserToken(
+        Long tokenId,
+        User user,
+        UserTokenType type,
+        boolean used,
+        Instant expiresAt
+    ) {
+        this.id = tokenId;
         this.user = user;
+        this.used = used;
+        this.token = generateToken();
+        this.expiresAt = expiresAt != null ? expiresAt : Instant.now().plus(1, ChronoUnit.DAYS);
+        this.type = type != null ? type : UserTokenType.ACCOUNT_VERIFICATION;
+        this.createdAt = Instant.now();
     }
 
-    public static UserToken create() {
-        return new UserToken();
+    public static UserToken create(User user, UserTokenType type) {
+        return new UserToken(null, user, type, false, null);
     }
 
     public User getUser() {
         return this.user;
     }
 
-    public UserToken setUser(User user) {
+    public void setUser(User user) {
         this.user = user;
-        return this;
     }
 
     public Long getId() {
         return id;
     }
 
-    public UserToken setId(Long id) {
-        this.id = id;
-        return this;
-    }
-
     public Instant getCreatedAt() {
         return createdAt;
-    }
-
-    public UserToken setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-        return this;
     }
 
     public Instant getExpiresAt() {
         return expiresAt;
     }
 
-    public UserToken setExpiresAt(Instant expiresAt) {
+    public void expiresAt(Instant expiresAt) {
         this.expiresAt = expiresAt;
-        return this;
     }
 
     public boolean isUsed() {
         return used;
     }
 
-    public UserToken setUsed(boolean used) {
-        this.used = used;
-        return this;
-    }
-
     public UserTokenType getType() {
         return type;
     }
 
-    public UserToken setType(UserTokenType type) {
-        this.type = type;
-        return this;
-    }
-
     public String getToken() {
         return token;
-    }
-
-    public UserToken setToken(String token) {
-        this.token = token;
-        return this;
     }
 
     public String generateToken() {
@@ -145,6 +135,10 @@ public class UserToken {
             throw new UserTokenExpiredException(this.getUser().getId(), token);
         }
     }
+
+    /**
+     * Uses the token
+     */
 
     public void markAsUsed() {
         this.used = true;

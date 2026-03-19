@@ -1,7 +1,6 @@
 package com.damian.xBank.modules.user.user.application.usecase.register;
 
 import com.damian.xBank.modules.user.profile.domain.exception.UserProfileException;
-import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import com.damian.xBank.modules.user.token.domain.factory.UserTokenFactory;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
@@ -25,7 +24,6 @@ public class RegisterUser {
     private final UserDomainService userDomainService;
     private final UserTokenLinkBuilder userTokenLinkBuilder;
     private final UserTokenVerificationNotifier userTokenVerificationNotifier;
-    private final UserProfileFactory userProfileFactory;
     private final UserTokenFactory userTokenFactory;
 
     public RegisterUser(
@@ -33,14 +31,12 @@ public class RegisterUser {
         UserDomainService userDomainService,
         UserTokenLinkBuilder userTokenLinkBuilder,
         UserTokenVerificationNotifier userTokenVerificationNotifier,
-        UserProfileFactory userProfileFactory,
         UserTokenFactory userTokenFactory
     ) {
         this.userRepository = userRepository;
         this.userDomainService = userDomainService;
         this.userTokenLinkBuilder = userTokenLinkBuilder;
         this.userTokenVerificationNotifier = userTokenVerificationNotifier;
-        this.userProfileFactory = userProfileFactory;
         this.userTokenFactory = userTokenFactory;
     }
 
@@ -57,8 +53,20 @@ public class RegisterUser {
         if (userRepository.existsByEmail(command.email())) {
             throw new UserEmailTakenException(command.email());
         }
-        // create the user profile TODO crear de otra manera
-        UserProfile profile = userProfileFactory.create(command);
+
+        // Crear el perfil
+        UserProfile profile = UserProfile.create(
+            command.firstName(),
+            command.lastName(),
+            command.phoneNumber(),
+            command.birthdate(),
+            "avatar.jpg",
+            command.address(),
+            command.zipCode(),
+            command.country(),
+            command.nationalId(),
+            command.gender()
+        );
 
         // Create the user
         User user = userDomainService.createUser(
@@ -69,8 +77,7 @@ public class RegisterUser {
         );
 
         // Create a token for the account activation
-        UserToken userToken = userTokenFactory.verificationToken();
-        user.setToken(userToken);
+        UserToken userToken = userTokenFactory.verificationToken(user);
 
         // save (cascade)
         userRepository.save(user);

@@ -3,6 +3,7 @@ package com.damian.xBank.modules.user.token.application.usecase;
 import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.token.application.usecase.verification.verify.VerifyAccount;
 import com.damian.xBank.modules.user.token.application.usecase.verification.verify.VerifyAccountCommand;
+import com.damian.xBank.modules.user.token.domain.factory.UserTokenFactory;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.domain.notification.UserTokenVerificationNotifier;
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
@@ -21,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,6 +50,9 @@ public class VerifyAccountTest extends AbstractServiceTest {
     @InjectMocks
     private VerifyAccount verifyAccount;
 
+    @Spy
+    private UserTokenFactory userTokenFactory;
+
     private User customer;
 
     @BeforeEach
@@ -73,8 +78,7 @@ public class VerifyAccountTest extends AbstractServiceTest {
             .withPassword(bCryptPasswordEncoder.encode(this.RAW_PASSWORD))
             .build();
 
-        UserToken token = new UserToken(unverifiedUser);
-        token.generateVerificationToken();
+        UserToken token = userTokenFactory.verificationToken(unverifiedUser);
 
         VerifyAccountCommand command = new VerifyAccountCommand(token.getToken());
 
@@ -104,8 +108,7 @@ public class VerifyAccountTest extends AbstractServiceTest {
             .withPassword(bCryptPasswordEncoder.encode(this.RAW_PASSWORD))
             .build();
 
-        UserToken token = new UserToken(user);
-        token.generateVerificationToken();
+        UserToken token = userTokenFactory.verificationToken(user);
 
         VerifyAccountCommand command = new VerifyAccountCommand(token.getToken());
 
@@ -134,8 +137,7 @@ public class VerifyAccountTest extends AbstractServiceTest {
             .withPassword(bCryptPasswordEncoder.encode(this.RAW_PASSWORD))
             .build();
 
-        UserToken token = new UserToken(user);
-        token.generateVerificationToken();
+        UserToken token = userTokenFactory.verificationToken(user);
 
         VerifyAccountCommand command = new VerifyAccountCommand(token.getToken());
 

@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.user.token.application.usecase.verification.request;
 
+import com.damian.xBank.modules.user.token.domain.factory.UserTokenFactory;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.domain.notification.UserTokenVerificationNotifier;
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
@@ -22,17 +23,20 @@ public class RequestAccountVerification {
     private final UserRepository userRepository;
     private final UserTokenLinkBuilder userTokenLinkBuilder;
     private final UserTokenVerificationNotifier userTokenVerificationNotifier;
+    private final UserTokenFactory userTokenFactory;
 
     public RequestAccountVerification(
         UserTokenRepository userTokenRepository,
         UserRepository userRepository,
         UserTokenLinkBuilder userTokenLinkBuilder,
-        UserTokenVerificationNotifier userTokenVerificationNotifier
+        UserTokenVerificationNotifier userTokenVerificationNotifier,
+        UserTokenFactory userTokenFactory
     ) {
         this.userTokenRepository = userTokenRepository;
         this.userRepository = userRepository;
         this.userTokenLinkBuilder = userTokenLinkBuilder;
         this.userTokenVerificationNotifier = userTokenVerificationNotifier;
+        this.userTokenFactory = userTokenFactory;
     }
 
     /**
@@ -61,11 +65,8 @@ public class RequestAccountVerification {
             .findByUser_Id(user.getId())
             .orElseGet(() -> {
                 log.warn("No previous token found. A new one will be created.");
-                return new UserToken(user);
+                return userTokenFactory.verificationToken(user);
             });
-
-        // we set the accountToken data
-        userToken.generateVerificationToken();
 
         // save the token to the database
         userTokenRepository.save(userToken);

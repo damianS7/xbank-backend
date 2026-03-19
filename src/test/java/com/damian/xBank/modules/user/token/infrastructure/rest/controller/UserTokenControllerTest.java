@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.user.token.infrastructure.rest.controller;
 
+import com.damian.xBank.modules.user.token.domain.factory.UserTokenFactory;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
-import com.damian.xBank.modules.user.token.domain.model.UserTokenType;
 import com.damian.xBank.modules.user.token.infrastructure.rest.request.RequestAccountVerificationRequest;
 import com.damian.xBank.modules.user.token.infrastructure.rest.request.RequestPasswordResetRequest;
 import com.damian.xBank.modules.user.token.infrastructure.rest.request.ResetPasswordRequest;
@@ -16,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -25,6 +26,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UserTokenControllerTest extends AbstractControllerTest {
+    @Autowired
+    private UserTokenFactory userTokenFactory;
+
     private User user;
 
     @BeforeEach
@@ -59,10 +63,7 @@ public class UserTokenControllerTest extends AbstractControllerTest {
 
         userRepository.save(unverifiedUser);
 
-        UserToken givenToken = UserToken.create()
-            .setType(UserTokenType.ACCOUNT_VERIFICATION)
-            .setUser(unverifiedUser);
-
+        UserToken givenToken = userTokenFactory.verificationToken(unverifiedUser);
         userTokenRepository.save(givenToken);
 
         // when
@@ -127,8 +128,7 @@ public class UserTokenControllerTest extends AbstractControllerTest {
             .build();
         userRepository.save(unverifiedUser);
 
-        UserToken givenToken = UserToken.create()
-            .setUser(unverifiedUser);
+        UserToken givenToken = userTokenFactory.passwordToken(unverifiedUser);
         userTokenRepository.save(givenToken);
 
         ResetPasswordRequest request = new ResetPasswordRequest(

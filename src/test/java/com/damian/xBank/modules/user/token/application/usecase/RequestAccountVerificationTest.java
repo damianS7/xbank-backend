@@ -2,6 +2,7 @@ package com.damian.xBank.modules.user.token.application.usecase;
 
 import com.damian.xBank.modules.user.token.application.usecase.verification.request.RequestAccountVerification;
 import com.damian.xBank.modules.user.token.application.usecase.verification.request.RequestAccountVerificationCommand;
+import com.damian.xBank.modules.user.token.domain.factory.UserTokenFactory;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.domain.notification.UserTokenVerificationNotifier;
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 
 import java.util.Optional;
 
@@ -41,6 +43,9 @@ public class RequestAccountVerificationTest extends AbstractServiceTest {
 
     @InjectMocks
     private RequestAccountVerification requestAccountVerification;
+
+    @Spy
+    private UserTokenFactory userTokenFactory;
 
     private User user;
 
@@ -68,8 +73,7 @@ public class RequestAccountVerificationTest extends AbstractServiceTest {
             user.getEmail()
         );
 
-        UserToken token = new UserToken(user);
-        token.generateVerificationToken();
+        UserToken token = userTokenFactory.verificationToken(user);
 
         // when
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));

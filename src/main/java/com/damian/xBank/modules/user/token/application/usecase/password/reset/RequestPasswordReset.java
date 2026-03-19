@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.user.token.application.usecase.password.reset;
 
+import com.damian.xBank.modules.user.token.domain.factory.UserTokenFactory;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.domain.notification.UserTokenPasswordResetNotifier;
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
@@ -23,17 +24,20 @@ public class RequestPasswordReset {
     private final UserRepository userRepository;
     private final UserTokenLinkBuilder userTokenLinkBuilder;
     private final UserTokenRepository userTokenRepository;
+    private final UserTokenFactory userTokenFactory;
 
     public RequestPasswordReset(
         UserTokenPasswordResetNotifier userTokenPasswordResetNotifier,
         UserRepository userRepository,
         UserTokenLinkBuilder userTokenLinkBuilder,
-        UserTokenRepository userTokenRepository
+        UserTokenRepository userTokenRepository,
+        UserTokenFactory userTokenFactory
     ) {
         this.userTokenPasswordResetNotifier = userTokenPasswordResetNotifier;
         this.userTokenLinkBuilder = userTokenLinkBuilder;
         this.userRepository = userRepository;
         this.userTokenRepository = userTokenRepository;
+        this.userTokenFactory = userTokenFactory;
     }
 
     /**
@@ -58,9 +62,7 @@ public class RequestPasswordReset {
             );
 
         // generate the token for password reset
-        UserToken token = new UserToken(user);
-        token.generateResetPasswordToken();
-
+        UserToken token = userTokenFactory.passwordToken(user);
         userTokenRepository.save(token);
 
         // create the password reset link

@@ -94,7 +94,7 @@ public class UserProfileTestBuilder {
 
     public UserProfile build() {
         return new UserProfile(
-            id, null, firstName, lastName, phoneNumber, birthdate, photo,
+            id, firstName, lastName, phoneNumber, birthdate, photo,
             address, postalCode, country, nationalId, gender
         );
     }

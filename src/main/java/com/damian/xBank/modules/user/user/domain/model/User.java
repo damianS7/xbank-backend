@@ -2,7 +2,6 @@ package com.damian.xBank.modules.user.user.domain.model;
 
 import com.damian.xBank.modules.setting.domain.model.Setting;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
-import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.user.domain.exception.UserVerificationNotPendingException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -49,9 +48,6 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Setting settings;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private UserToken token;
-
     // JPA constructor
     protected User() {
     }
@@ -70,7 +66,7 @@ public class User {
         this.role = role != null ? role : UserRole.CUSTOMER;
         this.status = status != null ? status : UserStatus.PENDING_VERIFICATION;
         this.settings = Setting.create(this, null);
-        this.profile = profile != null ? profile : UserProfile.create(this);
+        this.profile = profile != null ? profile : UserProfile.create();
         this.profile.setUser(this);
         this.createdAt = Instant.now();
         this.updatedAt = Instant.now();
@@ -125,10 +121,6 @@ public class User {
         return settings;
     }
 
-    public UserToken getToken() {
-        return token;
-    }
-
     public boolean isAdmin() {
         return this.getRole() == UserRole.ADMIN;
     }
@@ -155,18 +147,6 @@ public class User {
         this.status = status;
     }
 
-    public void setToken(UserToken activationToken) {
-        this.token = activationToken;
-    }
-
-    public void assignProfile(UserProfile newProfile) {
-        if (newProfile != null) {
-            this.profile = newProfile;
-        }
-
-        //        this.profile.setUser(this);
-    }
-
     public void assertAwaitingVerification() {
         if (this.getStatus() != UserStatus.PENDING_VERIFICATION) {
             throw new UserVerificationNotPendingException(getId());
@@ -176,7 +156,6 @@ public class User {
     public void verifyAccount() {
         assertAwaitingVerification();
         setStatus(UserStatus.VERIFIED);
-        //        this.status = UserStatus.VERIFIED;
         this.updatedAt = Instant.now();
     }
 

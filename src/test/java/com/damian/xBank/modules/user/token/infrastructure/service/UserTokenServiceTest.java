@@ -3,6 +3,7 @@ package com.damian.xBank.modules.user.token.infrastructure.service;
 import com.damian.xBank.modules.user.token.domain.exception.UserTokenExpiredException;
 import com.damian.xBank.modules.user.token.domain.exception.UserTokenNotFoundException;
 import com.damian.xBank.modules.user.token.domain.exception.UserTokenUsedException;
+import com.damian.xBank.modules.user.token.domain.factory.UserTokenFactory;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -32,11 +34,14 @@ public class UserTokenServiceTest extends AbstractServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private UserTokenRepository userTokenRepository;
+
     @InjectMocks
     private UserTokenService userTokenService;
 
-    @Mock
-    private UserTokenRepository userTokenRepository;
+    @Spy
+    private UserTokenFactory tokenFactory;
 
     private User user;
 
@@ -53,8 +58,7 @@ public class UserTokenServiceTest extends AbstractServiceTest {
     @DisplayName("should return token when valid")
     void validateToken_WhenValidToken_ReturnsToken() {
         // given
-        UserToken userToken = new UserToken(user);
-        userToken.generateVerificationToken();
+        UserToken userToken = tokenFactory.verificationToken(user);
 
         // when
         when(userTokenRepository.findByToken(userToken.getToken()))
@@ -94,10 +98,8 @@ public class UserTokenServiceTest extends AbstractServiceTest {
     @DisplayName("should throw exception when given token expired")
     void validateToken_WhenTokenExpired_ThrowsException() {
         // given
-        UserToken userToken = new UserToken(user);
-        userToken.generateVerificationToken();
-        userToken.setCreatedAt(Instant.now());
-        userToken.setExpiresAt(Instant.now().minus(1, ChronoUnit.DAYS));
+        UserToken userToken = tokenFactory.verificationToken(user);
+        userToken.expiresAt(Instant.now().minus(1, ChronoUnit.DAYS));
 
         // when
         when(userTokenRepository.findByToken(anyString())).thenReturn(Optional.of(userToken));
@@ -118,9 +120,8 @@ public class UserTokenServiceTest extends AbstractServiceTest {
     @DisplayName("should throw exception when given token is used")
     void validateToken_WhenTokenUsed_ThrowsException() {
         // given
-        UserToken userToken = new UserToken(user);
-        userToken.generateVerificationToken();
-        userToken.setUsed(true);
+        UserToken userToken = tokenFactory.verificationToken(user);
+        userToken.markAsUsed();
 
         // when
         when(userTokenRepository.findByToken(anyString())).thenReturn(Optional.of(userToken));

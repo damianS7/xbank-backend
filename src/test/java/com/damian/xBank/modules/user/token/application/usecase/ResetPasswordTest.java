@@ -3,6 +3,7 @@ package com.damian.xBank.modules.user.token.application.usecase;
 import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.token.application.usecase.password.reset.ResetPassword;
 import com.damian.xBank.modules.user.token.application.usecase.password.reset.ResetPasswordCommand;
+import com.damian.xBank.modules.user.token.domain.factory.UserTokenFactory;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.domain.notification.UserTokenPasswordResetNotifier;
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -41,11 +43,14 @@ public class ResetPasswordTest extends AbstractServiceTest {
     @InjectMocks
     private ResetPassword resetPassword;
 
-    private User customer;
+    @Spy
+    private UserTokenFactory userTokenFactory;
+
+    private User user;
 
     @BeforeEach
     void setUp() {
-        customer = UserTestBuilder.builder()
+        user = UserTestBuilder.builder()
             .withId(1L)
             .withPassword(RAW_PASSWORD)
             .withEmail("customer@demo.com")
@@ -57,8 +62,7 @@ public class ResetPasswordTest extends AbstractServiceTest {
     @DisplayName("should set a new password when token is valid")
     void resetPassword_WhenValidToken_ResetsPasswordAndMarksTokenAsUsed() {
         // given
-        UserToken token = new UserToken(customer);
-        token.generateResetPasswordToken();
+        UserToken token = userTokenFactory.passwordToken(user);
 
         ResetPasswordCommand command = new ResetPasswordCommand(
             token.getToken(),
@@ -66,7 +70,8 @@ public class ResetPasswordTest extends AbstractServiceTest {
         );
 
         // when
-        when(userTokenService.validateToken(token.getToken())).thenReturn(token);
+        when(userTokenService.validateToken(token.getToken()))
+            .thenReturn(token);
 
         resetPassword.execute(command);
 

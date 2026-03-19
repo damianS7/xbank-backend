@@ -2,6 +2,7 @@ package com.damian.xBank.modules.user.token.application.usecase;
 
 import com.damian.xBank.modules.user.token.application.usecase.password.reset.RequestPasswordReset;
 import com.damian.xBank.modules.user.token.application.usecase.password.reset.RequestPasswordResetCommand;
+import com.damian.xBank.modules.user.token.domain.factory.UserTokenFactory;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.domain.notification.UserTokenPasswordResetNotifier;
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 
 import java.util.Optional;
 
@@ -42,6 +44,9 @@ public class RequestPasswordResetTest extends AbstractServiceTest {
     @Mock
     private UserTokenRepository userTokenRepository;
 
+    @Spy
+    private UserTokenFactory userTokenFactory;
+    
     @InjectMocks
     private RequestPasswordReset requestPasswordReset;
 
@@ -65,7 +70,8 @@ public class RequestPasswordResetTest extends AbstractServiceTest {
         );
 
         // when
-        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(userRepository.findByEmail(user.getEmail()))
+            .thenReturn(Optional.of(user));
 
         when(userTokenRepository.save(any(UserToken.class)))
             .thenAnswer(invocation -> invocation.getArgument(0));

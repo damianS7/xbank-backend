@@ -1,6 +1,5 @@
 package com.damian.xBank.modules.user.profile.domain.model;
 
-import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -68,7 +67,6 @@ public class UserProfile {
 
     UserProfile(
         Long profileId,
-        User user,
         String firstName,
         String lastName,
         String phoneNumber,
@@ -81,7 +79,6 @@ public class UserProfile {
         UserGender gender
     ) {
         this.id = profileId;
-        this.user = user;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
@@ -96,10 +93,12 @@ public class UserProfile {
         this.updatedAt = Instant.now();
     }
 
-    public static UserProfile create(User owner) {
-        UserProfile profile = UserProfileFactory.defaultProfile();
-        profile.user = owner;
-        return profile;
+    public static UserProfile create() {
+        return new UserProfile(
+            null,
+            "", "", "", LocalDate.now(), "avatar.jpg",
+            "", "", "", "", UserGender.MALE
+        );
     }
 
     public static UserProfile create(
