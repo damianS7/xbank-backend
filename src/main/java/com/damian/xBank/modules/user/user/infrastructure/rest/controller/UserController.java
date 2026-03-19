@@ -32,7 +32,11 @@ public class UserController {
         this.updateCurrentUserEmail = updateCurrentUserEmail;
     }
 
-    // endpoint to receive current customer
+    /**
+     * Endpoint para obtener toda la info de un usuario
+     *
+     * @return
+     */
     @GetMapping("/users")
     public ResponseEntity<?> getLoggedUserData() {
         GetCurrentUserQuery query = new GetCurrentUserQuery();
@@ -43,7 +47,12 @@ public class UserController {
             .body(userResult);
     }
 
-    // endpoint to modify current user email
+    /**
+     * Endpoint para cambiar password.
+     *
+     * @param request
+     * @return
+     */
     @PatchMapping("/users/email")
     public ResponseEntity<Void> updateEmail(
         @Valid @RequestBody

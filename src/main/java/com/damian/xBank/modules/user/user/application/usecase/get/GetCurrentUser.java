@@ -24,16 +24,13 @@ public class GetCurrentUser {
     }
 
     /**
-     * Returns a current user data
-     *
      * @return the user
      * @throws UserNotFoundException
      */
     public GetCurrentUserResult execute(GetCurrentUserQuery query) {
-        // Current user
+        // Usuario actual
         final User currentUser = authenticationContext.getCurrentUser();
 
-        // if the user does not exist we throw an exception
         User storedUser = userRepository
             .findById(currentUser.getId())
             .orElseThrow(

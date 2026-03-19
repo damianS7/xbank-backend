@@ -10,6 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+/**
+ * Caso de uso para actualizar el password del usuario actual.
+ */
 @Service
 public class UpdateCurrentUserPassword {
     private static final Logger log = LoggerFactory.getLogger(UpdateCurrentUserPassword.class);
@@ -28,20 +31,18 @@ public class UpdateCurrentUserPassword {
     }
 
     /**
-     * It updates the password of the current user
-     *
-     * @param command the request body that contains the current password and the new password
+     * @param command
      * @throws UserNotFoundException                    if the user does not exist
      * @throws UserInvalidPasswordConfirmationException if the password does not match
      */
     public void execute(UpdateUserPasswordCommand command) {
-        // Current user
+        // Usuario actual
         final User currentUser = authenticationContext.getCurrentUser();
 
-        // Before making any changes we check that the password sent by the user matches the one in the entity
+        // Validar password
         passwordValidator.validatePassword(currentUser, command.currentPassword());
 
-        // update the password
+        // Cambiar password
         userPasswordService.updatePassword(currentUser.getId(), command.newPassword());
     }
 }

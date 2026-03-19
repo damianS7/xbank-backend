@@ -13,9 +13,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
- * Request a password reset token to be sent to the user email.
+ * Caso de uso para pedir un reseteo de contraseña.
  * <p>
- * Email will contain a link to reset the password.
+ * Se enviarà un correo con las instrucciones.
  */
 @Service
 public class RequestPasswordReset {
@@ -41,13 +41,9 @@ public class RequestPasswordReset {
     }
 
     /**
-     * Generate a token for password reset.
-     * Send email to the user with a link to reset password.
-     *
-     * @param command the command containing the email of the user and password
+     * @param command Comando con los datos necesario
      */
     public void execute(RequestPasswordResetCommand command) {
-        // generate a new password reset token
         log.debug("Generating password reset token for email: {}", command.email());
         User user = userRepository
             .findByEmail(command.email())
@@ -61,14 +57,14 @@ public class RequestPasswordReset {
                 }
             );
 
-        // generate the token for password reset
+        // Generar el token
         UserToken token = userTokenFactory.passwordToken(user);
         userTokenRepository.save(token);
 
-        // create the password reset link
+        // Enlace del email
         String link = userTokenLinkBuilder.buildPasswordResetLink(token.getToken());
 
-        // send the email
+        // Envia el email
         userTokenPasswordResetNotifier.sendPasswordResetToken(command.email(), link);
 
         log.debug("Password reset token generated and sent to: {}", command.email());

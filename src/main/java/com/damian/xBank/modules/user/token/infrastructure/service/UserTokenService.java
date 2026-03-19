@@ -13,34 +13,33 @@ public class UserTokenService {
     private final UserTokenRepository userTokenRepository;
 
     public UserTokenService(
-            UserTokenRepository userTokenRepository
+        UserTokenRepository userTokenRepository
     ) {
         this.userTokenRepository = userTokenRepository;
     }
 
     /**
-     * Validate if the token matches with the one in the database
-     * also run checks for expiration and usage of the token.
+     * Comprueba que el token coincida con el almacenado en base de datos.
+     * <p>
+     * Hace comprobaciones para asegurar la validez del token.
      *
-     * @param token the token to verify
-     * @return AccountToken the token entity
+     * @param token
+     * @return UserToken
      */
     public UserToken validateToken(String token) {
         log.debug("Validating token");
-        // check the token if it matches with the one in database
+
+        // Buscar el token en base de datos
         UserToken userToken = userTokenRepository
-                .findByToken(token)
-                .orElseThrow(
-                        () -> {
-                            log.error("Failed to validate token. Token {} not found.", token);
-                            return new UserTokenNotFoundException();
-                        }
-                );
+            .findByToken(token)
+            .orElseThrow(
+                () -> {
+                    log.error("Failed to validate token. Token {} not found.", token);
+                    return new UserTokenNotFoundException();
+                }
+            );
 
-        // check expiration
         userToken.assertNotExpired();
-
-        // check if token is already used
         userToken.assertNotUsed();
 
         return userToken;

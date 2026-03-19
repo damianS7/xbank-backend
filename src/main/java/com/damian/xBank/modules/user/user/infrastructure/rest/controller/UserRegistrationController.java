@@ -26,7 +26,12 @@ public class UserRegistrationController {
         this.registerUser = registerUser;
     }
 
-    // endpoint for the current user to upload his profile photo
+    /**
+     * Endpoint para registrar nuevos usuarios
+     *
+     * @param request
+     * @return
+     */
     @PostMapping("/users/register")
     public ResponseEntity<?> registerCustomer(
         @Valid @RequestBody

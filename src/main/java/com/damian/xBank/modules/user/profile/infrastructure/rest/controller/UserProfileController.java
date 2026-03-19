@@ -35,7 +35,11 @@ public class UserProfileController {
         this.updateCurrentUserProfile = updateCurrentUserProfile;
     }
 
-    // endpoint to receive current customer
+    /**
+     * Endpoint para obtener el perfil del usuario actual.
+     *
+     * @return GetUserProfileResult
+     */
     @GetMapping("/profiles")
     public ResponseEntity<?> getLoggedCustomerData() {
         GetUserProfileQuery query = new GetUserProfileQuery();
@@ -46,7 +50,12 @@ public class UserProfileController {
             .body(result);
     }
 
-    // endpoint to modify current customer profile
+    /**
+     * Endpoint para modificar el perfil de usuario.
+     *
+     * @param request UserProfileUpdateRequest
+     * @return UpdateUserProfileResult
+     */
     @PatchMapping("/profiles")
     public ResponseEntity<?> update(
         @Valid @RequestBody

@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * It resets the user password using a token previously received using {@link RequestPasswordReset}
+ * Caso de uso para resetear la contraseña del usuario previo uso de {@link RequestPasswordReset}
  * <p>
- * To set a new password the token must be valid.
+ * Asigna una nueva password.
  */
 @Service
 public class ResetPassword {
@@ -36,25 +36,23 @@ public class ResetPassword {
     }
 
     /**
-     * It resets the user password using a token.
-     *
-     * @param command the command with the password to set
+     * @param command El comando con lo datos
      */
     @Transactional
     public void execute(ResetPasswordCommand command) {
-        // verify the token
+        // Validar el token
         final UserToken userToken = userTokenService.validateToken(command.token());
 
         log.debug("Resetting password for user: {} using a token.", userToken.getUser().getId());
 
-        // update the password
+        // Cambiar el password
         userPasswordService.updatePassword(userToken.getUser().getId(), command.password());
 
-        // set the token as used
+        // User token
         userToken.markAsUsed();
         userTokenRepository.save(userToken);
 
-        // send the email notifying the user that his password is successfully changed
+        // Notificar
         userTokenPasswordResetNotifier.notifyPasswordReset(userToken.getUser().getEmail());
         log.debug("Password reset successfully.");
     }

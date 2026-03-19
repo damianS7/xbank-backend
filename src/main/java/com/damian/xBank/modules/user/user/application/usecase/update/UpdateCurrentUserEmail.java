@@ -12,6 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Caso de uso para cambiar el email.
+ */
 @Service
 public class UpdateCurrentUserEmail {
     private static final Logger log = LoggerFactory.getLogger(UpdateCurrentUserEmail.class);
@@ -30,37 +33,31 @@ public class UpdateCurrentUserEmail {
     }
 
     /**
-     * It updates the email from the logged user
-     *
-     * @param command that contains the current password and the new email.
-     * @throws UserNotFoundException                    if the user does not exist
-     * @throws UserEmailTakenException                  if the email is already taken
-     * @throws UserInvalidPasswordConfirmationException if the password does not match
+     * @param command
+     * @throws UserNotFoundException
+     * @throws UserEmailTakenException
+     * @throws UserInvalidPasswordConfirmationException
      */
     @Transactional
     public void execute(UpdateUserEmailCommand command) {
-        // Current user
+        // Usuario actual
         final User currentUser = authenticationContext.getCurrentUser();
 
-        // we get the User entity so we can save at the end
         User user = userRepository.findById(currentUser.getId()).orElseThrow(
             () -> new UserNotFoundException(currentUser.getId())
         );
 
-        // Before making any changes we check that the password sent by the user matches the one in the entity
+        // Valida password introducida
         passwordValidator.validatePassword(currentUser, command.currentPassword());
 
-        // check if the email is already taken
+        // Comprobar email si eiste
         if (userRepository.existsByEmail(command.newEmail())) {
             throw new UserEmailTakenException(command.newEmail());
         }
 
         log.debug("Updating user: {} to email: {}", user.getId(), command.newEmail());
 
-        // set the new email
         user.changeEmail(command.newEmail());
-
-        // save the changes
         userRepository.save(user);
     }
 }

@@ -5,7 +5,7 @@ import com.damian.xBank.modules.user.profile.domain.model.UserGender;
 import java.time.LocalDate;
 
 /**
- * Contains all the data required for Customer registration
+ * Comando para registrar un usuario.
  */
 public record RegisterUserCommand(
     String email,

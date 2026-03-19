@@ -16,35 +16,33 @@ public class UserPasswordService {
     private final UserRepository userRepository;
 
     public UserPasswordService(
-            BCryptPasswordEncoder bCryptPasswordEncoder,
-            UserRepository userRepository
+        BCryptPasswordEncoder bCryptPasswordEncoder,
+        UserRepository userRepository
     ) {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userRepository = userRepository;
     }
 
     /**
-     * It updates the password of given user.
+     * Actualiza el password de un usuario.
      *
-     * @param userId   the id of the user to be updated
-     * @param password the new password to be set
-     * @throws UserNotFoundException                    if the user does not exist
-     * @throws UserInvalidPasswordConfirmationException if the password does not match
+     * @param userId
+     * @param password
+     * @throws UserNotFoundException
+     * @throws UserInvalidPasswordConfirmationException
      */
     public void updatePassword(Long userId, String password) {
-        // we get the UserAuth entity so we can save.
         User user = userRepository.findById(userId).orElseThrow(
-                () -> {
-                    log.warn("Failed to update password");
-                    return new UserNotFoundException(userId);
-                }
+            () -> {
+                log.warn("Failed to update password");
+                return new UserNotFoundException(userId);
+            }
         );
 
-        // set the new password
+        // Cambia la password
         user.changePassword(bCryptPasswordEncoder.encode(password));
-
-        // save the changes
         userRepository.save(user);
+
         log.debug("Successfully updated password for user: {}", userId);
     }
 }

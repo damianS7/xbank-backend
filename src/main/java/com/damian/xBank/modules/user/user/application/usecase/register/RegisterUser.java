@@ -13,10 +13,12 @@ import com.damian.xBank.modules.user.user.domain.service.UserDomainService;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Caso de uso donde el usuario se registra
+ */
 @Service
 public class RegisterUser {
     private static final Logger log = LoggerFactory.getLogger(RegisterUser.class);
@@ -41,15 +43,15 @@ public class RegisterUser {
     }
 
     /**
-     * Creates a new user
+     * Crea un nuevo usuario
      *
-     * @param command contains the fields needed for the user creation
-     * @return the user created
-     * @throws UserProfileException if another user has the email
+     * @param command
+     * @return
+     * @throws UserProfileException
      */
     @Transactional
     public RegisterUserResult execute(RegisterUserCommand command) {
-        // check if the email is already taken
+        // Comprobar email
         if (userRepository.existsByEmail(command.email())) {
             throw new UserEmailTakenException(command.email());
         }
@@ -68,7 +70,7 @@ public class RegisterUser {
             command.gender()
         );
 
-        // Create the user
+        // Crear usuario
         User user = userDomainService.createUser(
             command.email(),
             command.password(),
@@ -76,16 +78,13 @@ public class RegisterUser {
             profile
         );
 
-        // Create a token for the account activation
+        // Generar token de verificación
         UserToken userToken = userTokenFactory.verificationToken(user);
-
-        // save (cascade)
+        String verificationLink = userTokenLinkBuilder.buildAccountVerificationLink(userToken.getToken());
         userRepository.save(user);
 
-        // create the verification link
-        String verificationLink = userTokenLinkBuilder.buildAccountVerificationLink(userToken.getToken());
 
-        // Send email to the user with verification link
+        // Notificar usuario
         userTokenVerificationNotifier.sendVerificationToken(command.email(), verificationLink);
 
         log.debug(
@@ -100,15 +99,5 @@ public class RegisterUser {
             user.getRole(),
             user.getCreatedAt()
         );
-    }
-
-    @Async  // ← No bloquea ni causa rollback si falla
-    private void sendVerificationEmailAsync(User user) {
-        try {
-            //            userTokenVerificationNotifier.sendVerificationToken(request.email(), verificationLink);
-        } catch (Exception e) {
-            log.error("Failed to send verification email to {}", user.getEmail(), e);
-            // Podría publicar evento para retry
-        }
     }
 }

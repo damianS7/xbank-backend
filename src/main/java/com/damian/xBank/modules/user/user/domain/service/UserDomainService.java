@@ -18,7 +18,7 @@ public class UserDomainService {
     }
 
     /**
-     * Creates a new user
+     * Crea un usuario
      *
      * @param email    email to be registered
      * @param password password
@@ -26,8 +26,6 @@ public class UserDomainService {
      * @throws UserEmailTakenException if another user has the email
      */
     public User createUser(String email, String password, UserRole role, UserProfile userProfile) {
-
-        // we create the user and assign the data
         return User.create(email, bCryptPasswordEncoder.encode(password), role, userProfile);
     }
 }

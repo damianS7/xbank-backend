@@ -17,8 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Confirms the user account using a token previously received
- * by using {@link RequestAccountVerification} or by new registration
+ * Caso de uso para confirmar/verificar una cuenta a traves de un token.
+ * Se ha de usar antes {@link RequestAccountVerification} o registrarse de nuevo
  */
 @Service
 public class VerifyAccount {
@@ -41,31 +41,27 @@ public class VerifyAccount {
     }
 
     /**
-     * Verify a user account using a valid token
      *
-     * @throws UserTokenNotFoundException          when the token not exists in database
-     * @throws UserTokenExpiredException           when the token exists but its expired
-     * @throws UserTokenUsedException              when the token exists but already used.
-     * @throws UserVerificationNotPendingException when the user is not pending for activation.
+     * @throws UserTokenNotFoundException
+     * @throws UserTokenExpiredException
+     * @throws UserTokenUsedException
+     * @throws UserVerificationNotPendingException
      */
     @Transactional
     public void execute(VerifyAccountCommand command) {
-        // check the token is valid and not expired.
+        // Validar token
         UserToken userToken = userTokenService.validateToken(command.token());
 
-        // Get the user that owns the token
+        // Usuario dueño del token
         User user = userToken.getUser();
 
-        // checks if the user is pending for verification
         user.verifyAccount();
-
-        // mark the token as used
         userToken.markAsUsed();
 
         userTokenRepository.save(userToken);
         userRepository.save(user);
 
-        // send email to user after user has been verificated
+        // send email to user after user has been verified
         userTokenVerificationNotifier.notifyVerification(user.getEmail());
 
         log.debug("User: {} successfully verified.", user.getId());

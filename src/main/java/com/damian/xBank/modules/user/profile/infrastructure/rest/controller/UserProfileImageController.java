@@ -8,7 +8,6 @@ import com.damian.xBank.shared.utils.ImageHelper;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
@@ -30,7 +29,6 @@ public class UserProfileImageController {
     private final GetCurrentUserProfileImage getCurrentUserProfileImage;
     private final UploadUserProfileImage uploadUserProfileImage;
 
-    @Autowired
     public UserProfileImageController(
         GetCurrentUserProfileImage getCurrentUserProfileImage,
         UploadUserProfileImage uploadUserProfileImage
@@ -39,7 +37,12 @@ public class UserProfileImageController {
         this.uploadUserProfileImage = uploadUserProfileImage;
     }
 
-    // endpoint to get the current customer profile image
+    /**
+     * Endpoint para obtener la imagen de un usuario.
+     *
+     * @param userId
+     * @return
+     */
     @GetMapping("/profiles/{userId}/image")
     public ResponseEntity<?> getProfileImage(
         @PathVariable @NotNull @Positive
@@ -56,7 +59,11 @@ public class UserProfileImageController {
             .body(resource);
     }
 
-    // endpoint to get the current user profile image
+    /**
+     * Endpoint para obtener la imagen actual
+     *
+     * @return
+     */
     @GetMapping("/profiles/image")
     public ResponseEntity<?> getProfileImage() {
         Resource resource = getCurrentUserProfileImage.execute();
@@ -69,7 +76,13 @@ public class UserProfileImageController {
             .body(resource);
     }
 
-    // endpoint for the current user to upload his profile photo
+    /**
+     * Endpoint para subir la imagen de perfil del usuario actual.
+     *
+     * @param currentPassword
+     * @param file
+     * @return
+     */
     @PostMapping("/profiles/image")
     public ResponseEntity<?> uploadProfileImage(
         @RequestParam("currentPassword") @NotBlank

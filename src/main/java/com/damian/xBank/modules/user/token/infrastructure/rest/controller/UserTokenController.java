@@ -1,11 +1,11 @@
 package com.damian.xBank.modules.user.token.infrastructure.rest.controller;
 
-import com.damian.xBank.modules.user.token.application.usecase.verification.request.RequestAccountVerification;
-import com.damian.xBank.modules.user.token.application.usecase.verification.request.RequestAccountVerificationCommand;
 import com.damian.xBank.modules.user.token.application.usecase.password.reset.RequestPasswordReset;
 import com.damian.xBank.modules.user.token.application.usecase.password.reset.RequestPasswordResetCommand;
 import com.damian.xBank.modules.user.token.application.usecase.password.reset.ResetPassword;
 import com.damian.xBank.modules.user.token.application.usecase.password.reset.ResetPasswordCommand;
+import com.damian.xBank.modules.user.token.application.usecase.verification.request.RequestAccountVerification;
+import com.damian.xBank.modules.user.token.application.usecase.verification.request.RequestAccountVerificationCommand;
 import com.damian.xBank.modules.user.token.application.usecase.verification.verify.VerifyAccount;
 import com.damian.xBank.modules.user.token.application.usecase.verification.verify.VerifyAccountCommand;
 import com.damian.xBank.modules.user.token.infrastructure.rest.request.RequestAccountVerificationRequest;
@@ -45,7 +45,12 @@ public class UserTokenController {
         this.requestAccountVerification = requestAccountVerification;
     }
 
-    // endpoint for account verification
+    /**
+     * Endpoint para verificar cuentas de usuario a partir de un token
+     *
+     * @param token
+     * @return
+     */
     @GetMapping("/accounts/verification/{token:.+}")
     public ResponseEntity<?> verifyAccount(
         @PathVariable @NotBlank
@@ -62,7 +67,12 @@ public class UserTokenController {
                 "Your account has been verified. You can now log in with your credentials."));
     }
 
-    // endpoint for account to request for account verification email
+    /**
+     * Endpoint para pedir un correo de verification
+     *
+     * @param request
+     * @return
+     */
     @PostMapping("/accounts/verification/resend")
     public ResponseEntity<?> resendVerification(
         @Valid @RequestBody
@@ -81,7 +91,12 @@ public class UserTokenController {
                 "A verification link has been sent to your email."));
     }
 
-    // endpoint to request for a reset password
+    /**
+     * Endpoint para pedir reseteo de password
+     *
+     * @param request
+     * @return
+     */
     @PostMapping("/accounts/password/reset")
     public ResponseEntity<?> resetPasswordRequest(
         @Valid @RequestBody
@@ -92,7 +107,6 @@ public class UserTokenController {
             request.email()
         );
 
-        // send the email with the link to reset the password
         requestPasswordReset.execute(command);
 
         return ResponseEntity
@@ -101,7 +115,13 @@ public class UserTokenController {
                 "A password reset link has been sent to your email address."));
     }
 
-    // endpoint to set a new password using token
+    /**
+     * Endpoint para cambiar la password con un token
+     *
+     * @param token
+     * @param request
+     * @return
+     */
     @PostMapping("/accounts/password/reset/{token:.+}")
     public ResponseEntity<?> resetPassword(
         @PathVariable @NotBlank
@@ -114,7 +134,6 @@ public class UserTokenController {
             request.password()
         );
 
-        // update the password using the token
         resetPassword.execute(command);
 
         return ResponseEntity

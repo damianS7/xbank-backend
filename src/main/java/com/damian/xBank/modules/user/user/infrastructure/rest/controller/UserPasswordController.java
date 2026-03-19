@@ -26,7 +26,12 @@ public class UserPasswordController {
         this.updateCurrentUserPassword = updateCurrentUserPassword;
     }
 
-    // endpoint to modify current user password
+    /**
+     * Endpoint para modificar la contraseña del usuario actual.
+     *
+     * @param request
+     * @return
+     */
     @PatchMapping("/accounts/password")
     public ResponseEntity<?> updatePassword(
         @Valid @RequestBody

@@ -32,10 +32,10 @@ public class UserProfileImageService {
     private final String[] ALLOWED_IMAGE_TYPES = {"image/jpg", "image/jpeg", "image/png"};
 
     public UserProfileImageService(
-            FileStorageService fileStorageService,
-            ImageUploaderService imageUploaderService,
-            ImageProcessingService imageProcessingService,
-            ImageValidationService imageValidationService
+        FileStorageService fileStorageService,
+        ImageUploaderService imageUploaderService,
+        ImageProcessingService imageProcessingService,
+        ImageValidationService imageValidationService
     ) {
         this.fileStorageService = fileStorageService;
         this.imageUploaderService = imageUploaderService;
@@ -45,13 +45,13 @@ public class UserProfileImageService {
 
     public String getProfileImageFolder(Long userId) {
         return Paths.get(
-                ImageUploaderService.getUserUploadFolder(userId),
-                PROFILE_IMAGE_FOLDER
+            ImageUploaderService.getUserUploadFolder(userId),
+            PROFILE_IMAGE_FOLDER
         ).toString();
     }
 
     /**
-     * It uploads an image and set it as user photo
+     * Sube una imagen al servidor
      *
      * @param image the uploaded image
      * @return image filename
@@ -62,40 +62,38 @@ public class UserProfileImageService {
 
         // run basic image validations
         imageValidationService.validateImage(
-                image,
-                MAX_IMAGE_SIZE,
-                ALLOWED_IMAGE_TYPES
+            image,
+            MAX_IMAGE_SIZE,
+            ALLOWED_IMAGE_TYPES
         );
 
-        // At this point the image is guaranteed to be not null and of an allowed type
-        // Image optimizations (resize and compress)
+        // Comprimir y redimensionar imagen
         image = imageProcessingService.optimizeImage(image, MAX_WIDTH, MAX_HEIGHT);
 
-        // Upload the image
+        // Subir imagen
         return imageUploaderService.uploadImage(
-                image,
-                userId,
-                PROFILE_IMAGE_FOLDER,
-                "avatar"
+            image,
+            userId,
+            PROFILE_IMAGE_FOLDER,
+            "avatar"
         );
     }
 
     /**
-     * It gets the user photo
+     * Obtiene la imagen de un usuario
      *
-     * @param userId the id of the user to get the photo for
-     * @return the user photo resource
-     * @throws UserNotFoundException             if the user does not exist
-     * @throws UserProfileImageNotFoundException if the user photo does not exist in the db
+     * @param userId
+     * @return Resource
+     * @throws UserNotFoundException
+     * @throws UserProfileImageNotFoundException
      */
     public Resource getImage(Long userId, String filename) {
 
         File file = fileStorageService.getFile(
-                getProfileImageFolder(userId),
-                filename
+            getProfileImageFolder(userId),
+            filename
         );
 
-        // return the image as resource
         return fileStorageService.createResource(file);
     }
 }
