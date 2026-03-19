@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
+// TODO revisar
 @Component
 public class UserProfileFactory {
     public static UserProfile defaultProfile() {

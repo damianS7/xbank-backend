@@ -1,6 +1,5 @@
 package com.damian.xBank.modules.user.user.domain.model;
 
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.setting.domain.model.Setting;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
@@ -10,17 +9,13 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "user_accounts")
@@ -57,11 +52,8 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserToken token;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<BankingAccount> bankingAccounts;
-
+    // JPA constructor
     protected User() {
-        // JPA constructor
     }
 
     User(
@@ -78,19 +70,10 @@ public class User {
         this.role = role != null ? role : UserRole.CUSTOMER;
         this.status = status != null ? status : UserStatus.PENDING_VERIFICATION;
         this.settings = Setting.create(this, null);
-        this.bankingAccounts = new HashSet<>();
         this.profile = profile != null ? profile : UserProfile.create(this);
         this.profile.setUser(this);
         this.createdAt = Instant.now();
         this.updatedAt = Instant.now();
-    }
-
-    public static User create(
-        String email,
-        String passwordHash,
-        UserRole role
-    ) {
-        return new User(null, email, passwordHash, role, null, null);
     }
 
     public static User create(
@@ -112,10 +95,6 @@ public class User {
 
     public String getPassword() {
         return this.passwordHash;
-    }
-
-    public Set<BankingAccount> getBankingAccounts() {
-        return bankingAccounts;
     }
 
     public UserRole getRole() {

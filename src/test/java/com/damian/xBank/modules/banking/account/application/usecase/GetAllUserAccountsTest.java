@@ -18,6 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import java.math.BigDecimal;
+import java.util.Set;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.anyLong;
@@ -59,14 +60,12 @@ public class GetAllUserAccountsTest extends AbstractServiceTest {
             .withType(BankingAccountType.SAVINGS)
             .withAccountNumber("US1200001111112233335516")
             .build();
-        // TODO
-        //        customer.addBankingAccount(account);
 
         GetAllUserAccountsQuery query = new GetAllUserAccountsQuery();
 
         // when
         when(bankingAccountRepository.findByUser_Id(anyLong())).thenReturn(
-            customer.getBankingAccounts()
+            Set.of(account)
         );
 
         GetAllUserAccountsResult result = getAllUserAccounts.execute(query);

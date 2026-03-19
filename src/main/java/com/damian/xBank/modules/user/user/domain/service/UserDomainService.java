@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.user.user.domain.service;
 
+import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import com.damian.xBank.modules.user.user.domain.exception.UserEmailTakenException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
@@ -24,9 +25,9 @@ public class UserDomainService {
      * @return the user created
      * @throws UserEmailTakenException if another user has the email
      */
-    public User createUser(String email, String password, UserRole role) {
+    public User createUser(String email, String password, UserRole role, UserProfile userProfile) {
 
         // we create the user and assign the data
-        return User.create(email, bCryptPasswordEncoder.encode(password), role);
+        return User.create(email, bCryptPasswordEncoder.encode(password), role, userProfile);
     }
 }

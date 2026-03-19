@@ -57,21 +57,16 @@ public class RegisterUser {
         if (userRepository.existsByEmail(command.email())) {
             throw new UserEmailTakenException(command.email());
         }
+        // create the user profile TODO crear de otra manera
+        UserProfile profile = userProfileFactory.create(command);
 
         // Create the user
         User user = userDomainService.createUser(
             command.email(),
             command.password(),
-            UserRole.CUSTOMER
+            UserRole.CUSTOMER,
+            profile
         );
-
-        // create the user profile
-        UserProfile profile = userProfileFactory.create(command);
-        user.assignProfile(profile);
-
-        // Create default settings for the new user
-        //        Setting userSettings = settingFactory.createDefault();
-        //        user.setSettings(userSettings);
 
         // Create a token for the account activation
         UserToken userToken = userTokenFactory.verificationToken();
