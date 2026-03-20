@@ -2,6 +2,7 @@ package com.damian.xBank.modules.banking.card.infrastructure.repository;
 
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
+import com.damian.xBank.modules.banking.card.domain.model.CardNumber;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,7 +13,7 @@ import java.util.Set;
 
 @Repository
 public interface BankingCardRepository extends JpaRepository<BankingCard, Long> {
-    Optional<BankingCard> findByCardNumber(String cardNumber);
+    Optional<BankingCard> findByCardNumber(CardNumber cardNumber);
 
     boolean existsByCardNumber(String cardNumber);
 

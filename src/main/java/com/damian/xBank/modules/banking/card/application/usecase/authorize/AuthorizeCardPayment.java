@@ -2,6 +2,7 @@ package com.damian.xBank.modules.banking.card.application.usecase.authorize;
 
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoundException;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
+import com.damian.xBank.modules.banking.card.domain.model.CardNumber;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
@@ -34,7 +35,7 @@ public class AuthorizeCardPayment {
     public PaymentAuthorizationResponse execute(AuthorizeCardPaymentCommand command) {
         // check card exists
         BankingCard bankingCard = bankingCardRepository
-            .findByCardNumber(command.cardNumber())
+            .findByCardNumber(CardNumber.of(command.cardNumber()))
             .orElseThrow(
                 () -> new BankingCardNotFoundException(command.cardNumber())
             );

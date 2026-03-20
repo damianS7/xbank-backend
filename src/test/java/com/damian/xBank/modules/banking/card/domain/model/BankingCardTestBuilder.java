@@ -10,7 +10,7 @@ public class BankingCardTestBuilder {
     private BankingCardType cardType = BankingCardType.CREDIT;
     private CardExpiration expiration = CardExpiration.defaultExpiration();
     private BigDecimal dailyLimit = BigDecimal.valueOf(1000);
-    private String cardNumber = "12345678901234567";
+    private CardNumber cardNumber = new CardNumber("1234567890123456");
     private String cvv = "123";
     private String pin = "1234";
     private BankingCardStatus status = BankingCardStatus.ACTIVE;
@@ -35,7 +35,7 @@ public class BankingCardTestBuilder {
     }
 
     public BankingCardTestBuilder withCardNumber(String cardNumber) {
-        this.cardNumber = cardNumber;
+        this.cardNumber = new CardNumber(cardNumber);
         return this;
     }
 

@@ -42,8 +42,8 @@ public class BankingCard {
     @JoinColumn(name = "account_id", referencedColumnName = "id", nullable = false)
     private BankingAccount bankingAccount;
 
-    @Column(length = 20, nullable = false)
-    private String cardNumber;
+    @Embedded
+    private CardNumber cardNumber;
 
     @Column(precision = 15, scale = 2)
     private BigDecimal dailyLimit;
@@ -80,7 +80,7 @@ public class BankingCard {
         BankingCardType cardType,
         BankingCardStatus cardStatus,
         BankingAccount bankingAccount,
-        String cardNumber,
+        CardNumber cardNumber,
         CardExpiration expiration,
         String cardCvv,
         String cardPin,
@@ -101,7 +101,7 @@ public class BankingCard {
     public static BankingCard create(
         BankingCardType bankingCardType,
         BankingAccount bankingAccount,
-        String cardNumber,
+        CardNumber cardNumber,
         String cardCvv,
         String cardPin
     ) {
@@ -127,7 +127,7 @@ public class BankingCard {
     }
 
     public String getCardNumber() {
-        return cardNumber;
+        return cardNumber.getValue();
     }
 
     public BankingCardType getCardType() {
@@ -228,7 +228,7 @@ public class BankingCard {
     }
 
     /**
-     * Authorize a payment.
+     * Comprueba que un pago puede llevarse a cabo y lo autoriza.
      *
      * @param amount
      * @param expiryMonth

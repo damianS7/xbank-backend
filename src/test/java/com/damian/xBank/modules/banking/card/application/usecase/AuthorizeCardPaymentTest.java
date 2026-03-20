@@ -12,6 +12,7 @@ import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoun
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardTestBuilder;
+import com.damian.xBank.modules.banking.card.domain.model.CardNumber;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionTestBuilder;
@@ -35,7 +36,6 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 public class AuthorizeCardPaymentTest extends AbstractServiceTest {
@@ -102,7 +102,7 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
             .withDescription(command.merchant())
             .build();
 
-        when(bankingCardRepository.findByCardNumber(anyString()))
+        when(bankingCardRepository.findByCardNumber(any(CardNumber.class)))
             .thenReturn(Optional.of(bankingCard));
 
         when(bankingTransactionRepository.save(
@@ -139,7 +139,7 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
         );
 
         // when
-        when(bankingCardRepository.findByCardNumber(anyString()))
+        when(bankingCardRepository.findByCardNumber(any(CardNumber.class)))
             .thenReturn(Optional.empty());
 
         // then
@@ -175,7 +175,7 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
         );
 
         // when
-        when(bankingCardRepository.findByCardNumber(anyString()))
+        when(bankingCardRepository.findByCardNumber(any(CardNumber.class)))
             .thenReturn(Optional.of(bankingCard));
 
         // then
@@ -211,8 +211,8 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
         );
 
         // when
-        when(bankingCardRepository.findByCardNumber(anyString())).
-            thenReturn(Optional.of(bankingCard));
+        when(bankingCardRepository.findByCardNumber(any(CardNumber.class)))
+            .thenReturn(Optional.of(bankingCard));
 
         // then
         BankingCardNotActiveException exception = assertThrows(
@@ -254,7 +254,7 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
         );
 
         // when
-        when(bankingCardRepository.findByCardNumber(anyString()))
+        when(bankingCardRepository.findByCardNumber(any(CardNumber.class)))
             .thenReturn(Optional.of(bankingCard));
 
         // then

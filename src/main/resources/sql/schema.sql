@@ -109,7 +109,7 @@ CREATE TABLE public.banking_cards
     account_id       int4                        NOT NULL,
     card_type        VARCHAR(30)                 NOT NULL,
     card_status      VARCHAR(30)                 NOT NULL,
-    card_number      varchar(32)                 NOT NULL,
+    card_number      varchar(16)                 NOT NULL,
     card_pin         varchar(4)                  NOT NULL,
     card_cvv         varchar(3)                  NOT NULL,
     daily_limit      numeric(15, 2) DEFAULT 0.00 NOT NULL,

@@ -10,6 +10,7 @@ import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountS
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardType;
+import com.damian.xBank.modules.banking.card.domain.model.CardNumber;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -34,6 +35,8 @@ import java.util.Set;
 @Entity
 @Table(name = "banking_accounts")
 public class BankingAccount {
+    public static final int MAX_CARDS_PER_ACCOUNT = 5;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -74,8 +77,6 @@ public class BankingAccount {
 
     @Column
     private Instant updatedAt;
-
-    public static final int MAX_CARDS_PER_ACCOUNT = 5;
 
     public BankingAccount() {
         this.bankingCards = new HashSet<>();
@@ -260,7 +261,7 @@ public class BankingAccount {
         BankingCard card = BankingCard.create(
             type,
             this,
-            number,
+            CardNumber.of(number),
             cvv,
             pin
         );

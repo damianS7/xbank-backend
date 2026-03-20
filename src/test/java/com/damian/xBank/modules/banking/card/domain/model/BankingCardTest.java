@@ -64,6 +64,37 @@ public class BankingCardTest extends AbstractServiceTest {
         bankingCard.activate(bankingCard.getCardCvv());
     }
 
+    @Test
+    @DisplayName("")
+    void createCard_WhenValidCardNumber_ReturnsCard() {
+        // given
+        // when / then
+        BankingCard.create(
+            BankingCardType.CREDIT,
+            null,
+            new CardNumber("1234 1234 1234 1234"),
+            "111",
+            "1111"
+        );
+    }
+
+    @Test
+    @DisplayName("")
+    void createCard_WhenInvalidCardNumber_ThrowsException() {
+        // given
+        // when
+        // then
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> BankingCard.create(
+                BankingCardType.CREDIT,
+                null,
+                new CardNumber("1234 1234 123 1234"),
+                "111",
+                "1111"
+            )
+        );
+    }
 
     @Test
     @DisplayName("should pass when user owns the card")
