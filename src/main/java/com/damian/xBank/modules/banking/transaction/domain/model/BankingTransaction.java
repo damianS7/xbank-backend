@@ -2,6 +2,7 @@ package com.damian.xBank.modules.banking.transaction.domain.model;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
+import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotAuthorizedException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotOwnerException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotPendingStatusException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionStatusTransitionException;
@@ -57,9 +58,15 @@ public class BankingTransaction {
     @Column
     private String description;
 
+    @Column
+    private String authorizationId;
+
     @Column(name = "transaction_type")
     @Enumerated(EnumType.STRING)
     private BankingTransactionType type;
+
+    @Enumerated(EnumType.STRING)
+    private BankingTransactionPaymentStatus paymentStatus;
 
     @Enumerated(EnumType.STRING)
     private BankingTransactionStatus status;
@@ -73,6 +80,7 @@ public class BankingTransaction {
     protected BankingTransaction() {
         this.amount = BigDecimal.valueOf(0);
         this.status = BankingTransactionStatus.PENDING;
+        this.paymentStatus = BankingTransactionPaymentStatus.PENDING;
         this.updatedAt = Instant.now();
         this.createdAt = Instant.now();
     }
@@ -86,7 +94,9 @@ public class BankingTransaction {
         BigDecimal amount,
         String description,
         BankingTransactionType type,
-        BankingTransactionStatus status
+        BankingTransactionStatus status,
+        BankingTransactionPaymentStatus paymentStatus,
+        String authorizationId
     ) {
         this();
         this.id = transactionId;
@@ -98,6 +108,8 @@ public class BankingTransaction {
         this.description = description;
         this.type = type;
         this.status = status;
+        this.paymentStatus = paymentStatus;
+        this.authorizationId = authorizationId;
         this.calcBalanceBefore();
         this.calcBalanceAfter();
     }
@@ -117,7 +129,9 @@ public class BankingTransaction {
             amount,
             description,
             type,
-            BankingTransactionStatus.PENDING
+            BankingTransactionStatus.PENDING,
+            BankingTransactionPaymentStatus.PENDING,
+            null
         );
     }
 
@@ -136,7 +150,31 @@ public class BankingTransaction {
             amount,
             description,
             type,
-            BankingTransactionStatus.PENDING
+            BankingTransactionStatus.PENDING,
+            BankingTransactionPaymentStatus.PENDING,
+            null
+        );
+    }
+
+    public static BankingTransaction create(
+        BankingTransactionType type,
+        BankingCard card,
+        BigDecimal amount,
+        String description,
+        String authorizationId
+    ) {
+        return new BankingTransaction(
+            null,
+            card.getBankingAccount(),
+            card,
+            null,
+            null,
+            amount,
+            description,
+            type,
+            BankingTransactionStatus.PENDING,
+            BankingTransactionPaymentStatus.AUTHORIZED,
+            authorizationId
         );
     }
 
@@ -155,7 +193,9 @@ public class BankingTransaction {
             transfer.getAmount(),
             description,
             type,
-            BankingTransactionStatus.PENDING
+            BankingTransactionStatus.PENDING,
+            BankingTransactionPaymentStatus.PENDING,
+            null
         );
     }
 
@@ -174,7 +214,9 @@ public class BankingTransaction {
             incomingTransfer.getAmount(),
             description,
             type,
-            BankingTransactionStatus.PENDING
+            BankingTransactionStatus.PENDING,
+            BankingTransactionPaymentStatus.PENDING,
+            null
         );
     }
 
@@ -264,6 +306,23 @@ public class BankingTransaction {
         markAsUpdated();
     }
 
+    private void setPaymentStatus(BankingTransactionPaymentStatus newStatus) {
+        if (this.paymentStatus == newStatus) {
+            return;
+        }
+
+        if (!this.paymentStatus.canTransitionTo(newStatus)) {
+            throw new BankingTransactionStatusTransitionException(
+                this.id,
+                this.paymentStatus.name(),
+                newStatus.name()
+            );
+        }
+
+        this.paymentStatus = newStatus;
+        markAsUpdated();
+    }
+
     private void calcBalanceBefore() {
         if (this.bankingAccount != null) {
             this.balanceBefore = this.bankingAccount.getBalance();
@@ -280,9 +339,17 @@ public class BankingTransaction {
         }
     }
 
-    public void capture() {
+    // TODO hacer authorize en el usecase!!!
+    public void authorize(String authorizationId) {
         this.assertPending();
-        this.complete();
+        setPaymentStatus(BankingTransactionPaymentStatus.AUTHORIZED);
+        this.authorizationId = authorizationId;
+        complete();
+    }
+
+    public void capture() {
+        this.assertAuthorized();
+        setPaymentStatus(BankingTransactionPaymentStatus.CAPTURED);
     }
 
     public void complete() {
@@ -293,12 +360,14 @@ public class BankingTransaction {
     public void reject(String rejectReason) {
         this.description = rejectReason;
         this.setStatus(BankingTransactionStatus.REJECTED);
+        this.setPaymentStatus(BankingTransactionPaymentStatus.FAILED);
         markAsUpdated();
     }
 
     public void fail(String failReason) {
         this.description = failReason;
         this.setStatus(BankingTransactionStatus.FAILED);
+        this.setPaymentStatus(BankingTransactionPaymentStatus.FAILED);
         markAsUpdated();
     }
 
@@ -308,21 +377,16 @@ public class BankingTransaction {
         }
     }
 
-    /**
-     * Assert the ownership of the transaction.
-     *
-     * @param userId the customer to check ownership against
-     * @return the current validator instance for chaining
-     * @throws BankingTransactionNotOwnerException if the transaction does not belong to the customer
-     */
-    public BankingTransaction assertOwnedBy(Long userId) {
-
-        // compare account owner id with given customer id
+    public void assertOwnedBy(Long userId) {
         if (!isOwnedBy(userId)) {
             throw new BankingTransactionNotOwnerException(getId(), userId);
         }
+    }
 
-        return this;
+    public void assertAuthorized() {
+        if (this.getPaymentStatus() != BankingTransactionPaymentStatus.AUTHORIZED) {
+            throw new BankingTransactionNotAuthorizedException(this.id);
+        }
     }
 
     @Override
@@ -342,5 +406,13 @@ public class BankingTransaction {
                ", createdAt=" + createdAt +
                ", updatedAt=" + updatedAt +
                '}';
+    }
+
+    public String getAuthorizationId() {
+        return authorizationId;
+    }
+
+    public BankingTransactionPaymentStatus getPaymentStatus() {
+        return paymentStatus;
     }
 }

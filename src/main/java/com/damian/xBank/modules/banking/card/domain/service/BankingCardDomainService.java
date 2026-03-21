@@ -16,11 +16,11 @@ public class BankingCardDomainService {
     }
 
     /**
-     * Create a new card and associate to the account
+     * Crea una tarjeta nueva asociada a una cuenta.
      *
-     * @param bankingAccount
-     * @param cardType
-     * @return
+     * @param bankingAccount Cuenta a la que se asocia la tarjeta
+     * @param cardType       Tipo de tarjeta
+     * @return La tarjeta creada
      */
     public BankingCard createBankingCard(
         BankingAccount bankingAccount,

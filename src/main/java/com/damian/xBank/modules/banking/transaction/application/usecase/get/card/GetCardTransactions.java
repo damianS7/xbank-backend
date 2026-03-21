@@ -7,14 +7,13 @@ import com.damian.xBank.modules.banking.transaction.application.dto.BankingTrans
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.shared.infrastructure.web.dto.response.PageResult;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 /**
- * Use case for retrieving the transactions of a banking card.
+ * Caso de uso para obtener las transacciones de una tarjeta
  */
 @Service
 public class GetCardTransactions {
@@ -33,33 +32,24 @@ public class GetCardTransactions {
     }
 
     /**
-     *
-     * @param query
-     * @return a result containing the paged transactions.
+     * @param query Datos de la consulta
+     * @return Result con las transacciones paginadas
      */
     public PageResult<BankingTransactionResult> execute(GetCardTransactionsQuery query) {
-        // Current user
+        // Usuario actual
         final User currentUser = authenticationContext.getCurrentUser();
 
-        BankingCard card = bankingCardRepository
+        final BankingCard card = bankingCardRepository
             .findById(query.cardId())
-            .orElseThrow(
-                () -> new BankingAccountNotFoundException(query.cardId())
-            );
+            .orElseThrow(() -> new BankingAccountNotFoundException(query.cardId()));
 
-        // if the current user is a customer ...
-        if (currentUser.hasRole(UserRole.CUSTOMER)) {
-
-            // assert account belongs to him
+        // Si no es admin se comprueba que es el dueño
+        if (!currentUser.isAdmin()) {
             card.assertOwnedBy(currentUser.getId());
-
         }
 
         Page<BankingTransaction> pagedResult = bankingTransactionRepository
-            .findByBankingCard_Id(
-                query.cardId(),
-                query.pageable()
-            );
+            .findByBankingCard_Id(query.cardId(), query.pageable());
 
         return PageResult.fromPagedTransactions(pagedResult);
     }

@@ -17,9 +17,9 @@ public class BankingAccountNumberGeneratorImpl implements BankingAccountNumberGe
     }
 
     /**
-     * Generate a random account number.
+     * Genera un numero de cuenta aleatorio
      *
-     * @return String account number
+     * @return String
      */
     @Override
     public String generate() {

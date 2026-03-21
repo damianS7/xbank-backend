@@ -1,8 +1,5 @@
 package com.damian.xBank.modules.banking.account.infrastructure.rest.controller;
 
-import com.damian.xBank.modules.banking.account.application.usecase.request.RequestCard;
-import com.damian.xBank.modules.banking.account.application.usecase.request.RequestCardCommand;
-import com.damian.xBank.modules.banking.account.application.usecase.request.RequestCardResult;
 import com.damian.xBank.modules.banking.account.application.usecase.close.CloseAccount;
 import com.damian.xBank.modules.banking.account.application.usecase.close.CloseAccountCommand;
 import com.damian.xBank.modules.banking.account.application.usecase.close.CloseAccountResult;
@@ -15,6 +12,9 @@ import com.damian.xBank.modules.banking.account.application.usecase.get.all.GetA
 import com.damian.xBank.modules.banking.account.application.usecase.get.summary.GetDailyBalancesByCurrency;
 import com.damian.xBank.modules.banking.account.application.usecase.get.summary.GetDailyBalancesByCurrencyQuery;
 import com.damian.xBank.modules.banking.account.application.usecase.get.summary.GetDailyBalancesByCurrencyResult;
+import com.damian.xBank.modules.banking.account.application.usecase.request.RequestCard;
+import com.damian.xBank.modules.banking.account.application.usecase.request.RequestCardCommand;
+import com.damian.xBank.modules.banking.account.application.usecase.request.RequestCardResult;
 import com.damian.xBank.modules.banking.account.application.usecase.set.alias.SetAccountAlias;
 import com.damian.xBank.modules.banking.account.application.usecase.set.alias.SetAccountAliasCommand;
 import com.damian.xBank.modules.banking.account.application.usecase.set.alias.SetAccountAliasResult;
@@ -63,7 +63,12 @@ public class BankingAccountController {
         this.getDailyBalancesByCurrency = getDailyBalancesByCurrency;
     }
 
-    // endpoint to get summary for account currency
+    /**
+     * Endpoint para obtener el resumen de los balances diarios de cada moneda
+     *
+     * @param currency
+     * @return
+     */
     @GetMapping("/banking/accounts/summary/{currency}")
     public ResponseEntity<?> accountSummaryByCurrency(
         @PathVariable @NotNull
@@ -77,7 +82,11 @@ public class BankingAccountController {
             .body(result.dailyBalances());
     }
 
-    // return all the accounts from the logged customer
+    /**
+     * Endpoint para obtener todas las cuentas del usuario actual
+     *
+     * @return GetAllUserAccountsResult
+     */
     @GetMapping("/banking/accounts")
     public ResponseEntity<?> getCustomerBankingAccounts() {
         GetAllUserAccountsQuery query = new GetAllUserAccountsQuery();
@@ -88,7 +97,12 @@ public class BankingAccountController {
             .body(result.accounts());
     }
 
-    // endpoint for logged customer to request for a new BankingAccount
+    /**
+     * Endpoint para obtener que un usuario logeado solicite una nueva cuenta
+     *
+     * @param request CreateBankingAccountRequest
+     * @return CreateAccountResult
+     */
     @PostMapping("/banking/accounts")
     public ResponseEntity<?> requestBankingAccount(
         @Valid @RequestBody
@@ -106,7 +120,13 @@ public class BankingAccountController {
             .body(result);
     }
 
-    // endpoint for logged customer to close his BankingAccount
+    /**
+     * Endpoint para que el usuario actual cierre una cuenta
+     *
+     * @param id
+     * @param request
+     * @return
+     */
     @PatchMapping("/banking/accounts/{id}/close")
     public ResponseEntity<?> closeAccount(
         @PathVariable @NotNull @Positive
@@ -125,7 +145,13 @@ public class BankingAccountController {
             .body(result);
     }
 
-    // endpoint to set an alias for an account
+    /**
+     * Endpoint para que el usuario cambie el alias de su cuenta
+     *
+     * @param id
+     * @param request
+     * @return
+     */
     @PatchMapping("/banking/accounts/{id}/alias")
     public ResponseEntity<?> setAccountAlias(
         @PathVariable @Positive
@@ -141,7 +167,13 @@ public class BankingAccountController {
             .body(result);
     }
 
-    // endpoint for logged customer to request for a new BankingCard
+    /**
+     * Endpoint para que el usuario solicite una tarjeta
+     *
+     * @param id
+     * @param request
+     * @return RequestCardResult
+     */
     @PostMapping("/banking/accounts/{id}/cards")
     public ResponseEntity<?> requestCard(
         @PathVariable @NotNull @Positive

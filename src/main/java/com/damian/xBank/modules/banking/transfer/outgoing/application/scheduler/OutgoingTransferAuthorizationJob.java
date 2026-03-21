@@ -3,9 +3,9 @@ package com.damian.xBank.modules.banking.transfer.outgoing.application.scheduler
 import com.damian.xBank.modules.banking.transfer.outgoing.application.usecase.authorize.AuthorizeOutgoingExternalTransfer;
 import com.damian.xBank.modules.banking.transfer.outgoing.application.usecase.authorize.AuthorizeOutgoingInternalTransfer;
 import com.damian.xBank.modules.banking.transfer.outgoing.application.usecase.authorize.AuthorizeOutgoingTransferCommand;
-import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransferType;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransfer;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransferStatus;
+import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransferType;
 import com.damian.xBank.modules.banking.transfer.outgoing.infrastructure.repository.OutgoingTransferRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,9 +34,6 @@ public class OutgoingTransferAuthorizationJob {
         this.authorizeOutgoingExternalTransfer = authorizeOutgoingExternalTransfer;
     }
 
-    /**
-     *
-     */
     @Transactional
     @Scheduled(fixedDelay = 60000)
     public void authorizeTransfers() {

@@ -29,6 +29,15 @@ public class AdminBankingAccountController {
     }
 
     // endpoint for logged customer to deposit into given account
+
+    /**
+     * TODO: mover a Controller normal y comprobar acceso en elusecase
+     * Endpoint para depositos
+     *
+     * @param id
+     * @param request
+     * @return
+     */
     @PostMapping("/admin/banking/accounts/{id}/deposit")
     public ResponseEntity<?> deposit(
         @PathVariable @NotNull @Positive

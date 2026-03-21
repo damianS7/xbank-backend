@@ -15,8 +15,10 @@ public class BankingTransactionTestBuilder {
     private IncomingTransfer incomingTransfer;
     private BigDecimal amount;
     private String description;
+    private String authorizarionId;
     private BankingTransactionType type;
     private BankingTransactionStatus status;
+    private BankingTransactionPaymentStatus paymentStatus;
 
     public static BankingTransactionTestBuilder builder() {
         return new BankingTransactionTestBuilder();
@@ -53,8 +55,18 @@ public class BankingTransactionTestBuilder {
         return this;
     }
 
+    public BankingTransactionTestBuilder withPaymentStatus(BankingTransactionPaymentStatus status) {
+        this.paymentStatus = status;
+        return this;
+    }
+
     public BankingTransactionTestBuilder withDescription(String description) {
         this.description = description;
+        return this;
+    }
+
+    public BankingTransactionTestBuilder withAuthorizationId(String authorizarionId) {
+        this.authorizarionId = authorizarionId;
         return this;
     }
 
@@ -73,7 +85,9 @@ public class BankingTransactionTestBuilder {
             amount,
             description,
             type,
-            status
+            status,
+            paymentStatus,
+            authorizarionId
         );
     }
 }

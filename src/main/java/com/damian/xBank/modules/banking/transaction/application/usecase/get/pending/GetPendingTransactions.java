@@ -11,7 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 /**
- * Use case for retrieving the pending transactions of the current customer.
+ * Caso de uso para obtener todas las transacciones pendientes.
  */
 @Service
 public class GetPendingTransactions {
@@ -27,15 +27,14 @@ public class GetPendingTransactions {
     }
 
     /**
-     *
-     * @param query the query containing the pagination information
-     * @return a paginated result containing the pending transactions from current customer
+     * @param query Datos de consulta
+     * @return Result con transacciones paginadas
      */
     public PageResult<BankingTransactionResult> execute(GetPendingTransactionsQuery query) {
-        // Current user
+        // Usuario actual
         final User currentUser = authenticationContext.getCurrentUser();
 
-        Page<BankingTransaction> pagedTransactions = bankingTransactionRepository
+        final Page<BankingTransaction> pagedTransactions = bankingTransactionRepository
             .findByStatusAndBankingAccount_User_Id(
                 BankingTransactionStatus.PENDING,
                 currentUser.getId(),

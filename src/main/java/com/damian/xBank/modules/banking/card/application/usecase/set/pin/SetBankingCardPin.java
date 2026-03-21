@@ -10,6 +10,9 @@ import com.damian.xBank.shared.security.PasswordValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Caso de uso para cambiar el PIN de la tarjeta.
+ */
 @Service
 public class SetBankingCardPin {
     private final AuthenticationContext authenticationContext;
@@ -27,33 +30,26 @@ public class SetBankingCardPin {
     }
 
     /**
-     * Updates card pin
-     *
-     * @param command the command with the data needed to perform the operation
-     * @return BankingCard the updated card
+     * @param command Comando con lo necesario para cambiar el pin
      */
     @Transactional
     public BankingCardResult execute(SetBankingCardPinCommand command) {
-        // Current user
+        // Usuario actual
         final User currentUser = authenticationContext.getCurrentUser();
 
-        // Banking card to set pin on
-        final BankingCard bankingCard = bankingCardRepository.findById(command.cardId()).orElseThrow(
-            // Banking card not found
-            () -> new BankingCardNotFoundException(command.cardId()));
+        // Tarjeta a la que se cambia el PIN
+        final BankingCard bankingCard = bankingCardRepository
+            .findById(command.cardId())
+            .orElseThrow(() -> new BankingCardNotFoundException(command.cardId()));
 
-        // run validations if not admin
+        // Comprobaciones de seguridad
         if (!currentUser.isAdmin()) {
-
             bankingCard.assertOwnedBy(currentUser.getId());
-
             passwordValidator.validatePassword(currentUser, command.password());
         }
 
-        // we set the new pin
+        // Cambiar el PIN
         bankingCard.changePIN(command.pin());
-
-        // save the data and return BankingAccount
         bankingCardRepository.save(bankingCard);
 
         return BankingCardResult.from(bankingCard);

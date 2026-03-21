@@ -3,6 +3,8 @@ package com.damian.xBank.modules.banking.card.infrastructure.repository;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.domain.model.CardNumber;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -33,10 +35,11 @@ public interface BankingCardRepository extends JpaRepository<BankingCard, Long> 
                 )
             """
     )
-    Set<BankingCard> findExpiredCards(
+    Page<BankingCard> findExpiredCards(
         @Param("status") BankingCardStatus status,
         @Param("year") int year,
-        @Param("month") int month
+        @Param("month") int month,
+        Pageable pageable
     );
 }
 

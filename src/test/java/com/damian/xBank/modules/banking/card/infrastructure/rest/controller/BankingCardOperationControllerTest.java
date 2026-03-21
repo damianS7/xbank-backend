@@ -13,6 +13,7 @@ import com.damian.xBank.modules.banking.card.infrastructure.rest.request.Authori
 import com.damian.xBank.modules.banking.card.infrastructure.rest.request.CaptureCardPaymentRequest;
 import com.damian.xBank.modules.banking.card.infrastructure.rest.request.WithdrawFromATMRequest;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionPaymentStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionTestBuilder;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
@@ -159,14 +160,16 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
             .withCard(customerBankingCard)
             .withAmount(BigDecimal.valueOf(100))
             .withStatus(BankingTransactionStatus.PENDING)
+            .withPaymentStatus(BankingTransactionPaymentStatus.AUTHORIZED)
             .withType(BankingTransactionType.CARD_CHARGE)
-            .withDescription("Deposit transaction")
+            .withAuthorizationId("1234/1234")
+            .withDescription("Capture transaction")
             .build();
 
         transactionRepository.save(transaction);
 
         CaptureCardPaymentRequest request = new CaptureCardPaymentRequest(
-            transaction.getId()
+            transaction.getAuthorizationId()
         );
 
         // when
@@ -185,7 +188,7 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
 
         // then
         assertThat(response).isNotNull();
-        assertThat(response.status()).isEqualTo(BankingTransactionStatus.COMPLETED);
+        assertThat(response.status()).isEqualTo(BankingTransactionPaymentStatus.CAPTURED);
         assertThat(response.balanceBefore())
             .isEqualByComparingTo(initialBalance);
         assertThat(response.balanceAfter())

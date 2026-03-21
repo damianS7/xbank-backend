@@ -91,19 +91,6 @@ public class BankingTransactionTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("assertOwnedBy returns the transaction when the customer owns it")
-    void assertOwnedBy_WhenValidCustomerId_ReturnsTransaction() {
-        // given
-        Long customerId = customer.getId();
-
-        // when
-        BankingTransaction result = transaction.assertOwnedBy(customerId);
-
-        // then
-        assertThat(result).isSameAs(transaction);
-    }
-
-    @Test
     @DisplayName(
         "assertOwnedBy throws BankingTransactionNotOwnerException when the customer does not own the transaction"
     )
@@ -147,13 +134,15 @@ public class BankingTransactionTest extends AbstractServiceTest {
             .withAmount(BigDecimal.valueOf(100))
             .withDescription("Deposit transaction")
             .withStatus(BankingTransactionStatus.PENDING)
+            .withPaymentStatus(BankingTransactionPaymentStatus.AUTHORIZED)
             .build();
 
         // when
         transaction.capture();
 
         // then
-        Assertions.assertThat(transaction.getStatus()).isEqualTo(BankingTransactionStatus.COMPLETED);
+        assertThat(transaction.getPaymentStatus())
+            .isEqualTo(BankingTransactionPaymentStatus.CAPTURED);
     }
 
     @Test

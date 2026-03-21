@@ -12,6 +12,7 @@ import com.damian.xBank.modules.banking.card.domain.exception.BankingCardLockedE
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotActiveException;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotOwnerException;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardStatusTransitionException;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -72,7 +73,7 @@ public class BankingCard {
     private Instant updatedAt;
 
     protected BankingCard() {
-        // for JPA
+        // constructor JPA
     }
 
     BankingCard(
@@ -175,7 +176,7 @@ public class BankingCard {
     }
 
     private void setStatus(BankingCardStatus newStatus) {
-        // if the actual status is the same as the new ... do nothing
+        // Si el estado actual de la tarjeta es el mismo que el nuevo ... no hacer nada
         if (this.status == newStatus) {
             return;
         }
@@ -192,10 +193,11 @@ public class BankingCard {
         markAsUpdated();
     }
 
-    // returns true if the operation can be carried
+    /**
+     * @param amount Cantidad a comparar con el balance
+     * @return true si tiene fondos
+     */
     public boolean hasSufficientFunds(BigDecimal amount) {
-        // if its 0 then balance is equal to the amount willing to spend
-        // if its 1 then balance is greater than the amount willing to spend
         return this.getBankingAccount().hasSufficientFunds(amount);
     }
 
@@ -208,8 +210,6 @@ public class BankingCard {
     }
 
     public boolean isOwnedBy(Long userId) {
-
-        // compare card owner id with given user id
         return Objects.equals(getOwner().getId(), userId);
     }
 
@@ -230,22 +230,22 @@ public class BankingCard {
     /**
      * Comprueba que un pago puede llevarse a cabo y lo autoriza.
      *
-     * @param amount
-     * @param expiryMonth
-     * @param expiryYear
-     * @param cvv
+     * @param amount      Cantidad a comparar con el balance
+     * @param expiryMonth Mes de expiración de la tarjeta
+     * @param expiryYear  Año de expiración de la tarjeta
+     * @param cvv         CVV de la tarjeta
      */
-    public void authorize(
-        BigDecimal amount,
-        Integer expiryMonth,
-        Integer expiryYear,
-        String cvv
-    ) {
+    public void authorize(BigDecimal amount, Integer expiryMonth, Integer expiryYear, String cvv) {
         assertUsable();
         assertSufficientFunds(amount);
         validateExpirationYear(expiryYear);
         validateExpirationMonth(expiryMonth);
         assertCorrectCvv(cvv);
+    }
+
+    public void capture(BankingTransaction transaction) {
+        this.charge(transaction.getAmount());
+        transaction.capture();
     }
 
     public void charge(BigDecimal amount) {
@@ -261,9 +261,9 @@ public class BankingCard {
     }
 
     /**
-     * Activate the card.
+     * Activa la tarjeta
      *
-     * @param cvv
+     * @param cvv Código CVV necesario para la activación
      */
     public void activate(String cvv) {
         assertCorrectCvv(cvv);
@@ -287,10 +287,10 @@ public class BankingCard {
     }
 
     /**
-     * Assert the has sufficient funds.
+     * Asegura que se tienen fondos suficientes.
      *
-     * @param amount the amount to check
-     * @throws BankingCardInsufficientFundsException if the card does not have sufficient funds
+     * @param amount Cantidad a comparar con el balance
+     * @throws BankingCardInsufficientFundsException Si la tarjeta no tiene fondos
      */
     public void assertSufficientFunds(BigDecimal amount) {
         if (!this.hasSufficientFunds(amount)) {
@@ -299,46 +299,36 @@ public class BankingCard {
     }
 
     /**
-     * Assert the ownership of the card belongs to {@link User}.
+     * Asegura el ownership de la tarjeta con {@link User}.
      *
-     * @param userId the user to check ownership against
-     * @return the current validator instance for chaining
-     * @throws BankingCardNotOwnerException if the card does not belong to the user
+     * @param userId El ID de usuario a comparar con el dueño de la tarjeta
+     * @throws BankingCardNotOwnerException Si la tarjeta no pertenece al user ID
      */
-    public BankingCard assertOwnedBy(Long userId) {
+    public void assertOwnedBy(Long userId) {
 
         // compare card owner id with given user id
         if (!isOwnedBy(userId)) {
             throw new BankingCardNotOwnerException(getId(), userId);
         }
-
-        return this;
     }
 
     /**
-     * Assert the card PIN matches.
+     * Assert que el PIN de la tarjeta coincide.
      *
-     * @return the current validator instance for chaining
-     * @throws BankingCardInvalidPinException if the card PIN does not equals to the given PIN
+     * @throws BankingCardInvalidPinException Si {@code PIN} no coincide con el de la tarjeta
      */
-    public BankingCard assertCorrectPin(String PIN) {
-
-        // check card pin
+    public void assertCorrectPin(String PIN) {
         if (!Objects.equals(getCardPin(), PIN)) {
             throw new BankingCardInvalidPinException(getId());
         }
-
-        return this;
     }
 
     /**
-     * Assert the card cvv matches.
+     * Assert que el CVV coincide con el de la tarjeta.
      *
-     * @throws BankingCardInvalidCvvException if the card CVV does not equals to the given CVV
+     * @throws BankingCardInvalidCvvException Si {@code cvv} no coincide con el cvv de la tarjeta
      */
     public void assertCorrectCvv(String cvv) {
-
-        // check card pin
         if (!Objects.equals(getCardCvv(), cvv)) {
             throw new BankingCardInvalidCvvException(getId());
         }
@@ -357,21 +347,20 @@ public class BankingCard {
     }
 
     /**
-     * Assert card is not DISABLED.
+     * Assert que la tarjeta está en estado ACTIVE.
      *
-     * @throws BankingCardDisabledException if the card is locked
+     * @throws BankingCardDisabledException si la tarjeta está en estado DISABLED
      */
     public void assertEnabled() {
-        // check card status
         if (isDisabled()) {
             throw new BankingCardDisabledException(getId());
         }
     }
 
     /**
-     * Assert card is not LOCKED.
+     * Assert que la tarjeta no está en estado LOCKED
      *
-     * @throws BankingCardLockedException if the card is locked
+     * @throws BankingCardLockedException Si la tarjeta está en estado LOCKED
      */
     public void assertUnlocked() {
         if (isLocked()) {
@@ -380,10 +369,10 @@ public class BankingCard {
     }
 
     /**
-     * Assert card is not DISABLED or LOCKED and can be used for any operation.
+     * Assert que la tarjeta no está DISABLED o LOCKED.
      *
-     * @throws BankingCardDisabledException if the card is disabled
-     * @throws BankingCardLockedException   if the card is locked
+     * @throws BankingCardDisabledException Si la tarjeta está DISABLED
+     * @throws BankingCardLockedException   Si la tarjeta está LOCKED
      */
     public void assertUsable() {
         this.assertActivated();
@@ -392,18 +381,16 @@ public class BankingCard {
     }
 
     /**
-     * Validate that current card can spend.
+     * Asser que la tarjeta puede gastar la cantidad indicada.
      *
-     * @param amount  the amount to spend
-     * @param cardPin the pin of the card
+     * @param amount  La cantidad a gastar
+     * @param cardPin El pin de la tarjeta introducido por el usuario
      */
     public void assertCanSpend(
         User actor,
         BigDecimal amount,
         String cardPin
     ) {
-        // check the account status and see if can be used to operate
-        // run validations for the card and throw exception
         this.assertOwnedBy(actor.getId());
         this.assertUsable();
         this.assertCorrectPin(cardPin);
@@ -411,9 +398,9 @@ public class BankingCard {
     }
 
     /**
-     * Validate input year equals to the card expiration year
+     * Válida el año expiración de la tarjeta
      *
-     * @param year
+     * @param year Año introducido por el usuario
      */
     public void validateExpirationYear(int year) {
         if (this.getExpiration().getYear() != year) {
@@ -422,9 +409,9 @@ public class BankingCard {
     }
 
     /**
-     * Validate input year equals to the card expiration month
+     * Válida el mes expiración de la tarjeta
      *
-     * @param month
+     * @param month Mes introducido por el usuario
      */
     public void validateExpirationMonth(int month) {
         if (this.getExpiration().getMonth() != month) {

@@ -12,8 +12,7 @@ import com.damian.xBank.modules.payment.checkout.infrastructure.http.response.Pa
 import org.springframework.stereotype.Service;
 
 /**
- * This is used by the payment-gateway to check if the card is authorized to
- * carry the operation.
+ * Caso de uso donde el payment-gateway intenta autorizar un pago.
  */
 @Service
 public class AuthorizeCardPayment {
@@ -29,18 +28,20 @@ public class AuthorizeCardPayment {
     }
 
     /**
+     * Autoriza un pago con tarjeta.
      *
-     * @param command
+     * @param command datos necesarios para autorizar el pago
+     * @return resultado de la autorización del pago
      */
+    // TODO cambiar PaymentAuthorizationResponse a result???
     public PaymentAuthorizationResponse execute(AuthorizeCardPaymentCommand command) {
-        // check card exists
+        // Buscar la tarjeta
         BankingCard bankingCard = bankingCardRepository
             .findByCardNumber(CardNumber.of(command.cardNumber()))
-            .orElseThrow(
-                () -> new BankingCardNotFoundException(command.cardNumber())
-            );
+            .orElseThrow(() -> new BankingCardNotFoundException(command.cardNumber()));
 
-        // check security
+        // Comprobar que la tarjeta puede realizar el pago
+        // TODO return un authorizationId? o una transaccion?
         bankingCard.authorize(
             command.amount(),
             command.expiryMonth(),
@@ -53,9 +54,13 @@ public class AuthorizeCardPayment {
             bankingCard,
             command.amount(),
             command.merchant()
+            // authorizationId
         );
 
-        // store here the transaction as AUTHORIZED
+        // TODO ???
+        //        transaction.authorize(command);
+
+        // Guarda la transacción
         transaction = bankingTransactionRepository.save(transaction);
 
         return new PaymentAuthorizationResponse(

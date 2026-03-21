@@ -1,13 +1,13 @@
 package com.damian.xBank.modules.banking.card.infrastructure.rest.controller;
 
-import com.damian.xBank.modules.banking.card.application.usecase.authorize.AuthorizeCardPaymentCommand;
-import com.damian.xBank.modules.banking.card.application.usecase.capture.CaptureCardPaymentCommand;
-import com.damian.xBank.modules.banking.card.application.usecase.get.GetAllCurrentUserCardsQuery;
-import com.damian.xBank.modules.banking.card.application.usecase.capture.CaptureCardPaymentResult;
-import com.damian.xBank.modules.banking.card.application.usecase.get.GetAllCurrentUserBankingCardsResult;
 import com.damian.xBank.modules.banking.card.application.usecase.authorize.AuthorizeCardPayment;
+import com.damian.xBank.modules.banking.card.application.usecase.authorize.AuthorizeCardPaymentCommand;
 import com.damian.xBank.modules.banking.card.application.usecase.capture.CaptureCardPayment;
+import com.damian.xBank.modules.banking.card.application.usecase.capture.CaptureCardPaymentCommand;
+import com.damian.xBank.modules.banking.card.application.usecase.capture.CaptureCardPaymentResult;
 import com.damian.xBank.modules.banking.card.application.usecase.get.GetAllCurrentUserBankingCards;
+import com.damian.xBank.modules.banking.card.application.usecase.get.GetAllCurrentUserBankingCardsResult;
+import com.damian.xBank.modules.banking.card.application.usecase.get.GetAllCurrentUserCardsQuery;
 import com.damian.xBank.modules.banking.card.infrastructure.rest.request.AuthorizeCardPaymentRequest;
 import com.damian.xBank.modules.banking.card.infrastructure.rest.request.CaptureCardPaymentRequest;
 import com.damian.xBank.modules.payment.checkout.infrastructure.http.response.PaymentAuthorizationResponse;
@@ -39,7 +39,11 @@ public class BankingCardController {
         this.captureCardPayment = captureCardPayment;
     }
 
-    // endpoint to fetch all cards of logged customer
+    /**
+     * Devuelve todas las tarjetas de un usuario
+     *
+     * @return Result con las tarjetas del usuario
+     */
     @GetMapping("/banking/cards")
     public ResponseEntity<?> getCustomerBankingCards() {
         GetAllCurrentUserCardsQuery query = new GetAllCurrentUserCardsQuery();
@@ -50,7 +54,12 @@ public class BankingCardController {
             .body(result.cards());
     }
 
-    // endpoint for card authorization
+    /**
+     * Autoriza un pago
+     *
+     * @param request Petición con los datos requeridos
+     * @return Result con la respuesta de la autorización
+     */
     @PostMapping("/banking/cards/authorize")
     public ResponseEntity<?> authorizeCard(
         @Valid @RequestBody
@@ -73,7 +82,12 @@ public class BankingCardController {
             .body(result);
     }
 
-    // endpoint for card authorization
+    /**
+     * Usado por un merchant para reclamar sus fondos.
+     *
+     * @param request Petición con los datos requeridos
+     * @return Result con la respuesta
+     */
     @PostMapping("/banking/cards/capture")
     public ResponseEntity<?> capturePayment(
         @Valid @RequestBody

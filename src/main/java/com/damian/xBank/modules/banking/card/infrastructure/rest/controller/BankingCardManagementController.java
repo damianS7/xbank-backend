@@ -1,16 +1,16 @@
 package com.damian.xBank.modules.banking.card.infrastructure.rest.controller;
 
-import com.damian.xBank.modules.banking.card.application.usecase.activate.ActivateBankingCardCommand;
-import com.damian.xBank.modules.banking.card.application.usecase.lock.LockBankingCardCommand;
-import com.damian.xBank.modules.banking.card.application.usecase.set.limit.SetBankingCardDailyLimitCommand;
-import com.damian.xBank.modules.banking.card.application.usecase.set.pin.SetBankingCardPinCommand;
-import com.damian.xBank.modules.banking.card.application.usecase.lock.UnlockBankingCardCommand;
 import com.damian.xBank.modules.banking.card.application.dto.BankingCardResult;
 import com.damian.xBank.modules.banking.card.application.usecase.activate.ActivateBankingCard;
+import com.damian.xBank.modules.banking.card.application.usecase.activate.ActivateBankingCardCommand;
 import com.damian.xBank.modules.banking.card.application.usecase.lock.LockBankingCard;
-import com.damian.xBank.modules.banking.card.application.usecase.set.limit.SetBankingCardDailyLimit;
-import com.damian.xBank.modules.banking.card.application.usecase.set.pin.SetBankingCardPin;
+import com.damian.xBank.modules.banking.card.application.usecase.lock.LockBankingCardCommand;
 import com.damian.xBank.modules.banking.card.application.usecase.lock.UnlockBankingCard;
+import com.damian.xBank.modules.banking.card.application.usecase.lock.UnlockBankingCardCommand;
+import com.damian.xBank.modules.banking.card.application.usecase.set.limit.SetBankingCardDailyLimit;
+import com.damian.xBank.modules.banking.card.application.usecase.set.limit.SetBankingCardDailyLimitCommand;
+import com.damian.xBank.modules.banking.card.application.usecase.set.pin.SetBankingCardPin;
+import com.damian.xBank.modules.banking.card.application.usecase.set.pin.SetBankingCardPinCommand;
 import com.damian.xBank.modules.banking.card.infrastructure.rest.request.ActivateBankingCardRequest;
 import com.damian.xBank.modules.banking.card.infrastructure.rest.request.LockBankingCardRequest;
 import com.damian.xBank.modules.banking.card.infrastructure.rest.request.SetBankingCardDailyLimitRequest;
@@ -53,7 +53,13 @@ public class BankingCardManagementController {
         this.activateBankingCard = activateBankingCard;
     }
 
-    // endpoint for logged customer to set PIN on a BankingCard
+    /**
+     * Cambio de PIN de una tarjeta
+     *
+     * @param id      El ID de la tarjeta
+     * @param request La petición con los datos requeridos
+     * @return 200 Si se hace el cambio
+     */
     @PatchMapping("/banking/cards/{id}/pin")
     public ResponseEntity<?> updatePin(
         @PathVariable @Positive
@@ -74,7 +80,13 @@ public class BankingCardManagementController {
             .body(result);
     }
 
-    // endpoint for logged customer to set a daily limit
+    /**
+     * Cambio de límite de gasto diario de una tarjeta
+     *
+     * @param id      El ID de la tarjeta
+     * @param request La petición con los datos requeridos
+     * @return 200 Si se hace el cambio
+     */
     @PatchMapping("/banking/cards/{id}/daily-limit")
     public ResponseEntity<?> updateDailyLimit(
         @PathVariable @Positive
@@ -94,7 +106,13 @@ public class BankingCardManagementController {
             .body(result);
     }
 
-    // endpoint for logged customer to lock or unlock a BankingCard
+    /**
+     * Bloquea una tarjeta
+     *
+     * @param id      El ID de la tarjeta
+     * @param request La petición con los datos requeridos
+     * @return 200 Si se hace el bloqueo
+     */
     @PatchMapping("/banking/cards/{id}/lock")
     public ResponseEntity<?> lock(
         @PathVariable @Positive
@@ -110,7 +128,13 @@ public class BankingCardManagementController {
             .body(result);
     }
 
-    // endpoint for logged customer to lock or unlock a BankingCard
+    /**
+     * Desbloquea una tarjeta
+     *
+     * @param id      El ID de la tarjeta
+     * @param request La petición con los datos requeridos
+     * @return 200 Si se hace el cambio
+     */
     @PatchMapping("/banking/cards/{id}/unlock")
     public ResponseEntity<?> unlock(
         @PathVariable @Positive
@@ -126,7 +150,13 @@ public class BankingCardManagementController {
             .body(result);
     }
 
-    // endpoint for BankingCard activation
+    /**
+     * Activación de una tarjeta
+     *
+     * @param id      El ID de la tarjeta
+     * @param request La petición con los datos requeridos
+     * @return 200 Si se hace la activación correctamente
+     */
     @PatchMapping("/banking/cards/{id}/activate")
     public ResponseEntity<?> activate(
         @PathVariable @Positive

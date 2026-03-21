@@ -178,6 +178,7 @@ CREATE TABLE public.banking_transactions
     outgoing_transfer_id int4 NULL,
     incoming_transfer_id int4 NULL,
     card_id              int4 NULL,
+    authorization_id     VARCHAR(36)    NOT NULL,
     balance_before       numeric(15, 2) NOT NULL,
     balance_after        numeric(15, 2) NOT NULL,
     transaction_type     VARCHAR(30)    NOT NULL,

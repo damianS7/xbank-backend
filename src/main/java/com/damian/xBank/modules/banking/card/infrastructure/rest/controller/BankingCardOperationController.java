@@ -1,8 +1,8 @@
 package com.damian.xBank.modules.banking.card.infrastructure.rest.controller;
 
+import com.damian.xBank.modules.banking.card.application.usecase.withdraw.WithdrawFromATM;
 import com.damian.xBank.modules.banking.card.application.usecase.withdraw.WithdrawFromATMCommand;
 import com.damian.xBank.modules.banking.card.application.usecase.withdraw.WithdrawFromATMResult;
-import com.damian.xBank.modules.banking.card.application.usecase.withdraw.WithdrawFromATM;
 import com.damian.xBank.modules.banking.card.infrastructure.rest.request.WithdrawFromATMRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -27,7 +27,13 @@ public class BankingCardOperationController {
         this.withdrawFromATM = withdrawFromATM;
     }
 
-    // endpoint for logged customer to withdraw from card
+    /**
+     * Endpoint para hacer retiros
+     *
+     * @param id      de la tarjeta sobre la que se va a hacer el retiro
+     * @param request Petición con los datos requeridos
+     * @return La transacción generada para la operación.
+     */
     @PostMapping("/banking/cards/{id}/withdraw")
     public ResponseEntity<?> withdraw(
         @PathVariable @Positive

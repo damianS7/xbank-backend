@@ -47,7 +47,12 @@ public class BankingTransactionController {
         this.getPendingTransactions = getPendingTransactions;
     }
 
-    // endpoint for logged customer to get a single BankingTransaction by id
+    /**
+     * Devuelve una transacción
+     *
+     * @param id El ID de la transacción
+     * @return La transacción consultada
+     */
     @GetMapping("/banking/transactions/{id}")
     public ResponseEntity<?> getTransaction(
         @PathVariable @NotNull @Positive
@@ -61,7 +66,12 @@ public class BankingTransactionController {
             .body(result);
     }
 
-    // endpoint for logged customer to get all pending transactions of a BankingAccount
+    /**
+     * Devuelve todas las transacciones pendientes
+     *
+     * @param pageable Pagina requerida
+     * @return Las transacciones paginadas
+     */
     @GetMapping("/banking/transactions/pending")
     public ResponseEntity<?> getPendingTransactions(
         @PageableDefault(size = 2, sort = "createdAt", direction = Sort.Direction.DESC)
@@ -76,6 +86,14 @@ public class BankingTransactionController {
     }
 
     // endpoint for logged customer to get all transactions of a BankingCard
+
+    /**
+     * Devuelve las transacciones de una tarjeta
+     *
+     * @param id       El ID de la tarjeta
+     * @param pageable Datos de paginación
+     * @return Las transacciones paginadas
+     */
     @GetMapping("/banking/cards/{id}/transactions")
     public ResponseEntity<?> getCardTransactions(
         @PathVariable @Positive
@@ -93,6 +111,14 @@ public class BankingTransactionController {
     }
 
     // endpoint for logged customer to get all transactions of a BankingAccount
+
+    /**
+     * Devuelve las transacciones de una cuenta
+     *
+     * @param id       El ID de la tarjeta
+     * @param pageable Datos de paginación
+     * @return Las transacciones paginadas
+     */
     @GetMapping("/banking/accounts/{id}/transactions")
     public ResponseEntity<?> getAccountTransactions(
         @PathVariable @Positive

@@ -14,8 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Withdraw money from ATM using banking card.
- *
+ * Caso de uso que representa el retiro de fondos de un cajero ATM.
  */
 @Service
 public class WithdrawFromATM {
@@ -40,23 +39,20 @@ public class WithdrawFromATM {
     }
 
     /**
-     * Withdraw money from ATM
-     *
-     * @param command the command with the data needed to perform the operation
-     * @return the created transaction
+     * @param command Comando con los datos necesario para la operación
+     * @return Resultado con la transacción
      */
     @Transactional
     public WithdrawFromATMResult execute(WithdrawFromATMCommand command) {
-        // Current user
+        // Usuario actual
         final User currentUser = authenticationContext.getCurrentUser();
 
-        BankingCard bankingCard = bankingCardRepository
+        // La tarjeta que realiza el retiro
+        final BankingCard bankingCard = bankingCardRepository
             .findById(command.cardId())
-            .orElseThrow(
-                () -> new BankingCardNotFoundException(command.cardId())
-            );
+            .orElseThrow(() -> new BankingCardNotFoundException(command.cardId()));
 
-        // run validations for the card and throw exception
+        // Comprobaciones de seguridad
         bankingCard.assertCanSpend(currentUser, command.amount(), command.pin());
 
         BankingTransaction transaction = BankingTransaction.create(
@@ -70,7 +66,7 @@ public class WithdrawFromATM {
         transaction.complete();
         bankingTransactionRepository.save(transaction);
 
-        // Notify the user
+        // Notificar al usuario
         notificationPublisher.publish(
             notificationEventFactory.withdrawCompleted(transaction)
         );

@@ -10,6 +10,7 @@ import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardTestBuilder;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionPaymentStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionTestBuilder;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
@@ -27,7 +28,7 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 public class CaptureCardPaymentTest extends AbstractServiceTest {
@@ -77,23 +78,28 @@ public class CaptureCardPaymentTest extends AbstractServiceTest {
             .withAccount(bankingAccount)
             .withCard(bankingCard)
             .withAmount(bankingAccount.getBalance())
+            .withAuthorizationId("1233/1234")
             .withStatus(BankingTransactionStatus.PENDING)
+            .withPaymentStatus(BankingTransactionPaymentStatus.AUTHORIZED)
             .withType(BankingTransactionType.CARD_CHARGE)
             .withDescription("AMAZON.COM")
             .build();
 
         CaptureCardPaymentCommand command = new CaptureCardPaymentCommand(
-            transaction.getId()
+            transaction.getAuthorizationId()
         );
 
-        when(bankingTransactionRepository.findById(anyLong()))
+        when(bankingTransactionRepository.findByAuthorizationId(anyString()))
             .thenReturn(Optional.of(transaction));
 
         // then
         captureCardPayment.execute(command);
 
-        assertThat(transaction).isNotNull();
-        assertThat(transaction.getStatus()).isEqualTo(BankingTransactionStatus.COMPLETED);
+        assertThat(transaction)
+            .isNotNull()
+            .extracting(
+                BankingTransaction::getPaymentStatus
+            ).isEqualTo(BankingTransactionPaymentStatus.CAPTURED);
         assertThat(bankingAccount.getBalance()).isEqualTo(BigDecimal.ZERO);
     }
 }

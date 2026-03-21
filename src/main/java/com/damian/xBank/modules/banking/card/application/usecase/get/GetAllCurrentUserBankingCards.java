@@ -5,36 +5,33 @@ import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
-import com.damian.xBank.shared.security.PasswordValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Caso de uso donde el usuario obtiene todas sus tarjetas.
+ */
 @Service
 public class GetAllCurrentUserBankingCards {
     private final AuthenticationContext authenticationContext;
-    private final PasswordValidator passwordValidator;
     private final BankingCardRepository bankingCardRepository;
 
     public GetAllCurrentUserBankingCards(
         AuthenticationContext authenticationContext,
-        PasswordValidator passwordValidator,
         BankingCardRepository bankingCardRepository
     ) {
         this.authenticationContext = authenticationContext;
-        this.passwordValidator = passwordValidator;
         this.bankingCardRepository = bankingCardRepository;
     }
 
     /**
-     * Get all banking cards of the current user.
-     *
-     * @param query
-     * @return
+     * @param query Consulta con los datos necesarios
+     * @return Result con todas las tarjetas
      */
     public GetAllCurrentUserBankingCardsResult execute(GetAllCurrentUserCardsQuery query) {
-        // Current user
+        // Usuario actual
         final User currentUser = authenticationContext.getCurrentUser();
 
         Set<BankingCard> bankingCards = bankingCardRepository.findCardsByUserId(currentUser.getId());

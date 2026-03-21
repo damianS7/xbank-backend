@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.banking.card.application.usecase.capture;
 
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
-import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionPaymentStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 
 import java.math.BigDecimal;
@@ -13,7 +13,7 @@ public record CaptureCardPaymentResult(
     BigDecimal balanceAfter,
     String description,
     BankingTransactionType type,
-    BankingTransactionStatus status
+    BankingTransactionPaymentStatus status
 ) {
     public static CaptureCardPaymentResult from(BankingTransaction transaction) {
         return new CaptureCardPaymentResult(
@@ -23,7 +23,7 @@ public record CaptureCardPaymentResult(
             transaction.getBalanceAfter(),
             transaction.getDescription(),
             transaction.getType(),
-            transaction.getStatus()
+            transaction.getPaymentStatus()
         );
     }
 }

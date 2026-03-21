@@ -5,12 +5,11 @@ import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTran
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.stereotype.Service;
 
 /**
- * Use case for retrieving a single transaction by id.
+ * Caso de uso donde se consulta una transacción
  */
 @Service
 public class GetTransaction {
@@ -26,25 +25,20 @@ public class GetTransaction {
     }
 
     /**
-     * Returns a single transaction by id.
-     *
-     * @param query
-     * @return requested transaction
+     * @param query Consulta
+     * @return Result con los datos de la transacción
      */
     public BankingTransactionDetailResult execute(GetTransactionQuery query) {
-        // Current user
+        // Usuario actual
         final User currentUser = authenticationContext.getCurrentUser();
 
-        BankingTransaction transaction = bankingTransactionRepository
+        // La transacción consultada
+        final BankingTransaction transaction = bankingTransactionRepository
             .findById(query.transactionId())
-            .orElseThrow(
-                () -> new BankingTransactionNotFoundException(query.transactionId())
-            );
+            .orElseThrow(() -> new BankingTransactionNotFoundException(query.transactionId()));
 
-        // if the current user is a customer ...
-        if (currentUser.hasRole(UserRole.CUSTOMER)) {
-
-            // assert transaction belongs to him
+        // Si no es admin ...
+        if (!currentUser.isAdmin()) {
             transaction.assertOwnedBy(currentUser.getId());
         }
 

@@ -8,8 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Payment network will use this to capture merchant authorized funds
- * TODO: Maybe this is not the place? Move/Add to payment network module?
+ * Caso de uso donde PaymentNetwork intenta capturar los fondos pertenecientes a un merchant.
  */
 @Service
 public class CaptureCardPayment {
@@ -22,31 +21,20 @@ public class CaptureCardPayment {
     }
 
     /**
-     * Capture the authorized amount and mark transaction as completed
-     *
-     * @param command
+     * @param command comando con los datos necesarios
      */
     @Transactional
     public CaptureCardPaymentResult execute(CaptureCardPaymentCommand command) {
-        // check transaction exists
+        // Buscar la transacción asociada
         BankingTransaction transaction = bankingTransactionRepository
-            .findById(command.authorizationId())
-            .orElseThrow(
-                () -> new BankingTransactionNotFoundException(command.authorizationId())
-            );
+            .findByAuthorizationId(command.authorizationId())
+            .orElseThrow(() -> new BankingTransactionNotFoundException(command.authorizationId()));
 
-        // mark as captured
-        transaction.capture();
-
-        // deduct from card
+        // Tarjeta asociada a la transacción
         BankingCard card = transaction.getBankingCard();
-        card.charge(transaction.getAmount());
 
-        // Notify the user
-        //        notificationPublisher.publish(
-        //                notificationEventFactory.cardPaymentCompleted(transaction)
-        //        );
-
+        // Capturar fondos
+        card.capture(transaction);
         bankingTransactionRepository.save(transaction);
 
         return CaptureCardPaymentResult.from(transaction);

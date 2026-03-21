@@ -10,6 +10,9 @@ import com.damian.xBank.shared.security.PasswordValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Caso de uso donde se establece el lìmite diario de gasto de una tarjeta
+ */
 @Service
 public class SetBankingCardDailyLimit {
     private final AuthenticationContext authenticationContext;
@@ -28,33 +31,27 @@ public class SetBankingCardDailyLimit {
 
 
     /**
-     * Update the daily limit of the card.
-     *
-     * @param command the command with the data needed to perfom the operation
-     * @return BankingCard the updated card
+     * @param command Comando con los datos necesarios
+     * @return Result con el nuevo límite establecido
      */
     @Transactional
     public BankingCardResult execute(SetBankingCardDailyLimitCommand command) {
-        // Current user
+        // Usuario actual
         final User currentUser = authenticationContext.getCurrentUser();
 
-        // Banking card to set limit on
-        final BankingCard bankingCard = bankingCardRepository.findById(command.cardId()).orElseThrow(
-            // Banking card not found
-            () -> new BankingCardNotFoundException(command.cardId()));
+        // La tarjeta a la que se cambia el límite
+        final BankingCard bankingCard = bankingCardRepository
+            .findById(command.cardId())
+            .orElseThrow(() -> new BankingCardNotFoundException(command.cardId()));
 
-        // run validations if not admin
+        // Comprobar seguridad
         if (!currentUser.isAdmin()) {
-
             bankingCard.assertOwnedBy(currentUser.getId());
-
             passwordValidator.validatePassword(currentUser, command.password());
         }
 
-        // we set the limit of the card
+        // Establecer el nuevo límite
         bankingCard.limit(command.dailyLimit());
-
-        // save the data and return BankingCard
         bankingCardRepository.save(bankingCard);
 
         return BankingCardResult.from(bankingCard);
