@@ -1,9 +1,7 @@
-package com.damian.xBank.modules.payment.checkout.application.usecase;
+package com.damian.xBank.modules.payment.checkout.application.usecase.submit;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.payment.checkout.application.PaymentNetworkGateway;
-import com.damian.xBank.modules.payment.checkout.application.usecase.submit.SubmitPaymentCheckout;
-import com.damian.xBank.modules.payment.checkout.application.usecase.submit.SubmitPaymentCheckoutCommand;
 import com.damian.xBank.modules.payment.checkout.domain.PaymentAuthorizationStatus;
 import com.damian.xBank.modules.payment.checkout.infrastructure.http.request.PaymentAuthorizationRequest;
 import com.damian.xBank.modules.payment.checkout.infrastructure.http.response.PaymentAuthorizationResponse;
@@ -53,7 +51,7 @@ public class SubmitPaymentCheckoutTest extends AbstractServiceTest {
 
     @Test
     @DisplayName("returns authorized payment intent")
-    void checkoutSubmit_WhenValidRequest_ReturnsAuthorizedPaymentIntent() {
+    void submitPaymentCheckout_WhenValidRequest_ReturnsAuthorizedPaymentIntent() {
         // given
         PaymentIntent paymentIntent = PaymentIntent.create(
             customer,

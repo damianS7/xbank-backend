@@ -35,7 +35,8 @@ public class PaymentNetworkHttpGateway implements PaymentNetworkGateway {
             .uri(paymentNetworkEndpoint)
             .body(request)
             .exchange((req, response) -> {
-                // response if error
+
+                // Response en caso de error
                 if (response.getStatusCode().isError()) {
                     ApiResponse apiResponse = response.bodyTo(ApiResponse.class);
                     return new PaymentAuthorizationResponse(
@@ -45,7 +46,7 @@ public class PaymentNetworkHttpGateway implements PaymentNetworkGateway {
                     );
                 }
 
-                // response if success
+                // Response si no hay error
                 return response.bodyTo(PaymentAuthorizationResponse.class);
             });
     }

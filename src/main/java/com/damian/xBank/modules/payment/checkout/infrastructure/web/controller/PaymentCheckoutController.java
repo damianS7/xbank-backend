@@ -5,6 +5,7 @@ import com.damian.xBank.modules.payment.checkout.application.usecase.submit.Subm
 import com.damian.xBank.modules.payment.checkout.domain.PaymentCheckoutForm;
 import com.damian.xBank.modules.payment.checkout.domain.excepcion.PaymentCheckoutException;
 import com.damian.xBank.modules.payment.intent.application.usecase.get.GetPaymentIntent;
+import com.damian.xBank.modules.payment.intent.application.usecase.get.GetPaymentIntentQuery;
 import com.damian.xBank.modules.payment.intent.application.usecase.get.GetPaymentIntentResult;
 import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntentStatus;
 import com.damian.xBank.shared.exception.ErrorCodes;
@@ -53,8 +54,8 @@ public class PaymentCheckoutController {
         @PathVariable @Positive Long id,
         Model model
     ) {
-        // Get payment
-        GetPaymentIntentResult result = getPaymentIntent.execute(id);
+        GetPaymentIntentQuery query = new GetPaymentIntentQuery(id);
+        GetPaymentIntentResult result = getPaymentIntent.execute(query);
         if (result.status() != PaymentIntentStatus.PENDING) {
             return "redirect:/payments/" + id + "/status";
         }
@@ -79,8 +80,8 @@ public class PaymentCheckoutController {
         @PathVariable Long id,
         Model model
     ) {
-        // Get payment
-        GetPaymentIntentResult result = getPaymentIntent.execute(id);
+        GetPaymentIntentQuery query = new GetPaymentIntentQuery(id);
+        GetPaymentIntentResult result = getPaymentIntent.execute(query);
 
         // read only fields
         model.addAttribute("paymentId", result.id());

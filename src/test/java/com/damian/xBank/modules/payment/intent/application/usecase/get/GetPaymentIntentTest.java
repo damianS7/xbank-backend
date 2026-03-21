@@ -1,9 +1,6 @@
-package com.damian.xBank.modules.payment.intent.application.usecase;
+package com.damian.xBank.modules.payment.intent.application.usecase.get;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
-import com.damian.xBank.modules.payment.intent.application.usecase.create.CreatePaymentIntent;
-import com.damian.xBank.modules.payment.intent.application.usecase.create.CreatePaymentIntentCommand;
-import com.damian.xBank.modules.payment.intent.application.usecase.create.CreatePaymentIntentResult;
 import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntent;
 import com.damian.xBank.modules.payment.intent.infrastructure.repository.PaymentIntentRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -16,20 +13,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
-public class CreatePaymentIntentTest extends AbstractServiceTest {
+public class GetPaymentIntentTest extends AbstractServiceTest {
 
     @Mock
     private PaymentIntentRepository paymentIntentRepository;
 
     @InjectMocks
-    private CreatePaymentIntent createPaymentIntent;
+    private GetPaymentIntent getPaymentIntent;
 
     private User customer;
 
@@ -43,31 +39,24 @@ public class CreatePaymentIntentTest extends AbstractServiceTest {
     }
 
     @Test
-    @DisplayName("returns created payment intent")
-    void createPaymentIntent_WhenValidRequest_ReturnsCreatedPaymentIntent() {
+    @DisplayName("returns payment intent")
+    void getPaymentIntent_ReturnsPaymentIntent() {
         // given
-        setUpContext(customer);
-
         PaymentIntent paymentIntent = PaymentIntent.create(
             customer,
             BigDecimal.valueOf(100),
             BankingAccountCurrency.EUR
         );
 
-        CreatePaymentIntentCommand command = new CreatePaymentIntentCommand(
-            paymentIntent.getAmount(),
-            paymentIntent.getCurrency().toString()
-        );
+        GetPaymentIntentQuery query = new GetPaymentIntentQuery(1L);
 
         // when
-        when(paymentIntentRepository.save(any(PaymentIntent.class)))
-            .thenAnswer(invocation -> invocation.getArgument(0));
+        when(paymentIntentRepository.findById(anyLong()))
+            .thenReturn(Optional.of(paymentIntent));
 
-        CreatePaymentIntentResult result = createPaymentIntent.execute(command);
+        GetPaymentIntentResult result = getPaymentIntent.execute(query);
 
         // then
-        assertThat(result)
-            .isNotNull();
-        verify(paymentIntentRepository, times(1)).save(any(PaymentIntent.class));
+        assertThat(result).isNotNull();
     }
 }

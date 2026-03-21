@@ -19,10 +19,10 @@ public class GetPaymentIntent {
         this.paymentIntentRepository = paymentIntentRepository;
     }
 
-    public GetPaymentIntentResult execute(Long id) {
-        PaymentIntent paymentIntent = paymentIntentRepository.findById(id).orElseThrow(
-            () -> new PaymentIntentNotFoundException(id)
-        );
+    public GetPaymentIntentResult execute(GetPaymentIntentQuery query) {
+        PaymentIntent paymentIntent = paymentIntentRepository
+            .findById(query.paymentIntentId())
+            .orElseThrow(() -> new PaymentIntentNotFoundException(query.paymentIntentId()));
 
         return GetPaymentIntentResult.from(paymentIntent);
     }

@@ -65,7 +65,7 @@ public class PaymentCheckoutControllerTest extends AbstractControllerTest {
 
     @Test
     @DisplayName("should return authorized view when payment is authorized")
-    void postPaymentsCheckout_WhenPaymentAuthorized_ReturnsAuthorizedView() throws Exception {
+    void submitPaymentCheckout_WhenPaymentAuthorized_ReturnsAuthorizedView() throws Exception {
         when(paymentNetworkGateway.authorizePayment(
             any(PaymentAuthorizationRequest.class)
         )).thenReturn(new PaymentAuthorizationResponse(
