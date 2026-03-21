@@ -25,7 +25,6 @@ public class SetAccountAlias {
 
     /**
      * @param command Comando con los datos requeridos
-     *                                                                                           TODO cambiar a void?
      */
     public SetAccountAliasResult execute(SetAccountAliasCommand command) {
         // Usuario actual
@@ -34,9 +33,7 @@ public class SetAccountAlias {
         // Buscar la cuenta a la que se cambiará el alias
         final BankingAccount bankingAccount = bankingAccountRepository
             .findById(command.accountId())
-            .orElseThrow(
-                () -> new BankingAccountNotFoundException(command.accountId())
-            );
+            .orElseThrow(() -> new BankingAccountNotFoundException(command.accountId()));
 
         // Si no es admin comprueba que sea el owner de la cuenta.
         if (!currentUser.isAdmin()) {

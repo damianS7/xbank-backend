@@ -6,6 +6,9 @@ import com.damian.xBank.modules.banking.account.application.usecase.close.CloseA
 import com.damian.xBank.modules.banking.account.application.usecase.create.CreateAccountResult;
 import com.damian.xBank.modules.banking.account.application.usecase.create.CreateBankingAccount;
 import com.damian.xBank.modules.banking.account.application.usecase.create.CreateBankingAccountCommand;
+import com.damian.xBank.modules.banking.account.application.usecase.deposit.DepositAccount;
+import com.damian.xBank.modules.banking.account.application.usecase.deposit.DepositAccountCommand;
+import com.damian.xBank.modules.banking.account.application.usecase.deposit.DepositAccountResult;
 import com.damian.xBank.modules.banking.account.application.usecase.get.all.GetAllUserAccounts;
 import com.damian.xBank.modules.banking.account.application.usecase.get.all.GetAllUserAccountsQuery;
 import com.damian.xBank.modules.banking.account.application.usecase.get.all.GetAllUserAccountsResult;
@@ -20,6 +23,7 @@ import com.damian.xBank.modules.banking.account.application.usecase.set.alias.Se
 import com.damian.xBank.modules.banking.account.application.usecase.set.alias.SetAccountAliasResult;
 import com.damian.xBank.modules.banking.account.infrastructure.rest.request.CloseBankingAccountRequest;
 import com.damian.xBank.modules.banking.account.infrastructure.rest.request.CreateBankingAccountRequest;
+import com.damian.xBank.modules.banking.account.infrastructure.rest.request.DepositBankingAccountRequest;
 import com.damian.xBank.modules.banking.account.infrastructure.rest.request.RequestBankingAccountCardRequest;
 import com.damian.xBank.modules.banking.account.infrastructure.rest.request.SetBankingAccountAliasRequest;
 import jakarta.validation.Valid;
@@ -46,6 +50,7 @@ public class BankingAccountController {
     private final CloseAccount closeAccount;
     private final SetAccountAlias setAccountAlias;
     private final GetDailyBalancesByCurrency getDailyBalancesByCurrency;
+    private final DepositAccount depositAccount;
 
     public BankingAccountController(
         GetAllUserAccounts getAllUserAccounts,
@@ -53,7 +58,8 @@ public class BankingAccountController {
         RequestCard bankingAccountCardRequest,
         CloseAccount closeAccount,
         SetAccountAlias setAccountAlias,
-        GetDailyBalancesByCurrency getDailyBalancesByCurrency
+        GetDailyBalancesByCurrency getDailyBalancesByCurrency,
+        DepositAccount depositAccount
     ) {
         this.getAllUserAccounts = getAllUserAccounts;
         this.createBankingAccount = createBankingAccount;
@@ -61,6 +67,7 @@ public class BankingAccountController {
         this.closeAccount = closeAccount;
         this.setAccountAlias = setAccountAlias;
         this.getDailyBalancesByCurrency = getDailyBalancesByCurrency;
+        this.depositAccount = depositAccount;
     }
 
     /**
@@ -189,5 +196,31 @@ public class BankingAccountController {
             .body(result);
     }
 
+    /**
+     * Endpoint para depósitos
+     *
+     * @param id
+     * @param request
+     * @return
+     */
+    @PostMapping("/admin/banking/accounts/{id}/deposit")
+    public ResponseEntity<?> deposit(
+        @PathVariable @NotNull @Positive
+        Long id,
+        @Valid @RequestBody
+        DepositBankingAccountRequest request
+    ) {
+        DepositAccountCommand command = new DepositAccountCommand(
+            id,
+            request.depositorName(),
+            request.amount()
+        );
+
+        DepositAccountResult result = depositAccount.execute(command);
+
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(result);
+    }
 }
 
