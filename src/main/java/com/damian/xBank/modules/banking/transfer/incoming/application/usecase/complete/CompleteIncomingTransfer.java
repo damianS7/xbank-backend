@@ -11,11 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
+ * Caso de uso que completa una transferencia entrante.
  * TODO Merge with AuthorizeIncomingTrnasfer???
- * Use case for processing an incoming transfer. This involves:
- * 1. Validating the incoming transfer request.
- * 2. Updating the recipient's account balance.
- * 3. Recording the transaction in the banking transaction history.
  */
 @Service
 public class CompleteIncomingTransfer {
@@ -37,14 +34,11 @@ public class CompleteIncomingTransfer {
     @Transactional
     public void execute(CompleteIncomingTransferCommand command) {
         log.debug("Complete transfer command: {}", command);
-        // find transfer by authorizationId
+        // Buscar la transferencia
         IncomingTransfer incomingTransfer = incomingTransferRepository
             .findByProviderAuthorizationId(command.authorizationId())
-            .orElseThrow(
-                () -> new IncomingTransferNotFoundException(command.authorizationId())
-            );
-
-        incomingTransfer.complete(); // Deposit from here?
+            .orElseThrow(() -> new IncomingTransferNotFoundException(command.authorizationId()));
+        incomingTransfer.complete();
         incomingTransferRepository.save(incomingTransfer);
     }
 }

@@ -216,7 +216,7 @@ public class RequestCardRequestTest extends AbstractServiceTest {
             BankingCard card = BankingCardTestBuilder.builder()
                 .withId((long) i)
                 .withOwnerAccount(bankingAccount)
-                .withCardNumber("12345678901234" + i)
+                .withCardNumber("123412341234123" + i)
                 .withStatus(BankingCardStatus.ACTIVE)
                 .withCVV("123")
                 .withPIN("1234")

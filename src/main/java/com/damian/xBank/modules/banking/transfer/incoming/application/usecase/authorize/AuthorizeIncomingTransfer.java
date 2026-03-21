@@ -15,6 +15,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Caso de uso donde se autoriza una transferencia entrante.
+ */
 @Service
 public class AuthorizeIncomingTransfer {
     private static final Logger log = LoggerFactory.getLogger(AuthorizeIncomingTransfer.class);
@@ -29,6 +32,10 @@ public class AuthorizeIncomingTransfer {
         this.incomingTransferRepository = incomingTransferRepository;
     }
 
+    /**
+     *
+     * @param command Comando con los datos necesarios para autorizar la transferencia
+     */
     @Transactional
     public AuthorizeIncomingTransferResult execute(AuthorizeIncomingTransferCommand command) {
         log.debug("Authorize incoming transfer: {}", command);
@@ -36,10 +43,7 @@ public class AuthorizeIncomingTransfer {
         try {
             toAccount = bankingAccountRepository
                 .findByAccountNumber(command.toIban())
-                .orElseThrow(
-                    () -> new BankingAccountNotFoundException(command.toIban())
-                );
-
+                .orElseThrow(() -> new BankingAccountNotFoundException(command.toIban()));
             toAccount.assertActive();
             toAccount.assertCurrency(BankingAccountCurrency.valueOf(command.currency()));
         } catch (BankingAccountNotFoundException

@@ -3,11 +3,9 @@ package com.damian.xBank.modules.banking.transfer.incoming.domain.model;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
+import com.damian.xBank.modules.banking.transfer.incoming.domain.exception.IncomingTransferCurrencyMismatchException;
+import com.damian.xBank.modules.banking.transfer.incoming.domain.exception.IncomingTransferNotOwnerException;
 import com.damian.xBank.modules.banking.transfer.incoming.domain.exception.IncomingTransferStatusTransitionException;
-import com.damian.xBank.modules.banking.transfer.outgoing.domain.exception.OutgoingTransferCurrencyMismatchException;
-import com.damian.xBank.modules.banking.transfer.outgoing.domain.exception.OutgoingTransferNotOwnerException;
-import com.damian.xBank.modules.banking.transfer.outgoing.domain.exception.OutgoingTransferSameAccountException;
-import com.damian.xBank.modules.user.user.domain.model.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -96,10 +94,10 @@ public class IncomingTransfer {
             this.toAccountIban = this.toAccount.getAccountNumber();
         }
 
-        // validate transfer
+        // Assert que la transferencia se puede realizar
         this.assertTransferPossible();
 
-        // Generate transactions
+        // Genera las transacciones asociadas
         this.generateTransactions();
     }
 
@@ -122,11 +120,6 @@ public class IncomingTransfer {
 
     public Long getId() {
         return id;
-    }
-
-    // for testing
-    void setId(Long id) {
-        this.id = id;
     }
 
     public IncomingTransferStatus getStatus() {
@@ -170,13 +163,10 @@ public class IncomingTransfer {
     }
 
     public boolean isOwnedBy(Long userId) {
-
-        // compare account owner id with given customer id
         return Objects.equals(toAccount.getOwner().getId(), userId);
     }
 
     private void setStatus(IncomingTransferStatus newStatus) {
-        // if the actual status is the same as the new ... do nothing
         if (this.status == newStatus) {
             return;
         }
@@ -193,11 +183,12 @@ public class IncomingTransfer {
         markAsUpdated();
     }
 
+    /**
+     * Genera las transacciones asociadas a la transferencia
+     */
     private void generateTransactions() {
-        // Generate transactions
-
+        // Si la transferencia es a una cuenta interna ...
         if (toAccount != null) {
-            // create transfer transaction for the receiver of the funds
             this.transaction = BankingTransaction.create(
                 BankingTransactionType.INCOMING_TRANSFER,
                 toAccount,
@@ -221,67 +212,56 @@ public class IncomingTransfer {
         this.setStatus(IncomingTransferStatus.AUTHORIZED);
     }
 
+    /**
+     * Paso final que completa la transferencia
+     */
     public void complete() {
-        // deduct balance from sender account
+        // Añade los fondos a la cuenta destino
         this.toAccount.deposit(amount);
 
-        // add balance to destination (if internal)
-        //        if (this.type == BankingTransferType.INTERNAL && this.getToAccount() != null) {
-        //            this.getToAccount().deposit(amount);
-        //        }
-
-        // Confirm transactions
+        // Completa la transacción
         this.transaction.complete();
+
+        // Cambia el estado de la transferencia
         this.setStatus(IncomingTransferStatus.COMPLETED);
     }
 
     /**
-     * Validate that current account and {@code toBankingAccount} have the same currency
+     * Válida que ambas cuentas tienen la misma moneda
      *
-     * @throws OutgoingTransferCurrencyMismatchException if fromAccount and toAccount have different currencies
+     * @throws IncomingTransferCurrencyMismatchException Si las cuentas usan diferente moneda
      */
     public void assertCurrenciesMatch() {
         // if currencies are different, throw exception
-        if (!Objects.equals(toAccount.getCurrency(), toAccount.getCurrency())) {
-            throw new OutgoingTransferCurrencyMismatchException(toAccount.getId());
+        if (toAccount.getCurrency() != toAccount.getCurrency()) {
+            throw new IncomingTransferCurrencyMismatchException(toAccount.getId());
         }
-
     }
 
     /**
-     * Assert a transfer between {@link #toAccount} and {@link #toAccount} can be performed.
+     * Válida que la transferencia sea posible
      *
-     * @throws OutgoingTransferCurrencyMismatchException if toAccount and toAccount have different currencies
-     * @throws OutgoingTransferSameAccountException      if toAccount and toAccount are the same
+     * @throws IncomingTransferCurrencyMismatchException Si las cuentas usan diferente moneda
      */
     public void assertTransferPossible() {
-        // check if the source account is active
         toAccount.assertActive();
 
         if (toAccount != null) {
-            // check if the destiny account is active
             toAccount.assertActive();
-
-            // check currencies are the same
             this.assertCurrenciesMatch();
         }
     }
 
     /**
-     * Assert the ownership of the account belongs to {@link User}.
+     * Válida que la cuenta pertenezca al userId
      *
-     * @param userId the customer to check ownership against
-     * @return the current validator instance for chaining
-     * @throws OutgoingTransferNotOwnerException if the account does not belong to the customer
+     * @param userId El ID del usuario a comprobar
+     * @throws IncomingTransferNotOwnerException Si la cuenta no pertenece al usuario
      */
-    public IncomingTransfer assertOwnedBy(Long userId) {
-
-        // compare card owner id with given customer id
+    public void assertOwnedBy(Long userId) {
         if (!isOwnedBy(userId)) {
-            throw new OutgoingTransferNotOwnerException(toAccount.getOwner().getId(), userId);
+            throw new IncomingTransferNotOwnerException(toAccount.getOwner().getId(), userId);
         }
-
-        return this;
     }
 
     @Override

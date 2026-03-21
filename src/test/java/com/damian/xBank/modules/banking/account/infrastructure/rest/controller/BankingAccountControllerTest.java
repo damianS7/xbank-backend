@@ -16,6 +16,7 @@ import com.damian.xBank.modules.banking.account.infrastructure.rest.request.Requ
 import com.damian.xBank.modules.banking.account.infrastructure.rest.request.SetBankingAccountAliasRequest;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardType;
 import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
 import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.shared.AbstractControllerTest;
@@ -211,7 +212,15 @@ public class BankingAccountControllerTest extends AbstractControllerTest {
     @DisplayName("should return banking account closed")
     void postAccounts_WhenValidRequest_ThenReturnBankingAccountClosed() throws Exception {
         // given
-        login(customer);
+        User admin = UserTestBuilder.builder()
+            .withEmail("admin@demo.com")
+            .withRole(UserRole.ADMIN)
+            .withStatus(UserStatus.VERIFIED)
+            .withPassword(RAW_PASSWORD)
+            .build();
+        userRepository.save(admin);
+
+        login(admin);
 
         CloseBankingAccountRequest request = new CloseBankingAccountRequest(
             RAW_PASSWORD
@@ -234,7 +243,8 @@ public class BankingAccountControllerTest extends AbstractControllerTest {
 
         // then
         assertThat(response).isNotNull();
-        assertThat(response.accountStatus()).isEqualTo(BankingAccountStatus.CLOSED);
+        assertThat(response.accountStatus())
+            .isEqualTo(BankingAccountStatus.CLOSED);
     }
 
     @Test

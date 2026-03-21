@@ -36,18 +36,15 @@ public class CloseAccount {
         // Usuario actual
         final User currentUser = authenticationContext.getCurrentUser();
 
-        // only admin can close accounts
+        // Solo el administrador puede cerrar la cuenta
         if (!currentUser.isAdmin()) {
             throw new AuthorizationException();
         }
 
-        // Banking account to be closed
-        final BankingAccount bankingAccount = bankingAccountRepository.findById(command.accountId())
-            .orElseThrow(
-                () -> new BankingAccountNotFoundException(
-                    command.accountId()
-                ) // Banking account not found
-            );
+        // Cuenta que se va a cerrar
+        final BankingAccount bankingAccount = bankingAccountRepository
+            .findById(command.accountId())
+            .orElseThrow(() -> new BankingAccountNotFoundException(command.accountId()));
 
         bankingAccount.close();
         bankingAccountRepository.save(bankingAccount);

@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.banking.transfer.incoming.infrastructure.rest;
+package com.damian.xBank.modules.banking.transfer.incoming.infrastructure.rest.controller;
 
 import com.damian.xBank.modules.banking.transfer.incoming.application.usecase.authorize.AuthorizeIncomingTransfer;
 import com.damian.xBank.modules.banking.transfer.incoming.application.usecase.authorize.AuthorizeIncomingTransferCommand;
@@ -31,6 +31,12 @@ public class IncomingTransferController {
         this.completeIncomingTransfer = completeIncomingTransfer;
     }
 
+    /**
+     * Autoriza una transferencia entrante
+     *
+     * @param request Petición con los datos de la transferencia
+     * @return 200
+     */
     @PostMapping("/webhooks/transfers/incoming/authorize")
     public ResponseEntity<?> authorize(
         @RequestBody @Valid
@@ -52,6 +58,12 @@ public class IncomingTransferController {
             .body(result);
     }
 
+    /**
+     * Completa una transferencia
+     *
+     * @param request Petición con los datos de la transferencia
+     * @return 200
+     */
     @PostMapping("/webhooks/transfers/incoming/complete")
     public ResponseEntity<?> complete(
         @RequestBody @Valid
