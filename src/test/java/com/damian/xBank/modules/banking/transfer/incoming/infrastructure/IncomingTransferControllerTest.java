@@ -5,7 +5,11 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurre
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestBuilder;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.transfer.incoming.application.usecase.authorize.AuthorizeIncomingTransferResult;
+import com.damian.xBank.modules.banking.transfer.incoming.application.usecase.complete.CompleteIncomingTransferResult;
+import com.damian.xBank.modules.banking.transfer.incoming.domain.model.IncomingTransfer;
+import com.damian.xBank.modules.banking.transfer.incoming.domain.model.IncomingTransferStatus;
 import com.damian.xBank.modules.banking.transfer.incoming.infrastructure.rest.request.AuthorizeIncomingTransferRequest;
+import com.damian.xBank.modules.banking.transfer.incoming.infrastructure.rest.request.CompleteIncomingTransferRequest;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.BankingTransferTestBuilder;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransfer;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.TransferAuthorizationStatus;
@@ -94,8 +98,8 @@ public class IncomingTransferControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @DisplayName("")
-    void authorizeIncomingTransfer_WhenValidRequest_Returns200Ok() throws Exception {
+    @DisplayName("Authorize incoming transfer")
+    void authorizeIncomingTransfer_AuthorizesTransfer() throws Exception {
         // given
         login(fromCustomer);
 
@@ -119,13 +123,13 @@ public class IncomingTransferControllerTest extends AbstractControllerTest {
             .andExpect(status().is(200))
             .andReturn();
 
-        AuthorizeIncomingTransferResult resultDto = objectMapper.readValue(
+        AuthorizeIncomingTransferResult response = objectMapper.readValue(
             result.getResponse().getContentAsString(),
             AuthorizeIncomingTransferResult.class
         );
 
         // then
-        assertThat(resultDto)
+        assertThat(response)
             .isNotNull()
             .extracting(
                 AuthorizeIncomingTransferResult::authorizationId,
@@ -136,6 +140,62 @@ public class IncomingTransferControllerTest extends AbstractControllerTest {
                 TransferAuthorizationStatus.AUTHORIZED,
                 null
             );
+    }
+
+    @Test
+    @DisplayName("Completes incoming transfer and increases account balance")
+    void completeIncomingTransfer_WhenAuthorized_ThenCompleteTransferAndIncreaseBalance() throws Exception {
+        // given
+        login(fromCustomer);
+
+        BigDecimal accountInitialBalance = fromBankingAccount.getBalance();
+
+        IncomingTransfer incomingTransfer = IncomingTransfer.create(
+            "1234 1234 1234 1234 1234",
+            fromBankingAccount,
+            fromBankingAccount.getAccountNumber(),
+            BigDecimal.valueOf(100),
+            "David"
+        );
+        incomingTransfer.authorize("1234/1234");
+        incomingTransferRepository.save(incomingTransfer);
+
+        CompleteIncomingTransferRequest request = new CompleteIncomingTransferRequest(
+            incomingTransfer.getProviderAuthorizationId()
+        );
+
+        // when
+        MvcResult result = mockMvc
+            .perform(post(
+                "/api/v1/webhooks/transfers/incoming/complete")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+            .andDo(print())
+            .andExpect(status().is(200))
+            .andReturn();
+
+        CompleteIncomingTransferResult response = objectMapper.readValue(
+            result.getResponse().getContentAsString(),
+            CompleteIncomingTransferResult.class
+        );
+
+        // then
+        assertThat(response)
+            .isNotNull()
+            .extracting(
+                CompleteIncomingTransferResult::status
+            )
+            .isEqualTo(
+                IncomingTransferStatus.COMPLETED
+            );
+
+        BankingAccount updatedAccount = bankingAccountRepository
+            .findById(fromBankingAccount.getId())
+            .orElseThrow();
+
+        assertThat(updatedAccount.getBalance())
+            .isEqualTo(accountInitialBalance.add(incomingTransfer.getAmount()).setScale(2));
     }
 
 }

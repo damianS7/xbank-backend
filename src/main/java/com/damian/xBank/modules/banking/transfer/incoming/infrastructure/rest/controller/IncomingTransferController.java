@@ -5,6 +5,7 @@ import com.damian.xBank.modules.banking.transfer.incoming.application.usecase.au
 import com.damian.xBank.modules.banking.transfer.incoming.application.usecase.authorize.AuthorizeIncomingTransferResult;
 import com.damian.xBank.modules.banking.transfer.incoming.application.usecase.complete.CompleteIncomingTransfer;
 import com.damian.xBank.modules.banking.transfer.incoming.application.usecase.complete.CompleteIncomingTransferCommand;
+import com.damian.xBank.modules.banking.transfer.incoming.application.usecase.complete.CompleteIncomingTransferResult;
 import com.damian.xBank.modules.banking.transfer.incoming.infrastructure.rest.request.AuthorizeIncomingTransferRequest;
 import com.damian.xBank.modules.banking.transfer.incoming.infrastructure.rest.request.CompleteIncomingTransferRequest;
 import jakarta.validation.Valid;
@@ -73,9 +74,9 @@ public class IncomingTransferController {
             request.authorizationId()
         );
 
-        completeIncomingTransfer.execute(command);
+        CompleteIncomingTransferResult result = completeIncomingTransfer.execute(command);
         return ResponseEntity
             .status(HttpStatus.OK)
-            .build();
+            .body(result);
     }
 }

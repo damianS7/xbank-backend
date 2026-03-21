@@ -56,6 +56,13 @@ public class AuthorizeIncomingTransfer {
                 command.authorizationId(),
                 e.getMessage()
             );
+        } catch (Exception e) {
+            log.error("Failed to authorize incoming transfer: {}", e.getMessage());
+            return new AuthorizeIncomingTransferResult(
+                TransferAuthorizationStatus.REJECTED,
+                command.authorizationId(),
+                "Unknown error"
+            );
         }
 
         IncomingTransfer incomingTransfer = IncomingTransfer.create(

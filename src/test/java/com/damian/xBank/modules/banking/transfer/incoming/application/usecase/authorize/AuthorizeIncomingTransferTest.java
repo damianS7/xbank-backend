@@ -53,7 +53,7 @@ public class AuthorizeIncomingTransferTest extends AbstractServiceTest {
     }
 
     @Test
-    void authorizeIncomingTransfer_WhenValidRequest_ReturnsAuthorizedResponse() {
+    void authorizeIncomingTransfer_AuthorizesTransfer() {
         // given
         AuthorizeIncomingTransferCommand command = new AuthorizeIncomingTransferCommand(
             "1234",
@@ -81,7 +81,7 @@ public class AuthorizeIncomingTransferTest extends AbstractServiceTest {
     }
 
     @Test
-    void authorizeIncomingTransfer_WhenAccountNotFound_ReturnsRejectedResponse() {
+    void authorizeIncomingTransfer_WhenAccountNotFound_RejectsTransfer() {
         // given
         AuthorizeIncomingTransferCommand command = new AuthorizeIncomingTransferCommand(
             "1234",
@@ -111,7 +111,7 @@ public class AuthorizeIncomingTransferTest extends AbstractServiceTest {
     }
 
     @Test
-    void authorizeIncomingTransfer_WhenAccountSuspended_ReturnsRejectedResponse() {
+    void authorizeIncomingTransfer_WhenAccountSuspended_RejectsTransfer() {
         // given
         AuthorizeIncomingTransferCommand command = new AuthorizeIncomingTransferCommand(
             "1234",
@@ -143,7 +143,7 @@ public class AuthorizeIncomingTransferTest extends AbstractServiceTest {
     }
 
     @Test
-    void authorizeIncomingTransfer_WhenAccountClosed_ReturnsRejectedResponse() {
+    void authorizeIncomingTransfer_WhenAccountClosed_RejectsTransfer() {
         // given
         AuthorizeIncomingTransferCommand command = new AuthorizeIncomingTransferCommand(
             "1234",
@@ -175,11 +175,8 @@ public class AuthorizeIncomingTransferTest extends AbstractServiceTest {
     }
 
     @Test
-    void authorizeIncomingTransfer_WhenCurrencyMismatch_ReturnsRejectedResponse() {
+    void authorizeIncomingTransfer_WhenCurrencyMismatch_RejectsTransfer() {
         // given
-        // TODO review this
-        //        bankingAccount.setCurrency(BankingAccountCurrency.EUR);
-
         AuthorizeIncomingTransferCommand command = new AuthorizeIncomingTransferCommand(
             "1234",
             "ES001188222832838",

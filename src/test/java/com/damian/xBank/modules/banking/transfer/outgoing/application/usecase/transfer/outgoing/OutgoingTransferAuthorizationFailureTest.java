@@ -77,8 +77,6 @@ public class OutgoingTransferAuthorizationFailureTest extends AbstractServiceTes
             .build();
 
         transfer.confirm();
-        System.out.println(transfer.getAmount());
-        System.out.println(transfer.getFromAccount().getBalance());
 
         // when
         when(outgoingTransferRepository.findByProviderAuthorizationId(anyString()))
@@ -86,8 +84,6 @@ public class OutgoingTransferAuthorizationFailureTest extends AbstractServiceTes
 
         // then
         outgoingTransferAuthorizationFailure.execute(request);
-        System.out.println(transfer.getAmount());
-        System.out.println(transfer.getFromAccount().getBalance());
 
         assertThat(transfer)
             .extracting(
