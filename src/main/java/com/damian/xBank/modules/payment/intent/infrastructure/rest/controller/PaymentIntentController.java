@@ -26,10 +26,10 @@ public class PaymentIntentController {
     }
 
     /**
-     * Endpoint for merchants to create payment intents
+     * Endpoint para que un merchant asociado cree payment intents
      *
      * @param request
-     * @return the created payment intent
+     * @return El payment intent creado
      */
     @PostMapping("/payment-intents")
     public ResponseEntity<?> createPaymentIntent(
@@ -41,10 +41,10 @@ public class PaymentIntentController {
             request.currency()
         );
 
-        CreatePaymentIntentResult createPaymentIntentResult = createPaymentIntent.execute(command);
+        CreatePaymentIntentResult result = createPaymentIntent.execute(command);
 
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(createPaymentIntentResult);
+            .body(result);
     }
 }

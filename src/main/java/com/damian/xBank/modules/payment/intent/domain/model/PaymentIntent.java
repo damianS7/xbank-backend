@@ -3,7 +3,16 @@ package com.damian.xBank.modules.payment.intent.domain.model;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.payment.intent.domain.exception.PaymentIntentNotPendingException;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -14,6 +23,8 @@ public class PaymentIntent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    // TODO orderId? para que el usuario pueda comparar ...
 
     @ManyToOne
     @JoinColumn(name = "merchant_id", referencedColumnName = "id", nullable = false)
@@ -32,7 +43,7 @@ public class PaymentIntent {
 
     private String merchantCallbackUrl;
 
-    private String description;
+    private String description; // TODO renombar a merchantPublicName? Amazon.com por ej? codigo de la compra?
 
     @Column
     private Instant createdAt;
@@ -40,21 +51,35 @@ public class PaymentIntent {
     @Column
     private Instant updatedAt;
 
-    public PaymentIntent() {
+    protected PaymentIntent() {
+    }
+
+    PaymentIntent(
+        final User merchant,
+        final BigDecimal amount,
+        final BankingAccountCurrency currency,
+        final String description
+    ) {
+        this.merchant = merchant;
+        this.amount = amount;
+        this.currency = currency;
+        this.description = description;
         this.createdAt = Instant.now();
         this.updatedAt = Instant.now();
         this.status = PaymentIntentStatus.PENDING;
     }
 
-    public PaymentIntent(
-            final User merchant,
-            final BigDecimal amount,
-            final BankingAccountCurrency currency
+    public static PaymentIntent create(
+        final User merchant,
+        final BigDecimal amount,
+        final BankingAccountCurrency currency
     ) {
-        this();
-        this.merchant = merchant;
-        this.amount = amount;
-        this.currency = currency;
+        return new PaymentIntent(
+            merchant,
+            amount,
+            currency,
+            merchant.getProfile().getFullName().toUpperCase()
+        );
     }
 
     public Long getId() {
@@ -89,6 +114,14 @@ public class PaymentIntent {
         return createdAt;
     }
 
+    public String getMerchantCallbackUrl() {
+        return merchantCallbackUrl;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
     public void authorize() {
         this.status = PaymentIntentStatus.AUTHORIZED;
         this.updatedAt = Instant.now();
@@ -107,9 +140,9 @@ public class PaymentIntent {
 
     @Override
     public String toString() {
-        return "Payment{"
+        return "PaymentIntent{"
                + "id=" + id
-               + ", user=" + merchant.toString()
+               + ", merchant=" + merchant.getId()
                + ", amount=" + amount
                + ", currency=" + currency
                + ", status=" + status
@@ -118,19 +151,4 @@ public class PaymentIntent {
                + "}";
     }
 
-    public String getMerchantCallbackUrl() {
-        return merchantCallbackUrl;
-    }
-
-    public void setMerchantCallbackUrl(String merchantCallbackUrl) {
-        this.merchantCallbackUrl = merchantCallbackUrl;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 }

@@ -55,7 +55,7 @@ public class SubmitPaymentCheckoutTest extends AbstractServiceTest {
     @DisplayName("returns authorized payment intent")
     void checkoutSubmit_WhenValidRequest_ReturnsAuthorizedPaymentIntent() {
         // given
-        PaymentIntent paymentIntent = new PaymentIntent(
+        PaymentIntent paymentIntent = PaymentIntent.create(
             customer,
             BigDecimal.valueOf(100),
             BankingAccountCurrency.EUR

@@ -43,7 +43,7 @@ public class PaymentCheckoutControllerTest extends AbstractControllerTest {
 
         userRepository.save(customer);
 
-        paymentIntent = new PaymentIntent(
+        paymentIntent = PaymentIntent.create(
             customer,
             BigDecimal.valueOf(100, 2),
             BankingAccountCurrency.EUR

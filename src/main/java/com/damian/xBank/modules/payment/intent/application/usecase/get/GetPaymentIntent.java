@@ -7,7 +7,7 @@ import com.damian.xBank.modules.payment.intent.infrastructure.repository.Payment
 import org.springframework.stereotype.Service;
 
 /**
- * This usecase return a payment intent
+ * Caso de uso que devuelve los datos de un payment intent
  */
 @Service
 public class GetPaymentIntent {

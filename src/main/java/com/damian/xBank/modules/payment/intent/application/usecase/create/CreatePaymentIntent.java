@@ -10,10 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * This class is used by the merchant to create a pending payment intent.
+ * Caso de uso donde el merchant (user) crea un payment intent
  * <p>
- * Pending payment its returned to the merchant so they can redirect the
- * user to the payment gateway.
+ * Un payment intent en estado PENDING es devuelto al merchant
  */
 @Service
 public class CreatePaymentIntent {
@@ -29,17 +28,16 @@ public class CreatePaymentIntent {
     }
 
     /**
-     * It creates a payment intent for current merchant
      *
      * @param command
-     * @return Created payment intent
+     * @return CreatePaymentIntentResult
      */
     @Transactional
     public CreatePaymentIntentResult execute(CreatePaymentIntentCommand command) {
-        // Current user
+        // Usuario actual
         final User currentMerchant = authenticationContext.getCurrentUser();
 
-        PaymentIntent paymentIntent = new PaymentIntent(
+        PaymentIntent paymentIntent = PaymentIntent.create(
             currentMerchant,
             command.amount(),
             BankingAccountCurrency.valueOf(command.currency())

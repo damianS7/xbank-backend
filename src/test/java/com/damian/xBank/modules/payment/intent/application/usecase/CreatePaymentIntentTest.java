@@ -48,7 +48,7 @@ public class CreatePaymentIntentTest extends AbstractServiceTest {
         // given
         setUpContext(customer);
 
-        PaymentIntent paymentIntent = new PaymentIntent(
+        PaymentIntent paymentIntent = PaymentIntent.create(
             customer,
             BigDecimal.valueOf(100),
             BankingAccountCurrency.EUR

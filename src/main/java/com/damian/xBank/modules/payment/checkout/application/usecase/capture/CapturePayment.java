@@ -4,13 +4,12 @@ package com.damian.xBank.modules.payment.checkout.application.usecase.capture;
 import com.damian.xBank.modules.payment.intent.domain.exception.PaymentIntentNotFoundException;
 import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntent;
 import com.damian.xBank.modules.payment.intent.infrastructure.repository.PaymentIntentRepository;
-import com.damian.xBank.modules.payment.intent.infrastructure.rest.request.CapturePaymentRequest;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * This class is used by the merchant to capture the funds from an AUTHORIZED payment.
+ * Caso de uso donde el merchant captura los fondos de un pago Autorizado.
  */
 @Service
 public class CapturePayment {
@@ -27,28 +26,27 @@ public class CapturePayment {
 
     /**
      *
-     * @param
+     * @param command
      * @return
      */
     @Transactional
-    public PaymentIntent execute(CapturePaymentRequest request) {
+    public PaymentIntent execute(CapturePaymentCommand command) {
 
-        // 1. find the payment
+        // 1. Buscar el payment intent
         PaymentIntent paymentIntent = paymentIntentRepository
-            .findById(request.paymentId())
+            .findById(command.paymentId())
             .orElseThrow(
-                () -> new PaymentIntentNotFoundException(request.paymentId())
+                () -> new PaymentIntentNotFoundException(command.paymentId())
             );
 
-        // 2. deduce funds from user card
+        // 2. Deducir fondos de la tarjeta del usuario ??? o en este paso ya deberia estar hecho
         //                payment.getUser().getAccount().add
 
 
-        // 3. add the funds to the merchant
+        // 3. Agregar fondos al merchant
 
-        // find transaction and completed it
-
-        //        paymentIntent.setStatus(PaymentIntentStatus.CAPTURED);
+        // Completar transaccion?
+        //        paymentIntent.capture();
 
         return paymentIntentRepository.save(paymentIntent);
     }
