@@ -2,6 +2,7 @@ package com.damian.xBank.modules.banking.card.infrastructure.rest.controller;
 
 import com.damian.xBank.modules.banking.card.application.usecase.authorize.AuthorizeCardPayment;
 import com.damian.xBank.modules.banking.card.application.usecase.authorize.AuthorizeCardPaymentCommand;
+import com.damian.xBank.modules.banking.card.application.usecase.authorize.AuthorizeCardPaymentResult;
 import com.damian.xBank.modules.banking.card.application.usecase.capture.CaptureCardPayment;
 import com.damian.xBank.modules.banking.card.application.usecase.capture.CaptureCardPaymentCommand;
 import com.damian.xBank.modules.banking.card.application.usecase.capture.CaptureCardPaymentResult;
@@ -10,7 +11,6 @@ import com.damian.xBank.modules.banking.card.application.usecase.get.GetAllCurre
 import com.damian.xBank.modules.banking.card.application.usecase.get.GetAllCurrentUserCardsQuery;
 import com.damian.xBank.modules.banking.card.infrastructure.rest.request.AuthorizeCardPaymentRequest;
 import com.damian.xBank.modules.banking.card.infrastructure.rest.request.CaptureCardPaymentRequest;
-import com.damian.xBank.modules.payment.checkout.infrastructure.http.response.PaymentAuthorizationResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -75,7 +75,7 @@ public class BankingCardController {
             request.amount()
         );
 
-        PaymentAuthorizationResponse result = authorizeCardPayment.execute(command);
+        AuthorizeCardPaymentResult result = authorizeCardPayment.execute(command);
 
         return ResponseEntity
             .status(HttpStatus.OK)

@@ -6,6 +6,7 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestB
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.card.application.usecase.authorize.AuthorizeCardPayment;
 import com.damian.xBank.modules.banking.card.application.usecase.authorize.AuthorizeCardPaymentCommand;
+import com.damian.xBank.modules.banking.card.application.usecase.authorize.AuthorizeCardPaymentResult;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardInsufficientFundsException;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotActiveException;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoundException;
@@ -18,7 +19,6 @@ import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransact
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionPaymentStatus;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.payment.checkout.domain.PaymentAuthorizationStatus;
-import com.damian.xBank.modules.payment.checkout.infrastructure.http.response.PaymentAuthorizationResponse;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.shared.AbstractServiceTest;
@@ -100,7 +100,7 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
             .thenAnswer(invocation -> invocation.getArgument(0));
 
         // then
-        PaymentAuthorizationResponse response = cardAuthorize.execute(command);
+        AuthorizeCardPaymentResult response = cardAuthorize.execute(command);
         ArgumentCaptor<BankingTransaction> argCaptor = ArgumentCaptor.forClass(BankingTransaction.class);
         verify(bankingTransactionRepository).save(argCaptor.capture());
         BankingTransaction transaction = argCaptor.getValue();
@@ -108,9 +108,9 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
         assertThat(response)
             .isNotNull()
             .extracting(
-                PaymentAuthorizationResponse::status,
-                PaymentAuthorizationResponse::authorizationId,
-                PaymentAuthorizationResponse::declineReason
+                AuthorizeCardPaymentResult::status,
+                AuthorizeCardPaymentResult::authorizationId,
+                AuthorizeCardPaymentResult::declineReason
             ).containsExactly(
                 PaymentAuthorizationStatus.AUTHORIZED,
                 transaction.getAuthorizationId(),

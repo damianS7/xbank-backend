@@ -8,7 +8,6 @@ import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransact
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.payment.checkout.domain.PaymentAuthorizationStatus;
-import com.damian.xBank.modules.payment.checkout.infrastructure.http.response.PaymentAuthorizationResponse;
 import org.springframework.stereotype.Service;
 
 /**
@@ -33,8 +32,7 @@ public class AuthorizeCardPayment {
      * @param command datos necesarios para autorizar el pago
      * @return resultado de la autorización del pago
      */
-    // TODO cambiar PaymentAuthorizationResponse a result???
-    public PaymentAuthorizationResponse execute(AuthorizeCardPaymentCommand command) {
+    public AuthorizeCardPaymentResult execute(AuthorizeCardPaymentCommand command) {
         // Buscar la tarjeta
         BankingCard bankingCard = bankingCardRepository
             .findByCardNumber(CardNumber.of(command.cardNumber()))
@@ -59,7 +57,7 @@ public class AuthorizeCardPayment {
         transaction.authorize();
         transaction = bankingTransactionRepository.save(transaction);
 
-        return new PaymentAuthorizationResponse(
+        return new AuthorizeCardPaymentResult(
             PaymentAuthorizationStatus.AUTHORIZED,
             transaction.getAuthorizationId(),
             null
