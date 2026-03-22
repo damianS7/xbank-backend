@@ -1,46 +1,47 @@
 package com.damian.xBank.modules.banking.transfer.outgoing.application.usecase.complete;
 
+import com.damian.xBank.modules.banking.transfer.outgoing.domain.event.OutgoingTransferCompletedEvent;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransfer;
-import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransferType;
 import com.damian.xBank.modules.banking.transfer.outgoing.infrastructure.repository.OutgoingTransferRepository;
-import com.damian.xBank.modules.notification.domain.factory.NotificationEventFactory;
-import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Caso de uso para completar transferencias. Es el paso final, aquí cambiamos el estado a completada
+ * y notificamos a los destinatarios.
+ */
 @Service
 public class CompleteOutgoingInternalTransfer {
     private final OutgoingTransferRepository outgoingTransferRepository;
-    private final NotificationPublisher notificationPublisher;
-    private final NotificationEventFactory notificationEventFactory;
+    private final ApplicationEventPublisher eventPublisher;
 
     public CompleteOutgoingInternalTransfer(
         OutgoingTransferRepository outgoingTransferRepository,
-        NotificationPublisher notificationPublisher,
-        NotificationEventFactory notificationEventFactory
+        ApplicationEventPublisher eventPublisher
     ) {
         this.outgoingTransferRepository = outgoingTransferRepository;
-        this.notificationPublisher = notificationPublisher;
-        this.notificationEventFactory = notificationEventFactory;
+        this.eventPublisher = eventPublisher;
     }
 
     @Transactional
     public void execute(OutgoingTransfer transfer) {
         transfer.complete();
-
-        // TODO revisar los event factory ...
-        // Notify sender
-        notificationPublisher.publish(
-            notificationEventFactory.transferAuthorized(transfer)
-        );
-
-        if (transfer.getType() == OutgoingTransferType.INTERNAL) {
-            // Notify recipient
-            notificationPublisher.publish(
-                notificationEventFactory.transferReceived(transfer)
-            );
-        }
-
         outgoingTransferRepository.save(transfer);
+
+        eventPublisher.publishEvent(
+            new OutgoingTransferCompletedEvent(
+                transfer.getId(),
+                transfer.getType(),
+                transfer.getFromAccount().getOwner().getId(),
+                transfer.getFromAccount().getOwner().getProfile().getFullName(),
+                transfer.getFromTransaction().getId(),
+                transfer.getToAccount().getOwner().getId(),
+                transfer.getToAccount().getOwner().getProfile().getFullName(),
+                transfer.getToTransaction().getId(),
+                transfer.getAmount(),
+                transfer.getFromAccount().getCurrency().toString()
+            )
+        );
     }
 }

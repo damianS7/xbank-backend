@@ -13,7 +13,6 @@ import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransact
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
-import com.damian.xBank.modules.notification.domain.factory.NotificationEventFactory;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
@@ -26,6 +25,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -37,11 +37,8 @@ import static org.mockito.Mockito.when;
 
 public class DepositAccountTest extends AbstractServiceTest {
 
-    @InjectMocks
-    private DepositAccount depositAccount;
-
     @Mock
-    private NotificationEventFactory notificationEventFactory;
+    private ApplicationEventPublisher eventPublisher;
 
     @Mock
     private BankingAccountRepository bankingAccountRepository;
@@ -51,6 +48,9 @@ public class DepositAccountTest extends AbstractServiceTest {
 
     @Mock
     private NotificationPublisher notificationPublisher;
+
+    @InjectMocks
+    private DepositAccount depositAccount;
 
     private User customer;
     private BankingAccount bankingAccount;

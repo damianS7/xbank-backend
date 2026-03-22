@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.banking.account.application.usecase.deposit;
 
+import com.damian.xBank.modules.banking.account.domain.event.DepositCompletedEvent;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountDepositNotAdminException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
@@ -7,12 +8,11 @@ import com.damian.xBank.modules.banking.account.infrastructure.repository.Bankin
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
-import com.damian.xBank.modules.notification.domain.factory.NotificationEventFactory;
-import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,21 +22,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class DepositAccount {
     private static final Logger log = LoggerFactory.getLogger(DepositAccount.class);
-    private final NotificationEventFactory notificationEventFactory;
     private final BankingAccountRepository bankingAccountRepository;
     private final AuthenticationContext authenticationContext;
-    private final NotificationPublisher notificationPublisher;
+    private final ApplicationEventPublisher eventPublisher;
     private final BankingTransactionRepository bankingTransactionRepository;
 
     public DepositAccount(
-        NotificationEventFactory notificationEventFactory,
         BankingAccountRepository bankingAccountRepository,
         AuthenticationContext authenticationContext,
-        NotificationPublisher notificationPublisher,
+        ApplicationEventPublisher eventPublisher,
         BankingTransactionRepository bankingTransactionRepository
     ) {
-        this.notificationEventFactory = notificationEventFactory;
-        this.notificationPublisher = notificationPublisher;
+        this.eventPublisher = eventPublisher;
         this.bankingAccountRepository = bankingAccountRepository;
         this.authenticationContext = authenticationContext;
         this.bankingTransactionRepository = bankingTransactionRepository;
@@ -80,9 +77,14 @@ public class DepositAccount {
         transaction.complete();
         bankingTransactionRepository.save(transaction);
 
-        // Notificar al usuario receptor
-        notificationPublisher.publish(
-            notificationEventFactory.depositCompleted(transaction)
+        eventPublisher.publishEvent(
+            new DepositCompletedEvent(
+                transaction.getId(),
+                bankingAccount.getId(),
+                command.depositorName(),
+                command.amount(),
+                bankingAccount.getCurrency().toString()
+            )
         );
 
         log.debug(

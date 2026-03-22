@@ -14,8 +14,6 @@ import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.TransferA
 import com.damian.xBank.modules.banking.transfer.outgoing.infrastructure.repository.OutgoingTransferRepository;
 import com.damian.xBank.modules.banking.transfer.outgoing.infrastructure.rest.request.TransferAuthorizationRequest;
 import com.damian.xBank.modules.banking.transfer.outgoing.infrastructure.rest.response.TransferAuthorizationResponse;
-import com.damian.xBank.modules.notification.domain.factory.NotificationEventFactory;
-import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.shared.AbstractServiceTest;
@@ -24,6 +22,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -37,20 +36,17 @@ import static org.mockito.Mockito.when;
 
 public class AuthorizeOutgoingExternalTransferTest extends AbstractServiceTest {
 
-    @InjectMocks
-    private AuthorizeOutgoingExternalTransfer authorizeOutgoingExternalTransfer;
-
     @Mock
-    private NotificationEventFactory notificationEventFactory;
-
-    @Mock
-    private NotificationPublisher notificationPublisher;
+    private ApplicationEventPublisher eventPublisher;
 
     @Mock
     private OutgoingTransferRepository outgoingTransferRepository;
 
     @Mock
     private TransferAuthorizationGateway transferAuthorizationGateway;
+
+    @InjectMocks
+    private AuthorizeOutgoingExternalTransfer authorizeOutgoingExternalTransfer;
 
     private User fromCustomer;
     private User toCustomer;

@@ -10,7 +10,6 @@ import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingT
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransferStatus;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransferTestBuilder;
 import com.damian.xBank.modules.banking.transfer.outgoing.infrastructure.repository.OutgoingTransferRepository;
-import com.damian.xBank.modules.notification.domain.factory.NotificationEventFactory;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
@@ -35,9 +34,6 @@ public class AuthorizeOutgoingInternalTransferTest extends AbstractServiceTest {
 
     @InjectMocks
     private AuthorizeOutgoingInternalTransfer authorizeOutgoingInternalTransfer;
-
-    @Mock
-    private NotificationEventFactory notificationEventFactory;
 
     @Mock
     private NotificationPublisher notificationPublisher;

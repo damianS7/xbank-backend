@@ -17,8 +17,6 @@ import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransact
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionTestBuilder;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
-import com.damian.xBank.modules.notification.domain.factory.NotificationEventFactory;
-import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.shared.AbstractServiceTest;
@@ -28,6 +26,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -41,10 +40,7 @@ import static org.mockito.Mockito.when;
 public class WithdrawFromATMTest extends AbstractServiceTest {
 
     @Mock
-    private NotificationEventFactory notificationEventFactory;
-
-    @Mock
-    private NotificationPublisher notificationPublisher;
+    private ApplicationEventPublisher eventPublisher;
 
     @Mock
     private BankingTransactionRepository bankingTransactionRepository;
