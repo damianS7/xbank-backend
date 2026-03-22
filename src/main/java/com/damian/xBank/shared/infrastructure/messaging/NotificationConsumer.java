@@ -7,7 +7,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
 /**
- * Responsible for consuming notification messages from a RabbitMQ queue.
+ * Consume notificaciones de una cola de RabbitMQ.
  */
 @Service
 public class NotificationConsumer {
@@ -18,13 +18,12 @@ public class NotificationConsumer {
     }
 
     /**
-     * Listens for messages from the RabbitMQ queue and processes them.
+     * Escucha una cola de RabbitMQ y procesa las notificaciones.
      *
-     * @param notification The notification event received from the queue.
+     * @param notification El evento recibido de la cola.
      */
     @RabbitListener(queues = RabbitConfig.QUEUE)
     public void receiveMessage(NotificationEvent notification) {
-        // Delegates the processing of the notification to the NotificationService
         notificationPublisher.publish(notification);
     }
 }
