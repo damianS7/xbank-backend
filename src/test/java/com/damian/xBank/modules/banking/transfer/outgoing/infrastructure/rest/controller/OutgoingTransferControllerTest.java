@@ -7,9 +7,9 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.transfer.outgoing.application.usecase.confirm.ConfirmOutgoingTransferResult;
 import com.damian.xBank.modules.banking.transfer.outgoing.application.usecase.create.CreateOutgoingTransferResult;
 import com.damian.xBank.modules.banking.transfer.outgoing.application.usecase.reject.RejectOutgoingTransferResult;
-import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.BankingTransferTestBuilder;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransfer;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransferStatus;
+import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransferTestBuilder;
 import com.damian.xBank.modules.banking.transfer.outgoing.infrastructure.rest.request.ConfirmOutgoingTransferRequest;
 import com.damian.xBank.modules.banking.transfer.outgoing.infrastructure.rest.request.CreateOutgoingTransferRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -88,7 +88,7 @@ public class OutgoingTransferControllerTest extends AbstractControllerTest {
 
         userRepository.save(admin);
 
-        transfer = BankingTransferTestBuilder.builder()
+        transfer = OutgoingTransferTestBuilder.builder()
             .withFromAccount(fromBankingAccount)
             .withToAccount(toBankingAccount)
             .withAmount(BigDecimal.valueOf(100))

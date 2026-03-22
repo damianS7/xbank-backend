@@ -6,8 +6,8 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestB
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.transfer.outgoing.application.usecase.reject.RejectOutgoingTransfer;
 import com.damian.xBank.modules.banking.transfer.outgoing.application.usecase.reject.RejectOutgoingTransferCommand;
-import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.BankingTransferTestBuilder;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransfer;
+import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransferTestBuilder;
 import com.damian.xBank.modules.banking.transfer.outgoing.infrastructure.repository.OutgoingTransferRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
@@ -76,7 +76,7 @@ public class RejectOutgoingTransferTest extends AbstractServiceTest {
         // given
         setUpContext(fromCustomer);
 
-        OutgoingTransfer givenTransfer = BankingTransferTestBuilder.builder()
+        OutgoingTransfer givenTransfer = OutgoingTransferTestBuilder.builder()
             .withId(1L)
             .withFromAccount(fromAccount)
             .withToAccount(toAccount)

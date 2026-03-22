@@ -4,7 +4,7 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 
 import java.math.BigDecimal;
 
-public class BankingTransferTestBuilder {
+public class OutgoingTransferTestBuilder {
     private Long id = null;
     private BankingAccount fromAccount;
     private BankingAccount toAccount;
@@ -12,36 +12,36 @@ public class BankingTransferTestBuilder {
     private BigDecimal amount = BigDecimal.valueOf(0);
     private String description = "Test transfer";
 
-    public static BankingTransferTestBuilder builder() {
-        return new BankingTransferTestBuilder();
+    public static OutgoingTransferTestBuilder builder() {
+        return new OutgoingTransferTestBuilder();
     }
 
-    public BankingTransferTestBuilder withId(Long id) {
+    public OutgoingTransferTestBuilder withId(Long id) {
         this.id = id;
         return this;
     }
 
-    public BankingTransferTestBuilder withFromAccount(BankingAccount fromAccount) {
+    public OutgoingTransferTestBuilder withFromAccount(BankingAccount fromAccount) {
         this.fromAccount = fromAccount;
         return this;
     }
 
-    public BankingTransferTestBuilder withToAccount(BankingAccount toAccount) {
+    public OutgoingTransferTestBuilder withToAccount(BankingAccount toAccount) {
         this.toAccount = toAccount;
         return this;
     }
 
-    public BankingTransferTestBuilder withToAccountIban(String toAccountIban) {
+    public OutgoingTransferTestBuilder withToAccountIban(String toAccountIban) {
         this.toAccountIban = toAccountIban;
         return this;
     }
 
-    public BankingTransferTestBuilder withDescription(String description) {
+    public OutgoingTransferTestBuilder withDescription(String description) {
         this.description = description;
         return this;
     }
 
-    public BankingTransferTestBuilder withAmount(BigDecimal amount) {
+    public OutgoingTransferTestBuilder withAmount(BigDecimal amount) {
         this.amount = amount;
         return this;
     }

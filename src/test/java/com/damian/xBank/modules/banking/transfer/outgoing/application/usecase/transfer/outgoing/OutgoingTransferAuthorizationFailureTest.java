@@ -6,9 +6,9 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestB
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.transfer.outgoing.application.usecase.fail.OutgoingTransferAuthorizationFailure;
-import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.BankingTransferTestBuilder;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransfer;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransferStatus;
+import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransferTestBuilder;
 import com.damian.xBank.modules.banking.transfer.outgoing.infrastructure.repository.OutgoingTransferRepository;
 import com.damian.xBank.modules.banking.transfer.outgoing.infrastructure.rest.request.OutgoingTransferFailureRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -38,7 +38,7 @@ public class OutgoingTransferAuthorizationFailureTest extends AbstractServiceTes
     private OutgoingTransferAuthorizationFailure outgoingTransferAuthorizationFailure;
 
     private User customer;
-    private BankingAccount bankingAccount;
+    private BankingAccount fromAccount;
 
     @BeforeEach
     void setUp() {
@@ -48,7 +48,7 @@ public class OutgoingTransferAuthorizationFailureTest extends AbstractServiceTes
             .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
             .build();
 
-        bankingAccount = BankingAccountTestBuilder.builder()
+        fromAccount = BankingAccountTestBuilder.builder()
             .withId(5L)
             .withOwner(customer)
             .withCurrency(BankingAccountCurrency.EUR)
@@ -61,15 +61,15 @@ public class OutgoingTransferAuthorizationFailureTest extends AbstractServiceTes
     @Test
     void transferFailure_ChangesTransferStatusToFailedAndRevertsBalance() {
         // given
-        BigDecimal accountInitialBalance = bankingAccount.getBalance();
+        BigDecimal accountInitialBalance = fromAccount.getBalance();
         OutgoingTransferFailureRequest request = new OutgoingTransferFailureRequest(
             "123/123",
             "Error"
         );
 
-        OutgoingTransfer transfer = BankingTransferTestBuilder.builder()
+        OutgoingTransfer transfer = OutgoingTransferTestBuilder.builder()
             .withId(1L)
-            .withFromAccount(bankingAccount)
+            .withFromAccount(fromAccount)
             .withToAccount(null)
             .withToAccountIban("ES9900001111112233334444")
             .withAmount(accountInitialBalance)

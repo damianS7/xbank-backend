@@ -58,7 +58,7 @@ public class OutgoingTransferTest {
             .withAccountNumber("ES1234567890123456781012")
             .build();
 
-        transfer = BankingTransferTestBuilder.builder()
+        transfer = OutgoingTransferTestBuilder.builder()
             .withId(2L)
             .withFromAccount(fromAccount)
             .withToAccount(toAccount)
@@ -306,7 +306,7 @@ public class OutgoingTransferTest {
     @DisplayName("assertDifferentAccounts should return transfer when accounts are different")
     void assertDifferentAccounts_WhenAccountAreDifferent_ReturnsTransfer() {
         // given
-        OutgoingTransfer transfer = BankingTransferTestBuilder.builder()
+        OutgoingTransfer transfer = OutgoingTransferTestBuilder.builder()
             .withId(1L)
             .withFromAccount(fromAccount)
             .withToAccount(toAccount)

@@ -6,9 +6,9 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestB
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.transfer.outgoing.application.usecase.authorize.AuthorizeOutgoingInternalTransfer;
 import com.damian.xBank.modules.banking.transfer.outgoing.application.usecase.authorize.AuthorizeOutgoingTransferCommand;
-import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.BankingTransferTestBuilder;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransfer;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransferStatus;
+import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransferTestBuilder;
 import com.damian.xBank.modules.banking.transfer.outgoing.infrastructure.repository.OutgoingTransferRepository;
 import com.damian.xBank.modules.notification.domain.factory.NotificationEventFactory;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
@@ -89,7 +89,7 @@ public class AuthorizeOutgoingInternalTransferTest extends AbstractServiceTest {
         // given
         //        setUpContext(fromCustomer);
 
-        OutgoingTransfer givenTransfer = BankingTransferTestBuilder.builder()
+        OutgoingTransfer givenTransfer = OutgoingTransferTestBuilder.builder()
             .withId(1L)
             .withFromAccount(fromAccount)
             .withToAccount(toAccount)

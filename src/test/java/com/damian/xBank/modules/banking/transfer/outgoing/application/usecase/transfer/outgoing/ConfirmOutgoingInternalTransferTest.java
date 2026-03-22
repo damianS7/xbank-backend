@@ -5,9 +5,9 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurre
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestBuilder;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.transfer.outgoing.application.usecase.complete.CompleteOutgoingInternalTransfer;
-import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.BankingTransferTestBuilder;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransfer;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransferStatus;
+import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransferTestBuilder;
 import com.damian.xBank.modules.banking.transfer.outgoing.infrastructure.repository.OutgoingTransferRepository;
 import com.damian.xBank.modules.notification.domain.factory.NotificationEventFactory;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
@@ -87,7 +87,7 @@ public class ConfirmOutgoingInternalTransferTest extends AbstractServiceTest {
         final BigDecimal fromAccountInitialBalance = fromAccount.getBalance();
         final BigDecimal toAccountInitialBalance = toAccount.getBalance();
 
-        OutgoingTransfer givenTransfer = BankingTransferTestBuilder.builder()
+        OutgoingTransfer givenTransfer = OutgoingTransferTestBuilder.builder()
             .withId(1L)
             .withFromAccount(fromAccount)
             .withToAccount(toAccount)

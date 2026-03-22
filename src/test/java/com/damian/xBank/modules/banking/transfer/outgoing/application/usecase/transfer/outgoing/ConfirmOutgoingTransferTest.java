@@ -6,9 +6,9 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestB
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.transfer.outgoing.application.usecase.confirm.ConfirmOutgoingTransfer;
 import com.damian.xBank.modules.banking.transfer.outgoing.application.usecase.confirm.ConfirmOutgoingTransferCommand;
-import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.BankingTransferTestBuilder;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransfer;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransferStatus;
+import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransferTestBuilder;
 import com.damian.xBank.modules.banking.transfer.outgoing.infrastructure.repository.OutgoingTransferRepository;
 import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.user.domain.model.User;
@@ -84,7 +84,7 @@ public class ConfirmOutgoingTransferTest extends AbstractServiceTest {
         // given
         setUpContext(fromCustomer);
 
-        OutgoingTransfer givenTransfer = BankingTransferTestBuilder.builder()
+        OutgoingTransfer givenTransfer = OutgoingTransferTestBuilder.builder()
             .withId(1L)
             .withFromAccount(fromAccount)
             .withToAccount(toAccount)
@@ -113,7 +113,7 @@ public class ConfirmOutgoingTransferTest extends AbstractServiceTest {
         // given
         setUpContext(fromCustomer);
 
-        OutgoingTransfer givenTransfer = BankingTransferTestBuilder.builder()
+        OutgoingTransfer givenTransfer = OutgoingTransferTestBuilder.builder()
             .withId(1L)
             .withFromAccount(fromAccount)
             .withToAccount(toAccount)
