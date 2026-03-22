@@ -7,12 +7,12 @@ public enum IncomingTransferStatus {
     /**
      * Transfer is created and pending confirmation.
      */
-    PENDING, // TODO remove?
+    PENDING,
 
     /**
      * Transfer fails. Funds are released.
      */
-    FAILED, // TODO remove?
+    FAILED,
 
     /**
      * Transfer is authorized by the bank.

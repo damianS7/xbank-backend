@@ -1,5 +1,6 @@
 package com.damian.xBank.modules.banking.transfer.outgoing.infrastructure.rest.controller;
 
+import com.damian.xBank.modules.banking.transfer.outgoing.application.usecase.fail.FailedOutgoingTransferResult;
 import com.damian.xBank.modules.banking.transfer.outgoing.application.usecase.fail.OutgoingTransferAuthorizationFailure;
 import com.damian.xBank.modules.banking.transfer.outgoing.infrastructure.rest.request.OutgoingTransferFailureRequest;
 import jakarta.validation.Valid;
@@ -14,10 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 @RequestMapping("/api/v1")
 @RestController
-public class TransferAuthorizationNetworkController {
+public class OutgoingTransferAuthorizationController {
     private final OutgoingTransferAuthorizationFailure outgoingTransferAuthorizationFailure;
 
-    public TransferAuthorizationNetworkController(
+    public OutgoingTransferAuthorizationController(
         OutgoingTransferAuthorizationFailure outgoingTransferAuthorizationFailure
     ) {
         this.outgoingTransferAuthorizationFailure = outgoingTransferAuthorizationFailure;
@@ -28,9 +29,9 @@ public class TransferAuthorizationNetworkController {
         @RequestBody @Valid
         OutgoingTransferFailureRequest request
     ) {
-        outgoingTransferAuthorizationFailure.execute(request);
+        FailedOutgoingTransferResult result = outgoingTransferAuthorizationFailure.execute(request);
         return ResponseEntity
             .status(HttpStatus.OK)
-            .build();
+            .body(result);
     }
 }

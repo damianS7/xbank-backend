@@ -5,6 +5,7 @@ import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountC
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountDepositException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountInsufficientFundsException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountInsufficientReservedFundsException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotOwnerException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountStatusTransitionException;
@@ -89,6 +90,21 @@ public class BankingAccountExceptionHandler {
     @ExceptionHandler(BankingAccountInsufficientFundsException.class)
     public ResponseEntity<ApiResponse<String>> handleInsufficientFunds(BankingAccountInsufficientFundsException ex) {
         log.warn("Banking account: {} has insufficient funds.", ex.getResourceId());
+
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+            .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));
+    }
+
+    @ExceptionHandler(BankingAccountInsufficientReservedFundsException.class)
+    public ResponseEntity<ApiResponse<String>> handleInsufficientReservedFunds(
+        BankingAccountInsufficientReservedFundsException ex
+    ) {
+        log.warn(
+            "Banking account: {} has insufficient reserved funds. Reserved balance: {}, Amount: {}",
+            ex.getResourceId(),
+            ex.getArgs()[0],
+            ex.getArgs()[1]
+        );
 
         return ResponseEntity.status(HttpStatus.CONFLICT)
             .body(ApiResponse.error(ex, HttpStatus.CONFLICT, messageSource));

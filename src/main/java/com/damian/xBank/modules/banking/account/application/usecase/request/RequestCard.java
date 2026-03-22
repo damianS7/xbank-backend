@@ -47,9 +47,7 @@ public class RequestCard {
         // La cuenta a la que se asociara la tarjeta
         final BankingAccount bankingAccount = bankingAccountRepository
             .findById(command.bankingAccountId())
-            .orElseThrow(
-                () -> new BankingAccountNotFoundException(command.bankingAccountId())
-            );
+            .orElseThrow(() -> new BankingAccountNotFoundException(command.bankingAccountId()));
 
         // Si no es admin ...
         if (!currentUser.isAdmin()) {
@@ -57,7 +55,6 @@ public class RequestCard {
             bankingAccount.assertOwnedBy(currentUser.getId());
         }
 
-        // TODO usar issueCard desde el banking account
         BankingCard card = bankingCardDomainService.createBankingCard(bankingAccount, command.type());
         int retry = 0;
 

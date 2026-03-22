@@ -7,6 +7,10 @@ import com.damian.xBank.modules.banking.transfer.outgoing.infrastructure.rest.re
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Caso de uso donde un servicio externo (TransferNetwork) reporta que la transferencia
+ * iniciada por este banco ha fallado.
+ */
 @Service
 public class OutgoingTransferAuthorizationFailure {
     private final OutgoingTransferRepository outgoingTransferRepository;
@@ -18,15 +22,14 @@ public class OutgoingTransferAuthorizationFailure {
     }
 
     @Transactional
-    public void execute(OutgoingTransferFailureRequest request) {
+    public FailedOutgoingTransferResult execute(OutgoingTransferFailureRequest request) {
         OutgoingTransfer transfer = outgoingTransferRepository
-            .findByProviderAuthorizationId(
-                request.authorizationId()
-            ).orElseThrow(
-                () -> new OutgoingTransferNotFoundException(request.authorizationId())
-            );
+            .findByProviderAuthorizationId(request.authorizationId())
+            .orElseThrow(() -> new OutgoingTransferNotFoundException(request.authorizationId()));
 
-        // revert money
+        // Falla la transferencia
         transfer.fail(request.failure());
+
+        return FailedOutgoingTransferResult.from(transfer);
     }
 }

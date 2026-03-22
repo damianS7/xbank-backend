@@ -41,7 +41,7 @@ public enum OutgoingTransferStatus {
         FAILED.allowedTransitions = Set.of(PENDING);
         REJECTED.allowedTransitions = Set.of();
         CONFIRMED.allowedTransitions = Set.of(AUTHORIZED, FAILED);
-        AUTHORIZED.allowedTransitions = Set.of(COMPLETED);
+        AUTHORIZED.allowedTransitions = Set.of(COMPLETED, FAILED);
         COMPLETED.allowedTransitions = Set.of();
     }
 

@@ -77,12 +77,8 @@ public class OutgoingTransfer {
     @Column
     private Instant updatedAt;
 
+    // Constructor JPA
     protected OutgoingTransfer() {
-        this.type = OutgoingTransferType.INTERNAL;
-        this.status = OutgoingTransferStatus.PENDING;
-        this.updatedAt = Instant.now();
-        this.createdAt = Instant.now();
-        this.description = "";
     }
 
     OutgoingTransfer(
@@ -93,13 +89,16 @@ public class OutgoingTransfer {
         BigDecimal amount,
         String description
     ) {
-        this();
         this.id = transferId;
+        this.type = OutgoingTransferType.INTERNAL;
+        this.status = OutgoingTransferStatus.PENDING;
         this.fromAccount = fromAccount;
         this.toAccount = toAccount;
+        this.toAccountIban = toAccountIban;
         this.amount = amount;
         this.description = description;
-        this.toAccountIban = toAccountIban;
+        this.updatedAt = Instant.now();
+        this.createdAt = Instant.now();
 
         if (this.toAccount != null) {
             this.toAccountIban = this.toAccount.getAccountNumber();
@@ -352,4 +351,21 @@ public class OutgoingTransfer {
         return this;
     }
 
+    @Override
+    public String toString() {
+        return "OutgoingTransfer{" +
+               "id=" + id +
+               ", fromAccount=" + fromAccount.getId() +
+               ", toAccount=" + (toAccount != null ? toAccount.getId() : "null") +
+               ", toAccountIban='" + toAccountIban + '\'' +
+               ", amount=" + amount +
+               ", type=" + type +
+               ", status=" + status +
+               ", providerAuthorizationId='" + providerAuthorizationId + '\'' +
+               ", description='" + description + '\'' +
+               ", transactions=" + transactions.size() +
+               ", createdAt=" + createdAt +
+               ", updatedAt=" + updatedAt +
+               '}';
+    }
 }

@@ -10,6 +10,9 @@ import com.damian.xBank.shared.security.AuthenticationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Caso de uso para crear transferencias salientes
+ */
 @Service
 public class CreateOutgoingTransfer {
     private final BankingAccountRepository bankingAccountRepository;
@@ -28,20 +31,18 @@ public class CreateOutgoingTransfer {
 
     @Transactional
     public CreateOutgoingTransferResult execute(CreateOutgoingTransferCommand command) {
-        // Current user
+        // Usuario actual
         final User currentUser = authenticationContext.getCurrentUser();
 
-        // Banking account from where funds will be transferred.
+        // Cuenta desde donde se envían los fondos
         final BankingAccount fromAccount = bankingAccountRepository
             .findById(command.fromAccountId())
-            .orElseThrow(
-                () -> new BankingAccountNotFoundException(command.fromAccountId())
-            );
+            .orElseThrow(() -> new BankingAccountNotFoundException(command.fromAccountId()));
 
         // assert that the current user is the owner of the fromAccount
         fromAccount.assertOwnedBy(currentUser.getId());
 
-        // Banking account to receive funds
+        // Cuenta hacia donde se envían los fondos
         final BankingAccount toAccount = bankingAccountRepository
             .findByAccountNumber(command.toAccountNumber())
             .orElse(null);

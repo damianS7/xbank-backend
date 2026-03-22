@@ -131,8 +131,8 @@ CREATE TABLE public.outgoing_transfers
     id                        int4 GENERATED ALWAYS AS IDENTITY NOT NULL,
     from_account_id           int4                              NOT NULL,
     to_account_id             int4 NULL,
-    to_account_iban           VARCHAR(32)                       NOT NULL, -- TODO delete?
-    provider_authorization_id VARCHAR(36) NULL, -- delete?
+    to_account_iban           VARCHAR(32)                       NOT NULL,
+    provider_authorization_id VARCHAR(36) NULL,
     amount                    numeric(15, 2) DEFAULT 0.00       NOT NULL,
     type                      VARCHAR(30)                       NOT NULL,
     status                    VARCHAR(30)                       NOT NULL,

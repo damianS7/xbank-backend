@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Caso de uso que completa una transferencia entrante.
- * TODO Merge with AuthorizeIncomingTrnasfer???
  */
 @Service
 public class CompleteIncomingTransfer {

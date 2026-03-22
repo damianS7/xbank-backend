@@ -4,6 +4,7 @@ import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountC
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountClosedException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountCurrencyMismatchException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountInsufficientFundsException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountInsufficientReservedFundsException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotOwnerException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountStatusTransitionException;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountSuspendedException;
@@ -348,12 +349,12 @@ public class BankingAccount {
      */
     public void assertSufficientReservedFunds(BigDecimal amount) {
         if (!this.hasSufficientReservedFunds(amount)) {
-            throw new BankingAccountInsufficientFundsException(this.getId(), getBalance(), amount);
+            throw new BankingAccountInsufficientReservedFundsException(this.getId(), getReservedBalance(), amount);
         }
     }
 
     /**
-     * Asegura que el owner de la cuenta sea el
+     * Asegura que el owner de la cuenta sea el userId
      *
      * @param userId El userId que debe ser el owner
      * @throws BankingAccountNotOwnerException Si la cuenta no le pertenece
