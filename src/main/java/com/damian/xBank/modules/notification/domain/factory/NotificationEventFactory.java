@@ -56,7 +56,7 @@ public class NotificationEventFactory {
         );
     }
 
-    public NotificationEvent transferAuthorized(OutgoingTransfer transfer) {
+    public NotificationEvent transferSent(OutgoingTransfer transfer) {
         return new NotificationEvent(
             transfer.getFromAccount().getOwner().getId(),
             NotificationType.TRANSACTION,
