@@ -1,6 +1,6 @@
-package com.damian.xBank.modules.banking.card.infrastructure;
+package com.damian.xBank.modules.banking.account.infrastructure.event;
 
-import com.damian.xBank.modules.banking.card.domain.event.ATMWithdrawalEvent;
+import com.damian.xBank.modules.banking.account.domain.event.DepositCompletedEvent;
 import com.damian.xBank.modules.notification.domain.model.NotificationEvent;
 import com.damian.xBank.modules.notification.domain.model.NotificationType;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
@@ -13,10 +13,10 @@ import java.time.Instant;
 import java.util.Map;
 
 @Component
-public class BankingCardEventListener {
+public class BankingAccountEventListener {
     private final NotificationPublisher notificationPublisher;
 
-    public BankingCardEventListener(
+    public BankingAccountEventListener(
         NotificationPublisher notificationPublisher
     ) {
         this.notificationPublisher = notificationPublisher;
@@ -24,18 +24,18 @@ public class BankingCardEventListener {
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void onATMWithdrawal(ATMWithdrawalEvent event) {
+    public void onDepositCompleted(DepositCompletedEvent event) {
         notificationPublisher.publish(
             new NotificationEvent(
-                event.cardId(),
+                event.accountId(),
                 NotificationType.TRANSACTION,
                 Map.of(
                     "transactionId", event.transactionId(),
-                    "toUser", event.toUser(),
-                    "amount", event.amount(),
+                    "depositor", event.depositor(),
+                    "amount", event.depositAmount(),
                     "currency", event.currency()
                 ),
-                "notification.card.withdraw.completed",
+                "notification.account.deposit.completed",
                 Instant.now()
             )
         );

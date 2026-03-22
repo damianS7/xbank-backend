@@ -1,4 +1,4 @@
-package com.damian.xBank.modules.banking.transfer.outgoing.infrastructure;
+package com.damian.xBank.modules.banking.transfer.outgoing.infrastructure.event;
 
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.event.OutgoingTransferCompletedEvent;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.event.OutgoingTransferSentEvent;
