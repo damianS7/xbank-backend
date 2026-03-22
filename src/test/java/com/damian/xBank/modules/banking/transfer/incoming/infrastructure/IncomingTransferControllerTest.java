@@ -28,11 +28,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -153,16 +150,13 @@ public class IncomingTransferControllerTest extends AbstractControllerTest {
         AuthorizeIncomingTransferRequest request = new AuthorizeIncomingTransferRequest(
             "1234",
             "ES001188222832838",
-            toBankingAccount.getAccountNumber(),
+            "ES0011882228329998",
             BigDecimal.valueOf(100),
             "EUR",
             "from David"
         );
 
         // when
-        when(bankingAccountRepository.findByAccountNumber(anyString()))
-            .thenReturn(Optional.empty());
-
         // then
         MvcResult result = mockMvc.perform(post("/api/v1/webhooks/transfers/incoming/authorize")
                 .contentType(MediaType.APPLICATION_JSON)
