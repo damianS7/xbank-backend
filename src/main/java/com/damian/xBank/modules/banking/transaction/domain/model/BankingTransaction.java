@@ -22,6 +22,7 @@ import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 @Table(name = "banking_transactions")
@@ -280,6 +281,14 @@ public class BankingTransaction {
         return balanceAfter;
     }
 
+    public String getAuthorizationId() {
+        return authorizationId;
+    }
+
+    public BankingTransactionPaymentStatus getPaymentStatus() {
+        return paymentStatus;
+    }
+
     public boolean isOwnedBy(Long userId) {
         return Objects.equals(getBankingAccount().getOwner().getId(), userId);
     }
@@ -339,11 +348,10 @@ public class BankingTransaction {
         }
     }
 
-    // TODO hacer authorize en el usecase!!!
-    public void authorize(String authorizationId) {
+    public void authorize() {
         this.assertPending();
         setPaymentStatus(BankingTransactionPaymentStatus.AUTHORIZED);
-        this.authorizationId = authorizationId;
+        this.authorizationId = generateAuthorizationId();
         complete();
     }
 
@@ -389,6 +397,10 @@ public class BankingTransaction {
         }
     }
 
+    private static String generateAuthorizationId() {
+        return UUID.randomUUID().toString();
+    }
+
     @Override
     public String toString() {
         return "BankingTransaction{" +
@@ -406,13 +418,5 @@ public class BankingTransaction {
                ", createdAt=" + createdAt +
                ", updatedAt=" + updatedAt +
                '}';
-    }
-
-    public String getAuthorizationId() {
-        return authorizationId;
-    }
-
-    public BankingTransactionPaymentStatus getPaymentStatus() {
-        return paymentStatus;
     }
 }

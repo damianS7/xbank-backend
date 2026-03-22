@@ -15,8 +15,7 @@ import com.damian.xBank.modules.banking.card.domain.model.BankingCardTestBuilder
 import com.damian.xBank.modules.banking.card.domain.model.CardNumber;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
-import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionTestBuilder;
-import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionPaymentStatus;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.payment.checkout.domain.PaymentAuthorizationStatus;
 import com.damian.xBank.modules.payment.checkout.infrastructure.http.response.PaymentAuthorizationResponse;
@@ -27,6 +26,7 @@ import com.damian.xBank.shared.exception.ErrorCodes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
@@ -36,6 +36,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class AuthorizeCardPaymentTest extends AbstractServiceTest {
@@ -93,24 +94,17 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
             BigDecimal.valueOf(100)
         );
 
-        BankingTransaction transaction = BankingTransactionTestBuilder.builder()
-            .withId(1L)
-            .withAccount(bankingAccount)
-            .withCard(bankingCard)
-            .withType(BankingTransactionType.CARD_CHARGE)
-            .withAmount(command.amount())
-            .withDescription(command.merchant())
-            .build();
-
         when(bankingCardRepository.findByCardNumber(any(CardNumber.class)))
             .thenReturn(Optional.of(bankingCard));
-
-        when(bankingTransactionRepository.save(
-            any(BankingTransaction.class)
-        )).thenReturn(transaction);
+        when(bankingTransactionRepository.save(any(BankingTransaction.class)))
+            .thenAnswer(invocation -> invocation.getArgument(0));
 
         // then
         PaymentAuthorizationResponse response = cardAuthorize.execute(command);
+        ArgumentCaptor<BankingTransaction> argCaptor = ArgumentCaptor.forClass(BankingTransaction.class);
+        verify(bankingTransactionRepository).save(argCaptor.capture());
+        BankingTransaction transaction = argCaptor.getValue();
+
         assertThat(response)
             .isNotNull()
             .extracting(
@@ -119,9 +113,17 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
                 PaymentAuthorizationResponse::declineReason
             ).containsExactly(
                 PaymentAuthorizationStatus.AUTHORIZED,
-                transaction.getId().toString(),
+                transaction.getAuthorizationId(),
                 null
             );
+
+        assertThat(transaction)
+            .isNotNull()
+            .extracting(BankingTransaction::getPaymentStatus)
+            .isEqualTo(BankingTransactionPaymentStatus.AUTHORIZED);
+
+        assertThat(transaction.getAuthorizationId())
+            .hasSizeGreaterThan(10);
     }
 
     @Test

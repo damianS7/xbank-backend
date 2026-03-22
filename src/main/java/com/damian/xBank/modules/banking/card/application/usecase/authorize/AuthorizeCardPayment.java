@@ -41,7 +41,6 @@ public class AuthorizeCardPayment {
             .orElseThrow(() -> new BankingCardNotFoundException(command.cardNumber()));
 
         // Comprobar que la tarjeta puede realizar el pago
-        // TODO return un authorizationId? o una transaccion?
         bankingCard.authorize(
             command.amount(),
             command.expiryMonth(),
@@ -54,18 +53,15 @@ public class AuthorizeCardPayment {
             bankingCard,
             command.amount(),
             command.merchant()
-            // authorizationId
         );
 
-        // TODO ???
-        //        transaction.authorize(command);
-
-        // Guarda la transacción
+        // Autoriza y guarda la transacción
+        transaction.authorize();
         transaction = bankingTransactionRepository.save(transaction);
 
         return new PaymentAuthorizationResponse(
             PaymentAuthorizationStatus.AUTHORIZED,
-            transaction.getId().toString(),
+            transaction.getAuthorizationId(),
             null
         );
     }
