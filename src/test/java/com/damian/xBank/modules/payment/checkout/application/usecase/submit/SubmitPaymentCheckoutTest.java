@@ -47,6 +47,7 @@ public class SubmitPaymentCheckoutTest extends AbstractServiceTest {
             .withEmail("customer@demo.com")
             .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
             .build();
+        customer.registerMerchant("Amazon.es", "https://amazon.es");
     }
 
     @Test
@@ -54,9 +55,11 @@ public class SubmitPaymentCheckoutTest extends AbstractServiceTest {
     void submitPaymentCheckout_WhenValidRequest_ReturnsAuthorizedPaymentIntent() {
         // given
         PaymentIntent paymentIntent = PaymentIntent.create(
-            customer,
+            customer.getMerchant(),
+            "order_1234",
             BigDecimal.valueOf(100),
-            BankingAccountCurrency.EUR
+            BankingAccountCurrency.EUR,
+            "Amazon prime subscription"
         );
 
         SubmitPaymentCheckoutCommand command = new SubmitPaymentCheckoutCommand(

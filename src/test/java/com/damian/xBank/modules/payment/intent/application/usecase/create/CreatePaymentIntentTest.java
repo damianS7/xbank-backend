@@ -37,6 +37,8 @@ public class CreatePaymentIntentTest extends AbstractServiceTest {
             .withEmail("customer@demo.com")
             .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
             .build();
+
+        customer.registerMerchant("Amazon.es", "https://amazon.es");
     }
 
     @Test
@@ -45,15 +47,11 @@ public class CreatePaymentIntentTest extends AbstractServiceTest {
         // given
         setUpContext(customer);
 
-        PaymentIntent paymentIntent = PaymentIntent.create(
-            customer,
-            BigDecimal.valueOf(100),
-            BankingAccountCurrency.EUR
-        );
-
         CreatePaymentIntentCommand command = new CreatePaymentIntentCommand(
-            paymentIntent.getAmount(),
-            paymentIntent.getCurrency().toString()
+            "order_1234",
+            "Amazon prime subscription",
+            BigDecimal.valueOf(100),
+            BankingAccountCurrency.EUR.toString()
         );
 
         // when

@@ -201,17 +201,31 @@ CREATE TABLE public.banking_transactions
         ON DELETE SET NULL
 );
 
+CREATE TABLE public.merchants
+(
+    id            int4 GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id       int4         NOT NULL UNIQUE,
+    merchant_name VARCHAR(255) NOT NULL,
+    callback_url  VARCHAR(255) NOT NULL,
+    created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_merchant_user_account
+        FOREIGN KEY (user_id)
+            REFERENCES public.user_accounts (id)
+            ON DELETE CASCADE
+);
+
 CREATE TABLE public.payment_intents
 (
     id                    int4 GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     merchant_id           int4           NOT NULL,
-    merchant_callback_url varchar(255)   NOT NULL,
+    order_id              varchar(30)    NOT NULL,
     status                VARCHAR(30)    NOT NULL,
     amount                numeric(15, 2) NOT NULL,
     currency              VARCHAR(3)     NOT NULL,
+    description           VARCHAR(60)    NOT NULL,
     created_at            timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     updated_at            timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-    CONSTRAINT fk_users_accounts FOREIGN KEY (merchant_id)
-        REFERENCES public.user_accounts (id)
-        ON DELETE SET NULL
+    CONSTRAINT fk_merchants FOREIGN KEY (merchant_id)
+        REFERENCES public.merchants (id)
+        ON DELETE RESTRICT
 );

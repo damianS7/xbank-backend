@@ -40,13 +40,15 @@ public class PaymentCheckoutControllerTest extends AbstractControllerTest {
             .withStatus(UserStatus.VERIFIED)
             .withPassword(passwordEncoder.encode(RAW_PASSWORD))
             .build();
-
+        customer.registerMerchant("Amazon.es", "https://amazon.es");
         userRepository.save(customer);
 
         paymentIntent = PaymentIntent.create(
-            customer,
+            customer.getMerchant(),
+            "order_1234",
             BigDecimal.valueOf(100, 2),
-            BankingAccountCurrency.EUR
+            BankingAccountCurrency.EUR,
+            "Amazon prime subscription"
         );
 
         paymentIntentRepository.save(paymentIntent);

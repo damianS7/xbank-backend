@@ -1,7 +1,9 @@
 package com.damian.xBank.modules.user.user.domain.model;
 
 import com.damian.xBank.modules.setting.domain.model.Setting;
+import com.damian.xBank.modules.user.merchant.domain.Merchant;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
+import com.damian.xBank.modules.user.user.domain.exception.UserNotMerchantException;
 import com.damian.xBank.modules.user.user.domain.exception.UserVerificationNotPendingException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -43,6 +45,9 @@ public class User {
     private Instant updatedAt;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Merchant merchant;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserProfile profile;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
@@ -81,6 +86,15 @@ public class User {
         return new User(null, email, passwordHash, role, null, profile);
     }
 
+    public Merchant registerMerchant(
+        String merchantName,
+        String callbackUrl
+    ) {
+        this.merchant = Merchant.create(merchantName, callbackUrl);
+        this.merchant.setUser(this);
+        return this.merchant;
+    }
+
     public Long getId() {
         return id;
     }
@@ -115,6 +129,13 @@ public class User {
 
     public UserProfile getProfile() {
         return profile;
+    }
+
+    public Merchant getMerchant() {
+        if (merchant == null) {
+            throw new UserNotMerchantException(this.id);
+        }
+        return merchant;
     }
 
     public Setting getSettings() {

@@ -40,7 +40,7 @@ public class SubmitPaymentCheckout {
 
         PaymentAuthorizationResponse response = paymentNetworkGateway.authorizePayment(
             new PaymentAuthorizationRequest(
-                paymentIntent.getMerchantName(),
+                paymentIntent.getMerchant().getMerchantName(),
                 command.cardHolder(),
                 command.cardNumber(),
                 command.expiryMonth(),
@@ -57,6 +57,7 @@ public class SubmitPaymentCheckout {
             throw new PaymentCheckoutException(paymentIntent.getId(), response.declineReason());
         }
 
+        // TODO
         // If the payment is authorized we should send to the card issuer bank
         // Or the payment network should send to the issuer card?
         paymentIntent.authorize();

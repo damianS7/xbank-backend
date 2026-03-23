@@ -13,6 +13,7 @@ public class ErrorCodes {
 
     // User account
     public static final String USER_NOT_FOUND = "user.not_found";
+    public static final String USER_NOT_MERCHANT = "user.not_merchant";
     public static final String USER_SUSPENDED = "user.suspended";
     public static final String USER_EMAIL_TAKEN = "user.email_taken";
     public static final String USER_INVALID_PASSWORD = "user.invalid_password";

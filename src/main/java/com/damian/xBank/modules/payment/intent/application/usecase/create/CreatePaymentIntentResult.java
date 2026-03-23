@@ -20,7 +20,7 @@ public record CreatePaymentIntentResult(
         return new CreatePaymentIntentResult(
             paymentIntent.getId(),
             paymentIntent.getStatus(),
-            paymentIntent.getMerchantName(),
+            paymentIntent.getMerchant().getMerchantName(),
             paymentIntent.getAmount(),
             paymentIntent.getCurrency(),
             paymentIntent.getCreatedAt(),

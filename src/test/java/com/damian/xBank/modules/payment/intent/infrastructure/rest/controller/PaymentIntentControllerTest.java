@@ -28,6 +28,7 @@ public class PaymentIntentControllerTest extends AbstractControllerTest {
             .withPassword(passwordEncoder.encode(RAW_PASSWORD))
             .build();
 
+        customer.registerMerchant("Amazon.es", "https://amazon.es");
         userRepository.save(customer);
     }
 
@@ -38,6 +39,8 @@ public class PaymentIntentControllerTest extends AbstractControllerTest {
         login(customer);
 
         CreatePaymentIntentRequest request = new CreatePaymentIntentRequest(
+            "order_1234",
+            "Amazon prime subscription",
             BigDecimal.valueOf(100),
             "EUR"
         );

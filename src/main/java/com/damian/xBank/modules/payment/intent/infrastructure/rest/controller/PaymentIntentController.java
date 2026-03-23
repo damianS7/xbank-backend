@@ -37,6 +37,8 @@ public class PaymentIntentController {
         CreatePaymentIntentRequest request
     ) {
         CreatePaymentIntentCommand command = new CreatePaymentIntentCommand(
+            request.orderId(),
+            request.description(),
             request.amount(),
             request.currency()
         );

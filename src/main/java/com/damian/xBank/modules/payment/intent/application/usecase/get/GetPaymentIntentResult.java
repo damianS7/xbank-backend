@@ -9,22 +9,26 @@ import java.time.Instant;
 
 public record GetPaymentIntentResult(
     Long id,
+    String orderId,
     PaymentIntentStatus status,
     String merchant,
     String merchantCallbackUrl,
     BigDecimal amount,
     BankingAccountCurrency currency,
+    String paymentDescription,
     Instant createdAt,
     Instant updatedAt
 ) {
     public static GetPaymentIntentResult from(PaymentIntent paymentIntent) {
         return new GetPaymentIntentResult(
             paymentIntent.getId(),
+            paymentIntent.getOrderId(),
             paymentIntent.getStatus(),
-            paymentIntent.getMerchantName(),
-            paymentIntent.getMerchantCallbackUrl(),
+            paymentIntent.getMerchant().getMerchantName(),
+            paymentIntent.getMerchant().getCallbackUrl(),
             paymentIntent.getAmount(),
             paymentIntent.getCurrency(),
+            paymentIntent.getDescription(),
             paymentIntent.getCreatedAt(),
             paymentIntent.getUpdatedAt()
         );

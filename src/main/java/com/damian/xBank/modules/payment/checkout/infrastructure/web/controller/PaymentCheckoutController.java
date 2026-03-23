@@ -65,11 +65,13 @@ public class PaymentCheckoutController {
 
         // read only fields
         model.addAttribute("paymentId", result.id());
+        model.addAttribute("orderId", result.orderId());
         model.addAttribute("status", result.status());
         model.addAttribute("PaymentIntentStatus", PaymentIntentStatus.class);
         model.addAttribute("merchant", result.merchant());
         model.addAttribute("amount", result.amount());
         model.addAttribute("currency", result.currency());
+        model.addAttribute("paymentDescription", result.paymentDescription());
         model.addAttribute("merchantCallbackUrl", result.merchantCallbackUrl());
         model.addAttribute("form", form);
         return "layout/main";
@@ -85,10 +87,12 @@ public class PaymentCheckoutController {
 
         // read only fields
         model.addAttribute("paymentId", result.id());
+        model.addAttribute("orderId", result.orderId());
         model.addAttribute("status", result.status());
         model.addAttribute("PaymentIntentStatus", PaymentIntentStatus.class);
         model.addAttribute("merchant", result.merchant());
         model.addAttribute("amount", result.amount());
+        model.addAttribute("paymentDescription", result.paymentDescription());
         model.addAttribute("currency", result.currency());
         model.addAttribute("merchantCallbackUrl", result.merchantCallbackUrl());
         return "layout/status";
