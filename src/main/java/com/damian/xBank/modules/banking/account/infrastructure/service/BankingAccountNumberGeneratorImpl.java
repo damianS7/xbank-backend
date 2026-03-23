@@ -1,27 +1,40 @@
 package com.damian.xBank.modules.banking.account.infrastructure.service;
 
-import net.datafaker.Faker;
+import com.damian.xBank.modules.banking.account.domain.service.BankingAccountNumberGenerator;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.security.SecureRandom;
 
 @Component
 public class BankingAccountNumberGeneratorImpl implements BankingAccountNumberGenerator {
-    private final Faker faker;
+    private final String BIN;
 
     public BankingAccountNumberGeneratorImpl(
-            Faker faker
+        @Value("${bank.account.bin}") String BIN
     ) {
-        this.faker = faker;
+        this.BIN = BIN;
     }
 
     /**
-     * Generate a random account number.
+     * Genera un numero de cuenta aleatorio
      *
-     * @return String account number
+     * @return String
      */
     @Override
     public String generate() {
-        //ES00 0000 0000 0000 0000 0000
-        String country = faker.country().countryCode2().toUpperCase();
-        return country + faker.number().digits(22);
+        SecureRandom random = new SecureRandom();
+
+        StringBuilder sb = new StringBuilder(16);
+        for (int i = 0; i < 16; i++) {
+            sb.append(random.nextInt(10)); // 0–9
+        }
+
+        return BIN + sb;
+    }
+
+    @Override
+    public String getBIN() {
+        return BIN;
     }
 }

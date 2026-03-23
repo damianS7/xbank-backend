@@ -7,9 +7,9 @@ public class ApplicationException extends RuntimeException {
     private final Object[] args;
 
     public ApplicationException(
-            String errorCode,
-            Object resourceId,
-            Object[] args
+        String errorCode,
+        Object resourceId,
+        Object[] args
     ) {
         super(errorCode);
         this.resourceId = resourceId;

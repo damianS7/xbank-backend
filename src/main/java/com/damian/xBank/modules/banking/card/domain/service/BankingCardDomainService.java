@@ -3,7 +3,6 @@ package com.damian.xBank.modules.banking.card.domain.service;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardType;
-import com.damian.xBank.modules.banking.card.infrastructure.service.BankingCardGenerator;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -11,25 +10,27 @@ public class BankingCardDomainService {
     private final BankingCardGenerator bankingCardGenerator;
 
     public BankingCardDomainService(
-            BankingCardGenerator bankingCardGenerator
+        BankingCardGenerator bankingCardGenerator
     ) {
         this.bankingCardGenerator = bankingCardGenerator;
     }
 
     /**
-     * Create a new card and associate to the account
+     * Crea una tarjeta nueva asociada a una cuenta.
      *
-     * @param bankingAccount
-     * @param cardType
-     * @return
+     * @param bankingAccount Cuenta a la que se asocia la tarjeta
+     * @param cardType       Tipo de tarjeta
+     * @return La tarjeta creada
      */
     public BankingCard createBankingCard(
-            BankingAccount bankingAccount,
-            BankingCardType cardType
+        BankingAccount bankingAccount,
+        BankingCardType cardType
     ) {
-        BankingCard card = bankingCardGenerator.generate(bankingAccount, cardType);
-        //        bankingAccount.addBankingCard(card);
-        //        card.setBankingAccount(bankingAccount);
-        return card;
+        return bankingAccount.issueCard(
+            cardType,
+            bankingCardGenerator.generateCardNumber(),
+            bankingCardGenerator.generateCvv(),
+            bankingCardGenerator.generatePin()
+        );
     }
 }

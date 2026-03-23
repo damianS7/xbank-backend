@@ -1,15 +1,22 @@
 package com.damian.xBank.modules.user.user.domain.model;
 
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.setting.domain.model.Setting;
+import com.damian.xBank.modules.user.merchant.domain.Merchant;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
-import com.damian.xBank.modules.user.token.domain.model.UserToken;
+import com.damian.xBank.modules.user.user.domain.exception.UserNotMerchantException;
 import com.damian.xBank.modules.user.user.domain.exception.UserVerificationNotPendingException;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "user_accounts")
@@ -17,9 +24,6 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<BankingAccount> bankingAccounts;
 
     @Enumerated(EnumType.STRING)
     private UserRole role;
@@ -34,97 +38,73 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserStatus status;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private UserProfile profile;
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private Setting settings;
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private UserToken token;
-
     @Column
     private Instant createdAt;
 
     @Column
     private Instant updatedAt;
 
-    public User() {
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Merchant merchant;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private UserProfile profile;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Setting settings;
+
+    // JPA constructor
+    protected User() {
+    }
+
+    User(
+        Long id,
+        String email,
+        String passwordHash,
+        UserRole role,
+        UserStatus status,
+        UserProfile profile
+    ) {
+        this.id = id;
+        this.email = email;
+        this.passwordHash = passwordHash;
+        this.role = role != null ? role : UserRole.CUSTOMER;
+        this.status = status != null ? status : UserStatus.PENDING_VERIFICATION;
+        this.settings = Setting.create(this, null);
+        this.profile = profile != null ? profile : UserProfile.create();
+        this.profile.setUser(this);
         this.createdAt = Instant.now();
         this.updatedAt = Instant.now();
-        this.bankingAccounts = new HashSet<>();
-        this.role = UserRole.CUSTOMER;
-        this.status = UserStatus.PENDING_VERIFICATION;
-        this.profile = new UserProfile(this);
-        this.settings = new Setting();
     }
 
-    public User(UserProfile profile) {
-        this();
-        this.profile = profile;
+    public static User create(
+        String email,
+        String passwordHash,
+        UserRole role,
+        UserProfile profile
+    ) {
+        return new User(null, email, passwordHash, role, null, profile);
     }
 
-    public static User create() {
-        return new User();
-    }
-
-    public static User create(UserProfile userProfile) {
-        return new User(userProfile);
+    public Merchant registerMerchant(
+        String merchantName,
+        String callbackUrl
+    ) {
+        this.merchant = Merchant.create(merchantName, callbackUrl);
+        this.merchant.setUser(this);
+        return this.merchant;
     }
 
     public Long getId() {
         return id;
     }
 
-    public User setId(Long id) {
-        this.id = id;
-        return this;
-    }
-
     public String getEmail() {
         return this.email;
     }
 
-    public User setEmail(String email) {
-        this.email = email;
-        return this;
-    }
-
     public String getPassword() {
         return this.passwordHash;
-    }
-
-    public User setPassword(String password) {
-        this.passwordHash = password;
-        return this;
-    }
-
-    public void changePassword(String newHashedPassword) {
-        this.passwordHash = newHashedPassword;
-        this.updatedAt = Instant.now();
-    }
-
-    public Set<BankingAccount> getBankingAccounts() {
-        return bankingAccounts;
-    }
-
-    public User addBankingAccount(BankingAccount bankingAccount) {
-        if (bankingAccount.getOwner() != this) {
-            bankingAccount.setOwner(this);
-        }
-
-        this.bankingAccounts.add(bankingAccount);
-        return this;
-    }
-
-    public User setBankingAccounts(Set<BankingAccount> bankingAccounts) {
-        this.bankingAccounts = bankingAccounts;
-        return this;
-    }
-
-    public User setRole(UserRole role) {
-        this.role = role;
-        return this;
     }
 
     public UserRole getRole() {
@@ -139,27 +119,27 @@ public class User {
         return updatedAt;
     }
 
-    public User setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
-        return this;
-    }
-
     public Instant getCreatedAt() {
         return createdAt;
-    }
-
-    public User setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-        return this;
     }
 
     public UserStatus getStatus() {
         return this.status;
     }
 
-    public User setStatus(UserStatus status) {
-        this.status = status;
-        return this;
+    public UserProfile getProfile() {
+        return profile;
+    }
+
+    public Merchant getMerchant() {
+        if (merchant == null) {
+            throw new UserNotMerchantException(this.id);
+        }
+        return merchant;
+    }
+
+    public Setting getSettings() {
+        return settings;
     }
 
     public boolean isAdmin() {
@@ -168,6 +148,36 @@ public class User {
 
     public boolean isCustomer() {
         return this.getRole() == UserRole.CUSTOMER;
+    }
+
+    private void markAsUpdated() {
+        this.updatedAt = Instant.now();
+    }
+
+    public void changeEmail(String email) {
+        this.email = email;
+        markAsUpdated();
+    }
+
+    public void changePassword(String newHashedPassword) {
+        this.passwordHash = newHashedPassword;
+        markAsUpdated();
+    }
+
+    private void setStatus(UserStatus status) {
+        this.status = status;
+    }
+
+    public void assertAwaitingVerification() {
+        if (this.getStatus() != UserStatus.PENDING_VERIFICATION) {
+            throw new UserVerificationNotPendingException(getId());
+        }
+    }
+
+    public void verifyAccount() {
+        assertAwaitingVerification();
+        setStatus(UserStatus.VERIFIED);
+        this.updatedAt = Instant.now();
     }
 
     @Override
@@ -181,43 +191,5 @@ public class User {
                ", createdAt=" + createdAt +
                ", updatedAt=" + updatedAt +
                '}';
-    }
-
-    public UserProfile getProfile() {
-        return profile;
-    }
-
-    public User setToken(UserToken token) {
-        this.token = token;
-        this.token.setUser(this);
-        return this;
-    }
-
-    public User setSettings(Setting setting) {
-        this.settings = setting;
-        this.settings.setUser(this);
-        return this;
-    }
-
-    public User setProfile(UserProfile newProfile) {
-        if (newProfile != null) {
-            this.profile = newProfile;
-        }
-
-        this.profile.setUser(this);
-        return this;
-    }
-
-    public void assertAwaitingVerification() {
-        if (this.getStatus() != UserStatus.PENDING_VERIFICATION) {
-            throw new UserVerificationNotPendingException(getId());
-        }
-    }
-
-    public void verifyAccount() {
-        assertAwaitingVerification();
-        setStatus(UserStatus.VERIFIED);
-        //        this.status = UserStatus.VERIFIED;
-        this.updatedAt = Instant.now();
     }
 }

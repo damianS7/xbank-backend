@@ -1,0 +1,89 @@
+package com.damian.xBank.modules.banking.transaction.infrastructure.mapper;
+
+import com.damian.xBank.modules.banking.transaction.application.dto.BankingTransactionDetailResult;
+import com.damian.xBank.modules.banking.transaction.application.dto.BankingTransactionResult;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
+import com.damian.xBank.shared.infrastructure.web.dto.response.PageResult;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+public class BankingTransactionDtoMapper {
+    public static BankingTransactionResult toBankingTransactionResult(BankingTransaction transaction) {
+        return new BankingTransactionResult(
+            transaction.getId(),
+            transaction.getBankingAccount().getId(),
+            transaction.getBankingCard() != null ? transaction.getBankingCard().getId() : null,
+            transaction.getAmount(),
+            transaction.getBankingAccount().getCurrency(),
+            transaction.getBalanceBefore(),
+            transaction.getBalanceAfter(),
+            transaction.getType(),
+            transaction.getStatus(),
+            transaction.getDescription(),
+            transaction.getCreatedAt(),
+            transaction.getUpdatedAt()
+        );
+    }
+
+    public static BankingTransactionDetailResult toBankingTransactionDetailDto(BankingTransaction transaction) {
+        return new BankingTransactionDetailResult(
+            transaction.getId(),
+            transaction.getBankingAccount().getId(),
+            transaction.getOutgoingTransfer() != null ? transaction
+                .getOutgoingTransfer()
+                .getFromAccount()
+                .getOwner()
+                .getProfile()
+                .getFullName() : null,
+            transaction.getOutgoingTransfer() != null ? transaction
+                .getOutgoingTransfer()
+                .getFromAccount()
+                .getAccountNumber() : null,
+            transaction.getOutgoingTransfer() != null ? transaction
+                .getOutgoingTransfer()
+                .getToAccount()
+                .getOwner()
+                .getProfile()
+                .getFullName() : null,
+            transaction.getOutgoingTransfer() != null ? transaction.getOutgoingTransfer()
+                .getToAccount()
+                .getAccountNumber() : null,
+            transaction.getBankingCard() != null ? transaction.getBankingCard().getId() : null,
+            transaction.getAmount(),
+            transaction.getBankingAccount().getCurrency(),
+            transaction.getBalanceBefore(),
+            transaction.getBalanceAfter(),
+            transaction.getType(),
+            transaction.getStatus(),
+            transaction.getDescription(),
+            transaction.getCreatedAt(),
+            transaction.getUpdatedAt()
+        );
+    }
+
+    public static Set<BankingTransactionResult> toBankingTransactionResultSet(Set<BankingTransaction> accountTransactions) {
+        return accountTransactions.stream().map(
+            BankingTransactionDtoMapper::toBankingTransactionResult
+        ).collect(Collectors.toSet());
+    }
+
+    public static PageResult<BankingTransactionResult> toBankingTransactionPagedResult(
+        Set<BankingTransaction> accountTransactions, Pageable pageable
+    ) {
+        List<BankingTransactionResult> content =
+            accountTransactions.stream()
+                .map(BankingTransactionDtoMapper::toBankingTransactionResult)
+                .toList();
+
+        return new PageResult<>(
+            content,
+            pageable.getPageNumber(),
+            pageable.getPageSize(),
+            content.size(),
+            content.size() / pageable.getPageSize()
+        );
+    }
+}

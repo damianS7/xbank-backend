@@ -1,8 +1,8 @@
 package com.damian.xBank.shared.infrastructure.storage.exception;
 
-import com.damian.xBank.shared.dto.ApiResponse;
 import com.damian.xBank.shared.exception.ApplicationException;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.infrastructure.web.dto.response.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
@@ -28,7 +28,7 @@ public class FileStorageExceptionHandler {
         log.error("File: {} not found in: {}", ex.getArgs()[1], ex.getArgs()[0]);
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body(ApiResponse.error(ex, HttpStatus.NOT_FOUND, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.NOT_FOUND, messageSource));
     }
 
     @ExceptionHandler(FileStorageFailedException.class)
@@ -36,7 +36,7 @@ public class FileStorageExceptionHandler {
         log.error("Failed to store file: {} at: {}", ex.getArgs()[0], ex.getArgs()[1]);
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                             .body(ApiResponse.error(ex, HttpStatus.INTERNAL_SERVER_ERROR, messageSource));
+            .body(ApiResponse.error(ex, HttpStatus.INTERNAL_SERVER_ERROR, messageSource));
     }
 
     @ExceptionHandler(MaxUploadSizeExceededException.class) // 413 Payload Too Large
@@ -44,12 +44,12 @@ public class FileStorageExceptionHandler {
         log.warn("File upload too large");
 
         ApplicationException exception = new ApplicationException(
-                ErrorCodes.STORAGE_UPLOAD_FILE_TOO_LARGE,
-                null,
-                null
+            ErrorCodes.STORAGE_UPLOAD_FILE_TOO_LARGE,
+            null,
+            null
         );
 
         return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
-                             .body(ApiResponse.error(exception, HttpStatus.PAYLOAD_TOO_LARGE, messageSource));
+            .body(ApiResponse.error(exception, HttpStatus.PAYLOAD_TOO_LARGE, messageSource));
     }
 }

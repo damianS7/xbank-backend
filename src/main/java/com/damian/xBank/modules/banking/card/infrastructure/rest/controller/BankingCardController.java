@@ -1,0 +1,105 @@
+package com.damian.xBank.modules.banking.card.infrastructure.rest.controller;
+
+import com.damian.xBank.modules.banking.card.application.usecase.authorize.AuthorizeCardPayment;
+import com.damian.xBank.modules.banking.card.application.usecase.authorize.AuthorizeCardPaymentCommand;
+import com.damian.xBank.modules.banking.card.application.usecase.authorize.AuthorizeCardPaymentResult;
+import com.damian.xBank.modules.banking.card.application.usecase.capture.CaptureCardPayment;
+import com.damian.xBank.modules.banking.card.application.usecase.capture.CaptureCardPaymentCommand;
+import com.damian.xBank.modules.banking.card.application.usecase.capture.CaptureCardPaymentResult;
+import com.damian.xBank.modules.banking.card.application.usecase.get.GetAllCurrentUserBankingCards;
+import com.damian.xBank.modules.banking.card.application.usecase.get.GetAllCurrentUserBankingCardsResult;
+import com.damian.xBank.modules.banking.card.application.usecase.get.GetAllCurrentUserCardsQuery;
+import com.damian.xBank.modules.banking.card.infrastructure.rest.request.AuthorizeCardPaymentRequest;
+import com.damian.xBank.modules.banking.card.infrastructure.rest.request.CaptureCardPaymentRequest;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@Validated
+@RequestMapping("/api/v1")
+@RestController
+public class BankingCardController {
+    private final GetAllCurrentUserBankingCards getAllCurrentUserBankingCards;
+    private final AuthorizeCardPayment authorizeCardPayment;
+    private final CaptureCardPayment captureCardPayment;
+
+    public BankingCardController(
+        GetAllCurrentUserBankingCards getAllCurrentUserBankingCards,
+        AuthorizeCardPayment authorizeCardPayment,
+        CaptureCardPayment captureCardPayment
+    ) {
+        this.getAllCurrentUserBankingCards = getAllCurrentUserBankingCards;
+        this.authorizeCardPayment = authorizeCardPayment;
+        this.captureCardPayment = captureCardPayment;
+    }
+
+    /**
+     * Devuelve todas las tarjetas de un usuario
+     *
+     * @return Result con las tarjetas del usuario
+     */
+    @GetMapping("/banking/cards")
+    public ResponseEntity<?> getCustomerBankingCards() {
+        GetAllCurrentUserCardsQuery query = new GetAllCurrentUserCardsQuery();
+        GetAllCurrentUserBankingCardsResult result = getAllCurrentUserBankingCards.execute(query);
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(result.cards());
+    }
+
+    /**
+     * Autoriza un pago
+     *
+     * @param request Petición con los datos requeridos
+     * @return Result con la respuesta de la autorización
+     */
+    @PostMapping("/banking/cards/authorize")
+    public ResponseEntity<?> authorizeCard(
+        @Valid @RequestBody
+        AuthorizeCardPaymentRequest request
+    ) {
+        AuthorizeCardPaymentCommand command = new AuthorizeCardPaymentCommand(
+            request.merchant(),
+            request.cardHolder(),
+            request.cardNumber(),
+            request.expiryMonth(),
+            request.expiryYear(),
+            request.cvv(),
+            request.amount()
+        );
+
+        AuthorizeCardPaymentResult result = authorizeCardPayment.execute(command);
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(result);
+    }
+
+    /**
+     * Usado por un merchant para reclamar sus fondos.
+     *
+     * @param request Petición con los datos requeridos
+     * @return Result con la respuesta
+     */
+    @PostMapping("/banking/cards/capture")
+    public ResponseEntity<?> capturePayment(
+        @Valid @RequestBody
+        CaptureCardPaymentRequest request
+    ) {
+        CaptureCardPaymentCommand command = new CaptureCardPaymentCommand(
+            request.authorizationId()
+        );
+        CaptureCardPaymentResult result = captureCardPayment.execute(command);
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(result);
+    }
+}

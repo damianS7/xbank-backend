@@ -2,7 +2,17 @@ package com.damian.xBank.modules.notification.domain.model;
 
 import com.damian.xBank.modules.notification.domain.exception.NotificationNotOwnerException;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -34,35 +44,66 @@ public class Notification {
     @Column
     private Instant createdAt;
 
-    public Notification() {
+    protected Notification() {
         this.createdAt = Instant.now();
     }
 
-    public Notification(User user) {
+    Notification(
+        Long id,
+        User user,
+        NotificationType type,
+        Map<String, Object> metadata,
+        String templateKey
+    ) {
         this();
+        this.id = id;
         this.user = user;
+        this.type = type;
+        this.metadata = metadata;
+        this.templateKey = templateKey;
     }
 
-    public static Notification create(User user) {
-        return new Notification(user);
+    public static Notification create(
+        User user,
+        NotificationType type,
+        Map<String, Object> metadata,
+        String templateKey
+    ) {
+        return new Notification(null, user, type, metadata, templateKey);
     }
 
     public Long getId() {
         return id;
     }
 
-    public Notification setId(Long id) {
-        this.id = id;
-        return this;
-    }
-
     public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public Notification setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-        return this;
+    public User getOwner() {
+        return user;
+    }
+
+    public NotificationType getType() {
+        return type;
+    }
+
+    public Map<String, Object> getMetadata() {
+        return metadata;
+    }
+
+    public boolean isOwnedBy(Long userId) {
+        return getOwner().getId().equals(userId);
+    }
+
+    public String getTemplateKey() {
+        return templateKey;
+    }
+
+    public void assertOwnedBy(Long userId) {
+        if (!isOwnedBy(userId)) {
+            throw new NotificationNotOwnerException(getId(), userId);
+        }
     }
 
     @Override
@@ -74,51 +115,5 @@ public class Notification {
                ",templateKey=" + (getTemplateKey() != null ? getTemplateKey() : "null") +
                ",createdAt=" + createdAt +
                "}";
-    }
-
-    public User getOwner() {
-        return user;
-    }
-
-    public Notification setOwner(User user) {
-        this.user = user;
-        return this;
-    }
-
-    public NotificationType getType() {
-        return type;
-    }
-
-    public Notification setType(NotificationType type) {
-        this.type = type;
-        return this;
-    }
-
-    public Map<String, Object> getMetadata() {
-        return metadata;
-    }
-
-    public Notification setMetadata(Map<String, Object> metadata) {
-        this.metadata = metadata;
-        return this;
-    }
-
-    public boolean isOwnedBy(Long userId) {
-        return getOwner().getId().equals(userId);
-    }
-
-    public void assertOwnedBy(Long userId) {
-        if (!isOwnedBy(userId)) {
-            throw new NotificationNotOwnerException(getId(), userId);
-        }
-    }
-
-    public String getTemplateKey() {
-        return templateKey;
-    }
-
-    public Notification setTemplateKey(String templateKey) {
-        this.templateKey = templateKey;
-        return this;
     }
 }

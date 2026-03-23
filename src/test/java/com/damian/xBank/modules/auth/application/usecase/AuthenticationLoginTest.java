@@ -1,11 +1,12 @@
 package com.damian.xBank.modules.auth.application.usecase;
 
-import com.damian.xBank.modules.auth.application.dto.AuthenticationRequest;
-import com.damian.xBank.modules.auth.application.dto.AuthenticationResponse;
 import com.damian.xBank.modules.auth.domain.exception.UserNotVerifiedException;
 import com.damian.xBank.modules.auth.domain.exception.UserSuspendedException;
+import com.damian.xBank.modules.auth.infrastructure.rest.request.AuthenticationRequest;
+import com.damian.xBank.modules.auth.infrastructure.rest.response.AuthenticationResponse;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.security.UserPrincipal;
@@ -23,7 +24,9 @@ import org.springframework.security.core.Authentication;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -56,8 +59,8 @@ public class AuthenticationLoginTest extends AbstractServiceTest {
         UserPrincipal user = new UserPrincipal(this.customer);
 
         AuthenticationRequest request = new AuthenticationRequest(
-                this.customer.getEmail(),
-                this.customer.getPassword()
+            this.customer.getEmail(),
+            this.customer.getPassword()
         );
 
         // when
@@ -69,10 +72,10 @@ public class AuthenticationLoginTest extends AbstractServiceTest {
 
         // then
         assertThat(response)
-                .isNotNull()
-                .extracting(
-                        AuthenticationResponse::token
-                ).isEqualTo(givenToken);
+            .isNotNull()
+            .extracting(
+                AuthenticationResponse::token
+            ).isEqualTo(givenToken);
     }
 
     @Test
@@ -80,17 +83,17 @@ public class AuthenticationLoginTest extends AbstractServiceTest {
     void login_WithInvalidCredentials_ThrowsException() {
         // given
         AuthenticationRequest request = new AuthenticationRequest(
-                customer.getEmail(),
-                customer.getPassword()
+            customer.getEmail(),
+            customer.getPassword()
         );
 
         // when
         when(authenticationManager.authenticate(any()))
-                .thenThrow(new BadCredentialsException(ErrorCodes.AUTH_LOGIN_BAD_CREDENTIALS));
+            .thenThrow(new BadCredentialsException(ErrorCodes.AUTH_LOGIN_BAD_CREDENTIALS));
 
         BadCredentialsException exception = assertThrows(
-                BadCredentialsException.class,
-                () -> authenticationLogin.execute(request)
+            BadCredentialsException.class,
+            () -> authenticationLogin.execute(request)
         );
 
         // Then
@@ -101,25 +104,26 @@ public class AuthenticationLoginTest extends AbstractServiceTest {
     @DisplayName("should throw exception when account is suspended")
     void login_WhenAccountSuspended_ThrowsException() {
         // given
-        User user = User.create()
-                        .setId(1L)
-                        .setEmail("user@demo.com")
-                        .setPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                        .setStatus(UserStatus.SUSPENDED);
+        User user = UserTestBuilder.builder()
+            .withId(1L)
+            .withEmail("user@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .withStatus(UserStatus.SUSPENDED)
+            .build();
 
         AuthenticationRequest request = new AuthenticationRequest(
-                user.getEmail(),
-                user.getPassword()
+            user.getEmail(),
+            user.getPassword()
         );
 
         // when
         when(authenticationManager.authenticate(any())).thenThrow(
-                new UserSuspendedException(user.getEmail())
+            new UserSuspendedException(user.getEmail())
         );
 
         UserSuspendedException exception = assertThrows(
-                UserSuspendedException.class,
-                () -> authenticationLogin.execute(request)
+            UserSuspendedException.class,
+            () -> authenticationLogin.execute(request)
         );
 
         // Then
@@ -131,18 +135,18 @@ public class AuthenticationLoginTest extends AbstractServiceTest {
     void login_WhenAccountNotVerified_ThrowsException() {
         // given
         AuthenticationRequest request = new AuthenticationRequest(
-                customer.getEmail(),
-                customer.getPassword()
+            customer.getEmail(),
+            customer.getPassword()
         );
 
         // when
         when(authenticationManager.authenticate(any())).thenThrow(
-                new UserNotVerifiedException(request.email())
+            new UserNotVerifiedException(request.email())
         );
 
         UserNotVerifiedException exception = assertThrows(
-                UserNotVerifiedException.class,
-                () -> authenticationLogin.execute(request)
+            UserNotVerifiedException.class,
+            () -> authenticationLogin.execute(request)
         );
 
         // Then

@@ -2,15 +2,27 @@ package com.damian.xBank.modules.banking.transaction.domain.model;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
-import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotAuthorizedStatusException;
+import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotAuthorizedException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotOwnerException;
+import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotPendingStatusException;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionStatusTransitionException;
-import com.damian.xBank.modules.banking.transfer.domain.model.BankingTransfer;
-import jakarta.persistence.*;
+import com.damian.xBank.modules.banking.transfer.incoming.domain.model.IncomingTransfer;
+import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransfer;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 @Table(name = "banking_transactions")
@@ -28,8 +40,12 @@ public class BankingTransaction {
     private BankingCard bankingCard;
 
     @ManyToOne
-    @JoinColumn(name = "transfer_id", referencedColumnName = "id")
-    private BankingTransfer transfer;
+    @JoinColumn(name = "outgoing_transfer_id", referencedColumnName = "id")
+    private OutgoingTransfer outgoingTransfer;
+
+    @ManyToOne
+    @JoinColumn(name = "incoming_transfer_id", referencedColumnName = "id")
+    private IncomingTransfer incomingTransfer;
 
     @Column(precision = 15, scale = 2)
     private BigDecimal amount;
@@ -43,9 +59,15 @@ public class BankingTransaction {
     @Column
     private String description;
 
+    @Column
+    private String authorizationId;
+
     @Column(name = "transaction_type")
     @Enumerated(EnumType.STRING)
     private BankingTransactionType type;
+
+    @Enumerated(EnumType.STRING)
+    private BankingTransactionPaymentStatus paymentStatus;
 
     @Enumerated(EnumType.STRING)
     private BankingTransactionStatus status;
@@ -56,229 +78,345 @@ public class BankingTransaction {
     @Column
     private Instant updatedAt;
 
-    public BankingTransaction() {
+    protected BankingTransaction() {
         this.amount = BigDecimal.valueOf(0);
         this.status = BankingTransactionStatus.PENDING;
+        this.paymentStatus = BankingTransactionPaymentStatus.PENDING;
         this.updatedAt = Instant.now();
         this.createdAt = Instant.now();
     }
 
-    public BankingTransaction(BankingAccount bankingAccount) {
+    BankingTransaction(
+        Long transactionId,
+        BankingAccount bankingAccount,
+        BankingCard bankingCard,
+        OutgoingTransfer outgoingTransfer,
+        IncomingTransfer incomingTransfer,
+        BigDecimal amount,
+        String description,
+        BankingTransactionType type,
+        BankingTransactionStatus status,
+        BankingTransactionPaymentStatus paymentStatus,
+        String authorizationId
+    ) {
         this();
+        this.id = transactionId;
         this.bankingAccount = bankingAccount;
-    }
-
-    public BankingTransaction(BankingCard bankingCard) {
-        this(bankingCard.getBankingAccount());
         this.bankingCard = bankingCard;
+        this.outgoingTransfer = outgoingTransfer;
+        this.incomingTransfer = incomingTransfer;
+        this.amount = amount;
+        this.description = description;
+        this.type = type;
+        this.status = status;
+        this.paymentStatus = paymentStatus;
+        this.authorizationId = authorizationId;
+        this.calcBalanceBefore();
+        this.calcBalanceAfter();
     }
 
     public static BankingTransaction create(
-            BankingTransactionType type,
-            BankingAccount account,
-            BigDecimal amount
+        BankingTransactionType type,
+        BankingAccount account,
+        BigDecimal amount,
+        String description
     ) {
-        BankingTransaction transaction = new BankingTransaction();
-        transaction.setBankingAccount(account);
-        transaction.setType(type);
-        transaction.setAmount(amount);
-        transaction.setBalanceBefore(account.getBalance());
-        transaction.setBalanceAfter(transaction.calcBalanceAfter());
-        return transaction;
+        return new BankingTransaction(
+            null,
+            account,
+            null,
+            null,
+            null,
+            amount,
+            description,
+            type,
+            BankingTransactionStatus.PENDING,
+            BankingTransactionPaymentStatus.PENDING,
+            null
+        );
     }
 
     public static BankingTransaction create(
-            BankingTransactionType type,
-            BankingCard card,
-            BigDecimal amount
+        BankingTransactionType type,
+        BankingCard card,
+        BigDecimal amount,
+        String description
     ) {
-        BankingTransaction t = create(type, card.getBankingAccount(), amount);
-        t.setBankingCard(card);
-        return t;
+        return new BankingTransaction(
+            null,
+            card.getBankingAccount(),
+            card,
+            null,
+            null,
+            amount,
+            description,
+            type,
+            BankingTransactionStatus.PENDING,
+            BankingTransactionPaymentStatus.PENDING,
+            null
+        );
     }
 
-    public boolean isOwnedBy(Long userId) {
-        return Objects.equals(getBankingAccount().getOwner().getId(), userId);
+    public static BankingTransaction create(
+        BankingTransactionType type,
+        BankingCard card,
+        BigDecimal amount,
+        String description,
+        String authorizationId
+    ) {
+        return new BankingTransaction(
+            null,
+            card.getBankingAccount(),
+            card,
+            null,
+            null,
+            amount,
+            description,
+            type,
+            BankingTransactionStatus.PENDING,
+            BankingTransactionPaymentStatus.AUTHORIZED,
+            authorizationId
+        );
+    }
+
+    public static BankingTransaction create(
+        BankingTransactionType type,
+        BankingAccount account,
+        OutgoingTransfer transfer,
+        String description
+    ) {
+        return new BankingTransaction(
+            null,
+            account,
+            null,
+            transfer,
+            null,
+            transfer.getAmount(),
+            description,
+            type,
+            BankingTransactionStatus.PENDING,
+            BankingTransactionPaymentStatus.PENDING,
+            null
+        );
+    }
+
+    public static BankingTransaction create(
+        BankingTransactionType type,
+        BankingAccount account,
+        IncomingTransfer incomingTransfer,
+        String description
+    ) {
+        return new BankingTransaction(
+            null,
+            account,
+            null,
+            null,
+            incomingTransfer,
+            incomingTransfer.getAmount(),
+            description,
+            type,
+            BankingTransactionStatus.PENDING,
+            BankingTransactionPaymentStatus.PENDING,
+            null
+        );
     }
 
     public Long getId() {
         return id;
     }
 
-    public BankingTransaction setId(Long id) {
-        this.id = id;
-        return this;
-    }
-
     public BankingAccount getBankingAccount() {
         return bankingAccount;
     }
 
-    public BankingTransaction setBankingAccount(BankingAccount account) {
-        this.bankingAccount = account;
-        return this;
+    public Long getBankingAccountId() {
+        return this.bankingAccount != null ? this.bankingAccount.getId() : null;
     }
 
     public BigDecimal getAmount() {
         return amount;
     }
 
-    public BankingTransaction setAmount(BigDecimal amount) {
-        this.amount = amount;
-        return this;
-    }
-
     public BankingTransactionType getType() {
         return type;
-    }
-
-    public BankingTransaction setType(BankingTransactionType transactionType) {
-        this.type = transactionType;
-        return this;
     }
 
     public BankingTransactionStatus getStatus() {
         return status;
     }
 
-    public BankingTransaction setStatus(BankingTransactionStatus newStatus) {
-        // if the actual status is the same as the new ... do nothing
-        if (this.status == newStatus) {
-            return this;
-        }
-
-        if (!this.status.canTransitionTo(newStatus)) {
-            throw new BankingTransactionStatusTransitionException(
-                    this.id,
-                    this.status.name(),
-                    newStatus.name()
-            );
-        }
-
-        this.status = newStatus;
-        return this;
+    public OutgoingTransfer getOutgoingTransfer() {
+        return outgoingTransfer;
     }
 
-    public BankingTransfer getTransfer() {
-        return transfer;
-    }
-
-    public BankingTransaction setTransfer(BankingTransfer transfer) {
-        this.transfer = transfer;
-        return this;
+    public Long getTransferId() {
+        return outgoingTransfer != null ? outgoingTransfer.getId() : null;
     }
 
     public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public BankingTransaction setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-        return this;
-    }
-
     public String getDescription() {
         return description;
-    }
-
-    public BankingTransaction setDescription(String description) {
-        this.description = description;
-        return this;
     }
 
     public Instant getUpdatedAt() {
         return updatedAt;
     }
 
-    public BankingTransaction setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
-        return this;
-    }
-
     public BankingCard getBankingCard() {
         return bankingCard;
     }
 
-    public BankingTransaction setBankingCard(BankingCard bankingCard) {
-        this.bankingCard = bankingCard;
-        return this;
+    public Long getBankingCardId() {
+        return this.bankingCard != null ? this.bankingCard.getId() : null;
     }
 
     public BigDecimal getBalanceBefore() {
         return balanceBefore;
     }
 
-    public BankingTransaction setBalanceBefore(BigDecimal balanceBefore) {
-        this.balanceBefore = balanceBefore;
-        return this;
-    }
-
     public BigDecimal getBalanceAfter() {
         return balanceAfter;
     }
 
-    public BankingTransaction setBalanceAfter(BigDecimal balanceAfter) {
-        this.balanceAfter = balanceAfter;
-        return this;
+    public String getAuthorizationId() {
+        return authorizationId;
     }
 
-    private BigDecimal calcBalanceAfter() {
-        if (type == BankingTransactionType.DEPOSIT || type == BankingTransactionType.TRANSFER_FROM) {
-            return balanceBefore.add(this.amount);
+    public BankingTransactionPaymentStatus getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public boolean isOwnedBy(Long userId) {
+        return Objects.equals(getBankingAccount().getOwner().getId(), userId);
+    }
+
+    private void markAsUpdated() {
+        this.updatedAt = Instant.now();
+    }
+
+    private void setStatus(BankingTransactionStatus newStatus) {
+        // if the actual status is the same as the new ... do nothing
+        if (this.status == newStatus) {
+            return;
         }
 
-        if (type == BankingTransactionType.TRANSFER_TO || type == BankingTransactionType.CARD_CHARGE) {
-            return balanceBefore.subtract(this.amount);
+        if (!this.status.canTransitionTo(newStatus)) {
+            throw new BankingTransactionStatusTransitionException(
+                this.id,
+                this.status.name(),
+                newStatus.name()
+            );
         }
 
-        return balanceBefore.subtract(this.amount);
+        this.status = newStatus;
+        markAsUpdated();
+    }
+
+    private void setPaymentStatus(BankingTransactionPaymentStatus newStatus) {
+        if (this.paymentStatus == newStatus) {
+            return;
+        }
+
+        if (!this.paymentStatus.canTransitionTo(newStatus)) {
+            throw new BankingTransactionStatusTransitionException(
+                this.id,
+                this.paymentStatus.name(),
+                newStatus.name()
+            );
+        }
+
+        this.paymentStatus = newStatus;
+        markAsUpdated();
+    }
+
+    private void calcBalanceBefore() {
+        if (this.bankingAccount != null) {
+            this.balanceBefore = this.bankingAccount.getBalance();
+            return;
+        }
+        this.balanceBefore = BigDecimal.valueOf(0);
+    }
+
+    private void calcBalanceAfter() {
+        switch (type) {
+            case DEPOSIT, INCOMING_TRANSFER -> this.balanceAfter = balanceBefore.add(this.amount);
+            case OUTGOING_TRANSFER, CARD_CHARGE, WITHDRAWAL -> this.balanceAfter = balanceBefore.subtract(this.amount);
+            default -> this.balanceAfter = balanceBefore;
+        }
     }
 
     public void authorize() {
-        this.setStatus(BankingTransactionStatus.AUTHORIZED);
-        this.updatedAt = Instant.now();
+        this.assertPending();
+        setPaymentStatus(BankingTransactionPaymentStatus.AUTHORIZED);
+        this.authorizationId = generateAuthorizationId();
+        complete();
     }
 
     public void capture() {
         this.assertAuthorized();
-        this.balanceBefore = bankingAccount.getBalance();
-        this.balanceAfter = calcBalanceAfter();
-        this.setStatus(BankingTransactionStatus.CAPTURED);
-        this.updatedAt = Instant.now();
+        setPaymentStatus(BankingTransactionPaymentStatus.CAPTURED);
     }
 
     public void complete() {
-        this.balanceBefore = bankingAccount.getBalance();
-        this.balanceAfter = calcBalanceAfter();
         this.setStatus(BankingTransactionStatus.COMPLETED);
-        this.updatedAt = Instant.now();
+        markAsUpdated();
     }
 
-    public void decline() {
-        this.setStatus(BankingTransactionStatus.DECLINED);
-        this.updatedAt = Instant.now();
+    public void reject(String rejectReason) {
+        this.description = rejectReason;
+        this.setStatus(BankingTransactionStatus.REJECTED);
+        this.setPaymentStatus(BankingTransactionPaymentStatus.FAILED);
+        markAsUpdated();
     }
 
-    public void assertAuthorized() {
-        if (status != BankingTransactionStatus.AUTHORIZED) {
-            throw new BankingTransactionNotAuthorizedStatusException(this.id);
+    public void fail(String failReason) {
+        this.description = failReason;
+        this.setStatus(BankingTransactionStatus.FAILED);
+        this.setPaymentStatus(BankingTransactionPaymentStatus.FAILED);
+        markAsUpdated();
+    }
+
+    public void assertPending() {
+        if (status != BankingTransactionStatus.PENDING) {
+            throw new BankingTransactionNotPendingStatusException(this.id);
         }
     }
 
-    /**
-     * Assert the ownership of the transaction.
-     *
-     * @param userId the customer to check ownership against
-     * @return the current validator instance for chaining
-     * @throws BankingTransactionNotOwnerException if the transaction does not belong to the customer
-     */
-    public BankingTransaction assertOwnedBy(Long userId) {
-
-        // compare account owner id with given customer id
+    public void assertOwnedBy(Long userId) {
         if (!isOwnedBy(userId)) {
             throw new BankingTransactionNotOwnerException(getId(), userId);
         }
+    }
 
-        return this;
+    public void assertAuthorized() {
+        if (this.getPaymentStatus() != BankingTransactionPaymentStatus.AUTHORIZED) {
+            throw new BankingTransactionNotAuthorizedException(this.id);
+        }
+    }
+
+    private static String generateAuthorizationId() {
+        return UUID.randomUUID().toString();
+    }
+
+    @Override
+    public String toString() {
+        return "BankingTransaction{" +
+               "id=" + id +
+               ", bankingAccountId=" + bankingAccount.getId() +
+               ", bankingCardId=" + bankingCard.getId() +
+               ", outgoingTransferId=" + outgoingTransfer.getId() +
+               ", incomingTransferId=" + incomingTransfer.getId() +
+               ", amount=" + amount +
+               ", balanceBefore=" + balanceBefore +
+               ", balanceAfter=" + balanceAfter +
+               ", description='" + description + '\'' +
+               ", type=" + type +
+               ", status=" + status +
+               ", createdAt=" + createdAt +
+               ", updatedAt=" + updatedAt +
+               '}';
     }
 }

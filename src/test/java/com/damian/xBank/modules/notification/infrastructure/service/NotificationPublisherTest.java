@@ -6,10 +6,10 @@ import com.damian.xBank.modules.notification.infrastructure.repository.Notificat
 import com.damian.xBank.modules.notification.infrastructure.sink.NotificationSinkRegistry;
 import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException;
 import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
-import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,7 +22,11 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class NotificationPublisherTest extends AbstractServiceTest {
 
@@ -42,11 +46,11 @@ public class NotificationPublisherTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        customer = UserTestBuilder.aCustomer()
-                                  .withId(1L)
-                                  .withEmail("customer@demo.com")
-                                  .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                  .build();
+        customer = UserTestBuilder.builder()
+            .withId(1L)
+            .withEmail("customer@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .build();
     }
 
     @Test
@@ -54,22 +58,22 @@ public class NotificationPublisherTest extends AbstractServiceTest {
     void publish_ValidRecipient_SavesNotification() {
         // given
         Map<String, Object> metadata = Map.of(
-                "postId", 3L,
-                "userName", "userName"
+            "postId", 3L,
+            "userName", "userName"
         );
 
         NotificationEvent event = new NotificationEvent(
-                customer.getId(),
-                NotificationType.TRANSFER,
-                metadata,
-                "notification.transfer.sent",
-                Instant.now()
+            customer.getId(),
+            NotificationType.TRANSFER,
+            metadata,
+            "notification.transfer.sent",
+            Instant.now()
         );
 
         // when
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(customer));
         when(notificationRepository.save(any()))
-                .thenAnswer(i -> i.getArguments()[0]);
+            .thenAnswer(i -> i.getArguments()[0]);
         notificationPublisher.publish(event);
 
         // then
@@ -82,23 +86,23 @@ public class NotificationPublisherTest extends AbstractServiceTest {
         // given
 
         Map<String, Object> metadata = Map.of(
-                "postId", 1L,
-                "userName", "userName"
+            "postId", 1L,
+            "userName", "userName"
         );
 
         NotificationEvent event = new NotificationEvent(
-                customer.getId(),
-                NotificationType.TRANSFER,
-                metadata,
-                "notification.transfer.sent",
-                Instant.now()
+            customer.getId(),
+            NotificationType.TRANSFER,
+            metadata,
+            "notification.transfer.sent",
+            Instant.now()
         );
 
         // when
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
         UserNotFoundException exception = assertThrows(
-                UserNotFoundException.class,
-                () -> notificationPublisher.publish(event)
+            UserNotFoundException.class,
+            () -> notificationPublisher.publish(event)
         );
 
         assertEquals(ErrorCodes.USER_NOT_FOUND, exception.getMessage());

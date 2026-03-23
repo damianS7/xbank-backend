@@ -2,8 +2,17 @@ package com.damian.xBank.modules.payment.intent.domain.model;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.payment.intent.domain.exception.PaymentIntentNotPendingException;
-import com.damian.xBank.modules.user.user.domain.model.User;
-import jakarta.persistence.*;
+import com.damian.xBank.modules.user.merchant.domain.Merchant;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -17,7 +26,10 @@ public class PaymentIntent {
 
     @ManyToOne
     @JoinColumn(name = "merchant_id", referencedColumnName = "id", nullable = false)
-    private User merchant;
+    private Merchant merchant;
+
+    @Column
+    private String orderId;
 
     @Column(precision = 15, scale = 2)
     private BigDecimal amount;
@@ -30,8 +42,7 @@ public class PaymentIntent {
     @Enumerated(EnumType.STRING)
     private PaymentIntentStatus status;
 
-    private String merchantCallbackUrl;
-
+    @Column
     private String description;
 
     @Column
@@ -40,21 +51,40 @@ public class PaymentIntent {
     @Column
     private Instant updatedAt;
 
-    public PaymentIntent() {
+    protected PaymentIntent() {
+    }
+
+    PaymentIntent(
+        final Merchant merchant,
+        final BigDecimal amount,
+        final BankingAccountCurrency currency,
+        final String orderId,
+        final String description
+    ) {
+        this.merchant = merchant;
+        this.amount = amount;
+        this.currency = currency;
+        this.orderId = orderId;
+        this.description = description;
         this.createdAt = Instant.now();
         this.updatedAt = Instant.now();
         this.status = PaymentIntentStatus.PENDING;
     }
 
-    public PaymentIntent(
-            final User merchant,
-            final BigDecimal amount,
-            final BankingAccountCurrency currency
+    public static PaymentIntent create(
+        final Merchant merchant,
+        final String orderId,
+        final BigDecimal amount,
+        final BankingAccountCurrency currency,
+        final String description
     ) {
-        this();
-        this.merchant = merchant;
-        this.amount = amount;
-        this.currency = currency;
+        return new PaymentIntent(
+            merchant,
+            amount,
+            currency,
+            orderId,
+            description
+        );
     }
 
     public Long getId() {
@@ -65,11 +95,7 @@ public class PaymentIntent {
         return updatedAt;
     }
 
-    public String getMerchantName() {
-        return merchant.getProfile().getFirstName();
-    }
-
-    public User getMerchant() {
+    public Merchant getMerchant() {
         return merchant;
     }
 
@@ -87,6 +113,10 @@ public class PaymentIntent {
 
     public Instant getCreatedAt() {
         return createdAt;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public void authorize() {
@@ -107,9 +137,9 @@ public class PaymentIntent {
 
     @Override
     public String toString() {
-        return "Payment{"
+        return "PaymentIntent{"
                + "id=" + id
-               + ", user=" + merchant.toString()
+               + ", merchant=" + merchant.getId()
                + ", amount=" + amount
                + ", currency=" + currency
                + ", status=" + status
@@ -118,19 +148,11 @@ public class PaymentIntent {
                + "}";
     }
 
-    public String getMerchantCallbackUrl() {
-        return merchantCallbackUrl;
+    public String getOrderId() {
+        return orderId;
     }
 
-    public void setMerchantCallbackUrl(String merchantCallbackUrl) {
-        this.merchantCallbackUrl = merchantCallbackUrl;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
     }
 }

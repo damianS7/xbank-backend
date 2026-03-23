@@ -1,12 +1,13 @@
 package com.damian.xBank.shared;
 
 
-import com.damian.xBank.modules.auth.application.dto.AuthenticationRequest;
-import com.damian.xBank.modules.auth.application.dto.AuthenticationResponse;
+import com.damian.xBank.modules.auth.infrastructure.rest.request.AuthenticationRequest;
+import com.damian.xBank.modules.auth.infrastructure.rest.response.AuthenticationResponse;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
-import com.damian.xBank.modules.banking.transfer.infrastructure.repository.BankingTransferRepository;
+import com.damian.xBank.modules.banking.transfer.incoming.infrastructure.repository.IncomingTransferRepository;
+import com.damian.xBank.modules.banking.transfer.outgoing.infrastructure.repository.OutgoingTransferRepository;
 import com.damian.xBank.modules.notification.infrastructure.repository.NotificationRepository;
 import com.damian.xBank.modules.payment.intent.infrastructure.repository.PaymentIntentRepository;
 import com.damian.xBank.modules.setting.infrastructure.persistence.repository.SettingRepository;
@@ -41,8 +42,8 @@ public abstract class AbstractControllerTest {
     @Container
     @ServiceConnection
     protected static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16")
-            .withReuse(true)
-            .withInitScript("init_postgres.sql");
+        .withReuse(true)
+        .withInitScript("init_postgres.sql");
 
     protected final String RAW_PASSWORD = "123456";
 
@@ -56,7 +57,10 @@ public abstract class AbstractControllerTest {
     protected ObjectMapper objectMapper;
 
     @Autowired
-    protected BankingTransferRepository transferRepository;
+    protected OutgoingTransferRepository outgoingTransferRepository;
+
+    @Autowired
+    protected IncomingTransferRepository incomingTransferRepository;
 
     @Autowired
     protected BankingTransactionRepository transactionRepository;
@@ -69,9 +73,6 @@ public abstract class AbstractControllerTest {
 
     @Autowired
     protected UserTokenRepository userTokenRepository;
-
-    @Autowired
-    protected BankingTransactionRepository bankingTransactionRepository;
 
     @Autowired
     protected UserRepository userRepository;
@@ -94,7 +95,8 @@ public abstract class AbstractControllerTest {
     void tearDown() {
         notificationRepository.deleteAll();
         settingRepository.deleteAll();
-        transferRepository.deleteAll();
+        outgoingTransferRepository.deleteAll();
+        incomingTransferRepository.deleteAll();
         transactionRepository.deleteAll();
         bankingCardRepository.deleteAll();
         bankingAccountRepository.deleteAll();
@@ -132,20 +134,20 @@ public abstract class AbstractControllerTest {
     protected void loginWithPost(User user) throws Exception {
         // given
         AuthenticationRequest authenticationRequest = new AuthenticationRequest(
-                user.getEmail(), "123456"
+            user.getEmail(), "123456"
         );
 
         String jsonRequest = objectMapper.writeValueAsString(authenticationRequest);
 
         // when
         MvcResult result = mockMvc.perform(post("/api/v1/auth/login")
-                                          .contentType(MediaType.APPLICATION_JSON)
-                                          .content(jsonRequest))
-                                  .andReturn();
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonRequest))
+            .andReturn();
 
         AuthenticationResponse response = objectMapper.readValue(
-                result.getResponse().getContentAsString(),
-                AuthenticationResponse.class
+            result.getResponse().getContentAsString(),
+            AuthenticationResponse.class
         );
 
         token = response.token();

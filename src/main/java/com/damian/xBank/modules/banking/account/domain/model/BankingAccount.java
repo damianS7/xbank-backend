@@ -1,13 +1,31 @@
 package com.damian.xBank.modules.banking.account.domain.model;
 
-import com.damian.xBank.modules.banking.account.domain.exception.*;
-import com.damian.xBank.modules.banking.card.domain.exception.BankingAccountCardsLimitException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountCardsLimitException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountClosedException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountCurrencyMismatchException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountInsufficientFundsException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountInsufficientReservedFundsException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotOwnerException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountStatusTransitionException;
+import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountSuspendedException;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
-import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardType;
+import com.damian.xBank.modules.banking.card.domain.model.CardNumber;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserRole;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -18,6 +36,8 @@ import java.util.Set;
 @Entity
 @Table(name = "banking_accounts")
 public class BankingAccount {
+    public static final int MAX_CARDS_PER_ACCOUNT = 5;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,9 +45,6 @@ public class BankingAccount {
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
-
-    @OneToMany(mappedBy = "bankingAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<BankingTransaction> accountTransactions;
 
     @OneToMany(mappedBy = "bankingAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<BankingCard> bankingCards;
@@ -40,6 +57,9 @@ public class BankingAccount {
 
     @Column(precision = 15, scale = 2)
     private BigDecimal balance;
+
+    @Column(precision = 15, scale = 2)
+    private BigDecimal reservedBalance;
 
     @Column(name = "account_type")
     @Enumerated(EnumType.STRING)
@@ -59,12 +79,10 @@ public class BankingAccount {
     @Column
     private Instant updatedAt;
 
-    private static final int MAX_CARDS_PER_ACCOUNT = 5;
-
     public BankingAccount() {
-        this.accountTransactions = new HashSet<>();
         this.bankingCards = new HashSet<>();
         this.balance = BigDecimal.valueOf(0);
+        this.reservedBalance = BigDecimal.valueOf(0);
         this.currency = BankingAccountCurrency.EUR;
         this.type = BankingAccountType.SAVINGS;
         this.status = BankingAccountStatus.ACTIVE;
@@ -72,191 +90,95 @@ public class BankingAccount {
         this.createdAt = Instant.now();
     }
 
-    public BankingAccount(User user) {
+    BankingAccount(
+        Long id,
+        User user,
+        String accountNumber,
+        BankingAccountType type,
+        BankingAccountCurrency currency,
+        BigDecimal initialBalance,
+        BankingAccountStatus initialStatus,
+        Set<BankingCard> bankingCards
+    ) {
         this();
+        this.id = id;
+        this.accountNumber = accountNumber;
         this.user = user;
-        this.user.addBankingAccount(this);
+        this.type = type;
+        this.currency = currency;
+        this.balance = initialBalance;
+        this.status = initialStatus;
+        this.bankingCards = bankingCards;
     }
 
-    public static BankingAccount create(User user) {
-        return new BankingAccount(user);
+    public static BankingAccount create(
+        User accountOwner,
+        String accountNumber,
+        BankingAccountType accountType,
+        BankingAccountCurrency accountCurrency
+    ) {
+        return new BankingAccount(
+            null,
+            accountOwner,
+            accountNumber,
+            accountType,
+            accountCurrency,
+            BigDecimal.valueOf(0),
+            BankingAccountStatus.ACTIVE,
+            Set.of()
+        );
     }
 
     public Long getId() {
         return id;
     }
 
-    public BankingAccount setId(Long id) {
-        this.id = id;
-        return this;
-    }
-
     public User getOwner() {
         return user;
-    }
-
-    public BankingAccount setOwner(User user) {
-        this.user = user;
-        return this;
     }
 
     public String getAccountNumber() {
         return accountNumber;
     }
 
-    public BankingAccount setAccountNumber(String number) {
-        this.accountNumber = number;
-        return this;
-    }
-
     public BigDecimal getBalance() {
         return balance;
-    }
-
-    public BankingAccount setBalance(BigDecimal balance) {
-        this.balance = balance;
-        return this;
     }
 
     public BankingAccountType getType() {
         return type;
     }
 
-    public BankingAccount setType(BankingAccountType type) {
-        this.type = type;
-        return this;
-    }
-
     public BankingAccountCurrency getCurrency() {
         return currency;
-    }
-
-    public BankingAccount setCurrency(BankingAccountCurrency accountCurrency) {
-        this.currency = accountCurrency;
-        return this;
     }
 
     public BankingAccountStatus getStatus() {
         return status;
     }
 
-    public BankingAccount setStatus(BankingAccountStatus newStatus) {
-        // if the actual status is the same as the new ... do nothing
-        if (this.status == newStatus) {
-            return this;
-        }
-
-        if (!this.status.canTransitionTo(newStatus)) {
-            throw new BankingAccountStatusTransitionException(
-                    this.id,
-                    this.status.name(),
-                    newStatus.name()
-            );
-        }
-
-        this.updatedAt = Instant.now();
-        this.status = newStatus;
-        return this;
-    }
-
     public Instant getCreatedAt() {
         return createdAt;
-    }
-
-    public BankingAccount setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-        return this;
-    }
-
-    public Set<BankingTransaction> getAccountTransactions() {
-        return accountTransactions;
-    }
-
-    public BankingAccount setAccountTransactions(Set<BankingTransaction> accountTransactions) {
-        this.accountTransactions = accountTransactions;
-        return this;
-    }
-
-    public int getCardLimit() {
-        return MAX_CARDS_PER_ACCOUNT;
-    }
-
-    public BankingAccount addTransaction(BankingTransaction transaction) {
-        if (transaction.getBankingAccount() != this) {
-            transaction.setBankingAccount(this);
-        }
-
-        this.accountTransactions.add(transaction);
-
-        return this;
-    }
-
-    public Set<BankingCard> getBankingCards() {
-        return this.bankingCards;
-    }
-
-    public BankingAccount addBankingCard(BankingCard bankingCard) {
-        // check that the card can be added
-        assertCanAddCard();
-
-        if (bankingCard.getBankingAccount() != this) {
-            bankingCard.setBankingAccount(this);
-        }
-
-        this.bankingCards.add(bankingCard);
-
-        return this;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public BankingAccount setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
-        return this;
     }
 
     public String getAlias() {
         return alias;
     }
 
-    public BankingAccount setAlias(String alias) {
-        this.alias = alias;
-        return this;
+    public Instant getUpdatedAt() {
+        return updatedAt;
     }
 
-    // returns true if the operation can be carried
-    public boolean hasSufficientFunds(BigDecimal amount) {
-        // if its 0 then balance is equal to the amount willing to spend
-        // if its 1 then balance is greater than the amount willing to spend
-        return this.getBalance().compareTo(amount) >= 0;
+    public Set<BankingCard> getBankingCards() {
+        return this.bankingCards;
     }
 
-    /**
-     * Assert the account has sufficient funds.
-     *
-     * @param amount the amount to check
-     * @return the current validator instance for chaining
-     * @throws BankingAccountInsufficientFundsException if the account does not have sufficient funds
-     */
-    public BankingAccount assertSufficientFunds(BigDecimal amount) {
-        if (!this.hasSufficientFunds(amount)) {
-            throw new BankingAccountInsufficientFundsException(this.getId(), getBalance(), amount);
-        }
-
-        return this;
+    public BigDecimal getReservedBalance() {
+        return reservedBalance;
     }
 
-    public void subtractBalance(BigDecimal amount) {
-        this.assertSufficientFunds(amount);
-
-        this.setBalance(this.getBalance().subtract(amount));
-    }
-
-    public BigDecimal addBalance(BigDecimal amount) {
-        this.setBalance(this.getBalance().add(amount));
-        return this.getBalance();
+    public boolean isSuspended() {
+        return getStatus() == BankingAccountStatus.SUSPENDED;
     }
 
     public boolean isOwnedBy(Long customerId) {
@@ -265,93 +187,205 @@ public class BankingAccount {
         return Objects.equals(getOwner().getId(), customerId);
     }
 
-    /**
-     * Assert the ownership of the account belongs to {@link User}.
-     *
-     * @param userId the customer to check ownership against
-     * @return the current validator instance for chaining
-     * @throws BankingAccountNotOwnerException if the account does not belong to the customer
-     */
-    public BankingAccount assertOwnedBy(Long userId) {
-
-        // compare card owner id with given customer id
-        if (!isOwnedBy(userId)) {
-            throw new BankingAccountNotOwnerException(getId(), userId);
-        }
-
-        return this;
-    }
-
-    public boolean isSuspended() {
-        return getStatus() == BankingAccountStatus.SUSPENDED;
-    }
-
-    /**
-     * Assert the account is not SUSPENDED.
-     *
-     * @return the current validator instance for chaining
-     * @throws BankingAccountSuspendedException if the account does not belong to the customer
-     */
-    public BankingAccount assertNotSuspended() {
-
-        // check if account is SUSPENDED
-        if (isSuspended()) {
-            throw new BankingAccountSuspendedException(getId());
-        }
-
-        return this;
-    }
-
     public boolean isClosed() {
         return getStatus() == BankingAccountStatus.CLOSED;
     }
 
     /**
-     * Validate account is not CLOSED.
-     *
-     * @return the current validator instance for chaining
-     * @throws BankingAccountClosedException if the account does not belong to the customer
+     * @return El número de tarjetas activas que tiene la cuenta
      */
-    public BankingAccount assertNotClosed() {
+    public int countActiveCards() {
+        return (int) this
+            .getBankingCards()
+            .stream()
+            .filter(bankingCard -> bankingCard.getStatus().equals(BankingCardStatus.ACTIVE))
+            .count();
+    }
+
+    /**
+     * Comprueba si la cuenta tiene suficientes fondos
+     *
+     * @param amount La cantidad a comprobar
+     * @return True si tiene fondos, false sino.
+     */
+    public boolean hasSufficientFunds(BigDecimal amount) {
+        return this.getBalance().compareTo(amount) >= 0;
+    }
+
+    /**
+     * Comprueba si la cuenta tiene suficientes fondos reservados.
+     *
+     * @param amount La cantidad a comprobar
+     * @return True si tiene fondos, false sino.
+     */
+    public boolean hasSufficientReservedFunds(BigDecimal amount) {
+        return this.getReservedBalance().compareTo(amount) >= 0;
+    }
+
+    private void setStatus(BankingAccountStatus newStatus) {
+        // Si el nuevo estado es el mismo que el actual ...
+        if (this.status == newStatus) {
+            return;
+        }
+
+        if (!this.status.canTransitionTo(newStatus)) {
+            throw new BankingAccountStatusTransitionException(
+                this.id,
+                this.status.name(),
+                newStatus.name()
+            );
+        }
+
+        this.status = newStatus;
+        markAsUpdated();
+    }
+
+    /**
+     * Emite una tarjeta asociada a la cuenta.
+     *
+     * @param type
+     * @param number
+     * @param cvv
+     * @param pin
+     * @return La tarjeta emitida.
+     */
+    public BankingCard issueCard(
+        BankingCardType type,
+        String number,
+        String cvv,
+        String pin
+    ) {
+        // Comprueba que se pueda agregar una nueva tarjeta
+        assertCanAddCard();
+
+        // Crea la tarjeta
+        BankingCard card = BankingCard.create(
+            type,
+            this,
+            CardNumber.of(number),
+            cvv,
+            pin
+        );
+
+        this.bankingCards.add(card);
+        return card;
+    }
+
+    public void changeAlias(String alias) {
+        this.alias = alias;
+        markAsUpdated();
+    }
+
+    private void markAsUpdated() {
+        this.updatedAt = Instant.now();
+    }
+
+    /**
+     * Retira una cantidad de la cuenta
+     *
+     * @param amount
+     */
+    public void withdraw(BigDecimal amount) {
+        this.assertSufficientFunds(amount);
+        this.balance = this.getBalance().subtract(amount);
+        markAsUpdated();
+    }
+
+    /**
+     * Deposita una cantidad en la cuenta
+     *
+     * @param amount
+     */
+    public void deposit(BigDecimal amount) {
+        this.balance = this.getBalance().add(amount);
+        markAsUpdated();
+    }
+
+    public void close() {
+        setStatus(BankingAccountStatus.CLOSED);
+    }
+
+    public void suspend() {
+        setStatus(BankingAccountStatus.SUSPENDED);
+    }
+
+    public void activate() {
+        setStatus(BankingAccountStatus.ACTIVE);
+    }
+
+    public void reserveAmount(BigDecimal amount) {
+        assertSufficientFunds(amount);
+        this.balance = this.balance.subtract(amount);
+        this.reservedBalance = this.reservedBalance.add(amount);
+    }
+
+    public void releaseReservedAmount(BigDecimal amount) {
+        assertSufficientReservedFunds(amount);
+        this.reservedBalance = this.reservedBalance.subtract(amount);
+        this.balance = this.balance.add(amount);
+    }
+
+    public void captureReservedAmount(BigDecimal amount) {
+        assertSufficientReservedFunds(amount);
+        this.reservedBalance = this.reservedBalance.subtract(amount);
+    }
+
+    /**
+     * Asegura que la cuenta tiene suficientes fondos o lanza excepción
+     *
+     * @param amount La cantidad a comprobar
+     * @throws BankingAccountInsufficientFundsException Si la cuenta no tiene fondos
+     */
+    public void assertSufficientFunds(BigDecimal amount) {
+        if (!this.hasSufficientFunds(amount)) {
+            throw new BankingAccountInsufficientFundsException(this.getId(), getBalance(), amount);
+        }
+    }
+
+    /**
+     * Asegura que la cuenta tiene suficientes fondos reservados o lanza excepción
+     *
+     * @param amount La cantidad a comprobar
+     */
+    public void assertSufficientReservedFunds(BigDecimal amount) {
+        if (!this.hasSufficientReservedFunds(amount)) {
+            throw new BankingAccountInsufficientReservedFundsException(this.getId(), getReservedBalance(), amount);
+        }
+    }
+
+    /**
+     * Asegura que el owner de la cuenta sea el userId
+     *
+     * @param userId El userId que debe ser el owner
+     * @throws BankingAccountNotOwnerException Si la cuenta no le pertenece
+     */
+    public void assertOwnedBy(Long userId) {
+        if (!isOwnedBy(userId)) {
+            throw new BankingAccountNotOwnerException(getId(), userId);
+        }
+    }
+
+    /**
+     * Asegura que la cuenta no esté suspendida.
+     *
+     * @throws BankingAccountSuspendedException Si la cuenta está suspendida
+     */
+    public void assertNotSuspended() {
+        if (isSuspended()) {
+            throw new BankingAccountSuspendedException(getId());
+        }
+    }
+
+    public void assertNotClosed() {
         // check if account is CLOSED
         if (isClosed()) {
             throw new BankingAccountClosedException(getId());
         }
-
-        return this;
     }
 
-    /**
-     * Assert account is not CLOSED or SUSPENDED.
-     *
-     * @return the current validator instance for chaining
-     * @throws BankingAccountSuspendedException if the account does not belong to the customer
-     * @throws BankingAccountClosedException    if the account does not belong to the customer
-     */
-    public BankingAccount assertActive() {
+    public void assertActive() {
         this.assertNotSuspended();
         this.assertNotClosed();
-        return this;
-    }
-
-    public void activateBy(User actor) {
-        if (actor.hasRole(UserRole.ADMIN)) {
-            //            assertOwnedBy(actor.getId());
-            setStatus(BankingAccountStatus.ACTIVE);
-        }
-
-    }
-
-    public void closeBy(User actor) {
-        // assert account is not Suspended or Closed already
-        assertActive();
-
-        // if not admin check ownership
-        if (!actor.hasRole(UserRole.ADMIN)) {
-            assertOwnedBy(actor.getId());
-        }
-
-        setStatus(BankingAccountStatus.CLOSED);
     }
 
     public void assertCanAddCard() {
@@ -360,16 +394,24 @@ public class BankingAccount {
         }
     }
 
-    /**
-     * Counts how many active (ENABLED) cards are associated with the given banking account.
-     *
-     * @return the number of active cards
-     */
-    public int countActiveCards() {
-        return (int) this
-                .getBankingCards()
-                .stream()
-                .filter(bankingCard -> bankingCard.getStatus().equals(BankingCardStatus.ACTIVE))
-                .count();
+    public void assertCurrency(BankingAccountCurrency currency) {
+        if (this.currency != currency) {
+            throw new BankingAccountCurrencyMismatchException(getId());
+        }
+    }
+
+    public String toString() {
+        return "BankingAccount{" +
+               "id=" + id +
+               ", user=" + user.getId() +
+               ", accountNumber='" + accountNumber + '\'' +
+               ", balance=" + balance +
+               ", type=" + type +
+               ", currency=" + currency +
+               ", status=" + status +
+               ", cards=" + (bankingCards != null ? bankingCards.size() : "null") +
+               ", createdAt=" + createdAt +
+               ", updatedAt=" + updatedAt +
+               '}';
     }
 }

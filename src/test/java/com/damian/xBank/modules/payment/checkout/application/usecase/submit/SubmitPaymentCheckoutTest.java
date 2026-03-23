@@ -1,0 +1,98 @@
+package com.damian.xBank.modules.payment.checkout.application.usecase.submit;
+
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
+import com.damian.xBank.modules.payment.checkout.application.PaymentNetworkGateway;
+import com.damian.xBank.modules.payment.checkout.domain.PaymentAuthorizationStatus;
+import com.damian.xBank.modules.payment.checkout.infrastructure.http.request.PaymentAuthorizationRequest;
+import com.damian.xBank.modules.payment.checkout.infrastructure.http.response.PaymentAuthorizationResponse;
+import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntent;
+import com.damian.xBank.modules.payment.intent.domain.model.PaymentIntentStatus;
+import com.damian.xBank.modules.payment.intent.infrastructure.repository.PaymentIntentRepository;
+import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
+import com.damian.xBank.shared.AbstractServiceTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+
+import java.math.BigDecimal;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+public class SubmitPaymentCheckoutTest extends AbstractServiceTest {
+
+    @Mock
+    private PaymentIntentRepository paymentIntentRepository;
+
+    @Mock
+    private PaymentNetworkGateway paymentNetworkGateway;
+
+    @InjectMocks
+    private SubmitPaymentCheckout submitPaymentCheckout;
+
+    private User customer;
+
+    @BeforeEach
+    void setUp() {
+        customer = UserTestBuilder.builder()
+            .withId(1L)
+            .withEmail("customer@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .build();
+        customer.registerMerchant("Amazon.es", "https://amazon.es");
+    }
+
+    @Test
+    @DisplayName("returns authorized payment intent")
+    void submitPaymentCheckout_WhenValidRequest_ReturnsAuthorizedPaymentIntent() {
+        // given
+        PaymentIntent paymentIntent = PaymentIntent.create(
+            customer.getMerchant(),
+            "order_1234",
+            BigDecimal.valueOf(100),
+            BankingAccountCurrency.EUR,
+            "Amazon prime subscription"
+        );
+
+        SubmitPaymentCheckoutCommand command = new SubmitPaymentCheckoutCommand(
+            0L,
+            "John Doe",
+            "1234123412341234",
+            "123",
+            "1234",
+            1,
+            2026
+        );
+
+        PaymentAuthorizationResponse response = new PaymentAuthorizationResponse(
+            PaymentAuthorizationStatus.AUTHORIZED,
+            "1234",
+            ""
+        );
+
+        // when
+        when(paymentIntentRepository.findById(anyLong())).thenReturn(Optional.of(paymentIntent));
+
+        when(paymentNetworkGateway.authorizePayment(
+            any(PaymentAuthorizationRequest.class)
+        )).thenReturn(response);
+
+        when(paymentIntentRepository.save(any(PaymentIntent.class)))
+            .thenAnswer(invocation -> invocation.getArgument(0));
+
+        submitPaymentCheckout.execute(command);
+
+        // then
+        assertThat(paymentIntent.getStatus()).isEqualTo(PaymentIntentStatus.AUTHORIZED);
+
+        verify(paymentIntentRepository, times(1)).save(any(PaymentIntent.class));
+    }
+}

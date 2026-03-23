@@ -11,9 +11,9 @@ public class BankingAccountInsufficientFundsException extends BankingAccountExce
     }
 
     public BankingAccountInsufficientFundsException(
-            Long bankingAccountId,
-            BigDecimal accountBalance,
-            BigDecimal amount
+        Long bankingAccountId,
+        BigDecimal accountBalance,
+        BigDecimal amount
     ) {
         super(ErrorCodes.BANKING_ACCOUNT_INSUFFICIENT_FUNDS, bankingAccountId, new Object[]{accountBalance, amount});
     }

@@ -1,12 +1,20 @@
 package com.damian.xBank.modules.user.profile.domain.model;
 
-import com.damian.xBank.modules.user.profile.domain.exception.UserProfileNotOwnerException;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.Objects;
 
 @Entity
 @Table(name = "user_profiles")
@@ -14,10 +22,6 @@ public class UserProfile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user;
 
     @Column
     private String firstName;
@@ -46,33 +50,86 @@ public class UserProfile {
     @Column
     private String nationalId;
 
-    @Column(name = "gender")
+    @Column
     @Enumerated(EnumType.STRING)
     private UserGender gender;
 
     @Column
     private Instant updatedAt;
 
-    public UserProfile() {
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
+
+    protected UserProfile() {
+        // JPA constructor
+    }
+
+    UserProfile(
+        Long profileId,
+        String firstName,
+        String lastName,
+        String phoneNumber,
+        LocalDate birthdate,
+        String photo,
+        String address,
+        String postalCode,
+        String country,
+        String nationalId,
+        UserGender gender
+    ) {
+        this.id = profileId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNumber = phoneNumber;
+        this.birthdate = birthdate;
+        this.photo = photo;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+        this.postalCode = postalCode;
+        this.country = country;
+        this.nationalId = nationalId;
+        this.gender = gender;
         this.updatedAt = Instant.now();
     }
 
     public static UserProfile create() {
-        return new UserProfile();
+        return new UserProfile(
+            null,
+            "", "", "", LocalDate.now(), "avatar.jpg",
+            "", "", "", "", UserGender.MALE
+        );
     }
 
-    public UserProfile(User user) {
-        this();
-        this.setUser(user);
+    public static UserProfile create(
+        String firstName,
+        String lastName,
+        String phoneNumber,
+        LocalDate birthdate,
+        String photo,
+        String address,
+        String postalCode,
+        String country,
+        String nationalId,
+        UserGender gender
+    ) {
+        UserProfile profile = new UserProfile();
+        profile.firstName = firstName;
+        profile.lastName = lastName;
+        profile.phoneNumber = phoneNumber;
+        profile.birthdate = birthdate;
+        profile.photo = photo;
+        profile.address = address;
+        profile.postalCode = postalCode;
+        profile.country = country;
+        profile.nationalId = nationalId;
+        profile.gender = gender;
+        profile.updatedAt = Instant.now();
+        return profile;
     }
 
     public Long getId() {
         return id;
-    }
-
-    public UserProfile setId(Long id) {
-        this.id = id;
-        return this;
     }
 
     public String getFullName() {
@@ -83,17 +140,13 @@ public class UserProfile {
         return updatedAt;
     }
 
-    public UserProfile setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
-        return this;
-    }
-
     public String getFirstName() {
         return firstName;
     }
 
     public UserProfile setFirstName(String firstName) {
         this.firstName = firstName;
+        markAsUpdated();
         return this;
     }
 
@@ -103,6 +156,7 @@ public class UserProfile {
 
     public UserProfile setLastName(String lastName) {
         this.lastName = lastName;
+        markAsUpdated();
         return this;
     }
 
@@ -112,6 +166,7 @@ public class UserProfile {
 
     public UserProfile setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+        markAsUpdated();
         return this;
     }
 
@@ -121,6 +176,7 @@ public class UserProfile {
 
     public UserProfile setBirthdate(LocalDate birthdate) {
         this.birthdate = birthdate;
+        markAsUpdated();
         return this;
     }
 
@@ -130,6 +186,7 @@ public class UserProfile {
 
     public UserProfile setPhotoPath(String photo) {
         this.photo = photo;
+        markAsUpdated();
         return this;
     }
 
@@ -139,6 +196,7 @@ public class UserProfile {
 
     public UserProfile setAddress(String address) {
         this.address = address;
+        markAsUpdated();
         return this;
     }
 
@@ -148,6 +206,7 @@ public class UserProfile {
 
     public UserProfile setPostalCode(String postalCode) {
         this.postalCode = postalCode;
+        markAsUpdated();
         return this;
     }
 
@@ -157,6 +216,7 @@ public class UserProfile {
 
     public UserProfile setCountry(String country) {
         this.country = country;
+        markAsUpdated();
         return this;
     }
 
@@ -166,7 +226,26 @@ public class UserProfile {
 
     public UserProfile setNationalId(String nationalId) {
         this.nationalId = nationalId;
+        markAsUpdated();
         return this;
+    }
+
+    private void markAsUpdated() {
+        this.updatedAt = Instant.now();
+    }
+
+    public UserGender getGender() {
+        return gender;
+    }
+
+    public UserProfile setGender(UserGender gender) {
+        this.gender = gender;
+        markAsUpdated();
+        return this;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override
@@ -185,50 +264,5 @@ public class UserProfile {
                ", gender=" + gender +
                ", updatedAt=" + updatedAt +
                '}';
-    }
-
-    public UserGender getGender() {
-        return gender;
-    }
-
-    public UserProfile setGender(UserGender gender) {
-        this.gender = gender;
-        return this;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public UserProfile setUser(User user) {
-        this.user = user;
-        return this;
-    }
-
-    /**
-     *
-     * @param userId
-     * @return true if the userId equals to the profile owner
-     */
-    public boolean isOwnedBy(Long userId) {
-
-        // compare profile owner id with given user id
-        return Objects.equals(getUser().getId(), userId);
-    }
-
-    /**
-     * Assert the ownership of the profile belongs to {@link User}.
-     *
-     * @param userId the user to check ownership against
-     * @return the current validator instance for chaining
-     * @throws UserProfileNotOwnerException if the profile does not belong to the user
-     */
-    public UserProfile assertOwnedBy(Long userId) {
-
-        if (!isOwnedBy(userId)) {
-            throw new UserProfileNotOwnerException(getId(), userId);
-        }
-
-        return this;
     }
 }

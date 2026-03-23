@@ -24,8 +24,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 /**
- * Filter that handles the authentication of every request.
- * It checks if the JWT is valid and if so, it sets the Authentication Object to the SecurityContext.
+ * Filtro que maneja la autenticación de cada Request.
+ * <p>
+ * Si encuentra el token jwt comprueba que sea válido y lo agrega al contexto.
  */
 @Component
 public class AuthenticationFilter extends OncePerRequestFilter {
@@ -35,9 +36,9 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     private final AuthenticationEntryPoint authenticationEntryPoint;
 
     public AuthenticationFilter(
-            JwtUtil jwtUtil,
-            CustomUserDetailsService customUserDetailsService,
-            AuthenticationEntryPoint authenticationEntryPoint
+        JwtUtil jwtUtil,
+        CustomUserDetailsService customUserDetailsService,
+        AuthenticationEntryPoint authenticationEntryPoint
     ) {
         this.jwtUtil = jwtUtil;
         this.customUserDetailsService = customUserDetailsService;
@@ -46,82 +47,79 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
 
     /**
-     * @param request     The request object.
-     * @param response    The response object.
-     * @param filterChain The filter chain.
-     * @throws ServletException If there is an error.
-     * @throws IOException      If there is an error.
+     *
+     * @param request
+     * @param response
+     * @param filterChain
+     * @throws ServletException
+     * @throws IOException
      */
     @Override
     protected void doFilterInternal(
-            @NonNull
-            HttpServletRequest request,
-            @NonNull
-            HttpServletResponse response,
-            @NonNull
-            FilterChain filterChain
+        @NonNull
+        HttpServletRequest request,
+        @NonNull
+        HttpServletResponse response,
+        @NonNull
+        FilterChain filterChain
     )
-            throws ServletException, IOException {
-        // Get the Authorization header.
+        throws ServletException, IOException {
+        // Token del Request.
         final String jwtToken = this.extractToken(request);
 
-        // If the header is null or does not start with "Bearer " then we
-        // don't have a token, so we can just continue the filter chain.
+        // Si el token no existe o es una cada vacía ...
         if (jwtToken == null || jwtToken.isEmpty()) {
             log.debug("No jwt token detected. processing request without auth.");
             filterChain.doFilter(request, response);
             return;
         }
 
-        // Check if the token has expired.
+        // En caso de haber token, comprueba su validez.
         if (!jwtUtil.isTokenValid(jwtToken)) {
             log.debug("Jwt token is invalid.");
-            // token is invalid. 401
+            // Si es invalido lanza 401.
             authenticationEntryPoint.commence(
-                    request, response, new JwtTokenInvalidException()
+                request, response, new JwtTokenInvalidException()
             );
             return;
         }
 
+        // Comprobar que el token no esta expirado.
         if (jwtUtil.isTokenExpired(jwtToken)) {
             log.debug("Jwt token is expired.");
-            // If the token has expired, then we need to send back a 401.
+            // Si el token jwt expirô lanza 401.
             authenticationEntryPoint.commence(
-                    request, response, new JwtTokenExpiredException()
+                request, response, new JwtTokenExpiredException()
             );
             return;
         }
 
-        // Extract the email from the JWT.
+        // Obtenemos el email del token jwt
         final String email = jwtUtil.extractEmail(jwtToken);
 
-        // If the email found in token is not null and there is no Authentication object
-        // in the SecurityContext, then we can go ahead and authenticate the user.
+        // Si el email no es null y el contexto no tiene usuario agregado ...
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails;
             try {
-                // Load the user details from the database.
                 userDetails = customUserDetailsService.loadUserByEmail(email);
             } catch (BadCredentialsException exception) {
-                // In case no such user exists by this email, then we sent 401
+                // Sino existe usuario con el email indicado lanza 401.
                 log.debug("Failed to authenticate user with email: {}", email);
                 authenticationEntryPoint.commence(request, response, exception);
                 return;
             }
 
-            // Create an Authentication object.
+            // Token de autenticación.
             var authToken = new UsernamePasswordAuthenticationToken(
-                    userDetails,
-                    null,
-                    userDetails.getAuthorities()
+                userDetails,
+                null,
+                userDetails.getAuthorities()
             );
 
-            // Add some extra details to the Authentication object.
             authToken.setDetails(
-                    new WebAuthenticationDetailsSource().buildDetails(request)
+                new WebAuthenticationDetailsSource().buildDetails(request)
             );
 
-            // Finally, set the Authentication object in the SecurityContext.
             SecurityContextHolder.getContext().setAuthentication(authToken);
         }
 
@@ -130,23 +128,22 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     }
 
     private String extractToken(HttpServletRequest request) {
-        // First find the token in the header
+        // Buscar el token el header del request
         String header = request.getHeader("Authorization");
         if (header != null && header.startsWith("Bearer ")) {
             return header.substring(7);
         }
 
-        // Find the token in a cookie
+        // Buscar el token en cookies
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
                 if ("jwt".equals(cookie.getName())) {
-                    log.debug("jwt token found in cookies.");
                     return cookie.getValue();
                 }
             }
         }
 
-        //        log.debug("No jwt token found.");
-        return null; // no token found
+        // No se encontró ningún token
+        return null;
     }
 }

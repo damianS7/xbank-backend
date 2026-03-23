@@ -5,7 +5,7 @@ import com.damian.xBank.shared.exception.ErrorCodes;
 public class BankingTransactionStatusTransitionException extends BankingTransactionException {
 
     public BankingTransactionStatusTransitionException(
-            Long transactionId, String fromStatus, String toStatus
+        Long transactionId, String fromStatus, String toStatus
     ) {
         this(transactionId, new Object[]{fromStatus, toStatus});
     }

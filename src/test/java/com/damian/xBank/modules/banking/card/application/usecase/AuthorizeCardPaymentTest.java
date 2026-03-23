@@ -2,38 +2,41 @@ package com.damian.xBank.modules.banking.card.application.usecase;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
+import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestBuilder;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
-import com.damian.xBank.modules.banking.card.application.dto.request.AuthorizeCardPaymentRequest;
-import com.damian.xBank.modules.banking.card.domain.exception.BankingCardDisabledException;
+import com.damian.xBank.modules.banking.card.application.usecase.authorize.AuthorizeCardPayment;
+import com.damian.xBank.modules.banking.card.application.usecase.authorize.AuthorizeCardPaymentCommand;
+import com.damian.xBank.modules.banking.card.application.usecase.authorize.AuthorizeCardPaymentResult;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardInsufficientFundsException;
-import com.damian.xBank.modules.banking.card.domain.exception.BankingCardLockedException;
+import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotActiveException;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoundException;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardTestBuilder;
+import com.damian.xBank.modules.banking.card.domain.model.CardNumber;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
-import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
-import com.damian.xBank.modules.banking.transaction.infrastructure.service.BankingTransactionPersistenceService;
-import com.damian.xBank.modules.payment.network.application.dto.response.PaymentAuthorizationResponse;
-import com.damian.xBank.modules.payment.network.domain.PaymentAuthorizationStatus;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionPaymentStatus;
+import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
+import com.damian.xBank.modules.payment.checkout.domain.PaymentAuthorizationStatus;
 import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
-import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class AuthorizeCardPaymentTest extends AbstractServiceTest {
@@ -41,7 +44,7 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
     private BankingCardRepository bankingCardRepository;
 
     @Mock
-    private BankingTransactionPersistenceService bankingTransactionPersistenceService;
+    private BankingTransactionRepository bankingTransactionRepository;
 
     @InjectMocks
     private AuthorizeCardPayment cardAuthorize;
@@ -52,100 +55,99 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        customer = UserTestBuilder.aCustomer()
-                                  .withId(1L)
-                                  .withEmail("customer@demo.com")
-                                  .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-                                  .build();
+        customer = UserTestBuilder.builder()
+            .withId(1L)
+            .withEmail("customer@demo.com")
+            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
+            .build();
 
-        bankingAccount = BankingAccount
-                .create(customer)
-                .setId(5L)
-                .setCurrency(BankingAccountCurrency.EUR)
-                .setType(BankingAccountType.SAVINGS)
-                .setBalance(BigDecimal.valueOf(1000))
-                .setAccountNumber("US9900001111112233334444");
+        bankingAccount = BankingAccountTestBuilder.builder()
+            .withId(5L)
+            .withOwner(customer)
+            .withCurrency(BankingAccountCurrency.EUR)
+            .withBalance(BigDecimal.valueOf(1000))
+            .withType(BankingAccountType.SAVINGS)
+            .withAccountNumber("US1200001111112233335555")
+            .build();
 
-
-        bankingCard = BankingCard
-                .create(bankingAccount)
-                .setId(11L)
-                .setCardNumber("1234123412341234")
-                .setExpiredDate(LocalDate.now().plusYears(1))
-                .setCardCvv("123")
-                .setCardPin("1234");
+        bankingCard = BankingCardTestBuilder.builder()
+            .withId(11L)
+            .withOwnerAccount(bankingAccount)
+            .withCardNumber("1234123412341234")
+            .withStatus(BankingCardStatus.ACTIVE)
+            .withCVV("123")
+            .withPIN("1234")
+            .build();
     }
-
 
     @Test
     @DisplayName("should authorize payment and return response")
     void authorizePayment_WhenValidRequest_ReturnsAuthorized() {
         // given
-        AuthorizeCardPaymentRequest request = new AuthorizeCardPaymentRequest(
-                "Amazon.com",
-                "",
-                bankingCard.getCardNumber(),
-                bankingCard.getExpiredDate().getMonthValue(),
-                bankingCard.getExpiredDate().getYear(),
-                bankingCard.getCardCvv(),
-                BigDecimal.valueOf(100)
+        AuthorizeCardPaymentCommand command = new AuthorizeCardPaymentCommand(
+            "Amazon.com",
+            "",
+            bankingCard.getCardNumber(),
+            bankingCard.getExpiration().getMonth(),
+            bankingCard.getExpiration().getYear(),
+            bankingCard.getCardCvv(),
+            BigDecimal.valueOf(100)
         );
 
-        BankingTransaction givenBankingTransaction = new BankingTransaction(bankingAccount);
-        givenBankingTransaction.setId(1L);
-        givenBankingTransaction.setBankingCard(bankingCard);
-        givenBankingTransaction.setType(BankingTransactionType.CARD_CHARGE);
-        givenBankingTransaction.setAmount(request.amount());
-        givenBankingTransaction.setDescription(request.merchant());
-
-        when(bankingCardRepository.findByCardNumber(anyString()))
-                .thenReturn(Optional.of(bankingCard));
-
-        when(bankingTransactionPersistenceService.record(
-                any(BankingTransaction.class)
-        )).thenReturn(givenBankingTransaction);
+        when(bankingCardRepository.findByCardNumber(any(CardNumber.class)))
+            .thenReturn(Optional.of(bankingCard));
+        when(bankingTransactionRepository.save(any(BankingTransaction.class)))
+            .thenAnswer(invocation -> invocation.getArgument(0));
 
         // then
-        PaymentAuthorizationResponse response = cardAuthorize.execute(request);
+        AuthorizeCardPaymentResult response = cardAuthorize.execute(command);
+        ArgumentCaptor<BankingTransaction> argCaptor = ArgumentCaptor.forClass(BankingTransaction.class);
+        verify(bankingTransactionRepository).save(argCaptor.capture());
+        BankingTransaction transaction = argCaptor.getValue();
+
         assertThat(response)
-                .isNotNull()
-                .extracting(
-                        PaymentAuthorizationResponse::status,
-                        PaymentAuthorizationResponse::authorizationId,
-                        PaymentAuthorizationResponse::declineReason
-                ).containsExactly(
-                        PaymentAuthorizationStatus.AUTHORIZED,
-                        givenBankingTransaction.getId().toString(),
-                        null
-                );
+            .isNotNull()
+            .extracting(
+                AuthorizeCardPaymentResult::status,
+                AuthorizeCardPaymentResult::authorizationId,
+                AuthorizeCardPaymentResult::declineReason
+            ).containsExactly(
+                PaymentAuthorizationStatus.AUTHORIZED,
+                transaction.getAuthorizationId(),
+                null
+            );
+
+        assertThat(transaction)
+            .isNotNull()
+            .extracting(BankingTransaction::getPaymentStatus)
+            .isEqualTo(BankingTransactionPaymentStatus.AUTHORIZED);
+
+        assertThat(transaction.getAuthorizationId())
+            .hasSizeGreaterThan(10);
     }
 
     @Test
     @DisplayName("should throw exception when card not found")
     void authorizePayment_WhenCardNotFound_ThrowsException() {
         // given
-        AuthorizeCardPaymentRequest request = new AuthorizeCardPaymentRequest(
-                "Amazon.com",
-                "",
-                bankingCard.getCardNumber(),
-                bankingCard.getExpiredDate().getMonthValue(),
-                bankingCard.getExpiredDate().getYear(),
-                bankingCard.getCardCvv(),
-                BigDecimal.valueOf(100)
+        AuthorizeCardPaymentCommand command = new AuthorizeCardPaymentCommand(
+            "Amazon.com",
+            "",
+            bankingCard.getCardNumber(),
+            bankingCard.getExpiration().getMonth(),
+            bankingCard.getExpiration().getYear(),
+            bankingCard.getCardCvv(),
+            BigDecimal.valueOf(100)
         );
 
-        BankingTransaction givenBankingTransaction = new BankingTransaction(bankingAccount);
-        givenBankingTransaction.setId(1L);
-        givenBankingTransaction.setType(BankingTransactionType.CARD_CHARGE);
-        givenBankingTransaction.setAmount(request.amount());
-        givenBankingTransaction.setDescription(request.merchant());
-
-        when(bankingCardRepository.findByCardNumber(anyString())).thenReturn(Optional.empty());
+        // when
+        when(bankingCardRepository.findByCardNumber(any(CardNumber.class)))
+            .thenReturn(Optional.empty());
 
         // then
         BankingCardNotFoundException exception = assertThrows(
-                BankingCardNotFoundException.class,
-                () -> cardAuthorize.execute(request)
+            BankingCardNotFoundException.class,
+            () -> cardAuthorize.execute(command)
         );
 
         // then
@@ -156,98 +158,111 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
     @DisplayName("should throw exception when card is not active")
     void authorizePayment_WhenCardNotActive_ThrowsException() {
         // given
-        bankingCard.setStatus(BankingCardStatus.DISABLED);
+        BankingCard bankingCard = BankingCardTestBuilder.builder()
+            .withOwnerAccount(bankingAccount)
+            .withCardNumber("1234123412341234")
+            .withStatus(BankingCardStatus.DISABLED)
+            .withCVV("123")
+            .withPIN("1234")
+            .build();
 
-        AuthorizeCardPaymentRequest request = new AuthorizeCardPaymentRequest(
-                "Amazon.com",
-                "",
-                bankingCard.getCardNumber(),
-                bankingCard.getExpiredDate().getMonthValue(),
-                bankingCard.getExpiredDate().getYear(),
-                bankingCard.getCardCvv(),
-                BigDecimal.valueOf(100)
+        AuthorizeCardPaymentCommand command = new AuthorizeCardPaymentCommand(
+            "Amazon.com",
+            "",
+            bankingCard.getCardNumber(),
+            bankingCard.getExpiration().getMonth(),
+            bankingCard.getExpiration().getYear(),
+            bankingCard.getCardCvv(),
+            BigDecimal.valueOf(100)
         );
 
-        BankingTransaction givenBankingTransaction = new BankingTransaction(bankingAccount);
-        givenBankingTransaction.setId(1L);
-        givenBankingTransaction.setType(BankingTransactionType.CARD_CHARGE);
-        givenBankingTransaction.setAmount(request.amount());
-        givenBankingTransaction.setDescription(request.merchant());
-
-        when(bankingCardRepository.findByCardNumber(anyString())).thenReturn(Optional.of(bankingCard));
+        // when
+        when(bankingCardRepository.findByCardNumber(any(CardNumber.class)))
+            .thenReturn(Optional.of(bankingCard));
 
         // then
-        BankingCardDisabledException exception = assertThrows(
-                BankingCardDisabledException.class,
-                () -> cardAuthorize.execute(request)
+        BankingCardNotActiveException exception = assertThrows(
+            BankingCardNotActiveException.class,
+            () -> cardAuthorize.execute(command)
         );
 
         // then
-        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.BANKING_CARD_DISABLED);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.BANKING_CARD_NOT_ACTIVE);
     }
 
     @Test
     @DisplayName("should throw exception when card is locked")
     void authorizePayment_WhenCardLocked_ThrowsException() {
         // given
-        bankingCard.setStatus(BankingCardStatus.ACTIVE);
-        bankingCard.setStatus(BankingCardStatus.LOCKED);
+        BankingCard bankingCard = BankingCardTestBuilder.builder()
+            .withOwnerAccount(bankingAccount)
+            .withCardNumber("1234123412341234")
+            .withStatus(BankingCardStatus.LOCKED)
+            .withCVV("123")
+            .withPIN("1234")
+            .build();
 
-        AuthorizeCardPaymentRequest request = new AuthorizeCardPaymentRequest(
-                "Amazon.com",
-                "",
-                bankingCard.getCardNumber(),
-                bankingCard.getExpiredDate().getMonthValue(),
-                bankingCard.getExpiredDate().getYear(),
-                bankingCard.getCardCvv(),
-                BigDecimal.valueOf(100)
+        AuthorizeCardPaymentCommand command = new AuthorizeCardPaymentCommand(
+            "Amazon.com",
+            "",
+            bankingCard.getCardNumber(),
+            bankingCard.getExpiration().getMonth(),
+            bankingCard.getExpiration().getYear(),
+            bankingCard.getCardCvv(),
+            BigDecimal.valueOf(100)
         );
 
-        BankingTransaction givenBankingTransaction = new BankingTransaction(bankingAccount);
-        givenBankingTransaction.setId(1L);
-        givenBankingTransaction.setType(BankingTransactionType.CARD_CHARGE);
-        givenBankingTransaction.setAmount(request.amount());
-        givenBankingTransaction.setDescription(request.merchant());
-
-        when(bankingCardRepository.findByCardNumber(anyString())).thenReturn(Optional.of(bankingCard));
+        // when
+        when(bankingCardRepository.findByCardNumber(any(CardNumber.class)))
+            .thenReturn(Optional.of(bankingCard));
 
         // then
-        BankingCardLockedException exception = assertThrows(
-                BankingCardLockedException.class,
-                () -> cardAuthorize.execute(request)
+        BankingCardNotActiveException exception = assertThrows(
+            BankingCardNotActiveException.class,
+            () -> cardAuthorize.execute(command)
         );
 
         // then
-        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.BANKING_CARD_LOCKED);
+        assertThat(exception.getMessage()).isEqualTo(ErrorCodes.BANKING_CARD_NOT_ACTIVE);
     }
 
     @Test
     @DisplayName("should throw exception when insufficient funds")
     void authorizePayment_WhenInsufficientFunds_ThrowsException() {
         // given
-        bankingAccount.setBalance(BigDecimal.valueOf(0));
-        AuthorizeCardPaymentRequest request = new AuthorizeCardPaymentRequest(
-                "Amazon.com",
-                "",
-                bankingCard.getCardNumber(),
-                bankingCard.getExpiredDate().getMonthValue(),
-                bankingCard.getExpiredDate().getYear(),
-                bankingCard.getCardCvv(),
-                BigDecimal.valueOf(100)
+        BankingAccount bankingAccount = BankingAccountTestBuilder.builder()
+            .withId(1L)
+            .withOwner(customer)
+            .withBalance(BigDecimal.valueOf(0))
+            .withAccountNumber("US1200001111112233335555")
+            .build();
+
+        BankingCard bankingCard = BankingCardTestBuilder.builder()
+            .withOwnerAccount(bankingAccount)
+            .withCardNumber("1234123412341234")
+            .withStatus(BankingCardStatus.ACTIVE)
+            .withCVV("123")
+            .withPIN("1234")
+            .build();
+
+        AuthorizeCardPaymentCommand command = new AuthorizeCardPaymentCommand(
+            "Amazon.com",
+            "",
+            bankingCard.getCardNumber(),
+            bankingCard.getExpiration().getMonth(),
+            bankingCard.getExpiration().getYear(),
+            bankingCard.getCardCvv(),
+            BigDecimal.valueOf(100)
         );
 
-        BankingTransaction givenBankingTransaction = new BankingTransaction(bankingAccount);
-        givenBankingTransaction.setId(1L);
-        givenBankingTransaction.setType(BankingTransactionType.CARD_CHARGE);
-        givenBankingTransaction.setAmount(request.amount());
-        givenBankingTransaction.setDescription(request.merchant());
-
-        when(bankingCardRepository.findByCardNumber(anyString())).thenReturn(Optional.of(bankingCard));
+        // when
+        when(bankingCardRepository.findByCardNumber(any(CardNumber.class)))
+            .thenReturn(Optional.of(bankingCard));
 
         // then
         BankingCardInsufficientFundsException exception = assertThrows(
-                BankingCardInsufficientFundsException.class,
-                () -> cardAuthorize.execute(request)
+            BankingCardInsufficientFundsException.class,
+            () -> cardAuthorize.execute(command)
         );
 
         // then

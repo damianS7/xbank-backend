@@ -27,13 +27,13 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     public UserDetails loadUserByEmail(String email) {
         User user = userRepository
-                .findByEmail(email)
-                .orElseThrow(
-                        () -> {
-                            log.debug("Failed to find a user with email: {}", email);
-                            return new BadCredentialsException(ErrorCodes.AUTH_LOGIN_BAD_CREDENTIALS);
-                        }
-                );
+            .findByEmail(email)
+            .orElseThrow(
+                () -> {
+                    log.debug("Failed to find a user with email: {}", email);
+                    return new BadCredentialsException(ErrorCodes.AUTH_LOGIN_BAD_CREDENTIALS);
+                }
+            );
 
         return new UserPrincipal(user);
     }

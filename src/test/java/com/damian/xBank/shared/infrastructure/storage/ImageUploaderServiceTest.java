@@ -1,9 +1,9 @@
 package com.damian.xBank.shared.infrastructure.storage;
 
 import com.damian.xBank.modules.user.user.domain.model.User;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.utils.ImageTestHelper;
-import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,18 +32,18 @@ public class ImageUploaderServiceTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        customer = UserTestBuilder.aCustomer()
-                                  .withId(1L)
-                                  .withPassword(RAW_PASSWORD)
-                                  .withEmail("customer@demo.com")
-                                  .build();
+        customer = UserTestBuilder.builder()
+            .withId(1L)
+            .withPassword(RAW_PASSWORD)
+            .withEmail("customer@demo.com")
+            .build();
     }
 
     @Test
     @DisplayName("Should get upload path")
     void shouldGetUploadPath() {
         System.out.println(
-                ImageUploaderService.getUserUploadFolder(1L)
+            ImageUploaderService.getUserUploadFolder(1L)
         );
     }
 
@@ -56,10 +56,10 @@ public class ImageUploaderServiceTest extends AbstractServiceTest {
 
         // when
         when(fileStorageService.storeFile(any(MultipartFile.class), anyString(), anyString()))
-                .thenReturn(tempFile);
+            .thenReturn(tempFile);
 
         File uploadedImage = imageUploaderService.uploadImage(
-                givenMultipart, customer.getId(), "posts", tempFile.getName()
+            givenMultipart, customer.getId(), "posts", tempFile.getName()
         );
 
         // then

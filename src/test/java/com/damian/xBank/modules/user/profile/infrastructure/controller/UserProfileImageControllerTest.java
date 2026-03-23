@@ -5,12 +5,12 @@ import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.infrastructure.storage.FileStorageService;
 import com.damian.xBank.shared.infrastructure.storage.ImageUploaderService;
 import com.damian.xBank.shared.infrastructure.storage.exception.FileStorageNotFoundException;
 import com.damian.xBank.shared.utils.ImageTestHelper;
-import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,9 @@ import java.io.File;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -51,13 +53,13 @@ public class UserProfileImageControllerTest extends AbstractControllerTest {
         UserProfile profile = UserProfileFactory.testProfile();
 
         customer = UserTestBuilder
-                .aCustomer()
-                .withEmail("customer@demo.com")
-                .withRole(UserRole.CUSTOMER)
-                .withStatus(UserStatus.VERIFIED)
-                .withPassword(RAW_PASSWORD)
-                .withProfile(profile)
-                .build();
+            .builder()
+            .withEmail("customer@demo.com")
+            .withRole(UserRole.CUSTOMER)
+            .withStatus(UserStatus.VERIFIED)
+            .withPassword(RAW_PASSWORD)
+            .withProfile(profile)
+            .build();
 
         userRepository.save(customer);
     }
@@ -76,14 +78,14 @@ public class UserProfileImageControllerTest extends AbstractControllerTest {
         when(fileStorageService.createResource(any(File.class))).thenReturn(imageResource);
 
         mockMvc
-                .perform(
-                        get("/api/v1/profiles/{id}/image", customer.getId())
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
-                .andDo(print())
-                .andExpect(status().is(HttpStatus.OK.value()))
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.IMAGE_JPEG))
-                .andReturn();
+            .perform(
+                get("/api/v1/profiles/{id}/image", customer.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+            .andDo(print())
+            .andExpect(status().is(HttpStatus.OK.value()))
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.IMAGE_JPEG))
+            .andReturn();
     }
 
     @Test
@@ -93,17 +95,17 @@ public class UserProfileImageControllerTest extends AbstractControllerTest {
         login(customer);
 
         when(fileStorageService.getFile(anyString(), anyString())).thenThrow(
-                new FileStorageNotFoundException("/path/", "image.jpg")
+            new FileStorageNotFoundException("/path/", "image.jpg")
         );
 
         mockMvc
-                .perform(
-                        get("/api/v1/profiles/{id}/image", customer.getId())
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
-                .andDo(print())
-                .andExpect(status().is(HttpStatus.NOT_FOUND.value()))
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
+            .perform(
+                get("/api/v1/profiles/{id}/image", customer.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+            .andDo(print())
+            .andExpect(status().is(HttpStatus.NOT_FOUND.value()))
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -113,13 +115,13 @@ public class UserProfileImageControllerTest extends AbstractControllerTest {
         login(customer);
 
         mockMvc
-                .perform(
-                        get("/api/v1/profiles/{id}/image", 99L)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
-                .andDo(print())
-                .andExpect(status().is(HttpStatus.NOT_FOUND.value()))
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
+            .perform(
+                get("/api/v1/profiles/{id}/image", 99L)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+            .andDo(print())
+            .andExpect(status().is(HttpStatus.NOT_FOUND.value()))
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -136,27 +138,27 @@ public class UserProfileImageControllerTest extends AbstractControllerTest {
         when(fileStorageService.createResource(any(File.class))).thenReturn(imageResource);
 
         when(imageUploaderService.uploadImage(
-                any(MultipartFile.class),
-                anyLong(),
-                anyString(),
-                anyString()
+            any(MultipartFile.class),
+            anyLong(),
+            anyString(),
+            anyString()
         )).thenReturn(imageFile);
 
         // when
         MvcResult result = mockMvc
-                .perform(
-                        multipart("/api/v1/profiles/image")
-                                .file(imageMultipart)
-                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                                .param("currentPassword", this.RAW_PASSWORD)
-                                .with(request -> {
-                                    request.setMethod("POST");
-                                    return request;
-                                }))
+            .perform(
+                multipart("/api/v1/profiles/image")
+                    .file(imageMultipart)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                    .param("currentPassword", this.RAW_PASSWORD)
+                    .with(request -> {
+                        request.setMethod("POST");
+                        return request;
+                    }))
 
-                .andDo(print())
-                .andExpect(status().is(HttpStatus.CREATED.value()))
-                .andReturn();
+            .andDo(print())
+            .andExpect(status().is(HttpStatus.CREATED.value()))
+            .andReturn();
 
         byte[] content = result.getResponse().getContentAsByteArray();
         Resource resource = new ByteArrayResource(content);
@@ -174,26 +176,26 @@ public class UserProfileImageControllerTest extends AbstractControllerTest {
         login(customer);
 
         MockMultipartFile file = new MockMultipartFile(
-                "file",
-                customer.getProfile().getPhotoPath(),
-                "image/jpeg",
-                new byte[0]
+            "file",
+            customer.getProfile().getPhotoPath(),
+            "image/jpeg",
+            new byte[0]
         );
 
         // when
         mockMvc
-                .perform(
-                        multipart("/api/v1/profiles/image")
-                                .file(file)
-                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                                .param("currentPassword", this.RAW_PASSWORD)
-                                .with(request -> {
-                                    request.setMethod("POST");
-                                    return request;
-                                }))
+            .perform(
+                multipart("/api/v1/profiles/image")
+                    .file(file)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                    .param("currentPassword", this.RAW_PASSWORD)
+                    .with(request -> {
+                        request.setMethod("POST");
+                        return request;
+                    }))
 
-                .andDo(print())
-                .andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
+            .andDo(print())
+            .andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
     }
 
     @Test
@@ -203,25 +205,25 @@ public class UserProfileImageControllerTest extends AbstractControllerTest {
         login(customer);
 
         MockMultipartFile file = new MockMultipartFile(
-                "file",
-                customer.getProfile().getPhotoPath(),
-                "image/jpeg",
-                new byte[5 * 1024 * 1024 + 1]
+            "file",
+            customer.getProfile().getPhotoPath(),
+            "image/jpeg",
+            new byte[5 * 1024 * 1024 + 1]
         );
 
         // when
         mockMvc
-                .perform(
-                        multipart("/api/v1/profiles/image")
-                                .file(file)
-                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                                .param("currentPassword", this.RAW_PASSWORD)
-                                .with(request -> {
-                                    request.setMethod("POST");
-                                    return request;
-                                }))
-                .andDo(print())
-                .andExpect(status().is(HttpStatus.PAYLOAD_TOO_LARGE.value()));
+            .perform(
+                multipart("/api/v1/profiles/image")
+                    .file(file)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                    .param("currentPassword", this.RAW_PASSWORD)
+                    .with(request -> {
+                        request.setMethod("POST");
+                        return request;
+                    }))
+            .andDo(print())
+            .andExpect(status().is(HttpStatus.PAYLOAD_TOO_LARGE.value()));
     }
 
     @Test
@@ -231,25 +233,25 @@ public class UserProfileImageControllerTest extends AbstractControllerTest {
         login(customer);
 
         MockMultipartFile file = new MockMultipartFile(
-                "file",
-                customer.getProfile().getPhotoPath(),
-                "text/plain",
-                new byte[5]
+            "file",
+            customer.getProfile().getPhotoPath(),
+            "text/plain",
+            new byte[5]
         );
 
         // when
         mockMvc
-                .perform(
-                        multipart("/api/v1/profiles/image")
-                                .file(file)
-                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                                .param("currentPassword", this.RAW_PASSWORD)
-                                .with(request -> {
-                                    request.setMethod("POST");
-                                    return request;
-                                }))
+            .perform(
+                multipart("/api/v1/profiles/image")
+                    .file(file)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                    .param("currentPassword", this.RAW_PASSWORD)
+                    .with(request -> {
+                        request.setMethod("POST");
+                        return request;
+                    }))
 
-                .andDo(print())
-                .andExpect(status().is(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value()));
+            .andDo(print())
+            .andExpect(status().is(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value()));
     }
 }

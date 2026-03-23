@@ -2,8 +2,8 @@ package com.damian.xBank.modules.banking.transaction.domain.model;
 
 public enum BankingTransactionType {
     DEPOSIT,
-    TRANSFER_TO,
-    TRANSFER_FROM,
+    INCOMING_TRANSFER,
+    OUTGOING_TRANSFER,
     WITHDRAWAL,
     CARD_CHARGE
 }

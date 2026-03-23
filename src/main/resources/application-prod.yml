@@ -28,9 +28,9 @@ spring:
       enabled: ALWAYS
 logging:
   level:
-    root: INFO
-    org.hibernate.SQL: INFO
-
-payment-network:
-  base-url: http://payment-network-api:8079
-  endpoint: /api/v1/card-payments/authorizations
+    root: WARN
+    com.damian: DEBUG # Switch to INFO
+    org.hibernate.SQL: WARN
+    org.springframework.web: WARN
+    org.hibernate.type.descriptor.sql: WARN
+    org.springframework: ERROR

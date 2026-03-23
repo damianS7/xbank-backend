@@ -1,0 +1,132 @@
+package com.damian.xBank.modules.notification.infrastructure.rest.controller;
+
+import com.damian.xBank.modules.notification.application.dto.NotificationResult;
+import com.damian.xBank.modules.notification.application.usecase.delete.DeleteNotification;
+import com.damian.xBank.modules.notification.application.usecase.delete.DeleteNotificationCommand;
+import com.damian.xBank.modules.notification.application.usecase.delete.DeleteNotifications;
+import com.damian.xBank.modules.notification.application.usecase.delete.DeleteNotificationsCommand;
+import com.damian.xBank.modules.notification.application.usecase.get.GetCurrentUserNotifications;
+import com.damian.xBank.modules.notification.application.usecase.get.GetCurrentUserNotificationsQuery;
+import com.damian.xBank.modules.notification.application.usecase.get.GetCurrentUserSinkNotifications;
+import com.damian.xBank.modules.notification.infrastructure.rest.request.NotificationDeleteRequest;
+import com.damian.xBank.shared.infrastructure.web.dto.response.PageResult;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.ServerSentEvent;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
+
+import java.time.Duration;
+
+@Validated
+@RestController
+@RequestMapping("/api/v1")
+public class NotificationController {
+    private final DeleteNotification deleteNotification;
+    private final DeleteNotifications deleteNotifications;
+    private final GetCurrentUserNotifications getCurrentUserNotifications;
+    private final GetCurrentUserSinkNotifications getCurrentUserSinkNotifications;
+
+    public NotificationController(
+        DeleteNotification deleteNotification,
+        DeleteNotifications deleteNotifications,
+        GetCurrentUserNotifications getCurrentUserNotifications,
+        GetCurrentUserSinkNotifications getCurrentUserSinkNotifications
+    ) {
+        this.deleteNotification = deleteNotification;
+        this.deleteNotifications = deleteNotifications;
+        this.getCurrentUserNotifications = getCurrentUserNotifications;
+        this.getCurrentUserSinkNotifications = getCurrentUserSinkNotifications;
+    }
+
+    /**
+     * Endpoint para obtener notificaciones del usuario actual
+     *
+     * @param pageable paginación
+     * @return Notificaciones paginadas
+     */
+    @GetMapping("/notifications")
+    public ResponseEntity<?> getNotifications(
+        @PageableDefault(size = 8, sort = "createdAt", direction = Sort.Direction.DESC)
+        Pageable pageable
+    ) {
+        GetCurrentUserNotificationsQuery query = new GetCurrentUserNotificationsQuery(pageable);
+        PageResult<NotificationResult> notifications = getCurrentUserNotifications.execute(query);
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(notifications);
+    }
+
+    /**
+     * Endpoint para borrar notificaciones en batch de ids
+     *
+     * @param request La petición con los ids
+     */
+    @DeleteMapping("/notifications")
+    public ResponseEntity<?> deleteNotifications(
+        @Valid @RequestBody
+        NotificationDeleteRequest request
+    ) {
+        DeleteNotificationsCommand command = new DeleteNotificationsCommand(request.notificationIds());
+        deleteNotifications.execute(command);
+
+        return ResponseEntity
+            .noContent()
+            .build();
+    }
+
+    /**
+     * Endpoint para borrar notificaciones por ID
+     *
+     * @param id
+     */
+    @DeleteMapping("/notifications/{id}")
+    public ResponseEntity<?> deleteNotification(
+        @PathVariable @Positive
+        Long id
+    ) {
+        DeleteNotificationCommand command = new DeleteNotificationCommand(id);
+        deleteNotification.execute(command);
+
+        return ResponseEntity
+            .noContent()
+            .build();
+    }
+
+    /**
+     *
+     * @return Stream con notificaciones
+     */
+    @GetMapping(value = "/notifications/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ServerSentEvent<?>> streamNotifications() {
+        Flux<ServerSentEvent<NotificationResult>> notifications =
+            getCurrentUserSinkNotifications.execute()
+                .map(dto -> ServerSentEvent.builder(dto)
+                    .event("notification")
+                    .build()
+                );
+
+        Flux<ServerSentEvent<String>> heartbeat =
+            Flux.interval(Duration.ofSeconds(10))
+                .map(tick -> ServerSentEvent.<String>builder()
+                    .event("heartbeat")
+                    .data("ping")
+                    .build()
+                );
+
+        return Flux.merge(notifications, heartbeat);
+    }
+}

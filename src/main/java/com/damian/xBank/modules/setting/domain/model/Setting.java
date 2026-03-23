@@ -1,15 +1,19 @@
 package com.damian.xBank.modules.setting.domain.model;
 
-import com.damian.xBank.modules.setting.domain.exception.SettingNotOwnerException;
 import com.damian.xBank.modules.setting.infrastructure.persistence.converter.UserSettingsConverter;
-import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.shared.security.UserPrincipal;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-
-import java.util.Objects;
 
 @Entity
 @Table(name = "user_settings")
@@ -27,80 +31,58 @@ public class Setting {
     @Column(columnDefinition = "jsonb")
     private UserSettings settings;
 
-    public Setting() {
+    protected Setting() {
+        // Constructor JPA
+        this.settings = UserSettings.defaults();
     }
 
-    public Setting(User user) {
-        this.user = user;
+    Setting(UserSettings settings) {
+        this();
+        this.settings = settings != null ? settings : UserSettings.defaults();
     }
 
-    public Setting(UserPrincipal owner) {
-        this(owner.getUser());
-    }
-
-    public static Setting create(User owner) {
-        return new Setting(owner);
-    }
-
-    public static Setting create(UserPrincipal owner) {
-        return new Setting(owner);
+    public static Setting create(User user, UserSettings settings) {
+        Setting setting = new Setting(settings);
+        setting.user = user;
+        return setting;
     }
 
     public Long getId() {
         return id;
     }
 
-    public Setting setId(Long id) {
-        this.id = id;
-        return this;
-    }
-
-    @Override
-    public String toString() {
-        return "Setting {" +
-               "id=" + id +
-               "userId=" + user.getId() +
-               "}";
-    }
-
-    public User getUserAccount() {
-        return user;
-    }
-
-    public Setting setUser(User user) {
-        this.user = user;
-        return this;
-    }
-
-    public boolean isOwnedBy(UserProfile customer) {
-        return this.isOwnedBy(customer.getUser().getId());
-    }
-
-    public boolean isOwnedBy(UserPrincipal user) {
-        return this.isOwnedBy(user.getUser().getId());
-    }
-
-    public boolean isOwnedBy(Long userId) {
-        // compare account owner id with given customer id
-        return Objects.equals(user.getId(), userId);
-    }
-
-    public Setting assertOwnedBy(Long userId) {
-
-        // compare card owner id with given customer id
-        if (!isOwnedBy(userId)) {
-            throw new SettingNotOwnerException(getId(), userId);
-        }
-
-        return this;
-    }
+    //    public User getUser() {
+    //        return user;
+    //    }
+    //
+    //    public boolean isOwnedBy(Long userId) {
+    //        // compare account owner id with given customer id
+    //        return Objects.equals(user.getId(), userId);
+    //    }
 
     public UserSettings getSettings() {
         return settings;
     }
 
-    public Setting setSettings(UserSettings settings) {
+    public void setSettings(UserSettings settings) {
         this.settings = settings;
-        return this;
+    }
+
+    //    public Setting assertOwnedBy(Long userId) {
+    //
+    //        // compare card owner id with given customer id
+    //        if (!isOwnedBy(userId)) {
+    //            throw new SettingNotOwnerException(getId(), userId);
+    //        }
+    //
+    //        return this;
+    //    }
+
+    @Override
+    public String toString() {
+        return "Setting{" +
+               "id=" + id +
+               ", settings=" + settings +
+               '}';
     }
 }

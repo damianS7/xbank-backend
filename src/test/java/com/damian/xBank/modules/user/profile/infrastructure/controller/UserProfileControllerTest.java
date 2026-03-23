@@ -1,17 +1,16 @@
 package com.damian.xBank.modules.user.profile.infrastructure.controller;
 
-import com.damian.xBank.modules.user.profile.application.dto.request.UserProfileUpdateRequest;
-import com.damian.xBank.modules.user.profile.application.dto.response.UserProfileDetailDto;
-import com.damian.xBank.modules.user.profile.application.dto.response.UserProfileDto;
+import com.damian.xBank.modules.user.profile.application.usecase.get.GetUserProfileResult;
+import com.damian.xBank.modules.user.profile.application.usecase.update.UpdateUserProfileResult;
 import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.profile.domain.model.UserGender;
-import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
+import com.damian.xBank.modules.user.profile.infrastructure.rest.request.UserProfileUpdateRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
+import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.utils.JsonHelper;
-import com.damian.xBank.shared.utils.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,17 +35,15 @@ public class UserProfileControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setUp() {
-        UserProfile profile = UserProfileFactory.testProfile();
-
         customer = UserTestBuilder
-                .aCustomer()
-                .withEmail("customer@demo.com")
-                .withRole(UserRole.CUSTOMER)
-                .withStatus(UserStatus.VERIFIED)
-                .withPassword(RAW_PASSWORD)
-                .withProfile(profile)
-                .build();
+            .builder()
+            .withEmail("customer@demo.com")
+            .withRole(UserRole.CUSTOMER)
+            .withStatus(UserStatus.VERIFIED)
+            .withPassword(RAW_PASSWORD)
+            .build();
 
+        customer.getProfile().setFirstName("Anthony");
         userRepository.save(customer);
     }
 
@@ -54,27 +51,42 @@ public class UserProfileControllerTest extends AbstractControllerTest {
     @DisplayName("should return current user profile")
     void getProfile_WhenValidRequest_Returns200Ok() throws Exception {
         // given
+        String firstName = "David";
+
+        User customer = UserTestBuilder
+            .builder()
+            .withEmail("david@demo.com")
+            .withRole(UserRole.CUSTOMER)
+            .withStatus(UserStatus.VERIFIED)
+            .withPassword(RAW_PASSWORD)
+            .withProfile(UserProfileFactory.testProfile())
+            .build();
+
+        customer.getProfile().setFirstName(firstName);
+        userRepository.save(customer);
+
         login(customer);
 
         // when
         MvcResult result = mockMvc
-                .perform(
-                        get("/api/v1/profiles")
-                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
-                .andDo(print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andReturn();
+            .perform(
+                get("/api/v1/profiles")
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + token))
+            .andDo(print())
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+            .andReturn();
 
         // then
-        UserProfileDetailDto customerWithProfileDTO = objectMapper.readValue(
-                result.getResponse().getContentAsString(),
-                UserProfileDetailDto.class
+        GetUserProfileResult response = objectMapper.readValue(
+            result.getResponse().getContentAsString(),
+            GetUserProfileResult.class
         );
 
         // then
-        assertThat(customerWithProfileDTO).isNotNull();
-        assertThat(customerWithProfileDTO.email()).isEqualTo(customer.getEmail());
+        assertThat(response).isNotNull();
+        assertThat(response.firstName())
+            .isEqualTo(firstName);
     }
 
     @Test
@@ -91,43 +103,43 @@ public class UserProfileControllerTest extends AbstractControllerTest {
         fields.put("gender", UserGender.FEMALE);
 
         UserProfileUpdateRequest givenRequest = new UserProfileUpdateRequest(
-                RAW_PASSWORD,
-                fields
+            RAW_PASSWORD,
+            fields
         );
 
         // when
         MvcResult result = mockMvc
-                .perform(
-                        patch("/api/v1/profiles")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                                .content(JsonHelper.toJson(givenRequest)))
-                .andDo(print())
-                .andExpect(status().is(HttpStatus.OK.value()))
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andReturn();
+            .perform(
+                patch("/api/v1/profiles")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                    .content(JsonHelper.toJson(givenRequest)))
+            .andDo(print())
+            .andExpect(status().is(HttpStatus.OK.value()))
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+            .andReturn();
 
         // then
-        UserProfileDto customerDto = JsonHelper.fromJson(
-                result.getResponse().getContentAsString(),
-                UserProfileDto.class
+        UpdateUserProfileResult response = JsonHelper.fromJson(
+            result.getResponse().getContentAsString(),
+            UpdateUserProfileResult.class
         );
 
-        assertThat(customerDto)
-                .isNotNull()
-                .extracting(
-                        UserProfileDto::firstName,
-                        UserProfileDto::lastName,
-                        UserProfileDto::phone,
-                        UserProfileDto::birthdate,
-                        UserProfileDto::gender
-                ).containsExactly(
-                        givenRequest.fieldsToUpdate().get("firstName"),
-                        givenRequest.fieldsToUpdate().get("lastName"),
-                        givenRequest.fieldsToUpdate().get("phoneNumber"),
-                        givenRequest.fieldsToUpdate().get("birthdate"),
-                        givenRequest.fieldsToUpdate().get("gender")
-                );
+        assertThat(response)
+            .isNotNull()
+            .extracting(
+                UpdateUserProfileResult::firstName,
+                UpdateUserProfileResult::lastName,
+                UpdateUserProfileResult::phone,
+                UpdateUserProfileResult::birthdate,
+                UpdateUserProfileResult::gender
+            ).containsExactly(
+                givenRequest.fieldsToUpdate().get("firstName"),
+                givenRequest.fieldsToUpdate().get("lastName"),
+                givenRequest.fieldsToUpdate().get("phoneNumber"),
+                givenRequest.fieldsToUpdate().get("birthdate"),
+                givenRequest.fieldsToUpdate().get("gender")
+            );
     }
 
 }

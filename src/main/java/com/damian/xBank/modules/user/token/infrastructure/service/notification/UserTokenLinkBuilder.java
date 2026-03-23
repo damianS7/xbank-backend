@@ -9,20 +9,20 @@ public class UserTokenLinkBuilder {
     private final LinkBuilder linkBuilder;
 
     public UserTokenLinkBuilder(
-            LinkBuilder linkBuilder
+        LinkBuilder linkBuilder
     ) {
         this.linkBuilder = linkBuilder;
     }
 
     public String buildPasswordResetLink(String token) {
         return linkBuilder.build(
-                String.format("/accounts/password/reset/%s", token)
+            String.format("/accounts/password/reset/%s", token)
         );
     }
 
     public String buildAccountVerificationLink(String token) {
         return linkBuilder.build(
-                String.format("/accounts/verify/%s", token)
+            String.format("/accounts/verify/%s", token)
         );
     }
 }

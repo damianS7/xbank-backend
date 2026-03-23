@@ -7,18 +7,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface BankingTransactionRepository extends JpaRepository<BankingTransaction, Long> {
-    Page<BankingTransaction> findByTransferId(Long transferId, Pageable pageable);
+    Optional<BankingTransaction> findByAuthorizationId(String authorizationId);
 
-    Page<BankingTransaction> findByBankingCardId(Long bankingCardId, Pageable pageable);
+    Page<BankingTransaction> findByBankingCard_Id(Long bankingCardId, Pageable pageable);
 
-    Page<BankingTransaction> findByBankingAccountId(Long bankingAccountId, Pageable pageable);
+    Page<BankingTransaction> findByBankingAccount_Id(Long bankingAccountId, Pageable pageable);
 
     Page<BankingTransaction> findByStatusAndBankingAccount_User_Id(
-            BankingTransactionStatus status,
-            Long userId,
-            Pageable pageable
+        BankingTransactionStatus status,
+        Long userId,
+        Pageable pageable
     );
 }
 
