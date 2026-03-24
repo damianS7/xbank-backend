@@ -12,9 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * This usecase will be used after user submits the checkout form.
- * <p>
- * When the form is submitted this class method will be called.
+ * Caso de uso donde el usuario hace submit en el formulario de checkout
  */
 @Service
 public class SubmitPaymentCheckout {
@@ -31,11 +29,11 @@ public class SubmitPaymentCheckout {
 
     @Transactional
     public void execute(SubmitPaymentCheckoutCommand command) {
-        PaymentIntent paymentIntent = paymentIntentRepository.findById(command.paymentId()).orElseThrow(
-            () -> new PaymentIntentNotFoundException(command.paymentId())
-        );
+        PaymentIntent paymentIntent = paymentIntentRepository
+            .findById(command.paymentId())
+            .orElseThrow(() -> new PaymentIntentNotFoundException(command.paymentId()));
 
-        // Payment must be pending
+        // El pago debe estar en estado PENDING
         paymentIntent.assertPending();
 
         PaymentAuthorizationResponse response = paymentNetworkGateway.authorizePayment(
@@ -67,7 +65,6 @@ public class SubmitPaymentCheckout {
         //                notificationEventFactory.cardPaymentCompleted(transaction)
         //        );
 
-        // redirect to merchant website
         paymentIntentRepository.save(paymentIntent);
     }
 }
