@@ -1,12 +1,10 @@
 package com.damian.xBank.modules.user.user.infrastructure.rest.controller;
 
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserRole;
-import com.damian.xBank.modules.user.user.domain.model.UserStatus;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.modules.user.user.infrastructure.rest.request.UserEmailUpdateRequest;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.utils.JsonHelper;
+import com.damian.xBank.modules.user.utils.UserTestFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -25,13 +23,7 @@ public class UserControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setUp() {
-        user = UserTestBuilder.builder()
-            .withEmail("user@demo.com")
-            .withPassword(this.RAW_PASSWORD)
-            .withRole(UserRole.ADMIN)
-            .withStatus(UserStatus.VERIFIED)
-            .build();
-
+        user = UserTestFactory.aCustomer();
         userRepository.save(user);
     }
 

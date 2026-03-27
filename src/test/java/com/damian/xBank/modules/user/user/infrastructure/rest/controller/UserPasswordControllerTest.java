@@ -1,16 +1,13 @@
 package com.damian.xBank.modules.user.user.infrastructure.rest.controller;
 
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserRole;
-import com.damian.xBank.modules.user.user.domain.model.UserStatus;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.modules.user.user.infrastructure.rest.request.UserPasswordUpdateRequest;
+import com.damian.xBank.modules.user.utils.UserTestFactory;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.infrastructure.web.dto.response.ApiResponse;
 import com.damian.xBank.shared.utils.JsonHelper;
 import com.fasterxml.jackson.core.type.TypeReference;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,21 +26,8 @@ public class UserPasswordControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setUp() {
-        user = UserTestBuilder
-            .builder()
-            .withEmail("user@demo.com")
-            .withRole(UserRole.CUSTOMER)
-            .withStatus(UserStatus.VERIFIED)
-            .withPassword(this.RAW_PASSWORD)
-            .build();
-
+        user = UserTestFactory.aCustomer();
         userRepository.save(user);
-    }
-
-    @AfterEach
-    void tearDown() {
-        userTokenRepository.deleteAll();
-        userRepository.deleteAll();
     }
 
     @Test

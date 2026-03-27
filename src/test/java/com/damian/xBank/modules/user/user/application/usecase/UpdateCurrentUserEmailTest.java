@@ -1,13 +1,12 @@
 package com.damian.xBank.modules.user.user.application.usecase;
 
-import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.user.application.usecase.update.UpdateCurrentUserEmail;
 import com.damian.xBank.modules.user.user.application.usecase.update.UpdateUserEmailCommand;
 import com.damian.xBank.modules.user.user.domain.exception.UserEmailTakenException;
 import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
+import com.damian.xBank.modules.user.utils.UserTestFactory;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,19 +38,13 @@ public class UpdateCurrentUserEmailTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        customer = UserTestBuilder.builder()
-            .withId(1L)
-            .withPassword(RAW_PASSWORD)
-            .withEmail("customer@demo.com")
-            .withProfile(UserProfileFactory.testProfile())
-            .build();
+        customer = UserTestFactory.aCustomerWithId(1L);
     }
 
     @Test
     @DisplayName("Should update email")
     void shouldUpdateEmail() {
         // given
-        // set the user on the context
         setUpContext(customer);
 
         UpdateUserEmailCommand command = new UpdateUserEmailCommand(
@@ -83,8 +76,6 @@ public class UpdateCurrentUserEmailTest extends AbstractServiceTest {
     @DisplayName("Should not update email when is already taken")
     void shouldNotUpdateEmailWhenIsAlreadyTaken() {
         // given
-
-        // set the user on the context
         setUpContext(customer);
 
         UpdateUserEmailCommand updateRequest = new UpdateUserEmailCommand(
@@ -109,7 +100,6 @@ public class UpdateCurrentUserEmailTest extends AbstractServiceTest {
     @DisplayName("Should not update email when password is wrong")
     void shouldNotUpdateEmailWhenPasswordIsWrong() {
         // given
-        // set the user on the context
         setUpContext(customer);
 
         UpdateUserEmailCommand updateRequest = new UpdateUserEmailCommand(

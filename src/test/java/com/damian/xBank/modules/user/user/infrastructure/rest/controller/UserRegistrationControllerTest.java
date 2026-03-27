@@ -5,7 +5,7 @@ import com.damian.xBank.modules.user.user.application.usecase.register.RegisterU
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
+import com.damian.xBank.modules.user.utils.UserTestBuilder;
 import com.damian.xBank.modules.user.user.infrastructure.rest.request.RegisterUserRequest;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.exception.ErrorCodes;

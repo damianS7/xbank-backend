@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.user.user.application.usecase;
 
-import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
+import com.damian.xBank.modules.user.profile.domain.factory.UserProfileTestFactory;
 import com.damian.xBank.modules.user.profile.domain.model.UserGender;
 import com.damian.xBank.modules.user.token.domain.factory.UserTokenFactory;
 import com.damian.xBank.modules.user.token.domain.notification.UserTokenVerificationNotifier;
@@ -8,19 +8,17 @@ import com.damian.xBank.modules.user.token.infrastructure.service.notification.U
 import com.damian.xBank.modules.user.user.application.usecase.register.RegisterUser;
 import com.damian.xBank.modules.user.user.application.usecase.register.RegisterUserCommand;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.modules.user.user.domain.service.UserDomainService;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
+import com.damian.xBank.modules.user.utils.UserTestFactory;
 import com.damian.xBank.shared.AbstractServiceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 
@@ -29,7 +27,6 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@ExtendWith(MockitoExtension.class)
 public class RegisterUserTest extends AbstractServiceTest {
     @Mock
     private UserTokenVerificationNotifier userTokenVerificationNotifier;
@@ -44,7 +41,7 @@ public class RegisterUserTest extends AbstractServiceTest {
     private UserDomainService userDomainService = new UserDomainService(bCryptPasswordEncoder);
 
     @Spy
-    private UserProfileFactory userProfileFactory;
+    private UserProfileTestFactory userProfileTestFactory;
 
     @Spy
     private UserTokenFactory userTokenFactory;
@@ -56,12 +53,7 @@ public class RegisterUserTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        user = UserTestBuilder.builder()
-            .withId(1L)
-            .withPassword(RAW_PASSWORD)
-            .withEmail("customer@demo.com")
-            .withProfile(UserProfileFactory.testProfile())
-            .build();
+        user = UserTestFactory.aCustomerWithId(1L);
     }
 
     @Test

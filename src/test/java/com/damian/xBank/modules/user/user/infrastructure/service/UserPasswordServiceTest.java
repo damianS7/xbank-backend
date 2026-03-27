@@ -1,9 +1,8 @@
 package com.damian.xBank.modules.user.user.infrastructure.service;
 
-import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
+import com.damian.xBank.modules.user.utils.UserTestFactory;
 import com.damian.xBank.shared.AbstractServiceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,28 +29,25 @@ public class UserPasswordServiceTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        user = UserTestBuilder.builder()
-            .withId(1L)
-            .withPassword(RAW_PASSWORD)
-            .withEmail("user@demo.com")
-            .withProfile(UserProfileFactory.testProfile())
-            .build();
+        user = UserTestFactory.aCustomerWithId(1L);
     }
 
     @Test
     @DisplayName("should update user password")
-    void updatePassword_WhenValid_UpdatesPassword() {
+    void updatePassword_UpdatesPassword() {
         // given
         final String rawNewPassword = "123456789";
         final String encodedNewPassword = bCryptPasswordEncoder.encode(rawNewPassword);
 
         // when
-        when(bCryptPasswordEncoder.encode(rawNewPassword)).thenReturn(encodedNewPassword);
-        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
-        userPasswordService.updatePassword(user.getId(), rawNewPassword);
+        when(bCryptPasswordEncoder.encode(rawNewPassword)).
+            thenReturn(encodedNewPassword);
+        when(userRepository.findById(user.getId()))
+            .thenReturn(Optional.of(user));
 
         // then
-        assertThat(user.getPassword()).isEqualTo(encodedNewPassword);
+        userPasswordService.updatePassword(user.getId(), rawNewPassword);
+        assertThat(user.getPasswordHash()).isEqualTo(encodedNewPassword);
         verify(userRepository, times(1)).save(user);
     }
 }
