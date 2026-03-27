@@ -10,13 +10,13 @@ public class DefaultPasswordValidator implements PasswordValidator {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public DefaultPasswordValidator(
-            BCryptPasswordEncoder bCryptPasswordEncoder
+        BCryptPasswordEncoder bCryptPasswordEncoder
     ) {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     public void validatePassword(User user, String rawPassword) {
-        if (!bCryptPasswordEncoder.matches(rawPassword, user.getPassword())) {
+        if (!bCryptPasswordEncoder.matches(rawPassword, user.getPasswordHash())) {
             throw new UserInvalidPasswordConfirmationException(user.getId());
         }
     }
