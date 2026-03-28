@@ -1,12 +1,12 @@
 package com.damian.xBank.modules.user.profile.infrastructure.controller;
 
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.infrastructure.storage.FileStorageService;
 import com.damian.xBank.shared.infrastructure.storage.ImageUploaderService;
 import com.damian.xBank.shared.infrastructure.storage.exception.FileStorageNotFoundException;
-import com.damian.xBank.shared.utils.ImageTestHelper;
-import com.damian.xBank.shared.utils.UserTestFactory;
+import com.damian.xBank.test.AbstractControllerTest;
+import com.damian.xBank.test.utils.ImageTestHelper;
+import com.damian.xBank.test.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

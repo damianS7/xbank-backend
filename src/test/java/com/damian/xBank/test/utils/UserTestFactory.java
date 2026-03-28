@@ -1,4 +1,4 @@
-package com.damian.xBank.shared.utils;
+package com.damian.xBank.test.utils;
 
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;

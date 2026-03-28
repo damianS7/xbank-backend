@@ -1,4 +1,4 @@
-package com.damian.xBank.shared.utils;
+package com.damian.xBank.test.utils;
 
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,12 +15,12 @@ import java.nio.file.Path;
 public class ImageTestHelper {
 
     public static MockMultipartFile createMockImage(
-            String name,
-            String filename,
-            String format,
-            int width,
-            int height,
-            Color fillColor
+        String name,
+        String filename,
+        String format,
+        int width,
+        int height,
+        Color fillColor
     ) {
         try {
             // Crear la imagen en memoria

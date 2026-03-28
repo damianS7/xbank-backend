@@ -1,4 +1,4 @@
-package com.damian.xBank.shared;
+package com.damian.xBank.test;
 
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.security.AuthenticationContext;

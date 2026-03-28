@@ -1,6 +1,6 @@
 package com.damian.xBank.shared.infrastructure.storage;
 
-import com.damian.xBank.shared.AbstractServiceTest;
+import com.damian.xBank.test.AbstractServiceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -24,10 +24,10 @@ public class FileStorageServiceTest extends AbstractServiceTest {
     @DisplayName("Should get root storage path")
     void shouldGetStoragePath() throws IOException {
         System.out.println(
-                fileStorageService.getStoragePath(
-                        ImageUploaderService.getUserUploadFolder(
-                                1L)
-                )
+            fileStorageService.getStoragePath(
+                ImageUploaderService.getUserUploadFolder(
+                    1L)
+            )
         );
     }
 
@@ -36,15 +36,15 @@ public class FileStorageServiceTest extends AbstractServiceTest {
     void shouldStoreFile() throws IOException {
         // given
         MultipartFile givenFile = new MockMultipartFile(
-                "file.jpg",
-                "photo.jpg",
-                "image/jpeg",
-                new byte[5]
+            "file.jpg",
+            "photo.jpg",
+            "image/jpeg",
+            new byte[5]
         );
 
         // when
         File storedFile = fileStorageService.storeFile(
-                givenFile, ImageUploaderService.getUserUploadFolder(1L), givenFile.getName()
+            givenFile, ImageUploaderService.getUserUploadFolder(1L), givenFile.getName()
         );
 
         // then
@@ -58,18 +58,18 @@ public class FileStorageServiceTest extends AbstractServiceTest {
     void shouldGetFile() throws IOException {
         // given
         File givenFile = fileStorageService.storeFile(
-                new MockMultipartFile(
-                        "file.jpg",
-                        "photo.jpg",
-                        "image/jpeg",
-                        new byte[5]
-                ),
-                "", "file.jpg"
+            new MockMultipartFile(
+                "file.jpg",
+                "photo.jpg",
+                "image/jpeg",
+                new byte[5]
+            ),
+            "", "file.jpg"
         );
 
         // when
         File file = fileStorageService.getFile(
-                "", givenFile.getName()
+            "", givenFile.getName()
         );
 
         // then
@@ -83,18 +83,18 @@ public class FileStorageServiceTest extends AbstractServiceTest {
     void shouldDeleteFile() throws IOException {
         // given
         File givenFile = fileStorageService.storeFile(
-                new MockMultipartFile(
-                        "file.jpg",
-                        "photo.jpg",
-                        "image/jpeg",
-                        new byte[5]
-                ),
-                "", "file.jpg"
+            new MockMultipartFile(
+                "file.jpg",
+                "photo.jpg",
+                "image/jpeg",
+                new byte[5]
+            ),
+            "", "file.jpg"
         );
 
         // when
         fileStorageService.deleteFile(
-                "", givenFile.getName()
+            "", givenFile.getName()
         );
 
         // then

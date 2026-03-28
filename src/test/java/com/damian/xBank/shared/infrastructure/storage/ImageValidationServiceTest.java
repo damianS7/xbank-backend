@@ -1,10 +1,10 @@
 package com.damian.xBank.shared.infrastructure.storage;
 
+import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.infrastructure.storage.exception.ImageEmptyFileException;
 import com.damian.xBank.shared.infrastructure.storage.exception.ImageTooLargeException;
 import com.damian.xBank.shared.infrastructure.storage.exception.ImageTypeNotSupportedException;
-import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.test.AbstractServiceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

@@ -1,4 +1,4 @@
-package com.damian.xBank.shared;
+package com.damian.xBank.test;
 
 
 import com.damian.xBank.modules.notification.infrastructure.repository.NotificationRepository;
@@ -15,7 +15,7 @@ public abstract class AbstractRepositoryTest {
     @Container
     @ServiceConnection
     public static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16")
-            .withReuse(true);
+        .withReuse(true);
 
     protected final String RAW_PASSWORD = "123456";
 

@@ -8,10 +8,10 @@ import com.damian.xBank.modules.user.token.infrastructure.rest.request.ResetPass
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
-import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.utils.JsonHelper;
-import com.damian.xBank.shared.utils.UserTestBuilder;
-import com.damian.xBank.shared.utils.UserTestFactory;
+import com.damian.xBank.test.AbstractControllerTest;
+import com.damian.xBank.test.utils.UserTestBuilder;
+import com.damian.xBank.test.utils.UserTestFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

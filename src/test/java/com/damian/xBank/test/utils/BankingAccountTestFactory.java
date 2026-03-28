@@ -1,4 +1,4 @@
-package com.damian.xBank.shared.utils;
+package com.damian.xBank.test.utils;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestBuilder;

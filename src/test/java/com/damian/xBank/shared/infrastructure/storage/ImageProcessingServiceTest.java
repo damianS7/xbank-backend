@@ -1,7 +1,7 @@
 package com.damian.xBank.shared.infrastructure.storage;
 
-import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.utils.ImageTestHelper;
+import com.damian.xBank.test.AbstractServiceTest;
+import com.damian.xBank.test.utils.ImageTestHelper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -24,12 +24,12 @@ public class ImageProcessingServiceTest extends AbstractServiceTest {
     void shouldCompressImageMultipartFile() {
         // given
         MultipartFile givenImage = new MultipartImageAdapter(
-                new File(getClass().getResource("/images/avatar.png").getFile())
+            new File(getClass().getResource("/images/avatar.png").getFile())
         );
 
         // when
         MultipartFile compressedFile = imageProcessingService.compressImage(
-                givenImage
+            givenImage
         );
 
         // then
@@ -41,12 +41,12 @@ public class ImageProcessingServiceTest extends AbstractServiceTest {
     void shouldOptimizeImageMultipartFile() {
         // given
         MultipartFile givenImage = new MultipartImageAdapter(
-                new File(getClass().getResource("/images/4k-image.jpg").getFile())
+            new File(getClass().getResource("/images/4k-image.jpg").getFile())
         );
 
         // when
         MultipartFile compressedFile = imageProcessingService.optimizeImage(
-                givenImage, 1920, 1080
+            givenImage, 1920, 1080
         );
 
         // then
@@ -58,17 +58,17 @@ public class ImageProcessingServiceTest extends AbstractServiceTest {
     void shouldResizeImageFile() throws IOException {
         // given
         MultipartFile givenImage = ImageTestHelper.createMockImage(
-                "file",
-                "file.jpg",
-                "jpg",
-                5000,
-                5000,
-                Color.BLUE
+            "file",
+            "file.jpg",
+            "jpg",
+            5000,
+            5000,
+            Color.BLUE
         );
 
         // when
         MultipartFile compressedFile = imageProcessingService.resizeImage(
-                givenImage, 1920, 1080
+            givenImage, 1920, 1080
         );
 
         // then
@@ -80,17 +80,17 @@ public class ImageProcessingServiceTest extends AbstractServiceTest {
     void shouldNotResizeImageFileWhenIsWithinLimits() throws IOException {
         // given
         MultipartFile givenImage = ImageTestHelper.createMockImage(
-                "file",
-                "file.jpg",
-                "jpg",
-                5000,
-                5000,
-                Color.BLUE
+            "file",
+            "file.jpg",
+            "jpg",
+            5000,
+            5000,
+            Color.BLUE
         );
 
         // when
         MultipartFile compressedFile = imageProcessingService.shrinkImage(
-                givenImage, 9000, 9000
+            givenImage, 9000, 9000
         );
 
         // then

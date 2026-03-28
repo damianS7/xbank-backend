@@ -1,4 +1,4 @@
-package com.damian.xBank.shared;
+package com.damian.xBank.test;
 
 
 import com.damian.xBank.modules.auth.infrastructure.rest.request.AuthenticationRequest;

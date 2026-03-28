@@ -5,9 +5,9 @@ import com.damian.xBank.modules.user.profile.application.usecase.update.UpdateUs
 import com.damian.xBank.modules.user.profile.domain.model.UserGender;
 import com.damian.xBank.modules.user.profile.infrastructure.rest.request.UserProfileUpdateRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.utils.JsonHelper;
-import com.damian.xBank.shared.utils.UserTestFactory;
+import com.damian.xBank.test.AbstractControllerTest;
+import com.damian.xBank.test.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

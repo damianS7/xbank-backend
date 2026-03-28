@@ -1,6 +1,6 @@
 package com.damian.xBank.shared.infrastructure.mail;
 
-import com.damian.xBank.shared.AbstractControllerTest;
+import com.damian.xBank.test.AbstractControllerTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -12,9 +12,9 @@ class EmailSenderControllerTest extends AbstractControllerTest {
     @Test
     void shouldSendEmail() {
         emailSenderService.send(
-                "customer@demo.com",
-                "hello",
-                "hello world"
+            "customer@demo.com",
+            "hello",
+            "hello world"
         );
     }
 }
