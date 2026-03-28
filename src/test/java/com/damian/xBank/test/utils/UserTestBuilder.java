@@ -1,6 +1,7 @@
 package com.damian.xBank.test.utils;
 
 import com.damian.xBank.modules.setting.domain.model.Setting;
+import com.damian.xBank.modules.user.merchant.domain.Merchant;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
@@ -20,6 +21,7 @@ public class UserTestBuilder {
     private String password = "$2a$10$7EqJtq98hPqEX7fNZaFWoOa6sK9Pz7RrH9Z4VQe8C7l8bqZkYwF6e";
     private UserStatus status = UserStatus.VERIFIED;
     private UserRole role = UserRole.CUSTOMER;
+    private Merchant merchant = Merchant.create("Amazon.es", "https://amazon.es");
     private UserProfile profile = UserProfileTestFactory.testProfile();
     private Setting settings = Setting.create();
 
@@ -57,6 +59,11 @@ public class UserTestBuilder {
         return this;
     }
 
+    public UserTestBuilder withMerchant(Merchant merchant) {
+        this.merchant = merchant;
+        return this;
+    }
+
     public User build() {
         User user = User.reconstitute(
             id,
@@ -66,13 +73,14 @@ public class UserTestBuilder {
             status,
             Instant.now(),
             Instant.now(),
-            null,
+            merchant,
             profile,
             settings
         );
 
         profile.assignOwner(user);
         settings.assignOwner(user);
+        merchant.setUser(user);
 
         return user;
     }

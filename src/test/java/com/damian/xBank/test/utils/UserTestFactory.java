@@ -1,5 +1,6 @@
 package com.damian.xBank.test.utils;
 
+import com.damian.xBank.modules.user.merchant.domain.Merchant;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
@@ -9,6 +10,35 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserTestFactory {
     public final static String RAW_PASSWORD = "123456";
+
+    public static User aMerchant() {
+        User user = UserTestBuilder.builder()
+            .withEmail("customer@demo.com")
+            .withPassword(RAW_PASSWORD)
+            .withRole(UserRole.MERCHANT)
+            .withStatus(UserStatus.VERIFIED)
+            .withProfile(UserProfileTestFactory.testProfile())
+            .withMerchant(Merchant.create("Amazon.es", "https://amazon.es"))
+            .build();
+
+        user.registerMerchant("Amazon.es", "https://amazon.es");
+        return user;
+    }
+
+    public static User aMerchantWithId(Long id) {
+        User user = UserTestBuilder.builder()
+            .withId(id)
+            .withEmail("customer@demo.com")
+            .withPassword(RAW_PASSWORD)
+            .withRole(UserRole.MERCHANT)
+            .withStatus(UserStatus.VERIFIED)
+            .withProfile(UserProfileTestFactory.testProfile())
+            .withMerchant(Merchant.create("Amazon.es", "https://amazon.es"))
+            .build();
+
+        user.registerMerchant("Amazon.es", "https://amazon.es");
+        return user;
+    }
 
     public static User aCustomer() {
         return UserTestBuilder.builder()
