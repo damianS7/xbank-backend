@@ -6,10 +6,10 @@ import com.damian.xBank.modules.notification.infrastructure.repository.Notificat
 import com.damian.xBank.modules.notification.infrastructure.sink.NotificationSinkRegistry;
 import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
-import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.test.AbstractServiceTest;
+import com.damian.xBank.test.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -46,11 +46,7 @@ public class NotificationPublisherTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        customer = UserTestBuilder.builder()
-            .withId(1L)
-            .withEmail("customer@demo.com")
-            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-            .build();
+        customer = UserTestFactory.aCustomerWithId(1L);
     }
 
     @Test
@@ -71,7 +67,8 @@ public class NotificationPublisherTest extends AbstractServiceTest {
         );
 
         // when
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(customer));
+        when(userRepository.findById(anyLong()))
+            .thenReturn(Optional.of(customer));
         when(notificationRepository.save(any()))
             .thenAnswer(i -> i.getArguments()[0]);
         notificationPublisher.publish(event);

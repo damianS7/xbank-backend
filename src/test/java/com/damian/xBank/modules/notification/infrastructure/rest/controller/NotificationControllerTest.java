@@ -6,20 +6,14 @@ import com.damian.xBank.modules.notification.domain.model.Notification;
 import com.damian.xBank.modules.notification.domain.model.NotificationType;
 import com.damian.xBank.modules.notification.infrastructure.rest.request.NotificationDeleteRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserRole;
-import com.damian.xBank.modules.user.user.domain.model.UserStatus;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
-import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.security.UserPrincipal;
-import com.damian.xBank.shared.utils.JwtUtil;
+import com.damian.xBank.test.AbstractControllerTest;
+import com.damian.xBank.test.utils.UserTestFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -27,6 +21,7 @@ import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import reactor.core.publisher.Flux;
@@ -43,27 +38,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class NotificationControllerTest extends AbstractControllerTest {
 
-    @Autowired
-    private JwtUtil jwtUtil;
-
-    @SpyBean
+    @MockitoSpyBean
     private GetCurrentUserSinkNotifications getCurrentUserSinkNotifications;
 
     private User customer;
 
     @BeforeEach
     void setUp() {
-        customer = UserTestBuilder
-            .builder()
-            .withEmail("customer@demo.com")
-            .withRole(UserRole.CUSTOMER)
-            .withStatus(UserStatus.VERIFIED)
-            .withPassword(passwordEncoder.encode(RAW_PASSWORD))
-            .build();
-
+        customer = UserTestFactory.aCustomer();
         userRepository.save(customer);
     }
 

@@ -1,5 +1,7 @@
-package com.damian.xBank.modules.notification.domain.model;
+package com.damian.xBank.test.utils;
 
+import com.damian.xBank.modules.notification.domain.model.Notification;
+import com.damian.xBank.modules.notification.domain.model.NotificationType;
 import com.damian.xBank.modules.user.user.domain.model.User;
 
 import java.util.HashMap;
@@ -42,6 +44,6 @@ public class NotificationTestBuilder {
     }
 
     public Notification build() {
-        return new Notification(id, owner, type, payload, templateKey);
+        return Notification.reconstitute(id, owner, type, payload, templateKey, null);
     }
 }

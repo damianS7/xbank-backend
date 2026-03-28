@@ -7,9 +7,9 @@ import com.damian.xBank.modules.notification.domain.model.Notification;
 import com.damian.xBank.modules.notification.domain.model.NotificationType;
 import com.damian.xBank.modules.notification.infrastructure.repository.NotificationRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
-import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.infrastructure.web.dto.response.PageResult;
+import com.damian.xBank.test.AbstractServiceTest;
+import com.damian.xBank.test.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,11 +39,7 @@ public class GetCurrentUserNotificationsTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        customer = UserTestBuilder.builder()
-            .withId(1L)
-            .withEmail("customer@demo.com")
-            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-            .build();
+        customer = UserTestFactory.aCustomerWithId(1L);
     }
 
     @Test
