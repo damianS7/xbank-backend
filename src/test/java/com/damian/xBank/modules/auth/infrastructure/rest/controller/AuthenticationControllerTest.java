@@ -5,11 +5,12 @@ import com.damian.xBank.modules.auth.infrastructure.rest.response.Authentication
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
-import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.infrastructure.web.dto.response.ApiResponse;
 import com.damian.xBank.shared.utils.JsonHelper;
+import com.damian.xBank.test.AbstractControllerTest;
+import com.damian.xBank.test.utils.UserTestBuilder;
+import com.damian.xBank.test.utils.UserTestFactory;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,14 +32,7 @@ public class AuthenticationControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setUp() {
-        customer = UserTestBuilder
-            .builder()
-            .withEmail("customer@demo.com")
-            .withRole(UserRole.CUSTOMER)
-            .withStatus(UserStatus.VERIFIED)
-            .withPassword(RAW_PASSWORD)
-            .build();
-
+        customer = UserTestFactory.aCustomer();
         userRepository.save(customer);
     }
 

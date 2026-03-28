@@ -4,11 +4,10 @@ import com.damian.xBank.modules.setting.application.usecase.get.GetCurrentUserSe
 import com.damian.xBank.modules.setting.application.usecase.get.GetCurrentUserSettingsQuery;
 import com.damian.xBank.modules.setting.application.usecase.get.GetCurrentUserSettingsResult;
 import com.damian.xBank.modules.setting.domain.model.Setting;
-import com.damian.xBank.modules.setting.domain.model.UserSettings;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
-import com.damian.xBank.shared.AbstractServiceTest;
-import com.damian.xBank.shared.utils.UserTestFactory;
+import com.damian.xBank.test.AbstractServiceTest;
+import com.damian.xBank.test.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,7 +33,7 @@ public class GetCurrentUserSettingsTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        customer = UserTestFactory.customer();
+        customer = UserTestFactory.aCustomerWithId(1L);
     }
 
     @Test
@@ -43,7 +42,7 @@ public class GetCurrentUserSettingsTest extends AbstractServiceTest {
         // given
         setUpContext(customer);
 
-        Setting setting = Setting.create(customer, UserSettings.defaults());
+        Setting currentUserSettings = customer.getSettings();
 
         GetCurrentUserSettingsQuery query = new GetCurrentUserSettingsQuery();
 
@@ -61,8 +60,8 @@ public class GetCurrentUserSettingsTest extends AbstractServiceTest {
                 r -> r.settings().emailNotifications()
             )
             .containsExactly(
-                setting.getSettings().language(),
-                setting.getSettings().emailNotifications()
+                currentUserSettings.getSettings().language(),
+                currentUserSettings.getSettings().emailNotifications()
             );
         verify(userRepository, times(1)).findById(customer.getId());
     }

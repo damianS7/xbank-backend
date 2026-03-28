@@ -2,12 +2,10 @@ package com.damian.xBank.modules.auth.infrastructure.rest.controller;
 
 import com.damian.xBank.modules.user.profile.infrastructure.rest.request.UserProfileUpdateRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserRole;
-import com.damian.xBank.modules.user.user.domain.model.UserStatus;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
-import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.JwtUtil;
+import com.damian.xBank.test.AbstractControllerTest;
+import com.damian.xBank.test.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,14 +34,7 @@ public class AuthorizationControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setUp() {
-        customer = UserTestBuilder
-            .builder()
-            .withEmail("customer@demo.com")
-            .withRole(UserRole.CUSTOMER)
-            .withStatus(UserStatus.VERIFIED)
-            .withPassword(passwordEncoder.encode(RAW_PASSWORD))
-            .build();
-
+        customer = UserTestFactory.aCustomer();
         userRepository.save(customer);
     }
 

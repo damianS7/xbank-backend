@@ -8,16 +8,13 @@ import com.damian.xBank.modules.setting.domain.model.SettingTheme;
 import com.damian.xBank.modules.setting.domain.model.UserSettings;
 import com.damian.xBank.modules.setting.infrastructure.rest.request.UpdateCurrentUserSettingsRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserRole;
-import com.damian.xBank.modules.user.user.domain.model.UserStatus;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
-import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.utils.JsonHelper;
+import com.damian.xBank.test.AbstractControllerTest;
+import com.damian.xBank.test.utils.UserTestFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,21 +26,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class SettingControllerTest extends AbstractControllerTest {
 
     private User customer;
 
     @BeforeEach
     void setUp() {
-        customer = UserTestBuilder
-            .builder()
-            .withEmail("customer@demo.com")
-            .withRole(UserRole.CUSTOMER)
-            .withStatus(UserStatus.VERIFIED)
-            .withPassword(passwordEncoder.encode(RAW_PASSWORD))
-            .build();
-
+        customer = UserTestFactory.aCustomer();
         userRepository.save(customer);
     }
 

@@ -6,12 +6,12 @@ import com.damian.xBank.modules.auth.infrastructure.rest.request.AuthenticationR
 import com.damian.xBank.modules.auth.infrastructure.rest.response.AuthenticationResponse;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
-import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.security.UserPrincipal;
 import com.damian.xBank.shared.utils.JwtUtil;
-import com.damian.xBank.shared.utils.UserTestFactory;
+import com.damian.xBank.test.AbstractServiceTest;
+import com.damian.xBank.test.utils.UserTestBuilder;
+import com.damian.xBank.test.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,9 +45,8 @@ public class AuthenticationLoginTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        customer = UserTestFactory.customer();
+        customer = UserTestFactory.aCustomer();
     }
-
 
     @Test
     @DisplayName("should return token when credentials are valid")
@@ -60,7 +59,7 @@ public class AuthenticationLoginTest extends AbstractServiceTest {
 
         AuthenticationRequest request = new AuthenticationRequest(
             this.customer.getEmail(),
-            this.customer.getPassword()
+            this.customer.getPasswordHash()
         );
 
         // when
@@ -84,7 +83,7 @@ public class AuthenticationLoginTest extends AbstractServiceTest {
         // given
         AuthenticationRequest request = new AuthenticationRequest(
             customer.getEmail(),
-            customer.getPassword()
+            customer.getPasswordHash()
         );
 
         // when
@@ -113,7 +112,7 @@ public class AuthenticationLoginTest extends AbstractServiceTest {
 
         AuthenticationRequest request = new AuthenticationRequest(
             user.getEmail(),
-            user.getPassword()
+            user.getPasswordHash()
         );
 
         // when
@@ -136,7 +135,7 @@ public class AuthenticationLoginTest extends AbstractServiceTest {
         // given
         AuthenticationRequest request = new AuthenticationRequest(
             customer.getEmail(),
-            customer.getPassword()
+            customer.getPasswordHash()
         );
 
         // when
