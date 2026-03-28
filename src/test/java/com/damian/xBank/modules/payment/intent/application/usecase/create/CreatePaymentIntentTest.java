@@ -32,7 +32,9 @@ public class CreatePaymentIntentTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        customer = UserTestFactory.aMerchantWithId(1L);
+        customer = UserTestFactory.aMerchant()
+            .withId(1L)
+            .build();
     }
 
     @Test

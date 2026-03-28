@@ -45,7 +45,7 @@ public class AuthenticationLoginTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        customer = UserTestFactory.aCustomer();
+        customer = UserTestFactory.aCustomer().build();
     }
 
     @Test

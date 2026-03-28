@@ -39,7 +39,9 @@ public class GetCurrentUserNotificationsTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        customer = UserTestFactory.aCustomerWithId(1L);
+        customer = UserTestFactory.aCustomer()
+            .withId(1L)
+            .build();
     }
 
     @Test

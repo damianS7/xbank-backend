@@ -34,7 +34,7 @@ public class AuthorizationControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setUp() {
-        customer = UserTestFactory.aCustomer();
+        customer = UserTestFactory.aCustomer().build();
         userRepository.save(customer);
     }
 

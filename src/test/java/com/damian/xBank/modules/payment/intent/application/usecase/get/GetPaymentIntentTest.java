@@ -31,8 +31,7 @@ public class GetPaymentIntentTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        customer = UserTestFactory.aCustomerWithId(1L);
-        customer.registerMerchant("Amazon.es", "https://amazon.es");
+        customer = UserTestFactory.aMerchant().build();
     }
 
     @Test

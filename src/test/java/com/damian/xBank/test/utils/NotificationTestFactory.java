@@ -20,18 +20,4 @@ public class NotificationTestFactory {
             ))
             .withTemplateKey("testTemplateKey");
     }
-
-    public static NotificationTestBuilder aNotificationWithId(Long id) {
-        return NotificationTestBuilder.builder()
-            .withId(id)
-            .withType(NotificationType.TRANSFER)
-            .withPayload(Map.of(
-                "transactionId", 1L,
-                "toUser", 1L,
-                "amount", 100L,
-                "currency", "EUR"
-            ))
-            .withTemplateKey("testTemplateKey");
-    }
-
 }

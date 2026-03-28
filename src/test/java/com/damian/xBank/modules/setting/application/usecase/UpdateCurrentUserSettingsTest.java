@@ -39,8 +39,12 @@ public class UpdateCurrentUserSettingsTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        customerA = UserTestFactory.aCustomerWithId(1L);
-        customerB = UserTestFactory.aCustomerWithId(2L);
+        customerA = UserTestFactory.aCustomer()
+            .withId(1L)
+            .build();
+        customerB = UserTestFactory.aCustomer()
+            .withId(1L)
+            .build();
     }
 
     @Test

@@ -26,7 +26,7 @@ public class UserPasswordControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setUp() {
-        user = UserTestFactory.aCustomer();
+        user = UserTestFactory.aCustomer().build();
         userRepository.save(user);
     }
 

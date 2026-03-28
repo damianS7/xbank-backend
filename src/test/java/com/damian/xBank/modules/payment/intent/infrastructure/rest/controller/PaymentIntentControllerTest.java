@@ -21,7 +21,7 @@ public class PaymentIntentControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setUp() {
-        customer = UserTestFactory.aMerchant();
+        customer = UserTestFactory.aMerchant().build();
         userRepository.save(customer);
     }
 

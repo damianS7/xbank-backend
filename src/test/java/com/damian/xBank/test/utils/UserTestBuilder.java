@@ -64,6 +64,21 @@ public class UserTestBuilder {
         return this;
     }
 
+    public UserTestBuilder admin() {
+        this.role = UserRole.ADMIN;
+        return this;
+    }
+
+    public UserTestBuilder unverified() {
+        this.status = UserStatus.PENDING_VERIFICATION;
+        return this;
+    }
+
+    public UserTestBuilder suspended() {
+        this.status = UserStatus.SUSPENDED;
+        return this;
+    }
+
     public User build() {
         User user = User.reconstitute(
             id,

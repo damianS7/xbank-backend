@@ -42,7 +42,7 @@ public class SubmitPaymentCheckoutTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        customer = UserTestFactory.aMerchant();
+        customer = UserTestFactory.aMerchant().build();
     }
 
     @Test

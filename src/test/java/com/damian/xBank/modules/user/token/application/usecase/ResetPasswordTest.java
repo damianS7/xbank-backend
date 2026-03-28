@@ -49,7 +49,9 @@ public class ResetPasswordTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        user = UserTestFactory.aCustomerWithId(1L);
+        user = UserTestFactory.aCustomer()
+            .withId(1L)
+            .build();
     }
 
     @Test
