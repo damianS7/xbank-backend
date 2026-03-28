@@ -10,9 +10,10 @@ import com.damian.xBank.modules.user.token.infrastructure.service.notification.U
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
+import com.damian.xBank.shared.utils.UserTestBuilder;
+import com.damian.xBank.shared.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -51,11 +52,7 @@ public class RequestAccountVerificationTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        user = UserTestBuilder.builder()
-            .withId(1L)
-            .withPassword(RAW_PASSWORD)
-            .withEmail("customer@demo.com")
-            .build();
+        user = UserTestFactory.aCustomerWithId(1L);
     }
 
     @Test

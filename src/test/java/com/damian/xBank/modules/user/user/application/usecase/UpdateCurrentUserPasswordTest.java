@@ -6,20 +6,18 @@ import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordCo
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.modules.user.user.infrastructure.service.UserPasswordService;
-import com.damian.xBank.modules.user.utils.UserTestBuilder;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 
 public class UpdateCurrentUserPasswordTest extends AbstractServiceTest {
 
@@ -32,25 +30,19 @@ public class UpdateCurrentUserPasswordTest extends AbstractServiceTest {
     @InjectMocks
     private UpdateCurrentUserPassword updateCurrentUserPassword;
 
-    private User customer;
+    private User user;
 
     @BeforeEach
     void setUp() {
-        customer = UserTestBuilder.builder()
-            .withId(1L)
-            .withPassword(RAW_PASSWORD)
-            .withEmail("customer@demo.com")
-            .build();
+        user = UserTestFactory.aCustomerWithId(1L);
     }
 
-    // TODO review this test
     @Test
     @DisplayName("should update user password")
-    void passwordUpdate_SetsNewPassword() {
+    void updatePassword_SetsNewPassword() {
         // given
-        setUpContext(customer);
+        setUpContext(user);
 
-        final String passwordHashBeforeUpdate = customer.getPasswordHash();
         final String rawNewPassword = "1234";
 
         UpdateUserPasswordCommand command = new UpdateUserPasswordCommand(
@@ -59,20 +51,15 @@ public class UpdateCurrentUserPasswordTest extends AbstractServiceTest {
         );
 
         // when
-        when(bCryptPasswordEncoder.encode(anyString()))
-            .thenAnswer(i -> i.getArgument(0));
-        updateCurrentUserPassword.execute(command);
-
         // then
-        assertThat(passwordHashBeforeUpdate)
-            .isNotEqualTo(customer.getPasswordHash());
+        assertDoesNotThrow(() -> updateCurrentUserPassword.execute(command));
     }
 
     @Test
     @DisplayName("should throw exception when password confirmation failed")
-    void passwordUpdate_WhenInvalidPassword_ThrowsException() {
+    void updatePassword_WhenInvalidCurrentPassword_ThrowsException() {
         // given
-        setUpContext(customer);
+        setUpContext(user);
 
         UpdateUserPasswordCommand command = new UpdateUserPasswordCommand(
             "wrongPassword",

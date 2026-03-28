@@ -1,6 +1,5 @@
 package com.damian.xBank.modules.user.token.application.usecase;
 
-import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.token.application.usecase.password.reset.ResetPassword;
 import com.damian.xBank.modules.user.token.application.usecase.password.reset.ResetPasswordCommand;
 import com.damian.xBank.modules.user.token.domain.factory.UserTokenFactory;
@@ -9,10 +8,10 @@ import com.damian.xBank.modules.user.token.domain.notification.UserTokenPassword
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
 import com.damian.xBank.modules.user.token.infrastructure.service.UserTokenService;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.modules.user.user.infrastructure.service.UserPasswordService;
 import com.damian.xBank.shared.AbstractServiceTest;
+import com.damian.xBank.shared.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -50,12 +49,7 @@ public class ResetPasswordTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        user = UserTestBuilder.builder()
-            .withId(1L)
-            .withPassword(RAW_PASSWORD)
-            .withEmail("customer@demo.com")
-            .withProfile(UserProfileFactory.testProfile())
-            .build();
+        user = UserTestFactory.aCustomerWithId(1L);
     }
 
     @Test

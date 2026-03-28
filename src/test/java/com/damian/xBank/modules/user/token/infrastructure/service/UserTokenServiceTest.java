@@ -7,10 +7,10 @@ import com.damian.xBank.modules.user.token.domain.factory.UserTokenFactory;
 import com.damian.xBank.modules.user.token.domain.model.UserToken;
 import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,11 +47,7 @@ public class UserTokenServiceTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        user = UserTestBuilder.builder()
-            .withId(1L)
-            .withPassword(RAW_PASSWORD)
-            .withEmail("customer@demo.com")
-            .build();
+        user = UserTestFactory.aCustomerWithId(1L);
     }
 
     @Test
@@ -79,7 +75,8 @@ public class UserTokenServiceTest extends AbstractServiceTest {
     void validateToken_WhenNotExists_ThrowsException() {
         // given
         // when
-        when(userTokenRepository.findByToken(anyString())).thenReturn(Optional.empty());
+        when(userTokenRepository.findByToken(anyString()))
+            .thenReturn(Optional.empty());
 
         UserTokenNotFoundException exception = assertThrows(
             UserTokenNotFoundException.class,
@@ -102,7 +99,8 @@ public class UserTokenServiceTest extends AbstractServiceTest {
         userToken.expiresAt(Instant.now().minus(1, ChronoUnit.DAYS));
 
         // when
-        when(userTokenRepository.findByToken(anyString())).thenReturn(Optional.of(userToken));
+        when(userTokenRepository.findByToken(anyString()))
+            .thenReturn(Optional.of(userToken));
 
         UserTokenExpiredException exception = assertThrows(
             UserTokenExpiredException.class,
@@ -124,7 +122,8 @@ public class UserTokenServiceTest extends AbstractServiceTest {
         userToken.markAsUsed();
 
         // when
-        when(userTokenRepository.findByToken(anyString())).thenReturn(Optional.of(userToken));
+        when(userTokenRepository.findByToken(anyString()))
+            .thenReturn(Optional.of(userToken));
 
         UserTokenUsedException exception = assertThrows(
             UserTokenUsedException.class,

@@ -1,5 +1,9 @@
-package com.damian.xBank.modules.user.profile.domain.model;
+package com.damian.xBank.shared.utils;
 
+import com.damian.xBank.modules.user.profile.domain.model.UserGender;
+import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
+
+import java.time.Instant;
 import java.time.LocalDate;
 
 public class UserProfileTestBuilder {
@@ -93,9 +97,9 @@ public class UserProfileTestBuilder {
     }
 
     public UserProfile build() {
-        return new UserProfile(
+        return UserProfile.reconstitute(
             id, firstName, lastName, phoneNumber, birthdate, photo,
-            address, postalCode, country, nationalId, gender
+            address, postalCode, country, nationalId, gender, Instant.now()
         );
     }
 }

@@ -1,6 +1,5 @@
 package com.damian.xBank.modules.user.token.application.usecase;
 
-import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
 import com.damian.xBank.modules.user.token.application.usecase.verification.verify.VerifyAccount;
 import com.damian.xBank.modules.user.token.application.usecase.verification.verify.VerifyAccountCommand;
 import com.damian.xBank.modules.user.token.domain.factory.UserTokenFactory;
@@ -12,10 +11,11 @@ import com.damian.xBank.modules.user.user.domain.exception.UserVerificationNotPe
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.utils.UserTestBuilder;
+import com.damian.xBank.shared.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -57,13 +57,7 @@ public class VerifyAccountTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-
-        customer = UserTestBuilder.builder()
-            .withId(1L)
-            .withPassword(RAW_PASSWORD)
-            .withEmail("customer@demo.com")
-            .withProfile(UserProfileFactory.testProfile())
-            .build();
+        customer = UserTestFactory.aCustomerWithId(1L);
     }
 
     @Test
@@ -127,7 +121,7 @@ public class VerifyAccountTest extends AbstractServiceTest {
 
     @Test
     @DisplayName("should throw exception when user is active")
-    void verifyAccount_WhenUserIsActive_ThrowsException() {
+    void verifyAccount_WhenUserIsVerified_ThrowsException() {
         // given
         User user = UserTestBuilder
             .builder()

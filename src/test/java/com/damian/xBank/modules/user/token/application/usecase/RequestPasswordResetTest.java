@@ -9,10 +9,10 @@ import com.damian.xBank.modules.user.token.infrastructure.repository.UserTokenRe
 import com.damian.xBank.modules.user.token.infrastructure.service.notification.UserTokenLinkBuilder;
 import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
 import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.shared.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -46,7 +46,7 @@ public class RequestPasswordResetTest extends AbstractServiceTest {
 
     @Spy
     private UserTokenFactory userTokenFactory;
-    
+
     @InjectMocks
     private RequestPasswordReset requestPasswordReset;
 
@@ -54,11 +54,7 @@ public class RequestPasswordResetTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        user = UserTestBuilder.builder()
-            .withId(1L)
-            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-            .withEmail("customerA@demo.com")
-            .build();
+        user = UserTestFactory.aCustomerWithId(1L);
     }
 
     @Test

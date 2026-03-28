@@ -1,16 +1,12 @@
 package com.damian.xBank.modules.user.profile.infrastructure.controller;
 
-import com.damian.xBank.modules.user.profile.domain.factory.UserProfileFactory;
-import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserRole;
-import com.damian.xBank.modules.user.user.domain.model.UserStatus;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.infrastructure.storage.FileStorageService;
 import com.damian.xBank.shared.infrastructure.storage.ImageUploaderService;
 import com.damian.xBank.shared.infrastructure.storage.exception.FileStorageNotFoundException;
 import com.damian.xBank.shared.utils.ImageTestHelper;
+import com.damian.xBank.shared.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -50,17 +46,7 @@ public class UserProfileImageControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setUp() {
-        UserProfile profile = UserProfileFactory.testProfile();
-
-        customer = UserTestBuilder
-            .builder()
-            .withEmail("customer@demo.com")
-            .withRole(UserRole.CUSTOMER)
-            .withStatus(UserStatus.VERIFIED)
-            .withPassword(RAW_PASSWORD)
-            .withProfile(profile)
-            .build();
-
+        customer = UserTestFactory.aCustomer();
         userRepository.save(customer);
     }
 

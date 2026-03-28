@@ -1,13 +1,13 @@
-package com.damian.xBank.modules.user.profile.domain.factory;
+package com.damian.xBank.shared.utils;
 
 import com.damian.xBank.modules.user.profile.domain.model.UserGender;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 
 import java.time.LocalDate;
 
-public class UserProfileFactory {
+public class UserProfileTestFactory {
     public static UserProfile testProfile() {
-        return UserProfile.create()
+        return UserProfile.emptyProfile()
             .setNationalId("123456789Z")
             .setFirstName("David")
             .setLastName("Brow")

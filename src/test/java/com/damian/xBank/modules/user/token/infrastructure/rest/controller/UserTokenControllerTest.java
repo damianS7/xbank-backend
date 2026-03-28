@@ -8,9 +8,10 @@ import com.damian.xBank.modules.user.token.infrastructure.rest.request.ResetPass
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
 import com.damian.xBank.modules.user.user.domain.model.UserStatus;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.utils.JsonHelper;
+import com.damian.xBank.shared.utils.UserTestBuilder;
+import com.damian.xBank.shared.utils.UserTestFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,14 +34,7 @@ public class UserTokenControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setUp() {
-        user = UserTestBuilder
-            .builder()
-            .withEmail("user@demo.com")
-            .withRole(UserRole.CUSTOMER)
-            .withStatus(UserStatus.VERIFIED)
-            .withPassword(RAW_PASSWORD)
-            .build();
-
+        user = UserTestFactory.aCustomer();
         userRepository.save(user);
     }
 
@@ -67,8 +61,10 @@ public class UserTokenControllerTest extends AbstractControllerTest {
         userTokenRepository.save(givenToken);
 
         // when
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/accounts/verification/{token}", givenToken.getToken())
-                .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(MockMvcRequestBuilders.get(
+                "/api/v1/accounts/verification/{token}",
+                givenToken.getToken()
+            ).contentType(MediaType.APPLICATION_JSON))
             .andDo(print())
             .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()));
     }
