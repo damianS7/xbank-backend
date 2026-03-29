@@ -2,21 +2,21 @@ package com.damian.xBank.modules.banking.card.application.usecase;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestBuilder;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.card.application.usecase.set.pin.SetBankingCardPin;
 import com.damian.xBank.modules.banking.card.application.usecase.set.pin.SetBankingCardPinCommand;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoundException;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotOwnerException;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
-import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
-import com.damian.xBank.modules.banking.card.domain.model.BankingCardTestBuilder;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
-import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.test.AbstractServiceTest;
+import com.damian.xBank.test.utils.BankingAccountTestBuilder;
+import com.damian.xBank.test.utils.BankingCardTestFactory;
+import com.damian.xBank.test.utils.UserTestBuilder;
+import com.damian.xBank.test.utils.UserTestFactory;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -61,13 +61,8 @@ public class SetBankingCardPinTest extends AbstractServiceTest {
             .withAccountNumber("US9900001111112233334444")
             .build();
 
-        bankingCard = BankingCardTestBuilder.builder()
+        bankingCard = BankingCardTestFactory.aDebitCard(bankingAccount)
             .withId(11L)
-            .withOwnerAccount(bankingAccount)
-            .withCardNumber("1234123412341234")
-            .withStatus(BankingCardStatus.ACTIVE)
-            .withCVV("123")
-            .withPIN("1234")
             .build();
     }
 
@@ -124,10 +119,8 @@ public class SetBankingCardPinTest extends AbstractServiceTest {
     @DisplayName("should throw exception when customer not owner of the card")
     void setPin_WhenNotOwnerCard_ThrowsException() {
         // given
-        User customerNotOwner = UserTestBuilder.builder()
+        User customerNotOwner = UserTestFactory.aCustomer()
             .withId(99L)
-            .withEmail("customerNotOwner@demo.com")
-            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
             .build();
 
         setUpContext(customerNotOwner);

@@ -1,9 +1,6 @@
 package com.damian.xBank.modules.banking.card.domain.model;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestBuilder;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardDisabledException;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardInsufficientFundsException;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardInvalidPinException;
@@ -11,9 +8,10 @@ import com.damian.xBank.modules.banking.card.domain.exception.BankingCardLockedE
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotOwnerException;
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.modules.user.user.domain.model.UserRole;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
-import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.test.AbstractServiceTest;
+import com.damian.xBank.test.utils.BankingAccountTestFactory;
+import com.damian.xBank.test.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,26 +31,20 @@ public class BankingCardTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        admin = UserTestBuilder.builder()
+        admin = UserTestFactory.anAdmin()
             .withId(2L)
             .withRole(UserRole.ADMIN)
             .withEmail("admin@demo.com")
-            .withPassword(RAW_PASSWORD)
             .build();
 
-        user = UserTestBuilder.builder()
+        user = UserTestFactory.aUser()
             .withId(1L)
             .withEmail("customer@demo.com")
-            .withPassword(RAW_PASSWORD)
             .build();
 
-        bankingAccount = BankingAccountTestBuilder.builder()
+        bankingAccount = BankingAccountTestFactory.aSavingsAccount(user)
             .withId(1L)
-            .withOwner(user)
-            .withCurrency(BankingAccountCurrency.EUR)
             .withBalance(BigDecimal.valueOf(1000))
-            .withType(BankingAccountType.SAVINGS)
-            .withAccountNumber("US1200001111112233335555")
             .build();
 
         bankingCard = bankingAccount.issueCard(
@@ -152,11 +144,9 @@ public class BankingCardTest extends AbstractServiceTest {
     @DisplayName("should throw exception when balance is insufficient")
     void assertSufficientFunds_WhenBalanceIsInsufficient_ThrowsException() {
         // given
-        BankingAccount bankingAccount = BankingAccountTestBuilder.builder()
+        BankingAccount bankingAccount = BankingAccountTestFactory.aSavingsAccount(user)
             .withId(1L)
-            .withOwner(user)
             .withBalance(BigDecimal.valueOf(0))
-            .withAccountNumber("US1200001111112233335555")
             .build();
 
         BankingCard card = bankingAccount.issueCard(

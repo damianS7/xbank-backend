@@ -1,22 +1,21 @@
 package com.damian.xBank.modules.banking.card.application.usecase;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestBuilder;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.card.application.usecase.lock.LockBankingCard;
 import com.damian.xBank.modules.banking.card.application.usecase.lock.LockBankingCardCommand;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoundException;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotOwnerException;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
-import com.damian.xBank.modules.banking.card.domain.model.BankingCardTestBuilder;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
-import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.test.AbstractServiceTest;
+import com.damian.xBank.test.utils.BankingAccountTestFactory;
+import com.damian.xBank.test.utils.BankingCardTestFactory;
+import com.damian.xBank.test.utils.UserTestBuilder;
+import com.damian.xBank.test.utils.UserTestFactory;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -54,22 +53,13 @@ public class LockBankingCardTest extends AbstractServiceTest {
             .withPassword(RAW_PASSWORD)
             .build();
 
-        bankingAccount = BankingAccountTestBuilder.builder()
+        bankingAccount = BankingAccountTestFactory.aSavingsAccount(customer)
             .withId(5L)
-            .withOwner(customer)
-            .withCurrency(BankingAccountCurrency.EUR)
             .withBalance(BigDecimal.valueOf(1000))
-            .withType(BankingAccountType.SAVINGS)
-            .withAccountNumber("US1200001111112233335555")
             .build();
 
-        bankingCard = BankingCardTestBuilder.builder()
+        bankingCard = BankingCardTestFactory.aDebitCard(bankingAccount)
             .withId(11L)
-            .withOwnerAccount(bankingAccount)
-            .withCardNumber("1234123412341234")
-            .withStatus(BankingCardStatus.ACTIVE)
-            .withCVV("123")
-            .withPIN("1234")
             .build();
     }
 
@@ -79,13 +69,8 @@ public class LockBankingCardTest extends AbstractServiceTest {
         // given
         setUpContext(customer);
 
-        BankingCard bankingCard = BankingCardTestBuilder.builder()
+        BankingCard bankingCard = BankingCardTestFactory.aDebitCard(bankingAccount)
             .withId(1L)
-            .withOwnerAccount(bankingAccount)
-            .withCardNumber("1234123412341234")
-            .withStatus(BankingCardStatus.ACTIVE)
-            .withCVV("123")
-            .withPIN("1234")
             .build();
 
         LockBankingCardCommand command = new LockBankingCardCommand(
@@ -134,10 +119,8 @@ public class LockBankingCardTest extends AbstractServiceTest {
     @DisplayName("should throw exception when customer not the owner of the card")
     void lock_WhenNotOwner_ThrowsException() {
         // given
-        User customerNotOwner = UserTestBuilder.builder()
+        User customerNotOwner = UserTestFactory.aCustomer()
             .withId(2L)
-            .withEmail("customerNotOwner@demo.com")
-            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
             .build();
 
         setUpContext(customerNotOwner);

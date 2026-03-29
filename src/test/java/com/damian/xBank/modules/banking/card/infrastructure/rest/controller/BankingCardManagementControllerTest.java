@@ -1,20 +1,18 @@
 package com.damian.xBank.modules.banking.card.infrastructure.rest.controller;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestBuilder;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.card.application.dto.BankingCardResult;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
-import com.damian.xBank.modules.banking.card.domain.model.BankingCardTestBuilder;
 import com.damian.xBank.modules.banking.card.infrastructure.rest.request.LockBankingCardRequest;
 import com.damian.xBank.modules.banking.card.infrastructure.rest.request.SetBankingCardDailyLimitRequest;
 import com.damian.xBank.modules.banking.card.infrastructure.rest.request.SetBankingCardPinRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserStatus;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
-import com.damian.xBank.shared.AbstractControllerTest;
+import com.damian.xBank.test.AbstractControllerTest;
+import com.damian.xBank.test.utils.BankingAccountTestFactory;
+import com.damian.xBank.test.utils.BankingCardTestBuilder;
+import com.damian.xBank.test.utils.BankingCardTestFactory;
+import com.damian.xBank.test.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,31 +35,16 @@ public class BankingCardManagementControllerTest extends AbstractControllerTest 
 
     @BeforeEach
     void setUp() {
-        customer = UserTestBuilder.builder()
-            .withEmail("customer@demo.com")
-            .withStatus(UserStatus.VERIFIED)
-            .withPassword(RAW_PASSWORD)
-            .build();
-
+        customer = UserTestFactory.aCustomer().build();
         userRepository.save(customer);
 
-        customerBankingAccount = BankingAccountTestBuilder.builder()
-            .withOwner(customer)
-            .withCurrency(BankingAccountCurrency.EUR)
+        customerBankingAccount = BankingAccountTestFactory.aSavingsAccount(customer)
             .withBalance(BigDecimal.valueOf(1000))
-            .withType(BankingAccountType.SAVINGS)
-            .withAccountNumber("US1200001111112233335555")
             .build();
         bankingAccountRepository.save(customerBankingAccount);
 
-        customerBankingCard = BankingCardTestBuilder.builder()
-            .withOwnerAccount(customerBankingAccount)
-            .withCardNumber("1234123412341234")
-            .withStatus(BankingCardStatus.ACTIVE)
-            .withCVV("123")
-            .withPIN("1234")
+        customerBankingCard = BankingCardTestFactory.aDebitCard(customerBankingAccount)
             .build();
-
         bankingCardRepository.save(customerBankingCard);
     }
 

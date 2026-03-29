@@ -1,9 +1,6 @@
 package com.damian.xBank.modules.banking.card.application.usecase;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestBuilder;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.card.application.usecase.authorize.AuthorizeCardPayment;
 import com.damian.xBank.modules.banking.card.application.usecase.authorize.AuthorizeCardPaymentCommand;
 import com.damian.xBank.modules.banking.card.application.usecase.authorize.AuthorizeCardPaymentResult;
@@ -11,8 +8,6 @@ import com.damian.xBank.modules.banking.card.domain.exception.BankingCardInsuffi
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotActiveException;
 import com.damian.xBank.modules.banking.card.domain.exception.BankingCardNotFoundException;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
-import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
-import com.damian.xBank.modules.banking.card.domain.model.BankingCardTestBuilder;
 import com.damian.xBank.modules.banking.card.domain.model.CardNumber;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
@@ -20,9 +15,11 @@ import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransact
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.payment.checkout.domain.PaymentAuthorizationStatus;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
-import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.test.AbstractServiceTest;
+import com.damian.xBank.test.utils.BankingAccountTestFactory;
+import com.damian.xBank.test.utils.BankingCardTestFactory;
+import com.damian.xBank.test.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -55,28 +52,17 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        customer = UserTestBuilder.builder()
+        customer = UserTestFactory.aCustomer()
             .withId(1L)
-            .withEmail("customer@demo.com")
-            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
             .build();
 
-        bankingAccount = BankingAccountTestBuilder.builder()
+        bankingAccount = BankingAccountTestFactory.aSavingsAccount(customer)
             .withId(5L)
-            .withOwner(customer)
-            .withCurrency(BankingAccountCurrency.EUR)
             .withBalance(BigDecimal.valueOf(1000))
-            .withType(BankingAccountType.SAVINGS)
-            .withAccountNumber("US1200001111112233335555")
             .build();
 
-        bankingCard = BankingCardTestBuilder.builder()
+        bankingCard = BankingCardTestFactory.aDebitCard(bankingAccount)
             .withId(11L)
-            .withOwnerAccount(bankingAccount)
-            .withCardNumber("1234123412341234")
-            .withStatus(BankingCardStatus.ACTIVE)
-            .withCVV("123")
-            .withPIN("1234")
             .build();
     }
 
@@ -158,12 +144,8 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
     @DisplayName("should throw exception when card is not active")
     void authorizePayment_WhenCardNotActive_ThrowsException() {
         // given
-        BankingCard bankingCard = BankingCardTestBuilder.builder()
-            .withOwnerAccount(bankingAccount)
-            .withCardNumber("1234123412341234")
-            .withStatus(BankingCardStatus.DISABLED)
-            .withCVV("123")
-            .withPIN("1234")
+        BankingCard bankingCard = BankingCardTestFactory.aDebitCard(bankingAccount)
+            .disabled()
             .build();
 
         AuthorizeCardPaymentCommand command = new AuthorizeCardPaymentCommand(
@@ -194,12 +176,8 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
     @DisplayName("should throw exception when card is locked")
     void authorizePayment_WhenCardLocked_ThrowsException() {
         // given
-        BankingCard bankingCard = BankingCardTestBuilder.builder()
-            .withOwnerAccount(bankingAccount)
-            .withCardNumber("1234123412341234")
-            .withStatus(BankingCardStatus.LOCKED)
-            .withCVV("123")
-            .withPIN("1234")
+        BankingCard bankingCard = BankingCardTestFactory.aDebitCard(bankingAccount)
+            .locked()
             .build();
 
         AuthorizeCardPaymentCommand command = new AuthorizeCardPaymentCommand(
@@ -230,19 +208,12 @@ public class AuthorizeCardPaymentTest extends AbstractServiceTest {
     @DisplayName("should throw exception when insufficient funds")
     void authorizePayment_WhenInsufficientFunds_ThrowsException() {
         // given
-        BankingAccount bankingAccount = BankingAccountTestBuilder.builder()
+        BankingAccount bankingAccount = BankingAccountTestFactory.aSavingsAccount(customer)
             .withId(1L)
-            .withOwner(customer)
-            .withBalance(BigDecimal.valueOf(0))
-            .withAccountNumber("US1200001111112233335555")
             .build();
 
-        BankingCard bankingCard = BankingCardTestBuilder.builder()
-            .withOwnerAccount(bankingAccount)
-            .withCardNumber("1234123412341234")
-            .withStatus(BankingCardStatus.ACTIVE)
-            .withCVV("123")
-            .withPIN("1234")
+        BankingCard bankingCard = BankingCardTestFactory.aDebitCard(bankingAccount)
+            .withId(11L)
             .build();
 
         AuthorizeCardPaymentCommand command = new AuthorizeCardPaymentCommand(

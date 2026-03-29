@@ -1,8 +1,14 @@
-package com.damian.xBank.modules.banking.card.domain.model;
+package com.damian.xBank.test.utils;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
+import com.damian.xBank.modules.banking.card.domain.model.BankingCardType;
+import com.damian.xBank.modules.banking.card.domain.model.CardExpiration;
+import com.damian.xBank.modules.banking.card.domain.model.CardNumber;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 
 public class BankingCardTestBuilder {
     private Long id = null;
@@ -17,6 +23,31 @@ public class BankingCardTestBuilder {
 
     public static BankingCardTestBuilder builder() {
         return new BankingCardTestBuilder();
+    }
+
+    public BankingCardTestBuilder pendingActivation() {
+        this.status = BankingCardStatus.PENDING_ACTIVATION;
+        return this;
+    }
+
+    public BankingCardTestBuilder active() {
+        this.status = BankingCardStatus.ACTIVE;
+        return this;
+    }
+
+    public BankingCardTestBuilder locked() {
+        this.status = BankingCardStatus.LOCKED;
+        return this;
+    }
+
+    public BankingCardTestBuilder expired() {
+        this.status = BankingCardStatus.EXPIRED;
+        return this;
+    }
+
+    public BankingCardTestBuilder disabled() {
+        this.status = BankingCardStatus.DISABLED;
+        return this;
     }
 
     public BankingCardTestBuilder withId(Long id) {
@@ -55,8 +86,18 @@ public class BankingCardTestBuilder {
     }
 
     public BankingCard build() {
-        return new BankingCard(
-            id, cardType, status, owner, cardNumber, expiration, cvv, pin, dailyLimit
+        return BankingCard.reconstitute(
+            id,
+            cardType,
+            owner,
+            cardNumber,
+            dailyLimit,
+            cvv,
+            pin,
+            expiration,
+            status,
+            Instant.now(),
+            Instant.now()
         );
     }
 }
