@@ -101,6 +101,10 @@ public class User {
     }
 
     public void assignProfile(UserProfile profile) {
+        if (profile == null) {
+            return;
+        }
+        
         this.profile = profile;
         this.profile.assignOwner(this);
     }

@@ -26,6 +26,8 @@ public class UserDomainService {
      * @throws UserEmailTakenException if another user has the email
      */
     public User createUser(String email, String password, UserRole role, UserProfile userProfile) {
-        return User.create(email, bCryptPasswordEncoder.encode(password), role, userProfile);
+        User user = User.create(email, bCryptPasswordEncoder.encode(password), role);
+        user.assignProfile(userProfile);
+        return user;
     }
 }
