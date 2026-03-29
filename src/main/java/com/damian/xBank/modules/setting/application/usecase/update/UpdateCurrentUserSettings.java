@@ -39,12 +39,10 @@ public class UpdateCurrentUserSettings {
         // Buscar las settings del usuario
         User user = userRepository
             .findById(currentUser.getId())
-            .orElseThrow(
-                () -> new SettingNotFoundException(currentUser.getId())
-            );
+            .orElseThrow(() -> new SettingNotFoundException(currentUser.getId()));
 
         // Actualizar las settings
-        user.getSettings().setSettings(command.settings());
+        user.updateSettings(command.settings());
         userRepository.save(user);
 
         log.debug(
