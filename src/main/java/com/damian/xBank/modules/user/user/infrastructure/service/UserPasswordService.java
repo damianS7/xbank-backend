@@ -39,7 +39,7 @@ public class UserPasswordService {
             }
         );
 
-        // Cambia la password
+        // Cambia el password
         user.changePassword(bCryptPasswordEncoder.encode(password));
         userRepository.save(user);
 

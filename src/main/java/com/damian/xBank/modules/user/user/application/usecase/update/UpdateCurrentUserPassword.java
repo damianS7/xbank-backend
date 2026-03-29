@@ -32,8 +32,8 @@ public class UpdateCurrentUserPassword {
 
     /**
      * @param command
-     * @throws UserNotFoundException                    if the user does not exist
-     * @throws UserInvalidPasswordConfirmationException if the password does not match
+     * @throws UserNotFoundException
+     * @throws UserInvalidPasswordConfirmationException
      */
     public void execute(UpdateUserPasswordCommand command) {
         // Usuario actual
