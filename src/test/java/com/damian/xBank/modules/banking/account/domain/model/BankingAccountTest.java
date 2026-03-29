@@ -8,10 +8,10 @@ import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountS
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardType;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserRole;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
-import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.test.AbstractServiceTest;
+import com.damian.xBank.test.utils.BankingAccountTestFactory;
+import com.damian.xBank.test.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,26 +31,18 @@ public class BankingAccountTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        admin = UserTestBuilder.builder()
+        admin = UserTestFactory.anAdmin()
             .withId(2L)
             .withEmail("admin@demo.com")
-            .withRole(UserRole.ADMIN)
-            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
             .build();
 
-        customer = UserTestBuilder.builder()
+        customer = UserTestFactory.aCustomer()
             .withId(1L)
             .withEmail("customer@demo.com")
-            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
             .build();
 
-        bankingAccount = BankingAccountTestBuilder.builder()
+        bankingAccount = BankingAccountTestFactory.aSavingsAccount(customer)
             .withId(5L)
-            .withOwner(customer)
-            .withCurrency(BankingAccountCurrency.EUR)
-            .withBalance(BigDecimal.valueOf(0))
-            .withType(BankingAccountType.SAVINGS)
-            .withAccountNumber("US1200001111112233335555")
             .build();
     }
 
@@ -84,13 +76,8 @@ public class BankingAccountTest extends AbstractServiceTest {
     @DisplayName("assertSufficientFunds: should throw exception when balance is insufficient")
     void assertSufficientFunds_WhenBalanceIsInsufficient_ThrowsException() {
         // given
-        BankingAccount account = BankingAccountTestBuilder.builder()
+        BankingAccount account = BankingAccountTestFactory.aSavingsAccount(customer)
             .withId(1L)
-            .withOwner(customer)
-            .withCurrency(BankingAccountCurrency.EUR)
-            .withBalance(BigDecimal.valueOf(0))
-            .withType(BankingAccountType.SAVINGS)
-            .withAccountNumber("US1200001111112233335555")
             .build();
 
         BigDecimal withdrawAmount = BigDecimal.valueOf(300);
@@ -111,15 +98,18 @@ public class BankingAccountTest extends AbstractServiceTest {
     @DisplayName("withdraw: should subtract amount when balance is sufficient")
     void withdrawIsSufficient_SubtractsAmount() {
         // given
-        bankingAccount.deposit(BigDecimal.valueOf(500));
+        BankingAccount account = BankingAccountTestFactory.aSavingsAccount(customer)
+            .withId(1L)
+            .withBalance(BigDecimal.valueOf(500))
+            .build();
 
         BigDecimal amount = BigDecimal.valueOf(200);
 
         // when
-        bankingAccount.withdraw(amount);
+        account.withdraw(amount);
 
         // then
-        assertThat(bankingAccount.getBalance())
+        assertThat(account.getBalance())
             .isEqualByComparingTo(BigDecimal.valueOf(300));
     }
 
@@ -127,14 +117,17 @@ public class BankingAccountTest extends AbstractServiceTest {
     @DisplayName("withdraw: should throw exception when balance is insufficient")
     void withdrawIsInsufficient_ThrowsException() {
         // given
-        bankingAccount.deposit(BigDecimal.valueOf(100));
+        BankingAccount account = BankingAccountTestFactory.aSavingsAccount(customer)
+            .withId(1L)
+            .withBalance(BigDecimal.valueOf(100))
+            .build();
 
         BigDecimal amount = BigDecimal.valueOf(300);
 
         // when / then
         assertThrows(
             BankingAccountInsufficientFundsException.class,
-            () -> bankingAccount.withdraw(amount)
+            () -> account.withdraw(amount)
         );
     }
 
@@ -142,15 +135,19 @@ public class BankingAccountTest extends AbstractServiceTest {
     @DisplayName("addBalance: should add amount to balance and return new balance")
     void deposit() {
         // given
-        bankingAccount.deposit(BigDecimal.valueOf(100));
+        BankingAccount account = BankingAccountTestFactory.aSavingsAccount(customer)
+            .withId(1L)
+            .withBalance(BigDecimal.valueOf(100))
+            .build();
 
         BigDecimal amount = BigDecimal.valueOf(250);
 
         // when
-        bankingAccount.deposit(amount);
+        account.deposit(amount);
 
         // then
-        assertThat(bankingAccount.getBalance()).isEqualByComparingTo(BigDecimal.valueOf(350));
+        assertThat(account.getBalance())
+            .isEqualByComparingTo(BigDecimal.valueOf(350));
     }
 
     @Test
@@ -183,14 +180,9 @@ public class BankingAccountTest extends AbstractServiceTest {
     @DisplayName("assertNotSuspended: should pass when account is not suspended")
     void assertNotSuspended_WhenAccountIsNotSuspended_DoesNotThrow() {
         // given
-        bankingAccount = BankingAccountTestBuilder.builder()
-            .withId(5L)
-            .withOwner(customer)
-            .withStatus(BankingAccountStatus.ACTIVE)
-            .withCurrency(BankingAccountCurrency.EUR)
+        BankingAccount bankingAccount = BankingAccountTestFactory.aSavingsAccount(customer)
+            .withId(1L)
             .withBalance(BigDecimal.valueOf(1000))
-            .withType(BankingAccountType.SAVINGS)
-            .withAccountNumber("US1200001111112233335555")
             .build();
 
         // when / then
@@ -201,14 +193,10 @@ public class BankingAccountTest extends AbstractServiceTest {
     @DisplayName("assertNotSuspended: should throw exception when account is suspended")
     void assertNotSuspended_WhenAccountIsSuspended_ThrowsException() {
         // given
-        bankingAccount = BankingAccountTestBuilder.builder()
-            .withId(5L)
-            .withOwner(customer)
-            .withStatus(BankingAccountStatus.SUSPENDED)
-            .withCurrency(BankingAccountCurrency.EUR)
+        BankingAccount bankingAccount = BankingAccountTestFactory.aSavingsAccount(customer)
+            .withId(1L)
             .withBalance(BigDecimal.valueOf(1000))
-            .withType(BankingAccountType.SAVINGS)
-            .withAccountNumber("US1200001111112233335555")
+            .suspended()
             .build();
 
         // when / then
@@ -222,14 +210,8 @@ public class BankingAccountTest extends AbstractServiceTest {
     @DisplayName("assertNotClosed: should pass when account is not closed")
     void assertNotClosed_WhenAccountIsNotClosed_DoesNotThrow() {
         // given
-        bankingAccount = BankingAccountTestBuilder.builder()
-            .withId(5L)
-            .withOwner(customer)
-            .withStatus(BankingAccountStatus.ACTIVE)
-            .withCurrency(BankingAccountCurrency.EUR)
-            .withBalance(BigDecimal.valueOf(1000))
-            .withType(BankingAccountType.SAVINGS)
-            .withAccountNumber("US1200001111112233335555")
+        BankingAccount bankingAccount = BankingAccountTestFactory.aSavingsAccount(customer)
+            .withId(1L)
             .build();
 
         // when / then
@@ -240,14 +222,10 @@ public class BankingAccountTest extends AbstractServiceTest {
     @DisplayName("assertNotClosed: should throw exception when account is closed")
     void assertNotClosed_WhenAccountIsClosed_ThrowsException() {
         // given
-        bankingAccount = BankingAccountTestBuilder.builder()
-            .withId(5L)
-            .withOwner(customer)
+        BankingAccount bankingAccount = BankingAccountTestFactory.aSavingsAccount(customer)
+            .withId(1L)
             .withStatus(BankingAccountStatus.CLOSED)
-            .withCurrency(BankingAccountCurrency.EUR)
             .withBalance(BigDecimal.valueOf(1000))
-            .withType(BankingAccountType.SAVINGS)
-            .withAccountNumber("US1200001111112233335555")
             .build();
 
         // when / then
@@ -261,14 +239,9 @@ public class BankingAccountTest extends AbstractServiceTest {
     @DisplayName("closeBy: should close account")
     void close_ClosesAccount() {
         // given
-        bankingAccount = BankingAccountTestBuilder.builder()
-            .withId(5L)
-            .withOwner(customer)
-            .withStatus(BankingAccountStatus.ACTIVE)
-            .withCurrency(BankingAccountCurrency.EUR)
+        BankingAccount bankingAccount = BankingAccountTestFactory.aSavingsAccount(customer)
+            .withId(1L)
             .withBalance(BigDecimal.valueOf(1000))
-            .withType(BankingAccountType.SAVINGS)
-            .withAccountNumber("US1200001111112233335555")
             .build();
 
         // when
@@ -283,14 +256,9 @@ public class BankingAccountTest extends AbstractServiceTest {
     @DisplayName("closeBy: should throws exception when actor is not admin")
     void activate_WhenActorIsNotAdmin_AccountNotClosed() {
         // given
-        bankingAccount = BankingAccountTestBuilder.builder()
-            .withId(5L)
-            .withOwner(customer)
-            .withStatus(BankingAccountStatus.ACTIVE)
-            .withCurrency(BankingAccountCurrency.EUR)
+        BankingAccount bankingAccount = BankingAccountTestFactory.aSavingsAccount(customer)
+            .withId(1L)
             .withBalance(BigDecimal.valueOf(1000))
-            .withType(BankingAccountType.SAVINGS)
-            .withAccountNumber("US1200001111112233335555")
             .build();
 
         // when

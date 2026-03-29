@@ -11,11 +11,11 @@ import com.damian.xBank.modules.banking.account.domain.service.BankingAccountNum
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.user.user.domain.exception.UserNotFoundException;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.modules.user.user.infrastructure.repository.UserRepository;
-import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
-import com.damian.xBank.shared.utils.BankingAccountTestFactory;
+import com.damian.xBank.test.AbstractServiceTest;
+import com.damian.xBank.test.utils.BankingAccountTestFactory;
+import com.damian.xBank.test.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,28 +35,33 @@ import static org.mockito.Mockito.when;
 
 public class CreateAccountTest extends AbstractServiceTest {
 
-    @Mock private BankingAccountRepository bankingAccountRepository;
+    @Mock
+    private BankingAccountRepository bankingAccountRepository;
 
-    @Mock private UserRepository userRepository;
+    @Mock
+    private UserRepository userRepository;
 
-    @Mock private BankingAccountNumberGenerator bankingAccountNumberGenerator;
+    @Mock
+    private BankingAccountNumberGenerator bankingAccountNumberGenerator;
 
-    @Mock private BankingAccountDomainService bankingAccountDomainService;
+    @Mock
+    private BankingAccountDomainService bankingAccountDomainService;
 
-    @InjectMocks private CreateBankingAccount createBankingAccount;
+    @InjectMocks
+    private CreateBankingAccount createBankingAccount;
 
     private User user;
     private BankingAccount bankingAccount;
 
     @BeforeEach
     void setUp() {
-        user = UserTestBuilder.builder()
+        user = UserTestFactory.aCustomer()
             .withId(1L)
-            .withEmail("customer@demo.com")
-            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
             .build();
 
-        bankingAccount = BankingAccountTestFactory.defaultAccount(user);
+        bankingAccount = BankingAccountTestFactory.aSavingsAccount(user)
+            .withId(1L)
+            .build();
     }
 
     @Test
@@ -71,7 +76,8 @@ public class CreateAccountTest extends AbstractServiceTest {
         );
 
         // when
-        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userRepository.findById(user.getId()))
+            .thenReturn(Optional.of(user));
 
         when(bankingAccountDomainService.createAccount(
             any(User.class),
@@ -79,7 +85,8 @@ public class CreateAccountTest extends AbstractServiceTest {
             any(BankingAccountCurrency.class)
         )).thenReturn(bankingAccount);
 
-        when(bankingAccountRepository.save(any(BankingAccount.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(bankingAccountRepository.save(any(BankingAccount.class)))
+            .thenAnswer(invocation -> invocation.getArgument(0));
 
         CreateAccountResult result = createBankingAccount.execute(command);
 
@@ -104,7 +111,8 @@ public class CreateAccountTest extends AbstractServiceTest {
         );
 
         // when
-        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(userRepository.findById(anyLong()))
+            .thenReturn(Optional.empty());
 
         UserNotFoundException exception = assertThrows(
             UserNotFoundException.class,

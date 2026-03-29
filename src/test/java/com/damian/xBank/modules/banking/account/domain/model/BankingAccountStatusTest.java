@@ -1,6 +1,6 @@
 package com.damian.xBank.modules.banking.account.domain.model;
 
-import com.damian.xBank.shared.AbstractServiceTest;
+import com.damian.xBank.test.AbstractServiceTest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;

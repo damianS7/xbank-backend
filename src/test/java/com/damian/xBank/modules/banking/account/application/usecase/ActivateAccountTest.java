@@ -5,17 +5,13 @@ import com.damian.xBank.modules.banking.account.application.usecase.activate.Act
 import com.damian.xBank.modules.banking.account.application.usecase.activate.ActivateAccountResult;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountStatusTransitionException;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestBuilder;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserRole;
-import com.damian.xBank.modules.user.user.domain.model.UserStatus;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
-import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.test.AbstractServiceTest;
+import com.damian.xBank.test.utils.BankingAccountTestFactory;
+import com.damian.xBank.test.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,19 +41,13 @@ public class ActivateAccountTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        customer = UserTestBuilder.builder()
+        customer = UserTestFactory.aCustomer()
             .withId(1L)
-            .withEmail("customer@demo.com")
-            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
             .build();
 
-        bankingAccount = BankingAccountTestBuilder.builder()
-            .withId(1L)
-            .withOwner(customer)
-            .withCurrency(BankingAccountCurrency.EUR)
+        bankingAccount = BankingAccountTestFactory.aSavingsAccount(customer)
+            .withId(5L)
             .withBalance(BigDecimal.valueOf(1000))
-            .withType(BankingAccountType.SAVINGS)
-            .withAccountNumber("US1200001111112233335555")
             .build();
     }
 
@@ -65,15 +55,11 @@ public class ActivateAccountTest extends AbstractServiceTest {
     @DisplayName("should return active account when admin tries to activate suspended account")
     void execute_WhenSuspendedAccountActiveByAdmin_ReturnActiveAccount() {
         // given
-        User customer = UserTestBuilder.builder()
+        User admin = UserTestFactory.anAdmin()
             .withId(1L)
-            .withEmail("customer@demo.com")
-            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-            .withStatus(UserStatus.VERIFIED)
-            .withRole(UserRole.ADMIN)
             .build();
 
-        setUpContext(customer);
+        setUpContext(admin);
 
         bankingAccount.suspend();
 
@@ -101,15 +87,11 @@ public class ActivateAccountTest extends AbstractServiceTest {
     @DisplayName("Should throws exception when trying to activate closed account")
     void execute_WhenClosedAccount_ThrowsException() {
         // given
-        User customer = UserTestBuilder.builder()
+        User admin = UserTestFactory.anAdmin()
             .withId(1L)
-            .withEmail("customer@demo.com")
-            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
-            .withStatus(UserStatus.VERIFIED)
-            .withRole(UserRole.ADMIN)
             .build();
-        
-        setUpContext(customer);
+
+        setUpContext(admin);
 
         bankingAccount.close();
 

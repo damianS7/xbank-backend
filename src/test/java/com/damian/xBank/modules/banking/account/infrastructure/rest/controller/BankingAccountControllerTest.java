@@ -8,7 +8,6 @@ import com.damian.xBank.modules.banking.account.application.usecase.set.alias.Se
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestBuilder;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.rest.request.CloseBankingAccountRequest;
 import com.damian.xBank.modules.banking.account.infrastructure.rest.request.CreateBankingAccountRequest;
@@ -19,10 +18,10 @@ import com.damian.xBank.modules.banking.card.domain.model.BankingCardType;
 import com.damian.xBank.modules.banking.transaction.application.dto.BankingTransactionResult;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserRole;
-import com.damian.xBank.modules.user.user.domain.model.UserStatus;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
-import com.damian.xBank.shared.AbstractControllerTest;
+import com.damian.xBank.test.AbstractControllerTest;
+import com.damian.xBank.test.utils.BankingAccountTestBuilder;
+import com.damian.xBank.test.utils.BankingAccountTestFactory;
+import com.damian.xBank.test.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,31 +46,17 @@ public class BankingAccountControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setUp() {
-        customer = UserTestBuilder.builder()
-            .withEmail("customer@demo.com")
-            .withStatus(UserStatus.VERIFIED)
-            .withPassword(RAW_PASSWORD)
-            .build();
-
+        customer = UserTestFactory.aCustomer().build();
         userRepository.save(customer);
 
-        admin = UserTestBuilder.builder()
+        admin = UserTestFactory.anAdmin()
             .withEmail("admin@demo.com")
-            .withRole(UserRole.ADMIN)
-            .withStatus(UserStatus.VERIFIED)
-            .withPassword(passwordEncoder.encode(RAW_PASSWORD))
             .build();
-
         userRepository.save(admin);
 
-        bankingAccount = BankingAccountTestBuilder.builder()
-            .withOwner(customer)
-            .withCurrency(BankingAccountCurrency.EUR)
+        bankingAccount = BankingAccountTestFactory.aSavingsAccount(customer)
             .withBalance(BigDecimal.valueOf(1000))
-            .withType(BankingAccountType.SAVINGS)
-            .withAccountNumber("US1200001111112233335555")
             .build();
-
         bankingAccountRepository.save(bankingAccount);
     }
 

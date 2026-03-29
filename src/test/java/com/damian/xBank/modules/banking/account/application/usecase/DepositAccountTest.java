@@ -5,9 +5,6 @@ import com.damian.xBank.modules.banking.account.application.usecase.deposit.Depo
 import com.damian.xBank.modules.banking.account.application.usecase.deposit.DepositAccountResult;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountDepositNotAdminException;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestBuilder;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
@@ -15,11 +12,10 @@ import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransact
 import com.damian.xBank.modules.banking.transaction.infrastructure.repository.BankingTransactionRepository;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserRole;
-import com.damian.xBank.modules.user.user.domain.model.UserStatus;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
-import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.test.AbstractServiceTest;
+import com.damian.xBank.test.utils.BankingAccountTestFactory;
+import com.damian.xBank.test.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -57,19 +53,13 @@ public class DepositAccountTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        customer = UserTestBuilder.builder()
+        customer = UserTestFactory.aCustomer()
             .withId(1L)
-            .withEmail("customer@demo.com")
-            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
             .build();
 
-        bankingAccount = BankingAccountTestBuilder.builder()
+        bankingAccount = BankingAccountTestFactory.aSavingsAccount(customer)
             .withId(5L)
-            .withOwner(customer)
-            .withCurrency(BankingAccountCurrency.EUR)
             .withBalance(BigDecimal.valueOf(1000))
-            .withType(BankingAccountType.SAVINGS)
-            .withAccountNumber("ES1234567890123456789012")
             .build();
     }
 
@@ -77,14 +67,11 @@ public class DepositAccountTest extends AbstractServiceTest {
     @DisplayName("should return deposit transaction")
     void deposit_WhenValidRequest_ReturnsTransaction() {
         // given
-        User customer = UserTestBuilder.builder()
-            .withEmail("non-verified-user@demo.com")
-            .withPassword(bCryptPasswordEncoder.encode(this.RAW_PASSWORD))
-            .withStatus(UserStatus.VERIFIED)
-            .withRole(UserRole.ADMIN)
+        User admin = UserTestFactory.anAdmin()
+            .withId(1L)
             .build();
 
-        setUpContext(customer);
+        setUpContext(admin);
 
         BigDecimal initialBalance = bankingAccount.getBalance();
         BigDecimal depositAmount = BigDecimal.valueOf(3000);

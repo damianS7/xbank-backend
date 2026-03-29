@@ -5,16 +5,13 @@ import com.damian.xBank.modules.banking.account.application.usecase.close.CloseA
 import com.damian.xBank.modules.banking.account.application.usecase.close.CloseAccountResult;
 import com.damian.xBank.modules.banking.account.domain.exception.BankingAccountNotFoundException;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountStatus;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestBuilder;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserRole;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
-import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.test.AbstractServiceTest;
+import com.damian.xBank.test.utils.BankingAccountTestFactory;
+import com.damian.xBank.test.utils.UserTestFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -47,19 +44,13 @@ public class CloseAccountTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        customer = UserTestBuilder.builder()
+        customer = UserTestFactory.aCustomer()
             .withId(1L)
-            .withEmail("customer@demo.com")
-            .withPassword(RAW_PASSWORD)
             .build();
 
-        bankingAccount = BankingAccountTestBuilder.builder()
+        bankingAccount = BankingAccountTestFactory.aSavingsAccount(customer)
             .withId(5L)
-            .withOwner(customer)
-            .withCurrency(BankingAccountCurrency.EUR)
             .withBalance(BigDecimal.valueOf(1000))
-            .withType(BankingAccountType.SAVINGS)
-            .withAccountNumber("US1200001111112233335555")
             .build();
     }
 
@@ -67,11 +58,8 @@ public class CloseAccountTest extends AbstractServiceTest {
     @DisplayName("Should returns a closed a BankingAccount")
     void closeAccount_WhenValidRequest_ReturnsClosedBankingAccount() {
         // given
-        User customerAdmin = UserTestBuilder.builder()
-            .withId(2L)
-            .withEmail("customerAdmin@demo.com")
-            .withRole(UserRole.ADMIN)
-            .withPassword(RAW_PASSWORD)
+        User customerAdmin = UserTestFactory.anAdmin()
+            .withId(1L)
             .build();
 
         setUpContext(customerAdmin);
@@ -100,11 +88,8 @@ public class CloseAccountTest extends AbstractServiceTest {
     @DisplayName("Should throws when BankingAccount is not found")
     void closeAccount_WhenAccountNotFound_ThrowsException() {
         // given
-        User customerAdmin = UserTestBuilder.builder()
-            .withId(2L)
-            .withEmail("customerAdmin@demo.com")
-            .withRole(UserRole.ADMIN)
-            .withPassword(RAW_PASSWORD)
+        User customerAdmin = UserTestFactory.anAdmin()
+            .withId(1L)
             .build();
 
         setUpContext(customerAdmin);
@@ -130,11 +115,8 @@ public class CloseAccountTest extends AbstractServiceTest {
     @DisplayName("Should returns a closed BankingAccount when not owner but it is admin")
     void closeAccount_WhenAccountNotOwnedByCustomerButItIsAdmin_ThrowsException() {
         // given
-        User customerAdmin = UserTestBuilder.builder()
-            .withId(2L)
-            .withEmail("customerAdmin@demo.com")
-            .withRole(UserRole.ADMIN)
-            .withPassword(RAW_PASSWORD)
+        User customerAdmin = UserTestFactory.anAdmin()
+            .withId(1L)
             .build();
 
         setUpContext(customerAdmin);

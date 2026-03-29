@@ -1,7 +1,7 @@
 package com.damian.xBank.modules.banking.account.infrastructure.service;
 
 import com.damian.xBank.modules.banking.account.domain.service.BankingAccountNumberGenerator;
-import com.damian.xBank.shared.AbstractServiceTest;
+import com.damian.xBank.test.AbstractServiceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
