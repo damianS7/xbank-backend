@@ -50,7 +50,7 @@ public class UserTestBuilder {
     }
 
     public UserTestBuilder withPassword(String password) {
-        this.password = passwordEncoder.encode(password);
+        this.password = password;
         return this;
     }
 
@@ -83,7 +83,7 @@ public class UserTestBuilder {
         User user = User.reconstitute(
             id,
             email,
-            password,
+            passwordEncoder.encode(password),
             role,
             status,
             Instant.now(),
@@ -95,7 +95,7 @@ public class UserTestBuilder {
 
         profile.assignOwner(user);
         settings.assignOwner(user);
-        merchant.setUser(user);
+        merchant.assignUser(user);
 
         return user;
     }

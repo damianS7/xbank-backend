@@ -10,9 +10,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // Constructor JPA
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "merchants")
 public class Merchant {
@@ -33,46 +40,14 @@ public class Merchant {
     @Column
     private Instant createdAt;
 
-    // JPA constructor
-    protected Merchant() {
-    }
-
-    Merchant(
-        Long id,
-        String merchantName,
-        String callbackUrl
-    ) {
-        this.id = id;
-        this.merchantName = merchantName;
-        this.callbackUrl = callbackUrl;
-        this.createdAt = Instant.now();
-    }
-
     public static Merchant create(
         String merchantName,
         String callbackUrl
     ) {
-        return new Merchant(null, merchantName, callbackUrl);
+        return new Merchant(null, null, merchantName, callbackUrl, Instant.now());
     }
 
-    public Long getId() {
-        return id;
-    }
-
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public String getMerchantName() {
-        return merchantName;
-    }
-
-    public String getCallbackUrl() {
-        return callbackUrl;
-    }
-
-    public void setUser(User user) {
+    public void assignUser(User user) {
         this.user = user;
     }
 }

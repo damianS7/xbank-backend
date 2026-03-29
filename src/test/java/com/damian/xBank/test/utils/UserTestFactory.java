@@ -10,17 +10,7 @@ import lombok.NoArgsConstructor;
 public class UserTestFactory {
     public final static String RAW_PASSWORD = "123456";
 
-    public static UserTestBuilder aMerchant() {
-        return UserTestBuilder.builder()
-            .withEmail("customer@demo.com")
-            .withPassword(RAW_PASSWORD)
-            .withRole(UserRole.MERCHANT)
-            .withStatus(UserStatus.VERIFIED)
-            .withProfile(UserProfileTestFactory.testProfile())
-            .withMerchant(Merchant.create("Amazon.es", "https://amazon.es"));
-    }
-
-    public static UserTestBuilder aCustomer() {
+    public static UserTestBuilder aUser() {
         return UserTestBuilder.builder()
             .withEmail("customer@demo.com")
             .withPassword(RAW_PASSWORD)
@@ -29,11 +19,18 @@ public class UserTestFactory {
             .withProfile(UserProfileTestFactory.testProfile());
     }
 
+    public static UserTestBuilder aMerchant() {
+        Merchant merchant = Merchant.create("Amazon.es", "https://amazon.es");
+        return aUser()
+            .withRole(UserRole.MERCHANT)
+            .withMerchant(merchant);
+    }
+
+    public static UserTestBuilder aCustomer() {
+        return aUser().withRole(UserRole.CUSTOMER);
+    }
+
     public static UserTestBuilder anAdmin() {
-        return UserTestBuilder.builder()
-            .withEmail("admin@demo.com")
-            .withPassword("123456")
-            .withRole(UserRole.ADMIN)
-            .withStatus(UserStatus.VERIFIED);
+        return aUser().withRole(UserRole.ADMIN);
     }
 }
