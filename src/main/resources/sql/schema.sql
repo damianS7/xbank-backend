@@ -41,7 +41,7 @@ CREATE TABLE public.user_tokens
 CREATE TABLE public.user_profiles
 (
     id           int4 GENERATED ALWAYS AS IDENTITY NOT NULL,
-    user_id      int4                              NOT NULL,
+    user_id      int4                       UNIQUE NOT NULL,
     first_name   varchar(20)                       NOT NULL,
     last_name    varchar(40)                       NOT NULL,
     phone_number varchar(14)                       NOT NULL,
