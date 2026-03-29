@@ -7,7 +7,7 @@ import com.damian.xBank.modules.banking.account.infrastructure.repository.Bankin
 import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.test.AbstractServiceTest;
 import com.damian.xBank.test.utils.BankingAccountTestFactory;
-import com.damian.xBank.test.utils.UserTestBuilder;
+import com.damian.xBank.test.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,10 +37,8 @@ public class SetAccountAliasTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        customer = UserTestBuilder.builder()
+        customer = UserTestFactory.aCustomer()
             .withId(1L)
-            .withEmail("customer@demo.com")
-            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
             .build();
 
         bankingAccount = BankingAccountTestFactory.aSavingsAccount(customer)

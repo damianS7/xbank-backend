@@ -10,7 +10,6 @@ import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardStatus;
-import com.damian.xBank.modules.banking.card.domain.model.BankingCardTestBuilder;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCardType;
 import com.damian.xBank.modules.banking.card.domain.service.BankingCardDomainService;
 import com.damian.xBank.modules.banking.card.infrastructure.repository.BankingCardRepository;
@@ -18,6 +17,8 @@ import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.test.AbstractServiceTest;
 import com.damian.xBank.test.utils.BankingAccountTestFactory;
+import com.damian.xBank.test.utils.BankingCardTestBuilder;
+import com.damian.xBank.test.utils.BankingCardTestFactory;
 import com.damian.xBank.test.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -72,14 +73,9 @@ public class RequestCardRequestTest extends AbstractServiceTest {
     void cardRequest_WhenValidRequest_ReturnsBankingCard() {
         // given
         setUpContext(customer);
-        // TODO user Factory
-        BankingCard givenBankingCard = BankingCardTestBuilder.builder()
+
+        BankingCard givenBankingCard = BankingCardTestFactory.aDebitCard(bankingAccount)
             .withId(11L)
-            .withOwnerAccount(bankingAccount)
-            .withCardNumber("1234567890123456")
-            .withStatus(BankingCardStatus.ACTIVE)
-            .withCVV("123")
-            .withPIN("1234")
             .build();
 
         RequestCardCommand command = new RequestCardCommand(
@@ -163,13 +159,8 @@ public class RequestCardRequestTest extends AbstractServiceTest {
 
         setUpContext(admin);
 
-        BankingCard givenBankingCard = BankingCardTestBuilder.builder()
+        BankingCard givenBankingCard = BankingCardTestFactory.aDebitCard(bankingAccount)
             .withId(11L)
-            .withOwnerAccount(bankingAccount)
-            .withCardNumber("1234567890123456")
-            .withStatus(BankingCardStatus.ACTIVE)
-            .withCVV("123")
-            .withPIN("1234")
             .build();
 
         RequestCardCommand command = new RequestCardCommand(
