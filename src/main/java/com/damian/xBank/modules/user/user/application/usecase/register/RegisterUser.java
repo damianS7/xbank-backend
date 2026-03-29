@@ -83,7 +83,6 @@ public class RegisterUser {
         String verificationLink = userTokenLinkBuilder.buildAccountVerificationLink(userToken.getToken());
         userRepository.save(user);
 
-
         // Notificar usuario
         userTokenVerificationNotifier.sendVerificationToken(command.email(), verificationLink);
 
