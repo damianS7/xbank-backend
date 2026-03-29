@@ -25,6 +25,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
@@ -32,6 +36,9 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Objects;
 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // Constructor JPA
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "banking_cards")
 public class BankingCard {
@@ -72,31 +79,32 @@ public class BankingCard {
     @Column
     private Instant updatedAt;
 
-    protected BankingCard() {
-        // constructor JPA
-    }
-
-    BankingCard(
-        Long cardId,
-        BankingCardType cardType,
-        BankingCardStatus cardStatus,
+    public static BankingCard reconstitute(
+        Long id,
+        BankingCardType bankingCardType,
         BankingAccount bankingAccount,
         CardNumber cardNumber,
-        CardExpiration expiration,
+        BigDecimal dailyLimit,
         String cardCvv,
         String cardPin,
-        BigDecimal dailyLimit
+        CardExpiration expiration,
+        BankingCardStatus status,
+        Instant createdAt,
+        Instant updatedAt
     ) {
-        this.id = cardId;
-        this.cardType = cardType;
-        this.status = cardStatus;
-        this.bankingAccount = bankingAccount;
-        this.cardNumber = cardNumber;
-        this.expiration = expiration;
-        this.cardCvv = cardCvv;
-        this.cardPin = cardPin;
-        this.dailyLimit = dailyLimit;
-        this.createdAt = Instant.now();
+        return new BankingCard(
+            id,
+            bankingAccount,
+            cardNumber,
+            dailyLimit,
+            bankingCardType,
+            cardCvv,
+            cardPin,
+            expiration,
+            status,
+            createdAt,
+            updatedAt
+        );
     }
 
     public static BankingCard create(
@@ -108,19 +116,17 @@ public class BankingCard {
     ) {
         return new BankingCard(
             null,
-            bankingCardType,
-            BankingCardStatus.PENDING_ACTIVATION,
             bankingAccount,
             cardNumber,
-            CardExpiration.defaultExpiration(),
+            BigDecimal.valueOf(3000),
+            bankingCardType,
             cardCvv,
             cardPin,
-            BigDecimal.valueOf(3000)
+            CardExpiration.defaultExpiration(),
+            BankingCardStatus.PENDING_ACTIVATION,
+            Instant.now(),
+            Instant.now()
         );
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public User getOwner() {
@@ -129,42 +135,6 @@ public class BankingCard {
 
     public String getCardNumber() {
         return cardNumber.getValue();
-    }
-
-    public BankingCardType getCardType() {
-        return cardType;
-    }
-
-    public BankingCardStatus getStatus() {
-        return status;
-    }
-
-    public BankingAccount getBankingAccount() {
-        return bankingAccount;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public CardExpiration getExpiration() {
-        return expiration;
-    }
-
-    public String getCardCvv() {
-        return cardCvv;
-    }
-
-    public String getCardPin() {
-        return cardPin;
-    }
-
-    public BigDecimal getDailyLimit() {
-        return dailyLimit;
     }
 
     public BigDecimal getBalance() {
