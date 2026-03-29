@@ -12,10 +12,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.time.LocalDate;
 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // JPA constructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "user_profiles")
 public class UserProfile {
@@ -61,11 +68,7 @@ public class UserProfile {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    protected UserProfile() {
-        // JPA constructor
-    }
-
-    UserProfile(
+    public static UserProfile reconstitute(
         Long profileId,
         String firstName,
         String lastName,
@@ -76,28 +79,23 @@ public class UserProfile {
         String postalCode,
         String country,
         String nationalId,
-        UserGender gender
+        UserGender gender,
+        Instant updatedAt
     ) {
-        this.id = profileId;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.phoneNumber = phoneNumber;
-        this.birthdate = birthdate;
-        this.photo = photo;
-        this.phoneNumber = phoneNumber;
-        this.address = address;
-        this.postalCode = postalCode;
-        this.country = country;
-        this.nationalId = nationalId;
-        this.gender = gender;
-        this.updatedAt = Instant.now();
-    }
-
-    public static UserProfile create() {
         return new UserProfile(
-            null,
-            "", "", "", LocalDate.now(), "avatar.jpg",
-            "", "", "", "", UserGender.MALE
+            profileId,
+            firstName,
+            lastName,
+            phoneNumber,
+            birthdate,
+            photo,
+            address,
+            postalCode,
+            country,
+            nationalId,
+            gender,
+            updatedAt,
+            null
         );
     }
 
@@ -113,35 +111,33 @@ public class UserProfile {
         String nationalId,
         UserGender gender
     ) {
-        UserProfile profile = new UserProfile();
-        profile.firstName = firstName;
-        profile.lastName = lastName;
-        profile.phoneNumber = phoneNumber;
-        profile.birthdate = birthdate;
-        profile.photo = photo;
-        profile.address = address;
-        profile.postalCode = postalCode;
-        profile.country = country;
-        profile.nationalId = nationalId;
-        profile.gender = gender;
-        profile.updatedAt = Instant.now();
-        return profile;
+        return new UserProfile(
+            null,
+            firstName,
+            lastName,
+            phoneNumber,
+            birthdate,
+            photo,
+            address,
+            postalCode,
+            country,
+            nationalId,
+            gender,
+            Instant.now(),
+            null
+        );
     }
 
-    public Long getId() {
-        return id;
+    public static UserProfile emptyProfile() {
+        return new UserProfile(
+            null,
+            "", "", "", LocalDate.now(), "avatar.jpg",
+            "", "", "", "", UserGender.MALE, Instant.now(), null
+        );
     }
 
     public String getFullName() {
         return getFirstName() + " " + getLastName();
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public String getFirstName() {
-        return firstName;
     }
 
     public UserProfile setFirstName(String firstName) {
@@ -150,28 +146,16 @@ public class UserProfile {
         return this;
     }
 
-    public String getLastName() {
-        return lastName;
-    }
-
     public UserProfile setLastName(String lastName) {
         this.lastName = lastName;
         markAsUpdated();
         return this;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
     public UserProfile setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
         markAsUpdated();
         return this;
-    }
-
-    public LocalDate getBirthdate() {
-        return birthdate;
     }
 
     public UserProfile setBirthdate(LocalDate birthdate) {
@@ -190,18 +174,10 @@ public class UserProfile {
         return this;
     }
 
-    public String getAddress() {
-        return address;
-    }
-
     public UserProfile setAddress(String address) {
         this.address = address;
         markAsUpdated();
         return this;
-    }
-
-    public String getPostalCode() {
-        return postalCode;
     }
 
     public UserProfile setPostalCode(String postalCode) {
@@ -210,18 +186,10 @@ public class UserProfile {
         return this;
     }
 
-    public String getCountry() {
-        return country;
-    }
-
     public UserProfile setCountry(String country) {
         this.country = country;
         markAsUpdated();
         return this;
-    }
-
-    public String getNationalId() {
-        return nationalId;
     }
 
     public UserProfile setNationalId(String nationalId) {
@@ -234,17 +202,13 @@ public class UserProfile {
         this.updatedAt = Instant.now();
     }
 
-    public UserGender getGender() {
-        return gender;
-    }
-
     public UserProfile setGender(UserGender gender) {
         this.gender = gender;
         markAsUpdated();
         return this;
     }
 
-    public void setUser(User user) {
+    public void assignOwner(User user) {
         this.user = user;
     }
 

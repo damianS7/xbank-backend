@@ -1,6 +1,7 @@
 package com.damian.xBank.modules.user.user.domain.model;
 
 import com.damian.xBank.modules.setting.domain.model.Setting;
+import com.damian.xBank.modules.setting.domain.model.UserSettings;
 import com.damian.xBank.modules.user.merchant.domain.Merchant;
 import com.damian.xBank.modules.user.profile.domain.model.UserProfile;
 import com.damian.xBank.modules.user.user.domain.exception.UserNotMerchantException;
@@ -15,9 +16,16 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // JPA constructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "user_accounts")
 public class User {
@@ -53,37 +61,65 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Setting settings;
 
-    // JPA constructor
-    protected User() {
-    }
-
-    User(
+    public static User reconstitute(
         Long id,
         String email,
         String passwordHash,
         UserRole role,
         UserStatus status,
-        UserProfile profile
+        Instant createdAt,
+        Instant updatedAt,
+        Merchant merchant,
+        UserProfile profile,
+        Setting settings
     ) {
-        this.id = id;
-        this.email = email;
-        this.passwordHash = passwordHash;
-        this.role = role != null ? role : UserRole.CUSTOMER;
-        this.status = status != null ? status : UserStatus.PENDING_VERIFICATION;
-        this.settings = Setting.create(this, null);
-        this.profile = profile != null ? profile : UserProfile.create();
-        this.profile.setUser(this);
-        this.createdAt = Instant.now();
-        this.updatedAt = Instant.now();
+        return new User(id, role, email, passwordHash, status, createdAt, updatedAt, merchant, profile, settings);
     }
 
     public static User create(
         String email,
         String passwordHash,
-        UserRole role,
-        UserProfile profile
+        UserRole role
     ) {
-        return new User(null, email, passwordHash, role, null, profile);
+        User user = new User(
+            null,
+            role,
+            email,
+            passwordHash,
+            UserStatus.PENDING_VERIFICATION,
+            Instant.now(),
+            Instant.now(),
+            null,
+            null,
+            null
+        );
+
+        user.createProfile();
+        user.createSettings();
+
+        return user;
+    }
+
+    public void assignProfile(UserProfile profile) {
+        this.profile = profile;
+        this.profile.assignOwner(this);
+    }
+
+    private void createProfile() {
+        assignProfile(UserProfile.emptyProfile());
+    }
+
+    public void assignSettings(Setting settings) {
+        this.settings = settings;
+        this.settings.assignOwner(this);
+    }
+
+    private void createSettings() {
+        assignSettings(Setting.create());
+    }
+
+    public void updateSettings(UserSettings settings) {
+        this.settings.updateSettings(settings);
     }
 
     public Merchant registerMerchant(
@@ -91,44 +127,12 @@ public class User {
         String callbackUrl
     ) {
         this.merchant = Merchant.create(merchantName, callbackUrl);
-        this.merchant.setUser(this);
+        this.merchant.assignUser(this);
         return this.merchant;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getEmail() {
-        return this.email;
-    }
-
-    public String getPassword() {
-        return this.passwordHash;
-    }
-
-    public UserRole getRole() {
-        return this.role;
     }
 
     public boolean hasRole(UserRole role) {
         return this.getRole() == role;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public UserStatus getStatus() {
-        return this.status;
-    }
-
-    public UserProfile getProfile() {
-        return profile;
     }
 
     public Merchant getMerchant() {
@@ -136,10 +140,6 @@ public class User {
             throw new UserNotMerchantException(this.id);
         }
         return merchant;
-    }
-
-    public Setting getSettings() {
-        return settings;
     }
 
     public boolean isAdmin() {

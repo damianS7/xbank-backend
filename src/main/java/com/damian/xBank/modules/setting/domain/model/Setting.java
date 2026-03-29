@@ -12,9 +12,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // Constructor JPA
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "user_settings")
 public class Setting {
@@ -31,52 +38,17 @@ public class Setting {
     @Column(columnDefinition = "jsonb")
     private UserSettings settings;
 
-    protected Setting() {
-        // Constructor JPA
-        this.settings = UserSettings.defaults();
+    public static Setting create() {
+        return new Setting(null, null, UserSettings.defaults());
     }
 
-    Setting(UserSettings settings) {
-        this();
-        this.settings = settings != null ? settings : UserSettings.defaults();
-    }
-
-    public static Setting create(User user, UserSettings settings) {
-        Setting setting = new Setting(settings);
-        setting.user = user;
-        return setting;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    //    public User getUser() {
-    //        return user;
-    //    }
-    //
-    //    public boolean isOwnedBy(Long userId) {
-    //        // compare account owner id with given customer id
-    //        return Objects.equals(user.getId(), userId);
-    //    }
-
-    public UserSettings getSettings() {
-        return settings;
-    }
-
-    public void setSettings(UserSettings settings) {
+    public void updateSettings(UserSettings settings) {
         this.settings = settings;
     }
 
-    //    public Setting assertOwnedBy(Long userId) {
-    //
-    //        // compare card owner id with given customer id
-    //        if (!isOwnedBy(userId)) {
-    //            throw new SettingNotOwnerException(getId(), userId);
-    //        }
-    //
-    //        return this;
-    //    }
+    public void assignOwner(User owner) {
+        this.user = owner;
+    }
 
     @Override
     public String toString() {

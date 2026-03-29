@@ -13,6 +13,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -20,6 +24,9 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // Constructor JPA
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "user_notifications")
 public class Notification {
@@ -44,60 +51,32 @@ public class Notification {
     @Column
     private Instant createdAt;
 
-    protected Notification() {
-        this.createdAt = Instant.now();
-    }
-
-    Notification(
-        Long id,
-        User user,
-        NotificationType type,
-        Map<String, Object> metadata,
-        String templateKey
-    ) {
-        this();
-        this.id = id;
-        this.user = user;
-        this.type = type;
-        this.metadata = metadata;
-        this.templateKey = templateKey;
-    }
-
     public static Notification create(
         User user,
         NotificationType type,
         Map<String, Object> metadata,
         String templateKey
     ) {
-        return new Notification(null, user, type, metadata, templateKey);
+        return new Notification(null, user, type, metadata, templateKey, Instant.now());
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
+    public static Notification reconstitute(
+        Long id,
+        User user,
+        NotificationType type,
+        Map<String, Object> metadata,
+        String templateKey,
+        Instant createdAt
+    ) {
+        return new Notification(id, user, type, metadata, templateKey, createdAt);
     }
 
     public User getOwner() {
         return user;
     }
 
-    public NotificationType getType() {
-        return type;
-    }
-
-    public Map<String, Object> getMetadata() {
-        return metadata;
-    }
-
     public boolean isOwnedBy(Long userId) {
         return getOwner().getId().equals(userId);
-    }
-
-    public String getTemplateKey() {
-        return templateKey;
     }
 
     public void assertOwnedBy(Long userId) {
