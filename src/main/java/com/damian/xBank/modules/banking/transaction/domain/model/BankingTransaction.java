@@ -18,12 +18,19 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // Constructor JPA
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "banking_transactions")
 public class BankingTransaction {
@@ -78,41 +85,40 @@ public class BankingTransaction {
     @Column
     private Instant updatedAt;
 
-    protected BankingTransaction() {
-        this.amount = BigDecimal.valueOf(0);
-        this.status = BankingTransactionStatus.PENDING;
-        this.paymentStatus = BankingTransactionPaymentStatus.PENDING;
-        this.updatedAt = Instant.now();
-        this.createdAt = Instant.now();
-    }
-
-    BankingTransaction(
-        Long transactionId,
-        BankingAccount bankingAccount,
-        BankingCard bankingCard,
-        OutgoingTransfer outgoingTransfer,
+    public static BankingTransaction reconstitute(
+        Long id,
+        BankingAccount account,
+        BankingCard card,
+        OutgoingTransfer transfer,
         IncomingTransfer incomingTransfer,
         BigDecimal amount,
+        BigDecimal balanceBefore,
+        BigDecimal balanceAfter,
         String description,
+        String authorizationId,
         BankingTransactionType type,
         BankingTransactionStatus status,
         BankingTransactionPaymentStatus paymentStatus,
-        String authorizationId
+        Instant createdAt,
+        Instant updatedAt
     ) {
-        this();
-        this.id = transactionId;
-        this.bankingAccount = bankingAccount;
-        this.bankingCard = bankingCard;
-        this.outgoingTransfer = outgoingTransfer;
-        this.incomingTransfer = incomingTransfer;
-        this.amount = amount;
-        this.description = description;
-        this.type = type;
-        this.status = status;
-        this.paymentStatus = paymentStatus;
-        this.authorizationId = authorizationId;
-        this.calcBalanceBefore();
-        this.calcBalanceAfter();
+        return new BankingTransaction(
+            id,
+            account,
+            card,
+            transfer,
+            incomingTransfer,
+            amount,
+            balanceBefore,
+            balanceAfter,
+            description,
+            authorizationId,
+            type,
+            paymentStatus,
+            status,
+            createdAt,
+            updatedAt
+        );
     }
 
     public static BankingTransaction create(
@@ -121,19 +127,27 @@ public class BankingTransaction {
         BigDecimal amount,
         String description
     ) {
-        return new BankingTransaction(
+        BankingTransaction transaction = new BankingTransaction(
             null,
             account,
             null,
             null,
             null,
             amount,
+            null,
+            null,
             description,
+            null,
             type,
-            BankingTransactionStatus.PENDING,
             BankingTransactionPaymentStatus.PENDING,
-            null
+            BankingTransactionStatus.PENDING,
+            Instant.now(),
+            Instant.now()
         );
+
+        transaction.calcBalanceBefore();
+        transaction.calcBalanceAfter();
+        return transaction;
     }
 
     public static BankingTransaction create(
@@ -142,19 +156,27 @@ public class BankingTransaction {
         BigDecimal amount,
         String description
     ) {
-        return new BankingTransaction(
+        BankingTransaction transaction = new BankingTransaction(
             null,
             card.getBankingAccount(),
             card,
             null,
             null,
             amount,
+            null,
+            null,
             description,
+            null,
             type,
-            BankingTransactionStatus.PENDING,
             BankingTransactionPaymentStatus.PENDING,
-            null
+            BankingTransactionStatus.PENDING,
+            Instant.now(),
+            Instant.now()
         );
+
+        transaction.calcBalanceBefore();
+        transaction.calcBalanceAfter();
+        return transaction;
     }
 
     public static BankingTransaction create(
@@ -164,40 +186,56 @@ public class BankingTransaction {
         String description,
         String authorizationId
     ) {
-        return new BankingTransaction(
+        BankingTransaction transaction = new BankingTransaction(
             null,
             card.getBankingAccount(),
             card,
             null,
             null,
             amount,
+            null,
+            null,
             description,
+            authorizationId,
             type,
-            BankingTransactionStatus.PENDING,
             BankingTransactionPaymentStatus.AUTHORIZED,
-            authorizationId
+            BankingTransactionStatus.PENDING,
+            Instant.now(),
+            Instant.now()
         );
+
+        transaction.calcBalanceBefore();
+        transaction.calcBalanceAfter();
+        return transaction;
     }
 
     public static BankingTransaction create(
         BankingTransactionType type,
         BankingAccount account,
-        OutgoingTransfer transfer,
+        OutgoingTransfer outgoingTransfer,
         String description
     ) {
-        return new BankingTransaction(
+        BankingTransaction transaction = new BankingTransaction(
             null,
             account,
             null,
-            transfer,
+            outgoingTransfer,
             null,
-            transfer.getAmount(),
+            outgoingTransfer.getAmount(),
+            null,
+            null,
             description,
+            null,
             type,
-            BankingTransactionStatus.PENDING,
             BankingTransactionPaymentStatus.PENDING,
-            null
+            BankingTransactionStatus.PENDING,
+            Instant.now(),
+            Instant.now()
         );
+
+        transaction.calcBalanceBefore();
+        transaction.calcBalanceAfter();
+        return transaction;
     }
 
     public static BankingTransaction create(
@@ -206,87 +244,39 @@ public class BankingTransaction {
         IncomingTransfer incomingTransfer,
         String description
     ) {
-        return new BankingTransaction(
+        BankingTransaction transaction = new BankingTransaction(
             null,
             account,
             null,
             null,
             incomingTransfer,
             incomingTransfer.getAmount(),
+            null,
+            null,
             description,
+            null,
             type,
-            BankingTransactionStatus.PENDING,
             BankingTransactionPaymentStatus.PENDING,
-            null
+            BankingTransactionStatus.PENDING,
+            Instant.now(),
+            Instant.now()
         );
-    }
 
-    public Long getId() {
-        return id;
-    }
-
-    public BankingAccount getBankingAccount() {
-        return bankingAccount;
+        transaction.calcBalanceBefore();
+        transaction.calcBalanceAfter();
+        return transaction;
     }
 
     public Long getBankingAccountId() {
         return this.bankingAccount != null ? this.bankingAccount.getId() : null;
     }
 
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public BankingTransactionType getType() {
-        return type;
-    }
-
-    public BankingTransactionStatus getStatus() {
-        return status;
-    }
-
-    public OutgoingTransfer getOutgoingTransfer() {
-        return outgoingTransfer;
-    }
-
     public Long getTransferId() {
         return outgoingTransfer != null ? outgoingTransfer.getId() : null;
     }
 
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public BankingCard getBankingCard() {
-        return bankingCard;
-    }
-
     public Long getBankingCardId() {
         return this.bankingCard != null ? this.bankingCard.getId() : null;
-    }
-
-    public BigDecimal getBalanceBefore() {
-        return balanceBefore;
-    }
-
-    public BigDecimal getBalanceAfter() {
-        return balanceAfter;
-    }
-
-    public String getAuthorizationId() {
-        return authorizationId;
-    }
-
-    public BankingTransactionPaymentStatus getPaymentStatus() {
-        return paymentStatus;
     }
 
     public boolean isOwnedBy(Long userId) {

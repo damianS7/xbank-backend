@@ -26,6 +26,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -33,6 +37,9 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // Constructor JPA
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "banking_accounts")
 public class BankingAccount {
@@ -46,14 +53,12 @@ public class BankingAccount {
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "bankingAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<BankingCard> bankingCards;
-
-    @Column(length = 64)
-    private String alias;
 
     @Column(length = 32, nullable = false)
     private String accountNumber;
+
+    @Column(length = 64)
+    private String alias;
 
     @Column(precision = 15, scale = 2)
     private BigDecimal balance;
@@ -79,37 +84,8 @@ public class BankingAccount {
     @Column
     private Instant updatedAt;
 
-    public BankingAccount() {
-        this.bankingCards = new HashSet<>();
-        this.balance = BigDecimal.valueOf(0);
-        this.reservedBalance = BigDecimal.valueOf(0);
-        this.currency = BankingAccountCurrency.EUR;
-        this.type = BankingAccountType.SAVINGS;
-        this.status = BankingAccountStatus.ACTIVE;
-        this.updatedAt = Instant.now();
-        this.createdAt = Instant.now();
-    }
-
-    BankingAccount(
-        Long id,
-        User user,
-        String accountNumber,
-        BankingAccountType type,
-        BankingAccountCurrency currency,
-        BigDecimal initialBalance,
-        BankingAccountStatus initialStatus,
-        Set<BankingCard> bankingCards
-    ) {
-        this();
-        this.id = id;
-        this.accountNumber = accountNumber;
-        this.user = user;
-        this.type = type;
-        this.currency = currency;
-        this.balance = initialBalance;
-        this.status = initialStatus;
-        this.bankingCards = bankingCards;
-    }
+    @OneToMany(mappedBy = "bankingAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<BankingCard> bankingCards;
 
     public static BankingAccount create(
         User accountOwner,
@@ -121,60 +97,51 @@ public class BankingAccount {
             null,
             accountOwner,
             accountNumber,
+            null,
+            BigDecimal.valueOf(0),
+            BigDecimal.valueOf(0),
             accountType,
             accountCurrency,
-            BigDecimal.valueOf(0),
             BankingAccountStatus.ACTIVE,
-            Set.of()
+            Instant.now(),
+            Instant.now(),
+            new HashSet<>()
         );
     }
 
-    public Long getId() {
-        return id;
+    public static BankingAccount reconstitute(
+        Long id,
+        User accountOwner,
+        String accountNumber,
+        String alias,
+        BigDecimal balance,
+        BigDecimal reservedBalance,
+        BankingAccountType accountType,
+        BankingAccountCurrency accountCurrency,
+        BankingAccountStatus status,
+        Instant createdAt,
+        Instant updatedAt,
+        Set<BankingCard> bankingCards
+    ) {
+        return new BankingAccount(
+            id,
+            accountOwner,
+            accountNumber,
+            alias,
+            balance,
+            reservedBalance,
+            accountType,
+            accountCurrency,
+            status,
+            createdAt,
+            updatedAt,
+            bankingCards
+        );
     }
+
 
     public User getOwner() {
         return user;
-    }
-
-    public String getAccountNumber() {
-        return accountNumber;
-    }
-
-    public BigDecimal getBalance() {
-        return balance;
-    }
-
-    public BankingAccountType getType() {
-        return type;
-    }
-
-    public BankingAccountCurrency getCurrency() {
-        return currency;
-    }
-
-    public BankingAccountStatus getStatus() {
-        return status;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public String getAlias() {
-        return alias;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public Set<BankingCard> getBankingCards() {
-        return this.bankingCards;
-    }
-
-    public BigDecimal getReservedBalance() {
-        return reservedBalance;
     }
 
     public boolean isSuspended() {
