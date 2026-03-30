@@ -135,16 +135,17 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
         login(customer);
 
         BigDecimal initialBalance = customerBankingAccount.getBalance();
+        BigDecimal amount = BigDecimal.valueOf(100);
 
         BankingTransaction transaction = BankingTransactionTestFactory.aCardChargeTransaction()
             .withCard(customerBankingCard)
-            .withAmount(BigDecimal.valueOf(100))
+            .withAmount(amount)
+            .withBalanceBefore(initialBalance)
+            .withBalanceAfter(initialBalance.subtract(amount).setScale(2))
             .withStatus(BankingTransactionStatus.PENDING)
-            .withPaymentStatus(BankingTransactionPaymentStatus.AUTHORIZED)
-            .withAuthorizationId("1234/1234")
             .withDescription("Capture transaction")
             .build();
-
+        transaction.authorize();
         transactionRepository.save(transaction);
 
         CaptureCardPaymentRequest request = new CaptureCardPaymentRequest(

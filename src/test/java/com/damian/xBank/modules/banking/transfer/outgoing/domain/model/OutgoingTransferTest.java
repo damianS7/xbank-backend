@@ -2,8 +2,6 @@ package com.damian.xBank.modules.banking.transfer.outgoing.domain.model;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestBuilder;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.exception.OutgoingTransferCurrencyMismatchException;
@@ -11,8 +9,10 @@ import com.damian.xBank.modules.banking.transfer.outgoing.domain.exception.Outgo
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.exception.OutgoingTransferSameAccountException;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.exception.OutgoingTransferStatusTransitionException;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.test.utils.BankingAccountTestFactory;
+import com.damian.xBank.test.utils.OutgoingTransferTestFactory;
+import com.damian.xBank.test.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,35 +33,30 @@ public class OutgoingTransferTest {
 
     @BeforeEach
     void setUp() {
-        fromCustomer = UserTestBuilder.builder()
+        fromCustomer = UserTestFactory.aCustomer()
             .withId(1L)
             .build();
-        toCustomer = UserTestBuilder.builder()
+
+        toCustomer = UserTestFactory.aCustomer()
             .withId(2L)
             .build();
 
-        fromAccount = BankingAccountTestBuilder.builder()
+        fromAccount = BankingAccountTestFactory.aSavingsAccount(fromCustomer)
             .withId(5L)
-            .withOwner(fromCustomer)
             .withCurrency(BankingAccountCurrency.EUR)
             .withBalance(BigDecimal.valueOf(1000))
-            .withType(BankingAccountType.SAVINGS)
             .withAccountNumber("ES1234567890123456789012")
             .build();
 
-        toAccount = BankingAccountTestBuilder.builder()
+        toAccount = BankingAccountTestFactory.aSavingsAccount(toCustomer)
             .withId(1L)
-            .withOwner(toCustomer)
             .withCurrency(BankingAccountCurrency.EUR)
             .withBalance(BigDecimal.valueOf(1000))
-            .withType(BankingAccountType.SAVINGS)
             .withAccountNumber("ES1234567890123456781012")
             .build();
 
-        transfer = OutgoingTransferTestBuilder.builder()
+        transfer = OutgoingTransferTestFactory.anInternalTransfer(fromAccount, toAccount)
             .withId(2L)
-            .withFromAccount(fromAccount)
-            .withToAccount(toAccount)
             .withAmount(BigDecimal.ZERO)
             .withDescription("a gift!")
             .build();
@@ -245,21 +240,17 @@ public class OutgoingTransferTest {
     @DisplayName("assertCurrenciesMatch should return transfer when currencies are equal")
     void assertCurrenciesMatch_WhenCurrenciesAreEqual_ReturnsTransfer() {
         // given
-        fromAccount = BankingAccountTestBuilder.builder()
+        fromAccount = BankingAccountTestFactory.aSavingsAccount(fromCustomer)
             .withId(1L)
-            .withOwner(fromCustomer)
             .withCurrency(BankingAccountCurrency.EUR)
             .withBalance(BigDecimal.valueOf(1000))
-            .withType(BankingAccountType.SAVINGS)
             .withAccountNumber("ES1234567890123456783012")
             .build();
 
-        toAccount = BankingAccountTestBuilder.builder()
+        toAccount = BankingAccountTestFactory.aSavingsAccount(toCustomer)
             .withId(5L)
-            .withOwner(toCustomer)
             .withCurrency(BankingAccountCurrency.EUR)
             .withBalance(BigDecimal.valueOf(1000))
-            .withType(BankingAccountType.SAVINGS)
             .withAccountNumber("ES1234567890123456789012")
             .build();
 
@@ -272,21 +263,17 @@ public class OutgoingTransferTest {
     @DisplayName("assertCurrenciesMatch should return exception when currencies are not equal")
     void assertCurrenciesMatch_WhenCurrenciesAreDifferent_ThrowsException() {
         // given
-        BankingAccount fromAccount = BankingAccountTestBuilder.builder()
+        BankingAccount fromAccount = BankingAccountTestFactory.aSavingsAccount(fromCustomer)
             .withId(1L)
-            .withOwner(fromCustomer)
             .withCurrency(BankingAccountCurrency.USD)
             .withBalance(BigDecimal.valueOf(1000))
-            .withType(BankingAccountType.SAVINGS)
             .withAccountNumber("ES1234567890123456783012")
             .build();
 
-        BankingAccount toAccount = BankingAccountTestBuilder.builder()
+        BankingAccount toAccount = BankingAccountTestFactory.aSavingsAccount(toCustomer)
             .withId(5L)
-            .withOwner(toCustomer)
             .withCurrency(BankingAccountCurrency.EUR)
             .withBalance(BigDecimal.valueOf(1000))
-            .withType(BankingAccountType.SAVINGS)
             .withAccountNumber("ES9000567890123456789012")
             .build();
 
@@ -306,10 +293,8 @@ public class OutgoingTransferTest {
     @DisplayName("assertDifferentAccounts should return transfer when accounts are different")
     void assertDifferentAccounts_WhenAccountAreDifferent_ReturnsTransfer() {
         // given
-        OutgoingTransfer transfer = OutgoingTransferTestBuilder.builder()
+        OutgoingTransfer transfer = OutgoingTransferTestFactory.anInternalTransfer(fromAccount, toAccount)
             .withId(1L)
-            .withFromAccount(fromAccount)
-            .withToAccount(toAccount)
             .withAmount(BigDecimal.valueOf(100))
             .withDescription("a gift!")
             .build();

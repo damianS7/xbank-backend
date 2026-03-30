@@ -2,19 +2,21 @@ package com.damian.xBank.modules.banking.transfer.outgoing.application.usecase.t
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestBuilder;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.transfer.outgoing.application.usecase.confirm.ConfirmOutgoingTransfer;
 import com.damian.xBank.modules.banking.transfer.outgoing.application.usecase.confirm.ConfirmOutgoingTransferCommand;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransfer;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransferStatus;
-import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransferTestBuilder;
 import com.damian.xBank.modules.banking.transfer.outgoing.infrastructure.repository.OutgoingTransferRepository;
 import com.damian.xBank.modules.user.user.domain.exception.UserInvalidPasswordConfirmationException;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
-import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.test.AbstractServiceTest;
+import com.damian.xBank.test.utils.BankingAccountTestBuilder;
+import com.damian.xBank.test.utils.BankingAccountTestFactory;
+import com.damian.xBank.test.utils.OutgoingTransferTestBuilder;
+import com.damian.xBank.test.utils.OutgoingTransferTestFactory;
+import com.damian.xBank.test.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,10 +49,9 @@ public class ConfirmOutgoingTransferTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        fromCustomer = UserTestBuilder.builder()
+        fromCustomer = UserTestFactory.aCustomer()
             .withId(1L)
             .withEmail("fromCustomer@demo.com")
-            .withPassword(RAW_PASSWORD)
             .build();
 
         fromAccount = BankingAccountTestBuilder.builder()
@@ -62,18 +63,15 @@ public class ConfirmOutgoingTransferTest extends AbstractServiceTest {
             .withAccountNumber("US9900001111112233334444")
             .build();
 
-        toCustomer = UserTestBuilder.builder()
+        toCustomer = UserTestFactory.aCustomer()
             .withId(2L)
             .withEmail("toCustomer@demo.com")
-            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
             .build();
 
-        toAccount = BankingAccountTestBuilder.builder()
+        toAccount = BankingAccountTestFactory.aSavingsAccount(toCustomer)
             .withId(2L)
-            .withOwner(toCustomer)
             .withCurrency(BankingAccountCurrency.EUR)
             .withBalance(BigDecimal.valueOf(1000))
-            .withType(BankingAccountType.SAVINGS)
             .withAccountNumber("US1200001111112233335555")
             .build();
     }
@@ -84,10 +82,8 @@ public class ConfirmOutgoingTransferTest extends AbstractServiceTest {
         // given
         setUpContext(fromCustomer);
 
-        OutgoingTransfer givenTransfer = OutgoingTransferTestBuilder.builder()
+        OutgoingTransfer givenTransfer = OutgoingTransferTestFactory.anInternalTransfer(fromAccount, toAccount)
             .withId(1L)
-            .withFromAccount(fromAccount)
-            .withToAccount(toAccount)
             .withAmount(BigDecimal.valueOf(100))
             .withDescription("a gift!")
             .build();
@@ -98,7 +94,8 @@ public class ConfirmOutgoingTransferTest extends AbstractServiceTest {
         );
 
         // when
-        when(outgoingTransferRepository.findById(anyLong())).thenReturn(Optional.of(givenTransfer));
+        when(outgoingTransferRepository.findById(anyLong()))
+            .thenReturn(Optional.of(givenTransfer));
 
         // then
         confirmOutgoingTransfer.execute(command);

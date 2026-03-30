@@ -1,22 +1,20 @@
 package com.damian.xBank.modules.banking.transfer.outgoing.application.usecase.transfer.outgoing;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestBuilder;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.transfer.outgoing.application.TransferAuthorizationGateway;
 import com.damian.xBank.modules.banking.transfer.outgoing.application.usecase.authorize.AuthorizeOutgoingExternalTransfer;
 import com.damian.xBank.modules.banking.transfer.outgoing.application.usecase.authorize.AuthorizeOutgoingTransferCommand;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransfer;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransferStatus;
-import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransferTestBuilder;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.TransferAuthorizationStatus;
 import com.damian.xBank.modules.banking.transfer.outgoing.infrastructure.repository.OutgoingTransferRepository;
 import com.damian.xBank.modules.banking.transfer.outgoing.infrastructure.rest.request.TransferAuthorizationRequest;
 import com.damian.xBank.modules.banking.transfer.outgoing.infrastructure.rest.response.TransferAuthorizationResponse;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
-import com.damian.xBank.shared.AbstractServiceTest;
+import com.damian.xBank.test.AbstractServiceTest;
+import com.damian.xBank.test.utils.BankingAccountTestFactory;
+import com.damian.xBank.test.utils.OutgoingTransferTestFactory;
+import com.damian.xBank.test.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -55,34 +53,24 @@ public class AuthorizeOutgoingExternalTransferTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        fromCustomer = UserTestBuilder.builder()
+        fromCustomer = UserTestFactory.aCustomer()
             .withId(1L)
             .withEmail("fromCustomer@demo.com")
-            .withPassword(RAW_PASSWORD)
             .build();
 
-        fromAccount = BankingAccountTestBuilder.builder()
+        fromAccount = BankingAccountTestFactory.aSavingsAccount(fromCustomer)
             .withId(1L)
-            .withOwner(fromCustomer)
-            .withCurrency(BankingAccountCurrency.EUR)
             .withBalance(BigDecimal.valueOf(1000))
-            .withType(BankingAccountType.SAVINGS)
-            .withAccountNumber("US1200001111112233334444")
             .build();
 
-        toCustomer = UserTestBuilder.builder()
+        toCustomer = UserTestFactory.aCustomer()
             .withId(2L)
             .withEmail("toCustomer@demo.com")
-            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
             .build();
 
-        toAccount = BankingAccountTestBuilder.builder()
+        toAccount = BankingAccountTestFactory.aSavingsAccount(toCustomer)
             .withId(5L)
-            .withOwner(toCustomer)
-            .withCurrency(BankingAccountCurrency.EUR)
             .withBalance(BigDecimal.valueOf(1000))
-            .withType(BankingAccountType.SAVINGS)
-            .withAccountNumber("US1200001111112233335555")
             .build();
     }
 
@@ -90,45 +78,20 @@ public class AuthorizeOutgoingExternalTransferTest extends AbstractServiceTest {
     @DisplayName("should return authorized transfer when request is valid")
     void authorizeTransfer_WhenValidRequest_ReturnsAuthorizedTransfer() {
         // given
-        //        setUpContext(fromCustomer);
-
-        OutgoingTransfer givenTransfer = OutgoingTransferTestBuilder.builder()
+        OutgoingTransfer givenTransfer = OutgoingTransferTestFactory.anInternalTransfer(fromAccount, toAccount)
             .withId(1L)
-            .withFromAccount(fromAccount)
-            .withToAccount(toAccount)
             .withAmount(BigDecimal.valueOf(100))
             .withDescription("a gift!")
             .build();
-
         givenTransfer.confirm();
-
-        //        BankingTransaction fromTransaction = BankingTransaction
-        //            .create(
-        //                BankingTransactionType.TRANSFER_TO,
-        //                fromAccount,
-        //                givenTransfer.getAmount()
-        //            )
-        //            .setStatus(BankingTransactionStatus.PENDING)
-        //            .setDescription(givenTransfer.getDescription());
-        //
-        //        BankingTransaction toTransaction = BankingTransaction
-        //            .create(
-        //                BankingTransactionType.TRANSFER_FROM,
-        //                toAccount,
-        //                givenTransfer.getAmount()
-        //            )
-        //            .setStatus(BankingTransactionStatus.PENDING)
-        //            .setDescription(givenTransfer.getDescription());
-        //
-        //        givenTransfer.addTransaction(fromTransaction);
-        //        givenTransfer.addTransaction(toTransaction);
 
         AuthorizeOutgoingTransferCommand command = new AuthorizeOutgoingTransferCommand(
             givenTransfer.getId()
         );
 
         // when
-        when(outgoingTransferRepository.findById(anyLong())).thenReturn(Optional.of(givenTransfer));
+        when(outgoingTransferRepository.findById(anyLong()))
+            .thenReturn(Optional.of(givenTransfer));
         when(transferAuthorizationGateway.authorizeTransfer(any(TransferAuthorizationRequest.class)))
             .thenReturn(
                 new TransferAuthorizationResponse(
@@ -148,13 +111,11 @@ public class AuthorizeOutgoingExternalTransferTest extends AbstractServiceTest {
     @DisplayName("should return authorized transfer when request is valid for external transfer")
     void authorizeTransfer_WhenExternalTransfer_ReturnsAuthorizedTransfer() {
         // given
-        //        setUpContext(fromCustomer);
-
-        OutgoingTransfer givenTransfer = OutgoingTransferTestBuilder.builder()
+        OutgoingTransfer givenTransfer = OutgoingTransferTestFactory.aExternalTransfer(
+                fromAccount,
+                "US1200001111112233335555"
+            )
             .withId(1L)
-            .withFromAccount(fromAccount)
-            .withToAccount(null)
-            .withToAccountIban("US1200001111112233335555")
             .withAmount(BigDecimal.valueOf(100))
             .withDescription("a gift!")
             .build();
@@ -166,7 +127,8 @@ public class AuthorizeOutgoingExternalTransferTest extends AbstractServiceTest {
         );
 
         // when
-        when(outgoingTransferRepository.findById(anyLong())).thenReturn(Optional.of(givenTransfer));
+        when(outgoingTransferRepository.findById(anyLong()))
+            .thenReturn(Optional.of(givenTransfer));
         when(transferAuthorizationGateway.authorizeTransfer(
             any()
         )).thenReturn(

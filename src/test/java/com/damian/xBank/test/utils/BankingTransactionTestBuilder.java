@@ -18,12 +18,14 @@ public class BankingTransactionTestBuilder {
     private BankingCard bankingCard;
     private OutgoingTransfer outgoingTransfer;
     private IncomingTransfer incomingTransfer;
-    private BigDecimal amount;
-    private String description;
-    private String authorizarionId;
-    private BankingTransactionType type;
-    private BankingTransactionStatus status;
-    private BankingTransactionPaymentStatus paymentStatus;
+    private BigDecimal amount = BigDecimal.ZERO;
+    private BigDecimal balanceBefore = BigDecimal.ZERO;
+    private BigDecimal balanceAfter = BigDecimal.ZERO;
+    private String description = "";
+    private String authorizationId = "";
+    private BankingTransactionType type = BankingTransactionType.DEPOSIT;
+    private BankingTransactionStatus status = BankingTransactionStatus.PENDING;
+    private BankingTransactionPaymentStatus paymentStatus = BankingTransactionPaymentStatus.PENDING;
 
     public static BankingTransactionTestBuilder builder() {
         return new BankingTransactionTestBuilder();
@@ -101,12 +103,22 @@ public class BankingTransactionTestBuilder {
     }
 
     public BankingTransactionTestBuilder withAuthorizationId(String authorizarionId) {
-        this.authorizarionId = authorizarionId;
+        this.authorizationId = authorizarionId;
         return this;
     }
 
     public BankingTransactionTestBuilder withAmount(BigDecimal amount) {
         this.amount = amount;
+        return this;
+    }
+
+    public BankingTransactionTestBuilder withBalanceBefore(BigDecimal amount) {
+        this.balanceBefore = amount;
+        return this;
+    }
+
+    public BankingTransactionTestBuilder withBalanceAfter(BigDecimal amount) {
+        this.balanceAfter = amount;
         return this;
     }
 
@@ -118,10 +130,10 @@ public class BankingTransactionTestBuilder {
             outgoingTransfer,
             incomingTransfer,
             amount,
-            null,
-            null,
+            balanceBefore,
+            balanceAfter,
             description,
-            authorizarionId,
+            authorizationId,
             type,
             status,
             paymentStatus,

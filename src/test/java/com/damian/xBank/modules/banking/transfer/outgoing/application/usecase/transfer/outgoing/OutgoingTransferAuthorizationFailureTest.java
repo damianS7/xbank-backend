@@ -1,19 +1,17 @@
 package com.damian.xBank.modules.banking.transfer.outgoing.application.usecase.transfer.outgoing;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestBuilder;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.transfer.outgoing.application.usecase.fail.OutgoingTransferAuthorizationFailure;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransfer;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransferStatus;
-import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransferTestBuilder;
 import com.damian.xBank.modules.banking.transfer.outgoing.infrastructure.repository.OutgoingTransferRepository;
 import com.damian.xBank.modules.banking.transfer.outgoing.infrastructure.rest.request.OutgoingTransferFailureRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
-import com.damian.xBank.shared.AbstractServiceTest;
+import com.damian.xBank.test.AbstractServiceTest;
+import com.damian.xBank.test.utils.BankingAccountTestFactory;
+import com.damian.xBank.test.utils.OutgoingTransferTestFactory;
+import com.damian.xBank.test.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -42,19 +40,13 @@ public class OutgoingTransferAuthorizationFailureTest extends AbstractServiceTes
 
     @BeforeEach
     void setUp() {
-        customer = UserTestBuilder.builder()
+        customer = UserTestFactory.aCustomer()
             .withId(1L)
-            .withEmail("customer@demo.com")
-            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
             .build();
 
-        fromAccount = BankingAccountTestBuilder.builder()
+        fromAccount = BankingAccountTestFactory.aSavingsAccount(customer)
             .withId(5L)
-            .withOwner(customer)
-            .withCurrency(BankingAccountCurrency.EUR)
             .withBalance(BigDecimal.valueOf(3000))
-            .withType(BankingAccountType.SAVINGS)
-            .withAccountNumber("US1200001111112233335555")
             .build();
     }
 
@@ -67,15 +59,14 @@ public class OutgoingTransferAuthorizationFailureTest extends AbstractServiceTes
             "Error"
         );
 
-        OutgoingTransfer transfer = OutgoingTransferTestBuilder.builder()
+        OutgoingTransfer transfer = OutgoingTransferTestFactory.aExternalTransfer(
+                fromAccount,
+                "ES9900001111112233334444"
+            )
             .withId(1L)
-            .withFromAccount(fromAccount)
-            .withToAccount(null)
-            .withToAccountIban("ES9900001111112233334444")
             .withAmount(accountInitialBalance)
             .withDescription("a gift!")
             .build();
-
         transfer.confirm();
 
         // when
@@ -89,9 +80,7 @@ public class OutgoingTransferAuthorizationFailureTest extends AbstractServiceTes
             .extracting(
                 OutgoingTransfer::getStatus
             )
-            .isEqualTo(
-                OutgoingTransferStatus.FAILED
-            );
+            .isEqualTo(OutgoingTransferStatus.FAILED);
 
         assertThat(transfer.getFromAccount())
             .extracting(BankingAccount::getBalance)

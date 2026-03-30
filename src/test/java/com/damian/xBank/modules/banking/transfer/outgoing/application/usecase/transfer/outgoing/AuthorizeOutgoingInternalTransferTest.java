@@ -2,18 +2,17 @@ package com.damian.xBank.modules.banking.transfer.outgoing.application.usecase.t
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestBuilder;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.transfer.outgoing.application.usecase.authorize.AuthorizeOutgoingInternalTransfer;
 import com.damian.xBank.modules.banking.transfer.outgoing.application.usecase.authorize.AuthorizeOutgoingTransferCommand;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransfer;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransferStatus;
-import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransferTestBuilder;
 import com.damian.xBank.modules.banking.transfer.outgoing.infrastructure.repository.OutgoingTransferRepository;
 import com.damian.xBank.modules.notification.infrastructure.service.NotificationPublisher;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
-import com.damian.xBank.shared.AbstractServiceTest;
+import com.damian.xBank.test.AbstractServiceTest;
+import com.damian.xBank.test.utils.BankingAccountTestFactory;
+import com.damian.xBank.test.utils.OutgoingTransferTestFactory;
+import com.damian.xBank.test.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -48,33 +47,27 @@ public class AuthorizeOutgoingInternalTransferTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        fromCustomer = UserTestBuilder.builder()
+        fromCustomer = UserTestFactory.aCustomer()
             .withId(1L)
             .withEmail("fromCustomer@demo.com")
-            .withPassword(RAW_PASSWORD)
             .build();
 
-        fromAccount = BankingAccountTestBuilder.builder()
+        fromAccount = BankingAccountTestFactory.aSavingsAccount(fromCustomer)
             .withId(5L)
-            .withOwner(fromCustomer)
             .withCurrency(BankingAccountCurrency.EUR)
             .withBalance(BigDecimal.valueOf(1000))
-            .withType(BankingAccountType.SAVINGS)
             .withAccountNumber("ES1234567890123456789012")
             .build();
 
-        toCustomer = UserTestBuilder.builder()
+        toCustomer = UserTestFactory.aCustomer()
             .withId(2L)
             .withEmail("toCustomer@demo.com")
-            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
             .build();
 
-        toAccount = BankingAccountTestBuilder.builder()
+        toAccount = BankingAccountTestFactory.aSavingsAccount(toCustomer)
             .withId(2L)
-            .withOwner(toCustomer)
             .withCurrency(BankingAccountCurrency.EUR)
             .withBalance(BigDecimal.valueOf(1000))
-            .withType(BankingAccountType.SAVINGS)
             .withAccountNumber("ES1234567890123456789012")
             .build();
     }
@@ -83,12 +76,8 @@ public class AuthorizeOutgoingInternalTransferTest extends AbstractServiceTest {
     @DisplayName("should return authorized transfer when request is valid")
     void authorizeTransfer_ReturnsAuthorizedTransfer() {
         // given
-        //        setUpContext(fromCustomer);
-
-        OutgoingTransfer givenTransfer = OutgoingTransferTestBuilder.builder()
+        OutgoingTransfer givenTransfer = OutgoingTransferTestFactory.anInternalTransfer(fromAccount, toAccount)
             .withId(1L)
-            .withFromAccount(fromAccount)
-            .withToAccount(toAccount)
             .withAmount(BigDecimal.valueOf(100))
             .withDescription("a gift!")
             .build();

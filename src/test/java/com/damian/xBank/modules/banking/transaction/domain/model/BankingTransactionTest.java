@@ -1,16 +1,13 @@
 package com.damian.xBank.modules.banking.transaction.domain.model;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestBuilder;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.transaction.domain.exception.BankingTransactionNotOwnerException;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserRole;
-import com.damian.xBank.modules.user.user.domain.model.UserStatus;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
-import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.test.AbstractServiceTest;
+import com.damian.xBank.test.utils.BankingAccountTestFactory;
+import com.damian.xBank.test.utils.BankingTransactionTestFactory;
+import com.damian.xBank.test.utils.UserTestFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,21 +26,14 @@ public class BankingTransactionTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        customer = UserTestBuilder.builder()
+        customer = UserTestFactory.aCustomer()
             .withId(1L)
-            .withEmail("customer@demo.com")
-            .withPassword(bCryptPasswordEncoder.encode(this.RAW_PASSWORD))
-            .withStatus(UserStatus.VERIFIED)
-            .withRole(UserRole.ADMIN)
+            .admin()
             .build();
 
-        account = BankingAccountTestBuilder.builder()
+        account = BankingAccountTestFactory.aSavingsAccount(customer)
             .withId(5L)
-            .withOwner(customer)
-            .withCurrency(BankingAccountCurrency.EUR)
             .withBalance(BigDecimal.valueOf(1000))
-            .withType(BankingAccountType.SAVINGS)
-            .withAccountNumber("US1200001111112233335555")
             .build();
 
         transaction = BankingTransaction.create(
@@ -127,14 +117,14 @@ public class BankingTransactionTest extends AbstractServiceTest {
     @DisplayName("Should confirm a transaction")
     void capture_WhenAuthorizedTransaction_ChangesStatusToCompleted() {
         // given
-        BankingTransaction transaction = BankingTransactionTestBuilder.builder()
+        BankingTransaction transaction = BankingTransactionTestFactory.aDepositTransaction()
             .withId(1L)
-            .withType(BankingTransactionType.DEPOSIT)
             .withAccount(account)
-            .withAmount(BigDecimal.valueOf(100))
-            .withDescription("Deposit transaction")
+            .withAmount(BigDecimal.valueOf(120))
             .withStatus(BankingTransactionStatus.PENDING)
             .withPaymentStatus(BankingTransactionPaymentStatus.AUTHORIZED)
+            .withType(BankingTransactionType.DEPOSIT)
+            .withDescription("Deposit transaction")
             .build();
 
         // when

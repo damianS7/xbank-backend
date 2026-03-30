@@ -1,19 +1,16 @@
 package com.damian.xBank.modules.banking.transfer.outgoing.infrastructure.rest.controller;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestBuilder;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.transfer.outgoing.application.usecase.fail.FailedOutgoingTransferResult;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransfer;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransferStatus;
-import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransferTestBuilder;
 import com.damian.xBank.modules.banking.transfer.outgoing.infrastructure.rest.request.OutgoingTransferFailureRequest;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserStatus;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
-import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.utils.JsonHelper;
+import com.damian.xBank.test.AbstractControllerTest;
+import com.damian.xBank.test.utils.BankingAccountTestFactory;
+import com.damian.xBank.test.utils.OutgoingTransferTestFactory;
+import com.damian.xBank.test.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -33,33 +30,24 @@ public class OutgoingTransferAuthorizationControllerTest extends AbstractControl
 
     @BeforeEach
     void setUp() {
-        customer = UserTestBuilder.builder()
-            .withEmail("customer@demo.com")
-            .withStatus(UserStatus.VERIFIED)
-            .withPassword(passwordEncoder.encode(RAW_PASSWORD))
+        customer = UserTestFactory.aCustomer()
             .build();
-
         userRepository.save(customer);
 
-        customerBankingAccount = BankingAccountTestBuilder.builder()
-            .withOwner(customer)
-            .withCurrency(BankingAccountCurrency.EUR)
+        customerBankingAccount = BankingAccountTestFactory.aSavingsAccount(customer)
             .withBalance(BigDecimal.valueOf(1000))
-            .withType(BankingAccountType.SAVINGS)
-            .withAccountNumber("US1200001111112233335555")
             .build();
-
         bankingAccountRepository.save(customerBankingAccount);
     }
 
     @Test
     void outgoingTransferFailure_Returns200OK() throws Exception {
         // given
-        OutgoingTransfer transfer = OutgoingTransferTestBuilder.builder()
+        OutgoingTransfer transfer = OutgoingTransferTestFactory.aExternalTransfer(
+                customerBankingAccount,
+                "US12341234123412341234"
+            )
             .withAmount(BigDecimal.valueOf(100))
-            .withFromAccount(customerBankingAccount)
-            .withToAccount(null)
-            .withToAccountIban("US12341234123412341234")
             .withDescription("description")
             .build();
 
