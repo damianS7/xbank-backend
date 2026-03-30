@@ -10,7 +10,6 @@ import com.damian.xBank.modules.banking.card.infrastructure.rest.request.Withdra
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionPaymentStatus;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
-import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.payment.checkout.application.PaymentNetworkGateway;
 import com.damian.xBank.modules.payment.checkout.domain.PaymentAuthorizationStatus;
 import com.damian.xBank.modules.payment.checkout.infrastructure.http.request.PaymentAuthorizationRequest;
@@ -19,7 +18,7 @@ import com.damian.xBank.modules.user.user.domain.model.User;
 import com.damian.xBank.test.AbstractControllerTest;
 import com.damian.xBank.test.utils.BankingAccountTestFactory;
 import com.damian.xBank.test.utils.BankingCardTestFactory;
-import com.damian.xBank.test.utils.BankingTransactionTestBuilder;
+import com.damian.xBank.test.utils.BankingTransactionTestFactory;
 import com.damian.xBank.test.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -137,13 +136,11 @@ public class BankingCardOperationControllerTest extends AbstractControllerTest {
 
         BigDecimal initialBalance = customerBankingAccount.getBalance();
 
-        // TODO al usar builder no se llama a calcBefore y after??
-        BankingTransaction transaction = BankingTransactionTestBuilder.builder()
+        BankingTransaction transaction = BankingTransactionTestFactory.aCardChargeTransaction()
             .withCard(customerBankingCard)
             .withAmount(BigDecimal.valueOf(100))
             .withStatus(BankingTransactionStatus.PENDING)
             .withPaymentStatus(BankingTransactionPaymentStatus.AUTHORIZED)
-            .withType(BankingTransactionType.CARD_CHARGE)
             .withAuthorizationId("1234/1234")
             .withDescription("Capture transaction")
             .build();

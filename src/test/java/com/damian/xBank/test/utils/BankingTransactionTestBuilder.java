@@ -1,11 +1,16 @@
-package com.damian.xBank.modules.banking.transaction.domain.model;
+package com.damian.xBank.test.utils;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.card.domain.model.BankingCard;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionPaymentStatus;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionStatus;
+import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransactionType;
 import com.damian.xBank.modules.banking.transfer.incoming.domain.model.IncomingTransfer;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransfer;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 
 public class BankingTransactionTestBuilder {
     private Long transactionId;
@@ -22,6 +27,36 @@ public class BankingTransactionTestBuilder {
 
     public static BankingTransactionTestBuilder builder() {
         return new BankingTransactionTestBuilder();
+    }
+
+    public BankingTransactionTestBuilder rejected() {
+        this.status = BankingTransactionStatus.REJECTED;
+        return this;
+    }
+
+    public BankingTransactionTestBuilder completed() {
+        this.status = BankingTransactionStatus.COMPLETED;
+        return this;
+    }
+
+    public BankingTransactionTestBuilder pending() {
+        this.status = BankingTransactionStatus.PENDING;
+        return this;
+    }
+
+    public BankingTransactionTestBuilder authorized() {
+        this.paymentStatus = BankingTransactionPaymentStatus.AUTHORIZED;
+        return this;
+    }
+
+    public BankingTransactionTestBuilder captured() {
+        this.paymentStatus = BankingTransactionPaymentStatus.CAPTURED;
+        return this;
+    }
+
+    public BankingTransactionTestBuilder failed() {
+        this.paymentStatus = BankingTransactionPaymentStatus.FAILED;
+        return this;
     }
 
     public BankingTransactionTestBuilder withId(Long id) {
@@ -76,18 +111,22 @@ public class BankingTransactionTestBuilder {
     }
 
     public BankingTransaction build() {
-        return new BankingTransaction(
+        return BankingTransaction.reconstitute(
             transactionId,
             bankingAccount,
             bankingCard,
             outgoingTransfer,
             incomingTransfer,
             amount,
+            null,
+            null,
             description,
+            authorizarionId,
             type,
             status,
             paymentStatus,
-            authorizarionId
+            Instant.now(),
+            Instant.now()
         );
     }
 }

@@ -31,6 +31,8 @@ public class UserTestFactory {
     }
 
     public static UserTestBuilder anAdmin() {
-        return aUser().withRole(UserRole.ADMIN);
+        return aUser()
+            .withEmail("admin@demo.com")
+            .withRole(UserRole.ADMIN);
     }
 }
