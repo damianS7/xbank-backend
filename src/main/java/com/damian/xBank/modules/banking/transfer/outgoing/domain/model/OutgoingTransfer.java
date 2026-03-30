@@ -20,6 +20,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -28,6 +32,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // Constructor JPA
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "outgoing_transfers")
 public class OutgoingTransfer {
@@ -77,44 +84,6 @@ public class OutgoingTransfer {
     @Column
     private Instant updatedAt;
 
-    // Constructor JPA
-    protected OutgoingTransfer() {
-    }
-
-    OutgoingTransfer(
-        Long transferId,
-        BankingAccount fromAccount,
-        BankingAccount toAccount,
-        String toAccountIban,
-        BigDecimal amount,
-        String description
-    ) {
-        this.id = transferId;
-        this.type = OutgoingTransferType.INTERNAL;
-        this.status = OutgoingTransferStatus.PENDING;
-        this.fromAccount = fromAccount;
-        this.toAccount = toAccount;
-        this.toAccountIban = toAccountIban;
-        this.amount = amount;
-        this.description = description;
-        this.updatedAt = Instant.now();
-        this.createdAt = Instant.now();
-
-        if (this.toAccount != null) {
-            this.toAccountIban = this.toAccount.getAccountNumber();
-        }
-
-        this.type = toAccount != null
-            ? OutgoingTransferType.INTERNAL
-            : OutgoingTransferType.EXTERNAL;
-
-        // validate transfer
-        this.assertTransferPossible();
-
-        // Generate transactions
-        this.generateTransactions();
-    }
-
     public static OutgoingTransfer create(
         BankingAccount fromAccount,
         BankingAccount toAccount,
@@ -122,58 +91,67 @@ public class OutgoingTransfer {
         BigDecimal amount,
         String description
     ) {
-        return new OutgoingTransfer(
+
+        if (toAccount != null) {
+            toAccountIban = toAccount.getAccountNumber();
+        }
+
+        OutgoingTransferType type = toAccount != null
+            ? OutgoingTransferType.INTERNAL
+            : OutgoingTransferType.EXTERNAL;
+
+        OutgoingTransfer transfer = new OutgoingTransfer(
             null,
             fromAccount,
             toAccount,
             toAccountIban,
             amount,
-            description
+            type,
+            OutgoingTransferStatus.PENDING,
+            null,
+            description,
+            new ArrayList<>(),
+            Instant.now(),
+            Instant.now()
         );
+
+        // validate transfer
+        transfer.assertTransferPossible();
+
+        // Generate transactions
+        transfer.generateTransactions();
+
+        return transfer;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public OutgoingTransferStatus getStatus() {
-        return status;
-    }
-
-    public OutgoingTransferType getType() {
-        return type;
-    }
-
-    public String getToAccountIban() {
-        return toAccountIban;
-    }
-
-    public String getProviderAuthorizationId() {
-        return providerAuthorizationId;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public BankingAccount getToAccount() {
-        return toAccount;
-    }
-
-    public BankingAccount getFromAccount() {
-        return fromAccount;
-    }
-
-    public String getDescription() {
-        return description;
+    public static OutgoingTransfer reconstitute(
+        Long id,
+        BankingAccount fromAccount,
+        BankingAccount toAccount,
+        String toAccountIban,
+        BigDecimal amount,
+        OutgoingTransferType type,
+        OutgoingTransferStatus status,
+        String providerAuthorizationId,
+        String description,
+        List<BankingTransaction> transactions,
+        Instant createdAt,
+        Instant updatedAt
+    ) {
+        return new OutgoingTransfer(
+            id,
+            fromAccount,
+            toAccount,
+            toAccountIban,
+            amount,
+            type,
+            status,
+            providerAuthorizationId,
+            description,
+            transactions,
+            createdAt,
+            updatedAt
+        );
     }
 
     public List<BankingTransaction> getTransactions() {
@@ -217,7 +195,7 @@ public class OutgoingTransfer {
     }
 
     private void generateTransactions() {
-        // Generate transactions
+        // Transacción de salida
         BankingTransaction fromTransaction = BankingTransaction.create(
             BankingTransactionType.OUTGOING_TRANSFER,
             fromAccount,
@@ -227,8 +205,8 @@ public class OutgoingTransfer {
 
         this.transactions.add(fromTransaction);
 
+        // Si el destino existe, crear transacción para el receptor
         if (toAccount != null) {
-            // create transfer transaction for the receiver of the funds
             BankingTransaction toTransaction = BankingTransaction.create(
                 BankingTransactionType.INCOMING_TRANSFER,
                 toAccount,
