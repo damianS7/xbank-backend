@@ -2,14 +2,13 @@ package com.damian.xBank.modules.banking.transfer.incoming.application.usecase.c
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestBuilder;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.transaction.domain.model.BankingTransaction;
 import com.damian.xBank.modules.banking.transfer.incoming.domain.model.IncomingTransfer;
 import com.damian.xBank.modules.banking.transfer.incoming.infrastructure.repository.IncomingTransferRepository;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
-import com.damian.xBank.shared.AbstractServiceTest;
+import com.damian.xBank.test.AbstractServiceTest;
+import com.damian.xBank.test.utils.BankingAccountTestFactory;
+import com.damian.xBank.test.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -38,18 +37,14 @@ public class CompleteIncomingTransferTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        customer = UserTestBuilder.builder()
+        customer = UserTestFactory.aCustomer()
             .withId(1L)
-            .withEmail("customer@demo.com")
-            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
             .build();
 
-        bankingAccount = BankingAccountTestBuilder.builder()
+        bankingAccount = BankingAccountTestFactory.aSavingsAccount(customer)
             .withId(5L)
-            .withOwner(customer)
             .withCurrency(BankingAccountCurrency.EUR)
             .withBalance(BigDecimal.valueOf(0))
-            .withType(BankingAccountType.SAVINGS)
             .withAccountNumber("US1200001111112233335555")
             .build();
     }
@@ -68,7 +63,6 @@ public class CompleteIncomingTransferTest extends AbstractServiceTest {
             BigDecimal.valueOf(100),
             "DAVID"
         );
-
         transfer.authorize("1234-1234");
 
         ArgumentCaptor<IncomingTransfer> captor = ArgumentCaptor.forClass(IncomingTransfer.class);

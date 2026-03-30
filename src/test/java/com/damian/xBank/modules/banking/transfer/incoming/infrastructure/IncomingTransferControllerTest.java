@@ -2,24 +2,19 @@ package com.damian.xBank.modules.banking.transfer.incoming.infrastructure;
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountTestBuilder;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.transfer.incoming.application.usecase.authorize.AuthorizeIncomingTransferResult;
 import com.damian.xBank.modules.banking.transfer.incoming.application.usecase.complete.CompleteIncomingTransferResult;
 import com.damian.xBank.modules.banking.transfer.incoming.domain.model.IncomingTransfer;
 import com.damian.xBank.modules.banking.transfer.incoming.domain.model.IncomingTransferStatus;
 import com.damian.xBank.modules.banking.transfer.incoming.infrastructure.rest.request.AuthorizeIncomingTransferRequest;
 import com.damian.xBank.modules.banking.transfer.incoming.infrastructure.rest.request.CompleteIncomingTransferRequest;
-import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransfer;
-import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.OutgoingTransferTestBuilder;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.TransferAuthorizationStatus;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserRole;
-import com.damian.xBank.modules.user.user.domain.model.UserStatus;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
-import com.damian.xBank.shared.AbstractControllerTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
 import com.damian.xBank.shared.utils.JsonHelper;
+import com.damian.xBank.test.AbstractControllerTest;
+import com.damian.xBank.test.utils.BankingAccountTestFactory;
+import com.damian.xBank.test.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,62 +36,37 @@ public class IncomingTransferControllerTest extends AbstractControllerTest {
     private User toCustomer;
     private BankingAccount toBankingAccount;
     private User admin;
-    private OutgoingTransfer transfer;
 
     @BeforeEach
     void setUp() {
-        fromCustomer = UserTestBuilder.builder()
+        fromCustomer = UserTestFactory.aCustomer()
             .withEmail("fromCustomer@demo.com")
-            .withPassword(RAW_PASSWORD)
-            .withStatus(UserStatus.VERIFIED)
             .build();
-
         userRepository.save(fromCustomer);
 
-        fromBankingAccount = BankingAccountTestBuilder.builder()
-            .withOwner(fromCustomer)
+        fromBankingAccount = BankingAccountTestFactory.aSavingsAccount(fromCustomer)
             .withCurrency(BankingAccountCurrency.EUR)
             .withBalance(BigDecimal.valueOf(3200))
-            .withType(BankingAccountType.SAVINGS)
             .withAccountNumber("ES1234567890123456789012")
             .build();
-
         bankingAccountRepository.save(fromBankingAccount);
 
-        toCustomer = UserTestBuilder.builder()
+        toCustomer = UserTestFactory.aCustomer()
             .withEmail("toCustomer@demo.com")
-            .withPassword(RAW_PASSWORD)
-            .withStatus(UserStatus.VERIFIED)
             .build();
-
         userRepository.save(toCustomer);
 
-        toBankingAccount = BankingAccountTestBuilder.builder()
-            .withOwner(toCustomer)
+        toBankingAccount = BankingAccountTestFactory.aSavingsAccount(toCustomer)
             .withCurrency(BankingAccountCurrency.EUR)
             .withBalance(BigDecimal.valueOf(200))
-            .withType(BankingAccountType.SAVINGS)
             .withAccountNumber("DE1234567890123456789012")
             .build();
-
         bankingAccountRepository.save(toBankingAccount);
 
-        admin = UserTestBuilder.builder()
+        admin = UserTestFactory.anAdmin()
             .withEmail("admin@demo.com")
-            .withStatus(UserStatus.VERIFIED)
-            .withRole(UserRole.ADMIN)
             .build();
-
         userRepository.save(admin);
-
-        transfer = OutgoingTransferTestBuilder.builder()
-            .withFromAccount(fromBankingAccount)
-            .withToAccount(toBankingAccount)
-            .withAmount(BigDecimal.valueOf(100))
-            .withDescription("a gift!")
-            .build();
-
-        outgoingTransferRepository.save(transfer);
     }
 
     @Test

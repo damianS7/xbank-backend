@@ -2,14 +2,14 @@ package com.damian.xBank.modules.banking.transfer.incoming.application.usecase.a
 
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccount;
 import com.damian.xBank.modules.banking.account.domain.model.BankingAccountCurrency;
-import com.damian.xBank.modules.banking.account.domain.model.BankingAccountType;
 import com.damian.xBank.modules.banking.account.infrastructure.repository.BankingAccountRepository;
 import com.damian.xBank.modules.banking.transfer.incoming.infrastructure.repository.IncomingTransferRepository;
 import com.damian.xBank.modules.banking.transfer.outgoing.domain.model.TransferAuthorizationStatus;
 import com.damian.xBank.modules.user.user.domain.model.User;
-import com.damian.xBank.modules.user.user.domain.model.UserTestBuilder;
-import com.damian.xBank.shared.AbstractServiceTest;
 import com.damian.xBank.shared.exception.ErrorCodes;
+import com.damian.xBank.test.AbstractServiceTest;
+import com.damian.xBank.test.utils.BankingAccountTestFactory;
+import com.damian.xBank.test.utils.UserTestFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -38,18 +38,14 @@ public class AuthorizeIncomingTransferTest extends AbstractServiceTest {
 
     @BeforeEach
     void setUp() {
-        customer = UserTestBuilder.builder()
+        customer = UserTestFactory.aCustomer()
             .withId(1L)
-            .withEmail("customer@demo.com")
-            .withPassword(bCryptPasswordEncoder.encode(RAW_PASSWORD))
             .build();
 
-        bankingAccount = BankingAccount.create(
-            customer,
-            "US9900001111112233334444",
-            BankingAccountType.SAVINGS,
-            BankingAccountCurrency.EUR
-        );
+        bankingAccount = BankingAccountTestFactory.aSavingsAccount(customer)
+            .withAccountNumber("US9900001111112233334444")
+            .withCurrency(BankingAccountCurrency.EUR)
+            .build();
     }
 
     @Test
