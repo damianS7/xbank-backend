@@ -46,7 +46,7 @@ public class AuthorizeCardPayment {
             command.cvv()
         );
 
-        BankingTransaction transaction = BankingTransaction.create(
+        BankingTransaction transaction = BankingTransaction.createCardTransaction(
             BankingTransactionType.CARD_CHARGE,
             bankingCard,
             command.amount(),

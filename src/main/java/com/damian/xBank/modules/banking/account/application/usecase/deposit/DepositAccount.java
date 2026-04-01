@@ -66,7 +66,7 @@ public class DepositAccount {
         bankingAccount.assertActive();
 
         // Crear la transacción asociada
-        BankingTransaction transaction = BankingTransaction.create(
+        BankingTransaction transaction = BankingTransaction.createAccountTransaction(
             BankingTransactionType.DEPOSIT,
             bankingAccount,
             command.amount(),

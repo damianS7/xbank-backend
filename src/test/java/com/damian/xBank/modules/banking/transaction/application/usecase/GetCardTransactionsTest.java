@@ -75,7 +75,7 @@ public class GetCardTransactionsTest extends AbstractServiceTest {
 
         Pageable pageable = PageRequest.of(0, 10);
 
-        BankingTransaction transaction = BankingTransaction.create(
+        BankingTransaction transaction = BankingTransaction.createCardTransaction(
             BankingTransactionType.CARD_CHARGE,
             customerBankingCard,
             BigDecimal.valueOf(100),

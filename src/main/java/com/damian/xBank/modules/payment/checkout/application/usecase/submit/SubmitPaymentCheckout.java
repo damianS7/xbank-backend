@@ -55,16 +55,7 @@ public class SubmitPaymentCheckout {
             throw new PaymentCheckoutException(paymentIntent.getId(), response.declineReason());
         }
 
-        // TODO
-        // If the payment is authorized we should send to the card issuer bank
-        // Or the payment network should send to the issuer card?
         paymentIntent.authorize();
-
-        // Notify the merchant
-        //        notificationPublisher.publish(
-        //                notificationEventFactory.cardPaymentCompleted(transaction)
-        //        );
-
         paymentIntentRepository.save(paymentIntent);
     }
 }

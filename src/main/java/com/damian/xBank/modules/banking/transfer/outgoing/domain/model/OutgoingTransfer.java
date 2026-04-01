@@ -196,7 +196,7 @@ public class OutgoingTransfer {
 
     private void generateTransactions() {
         // Transacción de salida
-        BankingTransaction fromTransaction = BankingTransaction.create(
+        BankingTransaction fromTransaction = BankingTransaction.createOutgoingTransferTransaction(
             BankingTransactionType.OUTGOING_TRANSFER,
             fromAccount,
             this,
@@ -207,7 +207,7 @@ public class OutgoingTransfer {
 
         // Si el destino existe, crear transacción para el receptor
         if (toAccount != null) {
-            BankingTransaction toTransaction = BankingTransaction.create(
+            BankingTransaction toTransaction = BankingTransaction.createOutgoingTransferTransaction(
                 BankingTransactionType.INCOMING_TRANSFER,
                 toAccount,
                 this,

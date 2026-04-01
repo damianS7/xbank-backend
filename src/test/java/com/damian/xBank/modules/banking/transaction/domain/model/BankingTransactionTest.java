@@ -36,7 +36,7 @@ public class BankingTransactionTest extends AbstractServiceTest {
             .withBalance(BigDecimal.valueOf(1000))
             .build();
 
-        transaction = BankingTransaction.create(
+        transaction = BankingTransaction.createAccountTransaction(
             BankingTransactionType.DEPOSIT,
             account,
             BigDecimal.valueOf(100),
@@ -139,7 +139,7 @@ public class BankingTransactionTest extends AbstractServiceTest {
     @DisplayName("Should reject a transaction")
     void failTransaction_WhenPendingTransaction_ChangesStatusToRejected() {
         // given
-        BankingTransaction transaction = BankingTransaction.create(
+        BankingTransaction transaction = BankingTransaction.createAccountTransaction(
             BankingTransactionType.DEPOSIT,
             account,
             BigDecimal.valueOf(100),

@@ -189,7 +189,7 @@ public class IncomingTransfer {
     private void generateTransactions() {
         // Si la transferencia es a una cuenta interna ...
         if (toAccount != null) {
-            this.transaction = BankingTransaction.create(
+            this.transaction = BankingTransaction.createIncomingTransferTransaction(
                 BankingTransactionType.INCOMING_TRANSFER,
                 toAccount,
                 this,

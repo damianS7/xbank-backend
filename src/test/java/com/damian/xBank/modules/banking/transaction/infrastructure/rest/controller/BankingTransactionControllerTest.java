@@ -60,7 +60,7 @@ public class BankingTransactionControllerTest extends AbstractControllerTest {
         // given
         login(customer);
 
-        BankingTransaction transaction = BankingTransaction.create(
+        BankingTransaction transaction = BankingTransaction.createCardTransaction(
             BankingTransactionType.CARD_CHARGE,
             customerBankingCard,
             BigDecimal.valueOf(120),

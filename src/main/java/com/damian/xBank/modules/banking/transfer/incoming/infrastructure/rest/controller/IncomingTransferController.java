@@ -61,7 +61,6 @@ public class IncomingTransferController {
 
     /**
      * Completa una transferencia
-     * TODO: quiza no es necesario???? Si ya me llego la peticion de autorizacion y tengo los datos???
      *
      * @param request Petición con los datos de la transferencia
      * @return 200

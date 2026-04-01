@@ -52,7 +52,7 @@ public class WithdrawFromATM {
         // Comprobaciones de seguridad
         bankingCard.assertCanSpend(currentUser, command.amount(), command.pin());
 
-        BankingTransaction transaction = BankingTransaction.create(
+        BankingTransaction transaction = BankingTransaction.createCardTransaction(
             BankingTransactionType.WITHDRAWAL,
             bankingCard,
             command.amount(),

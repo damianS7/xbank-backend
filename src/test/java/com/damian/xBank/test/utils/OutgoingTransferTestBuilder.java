@@ -104,7 +104,7 @@ public class OutgoingTransferTestBuilder {
         );
 
         // Transacción de salida
-        BankingTransaction fromTransaction = BankingTransaction.create(
+        BankingTransaction fromTransaction = BankingTransaction.createOutgoingTransferTransaction(
             BankingTransactionType.OUTGOING_TRANSFER,
             fromAccount,
             transfer,
@@ -115,7 +115,7 @@ public class OutgoingTransferTestBuilder {
 
         // Si el destino existe, crear transacción para el receptor
         if (toAccount != null) {
-            BankingTransaction toTransaction = BankingTransaction.create(
+            BankingTransaction toTransaction = BankingTransaction.createOutgoingTransferTransaction(
                 BankingTransactionType.INCOMING_TRANSFER,
                 toAccount,
                 transfer,

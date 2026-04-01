@@ -121,7 +121,7 @@ public class BankingTransaction {
         );
     }
 
-    public static BankingTransaction create(
+    public static BankingTransaction createAccountTransaction(
         BankingTransactionType type,
         BankingAccount account,
         BigDecimal amount,
@@ -150,7 +150,7 @@ public class BankingTransaction {
         return transaction;
     }
 
-    public static BankingTransaction create(
+    public static BankingTransaction createCardTransaction(
         BankingTransactionType type,
         BankingCard card,
         BigDecimal amount,
@@ -179,37 +179,7 @@ public class BankingTransaction {
         return transaction;
     }
 
-    public static BankingTransaction create(
-        BankingTransactionType type,
-        BankingCard card,
-        BigDecimal amount,
-        String description,
-        String authorizationId
-    ) {
-        BankingTransaction transaction = new BankingTransaction(
-            null,
-            card.getBankingAccount(),
-            card,
-            null,
-            null,
-            amount,
-            null,
-            null,
-            description,
-            authorizationId,
-            type,
-            BankingTransactionPaymentStatus.AUTHORIZED,
-            BankingTransactionStatus.PENDING,
-            Instant.now(),
-            Instant.now()
-        );
-
-        transaction.calcBalanceBefore();
-        transaction.calcBalanceAfter();
-        return transaction;
-    }
-
-    public static BankingTransaction create(
+    public static BankingTransaction createOutgoingTransferTransaction(
         BankingTransactionType type,
         BankingAccount account,
         OutgoingTransfer outgoingTransfer,
@@ -238,7 +208,7 @@ public class BankingTransaction {
         return transaction;
     }
 
-    public static BankingTransaction create(
+    public static BankingTransaction createIncomingTransferTransaction(
         BankingTransactionType type,
         BankingAccount account,
         IncomingTransfer incomingTransfer,
